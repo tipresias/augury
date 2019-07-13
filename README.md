@@ -1,6 +1,6 @@
 # Augury
 
-[![Build Status](https://travis-ci.com/tipresias/tipresias.svg?branch=master)](https://travis-ci.com/tipresias/tipresias)
+[![Build Status](https://travis-ci.com/tipresias/augury.svg?branch=master)](https://travis-ci.com/tipresias/augury)
 
 Jupyter Notebooks and machine-learning service for the Tipresias app
 
