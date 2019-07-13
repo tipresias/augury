@@ -3,7 +3,7 @@ services:
   - docker
 env:
   DOCKER_COMPOSE_VERSION: 1.22.0
-  GOOGLE_APPLICATION_CREDENTIALS: $HOME/.gcloud/keyfile.json
+  GOOGLE_APPLICATION_CREDENTIALS: ./.gcloud/keyfile.json
 before_install:
   - sudo rm /usr/local/bin/docker-compose
   - sudo curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose

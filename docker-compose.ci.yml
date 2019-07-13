@@ -2,8 +2,6 @@ version: "3.2"
 services:
   data_science:
     image: cfranklin11/tipresias_data_science:latest
-    volumes:
-      - ~/.gcloud:/app/.gcloud
     ports:
       - "8008:8008"
     depends_on:
