@@ -15,20 +15,22 @@ provider:
     AFL_DATA_SERVICE: ${self:custom.afl_data_service}
     PYTHON_ENV: production
     GCPF_TOKEN: ${self:custom.gcpf_token}
+    PYTHONPATH: ./src
 
 plugins:
   - serverless-google-cloudfunctions
 
 package:
   exclude:
-    - node_modules/**
-    - .gitignore
-    - .git/**
-    - notebooks/**
-    - data/**
-    - .gcloud/**
-    - .mypy_cache
-    - machine_learning/tests/**
+    - ./**
+  include:
+    - conf
+    - src/machine_learning/**
+    - src/setup.py
+    - main.py
+    - package-lock.json
+    - package.json
+    - requirements.txt
 
 functions:
   predictions:

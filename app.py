@@ -10,8 +10,6 @@ SRC_PATH = os.path.join(BASE_DIR, "src")
 if SRC_PATH not in sys.path:
     sys.path.append(SRC_PATH)
 
-os.environ["PYTHONPATH"] = SRC_PATH + os.pathsep + os.environ.get("PYTHONPATH", "")
-
 from machine_learning import api
 
 
