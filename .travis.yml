@@ -19,8 +19,8 @@ script:
 before_deploy:
   - echo "$DOCKER_PASSWORD" | docker login -u cfranklin11 --password-stdin
   - docker push cfranklin11/tipresias_data_science:latest
-  - mkdir -p $HOME/.gcloud
-  - openssl aes-256-cbc -K $encrypted_88b6344ff4d0_key -iv $encrypted_88b6344ff4d0_iv -in keyfile.json.enc -out $GOOGLE_APPLICATION_CREDENTIALS -d
+  - mkdir $HOME/.gcloud
+  - openssl aes-256-cbc -K $encrypted_88b6344ff4d0_key -iv $encrypted_88b6344ff4d0_iv -in keyfile.json.enc -out ${HOME}/.gcloud/keyfile.json -d
 deploy:
   provider: script
   script: ./scripts/deploy.sh
