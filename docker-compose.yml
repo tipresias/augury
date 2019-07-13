@@ -1,0 +1,34 @@
+version: "3.2"
+services:
+  data_science:
+    build: .
+    volumes:
+      - ./:/app
+      - ./.gcloud:/app/.gcloud
+      - /app/node_modules
+    ports:
+      - "8008:8008"
+    stdin_open: true
+    tty: true
+    depends_on:
+      - afl_data
+    env_file: .env
+    environment:
+      - PYTHON_ENV=development
+    command: python3 app.py
+  afl_data:
+    image: cfranklin11/tipresias_afl_data:latest
+    ports:
+      - "8080:8080"
+    stdin_open: true
+    tty: true
+    command: Rscript app.R
+  notebook:
+    image: tipresias_data_science:latest
+    volumes:
+      - ./:/app
+    ports:
+      - "8888:8888"
+    depends_on:
+      - data_science
+    command: jupyter notebook --ip 0.0.0.0 --no-browser --allow-root
