@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-docker-compose run --rm data_science sls deploy
+docker-compose run -e PROJECT_ID=${PROJECT_ID} -e AFL_DATA_SERVICE=${AFL_DATA_SERVICE} -e GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS} -e GCPF_TOKEN=${GCPF_TOKEN} data_science sls deploy
