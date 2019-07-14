@@ -27,15 +27,25 @@ class BaseDataImporter:
             if os.getenv("PYTHON_ENV") == "production"
             else LOCAL_AFL_DATA_SERVICE
         )
+
+        if os.getenv("PYTHON_ENV") == "production":
+            service_host = AFL_DATA_SERVICE
+            headers = {"Authorization": f'Bearer {os.getenv("GCR_TOKEN")}'}
+        else:
+            service_host = LOCAL_AFL_DATA_SERVICE
+            headers = {}
+
         service_url = urljoin(service_host, path)
 
-        response = self._make_request(service_url, params)
+        response = self._make_request(service_url, params=params, headers=headers)
 
         return self._handle_response_data(response)
 
     @staticmethod
-    def _make_request(url: str, params: Dict[str, Any] = {}) -> requests.Response:
-        response = requests.get(url, params=params)
+    def _make_request(
+        url: str, params: Dict[str, Any] = {}, headers: Dict[str, str] = {}
+    ) -> requests.Response:
+        response = requests.get(url, params=params, headers=headers)
 
         if response.status_code != 200:
             raise Exception(
