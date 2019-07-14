@@ -15,6 +15,7 @@ provider:
     AFL_DATA_SERVICE: ${self:custom.afl_data_service}
     PYTHON_ENV: production
     GCPF_TOKEN: ${self:custom.gcpf_token}
+    GCR_TOKEN: ${self:custom.gcr_token}
     PYTHONPATH: ./src
 
 plugins:
