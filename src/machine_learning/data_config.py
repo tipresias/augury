@@ -34,7 +34,7 @@ TEAM_TRANSLATIONS = {
 # For when we fetch upcoming matches in the fixture and need to make Footywire venue
 # names consistent with AFL tables venue names
 FOOTYWIRE_VENUE_TRANSLATIONS = {
-    "AAMI Stadium": "Melbourne",
+    "AAMI Stadium": "Football Park",
     "ANZ Stadium": "Stadium Australia",
     "UTAS Stadium": "York Park",
     "Blacktown International": "Blacktown",
@@ -50,9 +50,10 @@ FOOTYWIRE_VENUE_TRANSLATIONS = {
     "Spotless Stadium": "Sydney Showground",
     "Showground Stadium": "Sydney Showground",
     "TIO Stadium": "Marrara Oval",
-    "Westpac Stadium": "Wellington",
+    "Westpac Stadium": "Wellington",  # Not copy-pasta: AFL Tables calls it Wellington
     "Marvel Stadium": "Docklands",
     "Canberra Oval": "Manuka Oval",
+    "TIO Traeger Park": "Traeger Park",
 }
 
 CITIES = {
@@ -150,8 +151,9 @@ VENUE_CITIES = {
     "Blacktown": "Sydney",
     "Jiangwan Stadium": "Shanghai",
     "Albury": "Albury",
+    "Riverway Stadium": "Townsville",
     # Footywire venues
-    "AAMI Stadium": "Melbourne",
+    "AAMI Stadium": "Adelaide",
     "ANZ Stadium": "Sydney",
     "UTAS Stadium": "Launceston",
     "Blacktown International": "Sydney",
@@ -166,11 +168,10 @@ VENUE_CITIES = {
     "SCG": "Sydney",
     "Spotless Stadium": "Sydney",
     "TIO Stadium": "Darwin",
-    "TIO Traeger Park": "Alice Springs",
     "Westpac Stadium": "Wellington",
     "Marvel Stadium": "Melbourne",
     "Canberra Oval": "Canberra",
-    "Riverway Stadium": "Townsville",
+    "TIO Traeger Park": "Alice Springs",
 }
 
 DEFUNCT_TEAM_NAMES = ["Fitzroy", "University"]
