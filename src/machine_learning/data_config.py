@@ -31,37 +31,6 @@ TEAM_TRANSLATIONS = {
     "Sydney Swans": "Sydney",
 }
 
-# I used this dictionary to convert betting venue names to match venue names
-# for the sake of joining the two data sets, but no longer use venues to join them.
-# It was a pain to put this together, though, so I'm keeping it around in case I need
-# it later.
-# BETTING_VENUE_TRANSLATIONS = {
-#     "AAMI": "AAMI Stadium",
-#     "ANZ": "ANZ Stadium",
-#     "Adelaide": "Adelaide Oval",
-#     "Aurora": "UTAS Stadium",
-#     "Aurora Stadium": "UTAS Stadium",
-#     "Blacktown": "Blacktown International",
-#     "Blundstone": "Blundstone Arena",
-#     "Cazaly's": "Cazaly's Stadium",
-#     "Domain": "Domain Stadium",
-#     "Etihad": "Etihad Stadium",
-#     "GMHBA": "GMHBA Stadium",
-#     "Gabba": "Gabba",
-#     "Jiangwan": "Jiangwan Stadium",
-#     "MCG": "MCG",
-#     "Mars": "Mars Stadium",
-#     "Metricon": "Metricon Stadium",
-#     "Perth": "Optus Stadium",
-#     "SCG": "SCG",
-#     "Spotless": "Spotless Stadium",
-#     "StarTrack": "Manuka Oval",
-#     "TIO": "TIO Stadium",
-#     "UTAS": "UTAS Stadium",
-#     "Westpac": "Westpac Stadium",
-#     "TIO Traegar Park": "TIO Stadium",
-# }
-
 # For when we fetch upcoming matches in the fixture and need to make Footywire venue
 # names consistent with AFL tables venue names
 FOOTYWIRE_VENUE_TRANSLATIONS = {
