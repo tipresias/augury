@@ -197,6 +197,7 @@ VENUE_CITIES = {
     "SCG": "Sydney",
     "Spotless Stadium": "Sydney",
     "TIO Stadium": "Darwin",
+    "TIO Traeger Park": "Alice Springs",
     "Westpac Stadium": "Wellington",
     "Marvel Stadium": "Melbourne",
     "Canberra Oval": "Canberra",
