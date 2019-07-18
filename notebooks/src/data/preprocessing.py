@@ -2,10 +2,10 @@ import re
 import pandas as pd
 import numpy as np
 
-from machine_learning.settings import DATA_DIR
+from machine_learning.settings import RAW_DATA_DIR
 
 
-def raw_betting_df(path=f"{DATA_DIR}/afl_betting.csv"):
+def raw_betting_df(path=f"{RAW_DATA_DIR}/afl_betting.csv"):
     raw_df = pd.read_csv(path, index_col=("date", "venue"), parse_dates=["date"])
     home_df = (
         raw_df[raw_df["home"] == 1]
@@ -25,7 +25,7 @@ def raw_betting_df(path=f"{DATA_DIR}/afl_betting.csv"):
     )
 
 
-def raw_match_df(path=f"{DATA_DIR}/ft_match_list.csv"):
+def raw_match_df(path=f"{RAW_DATA_DIR}/ft_match_list.csv"):
     return (
         pd.read_csv(path, parse_dates=["date"])
         .rename(columns={"date": "datetime"})

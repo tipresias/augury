@@ -9,7 +9,7 @@ from machine_learning.ml_data import JoinedMLData
 from machine_learning.data_transformation import data_cleaning
 from tests.fixtures.data_factories import fake_cleaned_match_data
 
-DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../fixtures"))
+RAW_DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../fixtures"))
 FAKE = Faker()
 MATCH_COUNT_PER_YEAR = 10
 YEAR_RANGE = (2016, 2017)

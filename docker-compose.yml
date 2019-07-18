@@ -23,6 +23,7 @@ services:
       - "8080:8080"
     stdin_open: true
     tty: true
+    env_file: .env
     command: Rscript app.R
   notebook:
     image: augury_data_science:latest

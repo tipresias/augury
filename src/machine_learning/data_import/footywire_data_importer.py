@@ -7,7 +7,7 @@ from datetime import date
 from urllib3.exceptions import SystemTimeWarning
 import pandas as pd
 
-from machine_learning.settings import DATA_DIR
+from machine_learning.settings import RAW_DATA_DIR
 from .base_data_importer import BaseDataImporter
 
 AFL_DATA_SERVICE = "http://afl_data:8001"
@@ -24,7 +24,7 @@ class FootywireDataImporter(BaseDataImporter):
 
     def __init__(
         self,
-        csv_dir: str = DATA_DIR,
+        csv_dir: str = RAW_DATA_DIR,
         fixture_filename: str = "ft_match_list",
         betting_filename: str = "afl_betting",
         verbose=1,

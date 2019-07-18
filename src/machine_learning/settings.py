@@ -4,7 +4,8 @@ import yaml
 
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
-DATA_DIR = os.path.join(BASE_DIR, "data/01_raw/")
+RAW_DATA_DIR = os.path.join(BASE_DIR, "data/01_raw/")
+CASSETTE_LIBRARY_DIR = os.path.join(BASE_DIR, "src/tests/fixtures/cassettes")
 
 HOURS_FROM_UTC_TO_MELBOURNE = 11
 MELBOURNE_TIMEZONE = timezone(timedelta(hours=HOURS_FROM_UTC_TO_MELBOURNE))
