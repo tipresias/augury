@@ -1,16 +1,29 @@
 from unittest import TestCase
+import os
 
 import pandas as pd
 from faker import Faker
 
 from machine_learning.ml_data import BettingMLData
+from machine_learning.data_import import FootywireDataImporter
+from machine_learning.settings import BASE_DIR
 
+TEST_DATA_DIR = os.path.join(BASE_DIR, "src/tests/fixtures")
 FAKE = Faker()
 
 
 class TestBettingMLData(TestCase):
     def setUp(self):
-        self.data = BettingMLData(train_years=(2015, 2015), test_years=(2016, 2016))
+        self.data = BettingMLData(
+            train_years=(2015, 2015),
+            test_years=(2016, 2016),
+            data_readers={
+                "betting": (
+                    FootywireDataImporter(json_dir=TEST_DATA_DIR).get_betting_odds,
+                    {},
+                )
+            },
+        )
 
     def test_train_data(self):
         X_train, y_train = self.data.train_data()

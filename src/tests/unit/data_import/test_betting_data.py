@@ -38,4 +38,4 @@ class TestBettingData(TestCase):
         )
         open.assert_called_with(BETTING_DATA_PATH, "w")
         dump_args, _dump_kwargs = json.dump.call_args
-        self.assertIn({"data": self.fake_betting_data}, dump_args)
+        self.assertIn(self.fake_betting_data, dump_args)

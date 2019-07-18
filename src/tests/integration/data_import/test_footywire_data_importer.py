@@ -8,14 +8,14 @@ from machine_learning.data_import import FootywireDataImporter
 from machine_learning.settings import MELBOURNE_TIMEZONE
 
 START_OF_LAST_YEAR = f"{date.today().year - 1}-01-01"
-RAW_DATA_DIR = os.path.abspath(
+TEST_DATA_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "../../fixtures")
 )
 
 
 class TestFootywireDataImporter(TestCase):
     def setUp(self):
-        self.data_reader = FootywireDataImporter(csv_dir=RAW_DATA_DIR, verbose=0)
+        self.data_reader = FootywireDataImporter(json_dir=TEST_DATA_DIR, verbose=0)
 
     def test_get_betting_odds(self):
         with self.subTest("when fetch_data is True"):

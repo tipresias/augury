@@ -24,13 +24,13 @@ class FootywireDataImporter(BaseDataImporter):
 
     def __init__(
         self,
-        csv_dir: str = RAW_DATA_DIR,
+        json_dir: str = RAW_DATA_DIR,
         fixture_filename: str = "ft_match_list",
         betting_filename: str = "afl_betting",
         verbose=1,
     ) -> None:
         super().__init__(verbose=verbose)
-        self.csv_dir = csv_dir
+        self.json_dir = json_dir
         self.fixture_filename = fixture_filename
         self.betting_filename = betting_filename
 
@@ -76,27 +76,27 @@ class FootywireDataImporter(BaseDataImporter):
         start_year = int(start_date[:4])
         end_year = int(end_date[:4])
 
-        return self.__read_data_csv(self.betting_filename, (start_year, end_year))
+        return self.__read_data_json(self.betting_filename, (start_year, end_year))
 
-    def __read_data_csv(
+    def __read_data_json(
         self, filename: str, year_range: Optional[Tuple[int, int]]
     ) -> pd.DataFrame:
-        csv_data_frame = (
-            pd.read_csv(
-                os.path.join(self.csv_dir, f"{filename}.csv"), parse_dates=["date"]
+        json_data_frame = (
+            pd.read_json(
+                os.path.join(self.json_dir, f"{filename}.json"), convert_dates=["date"]
             )
             .assign(date=self._parse_dates)
             .rename(columns={"round": "round_number", "round_label": "round"})
         )
 
         if year_range is None:
-            return csv_data_frame
+            return json_data_frame
 
         min_year, max_year = year_range
 
-        return csv_data_frame[
-            (csv_data_frame["season"] >= min_year)
-            & (csv_data_frame["season"] < max_year)
+        return json_data_frame[
+            (json_data_frame["season"] >= min_year)
+            & (json_data_frame["season"] < max_year)
         ]
 
     @staticmethod

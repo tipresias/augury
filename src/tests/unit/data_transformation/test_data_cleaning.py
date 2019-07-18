@@ -10,9 +10,9 @@ from machine_learning.data_transformation.data_cleaning import (
     clean_player_data,
     clean_joined_data,
 )
-from machine_learning.settings import MELBOURNE_TIMEZONE
+from machine_learning.settings import MELBOURNE_TIMEZONE, BASE_DIR
 
-RAW_DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../fixtures"))
+TEST_DATA_DIR = os.path.join(BASE_DIR, "src/tests/fixtures")
 N_PLAYERS = 20
 N_MATCHES = 5
 FAKE = Faker()
@@ -21,7 +21,9 @@ FAKE = Faker()
 class TestDataCleaning(TestCase):
     def test_clean_betting_data(self):
         betting_data = (
-            pd.read_csv(os.path.join(RAW_DATA_DIR, "afl_betting.csv"), parse_dates=["date"])
+            pd.read_json(
+                os.path.join(TEST_DATA_DIR, "afl_betting.json"), convert_dates=["date"]
+            )
             .assign(
                 date=lambda df: pd.to_datetime(df["date"]).dt.tz_localize(
                     MELBOURNE_TIMEZONE
@@ -40,7 +42,9 @@ class TestDataCleaning(TestCase):
             self.assertTrue(col in clean_data.columns.values)
 
     def test_clean_match_data(self):
-        match_data = pd.read_csv(os.path.join(RAW_DATA_DIR, "fitzroy_match_results.csv"))
+        match_data = pd.read_csv(
+            os.path.join(TEST_DATA_DIR, "fitzroy_match_results.csv")
+        )
 
         clean_data = clean_match_data(match_data)
 
@@ -52,9 +56,11 @@ class TestDataCleaning(TestCase):
             self.assertTrue(col in clean_data.columns.values)
 
     def test_clean_player_data(self):
-        match_data = pd.read_csv(os.path.join(RAW_DATA_DIR, "fitzroy_match_results.csv"))
+        match_data = pd.read_csv(
+            os.path.join(TEST_DATA_DIR, "fitzroy_match_results.csv")
+        )
         player_data = pd.read_csv(
-            os.path.join(RAW_DATA_DIR, "fitzroy_get_afltables_stats.csv")
+            os.path.join(TEST_DATA_DIR, "fitzroy_get_afltables_stats.csv")
         )
 
         clean_data = clean_player_data(player_data, match_data)
@@ -94,11 +100,13 @@ class TestDataCleaning(TestCase):
             self.assertTrue(this_year_data.any().any())
 
     def test_clean_joined_data(self):
-        match_data = pd.read_csv(os.path.join(RAW_DATA_DIR, "fitzroy_match_results.csv"))
-        player_data = pd.read_csv(
-            os.path.join(RAW_DATA_DIR, "fitzroy_get_afltables_stats.csv")
+        match_data = pd.read_csv(
+            os.path.join(TEST_DATA_DIR, "fitzroy_match_results.csv")
         )
-        betting_data = pd.read_csv(os.path.join(RAW_DATA_DIR, "afl_betting.csv"))
+        player_data = pd.read_csv(
+            os.path.join(TEST_DATA_DIR, "fitzroy_get_afltables_stats.csv")
+        )
+        betting_data = pd.read_json(os.path.join(TEST_DATA_DIR, "afl_betting.json"))
 
         clean_data = clean_joined_data([player_data, match_data, betting_data])
 
