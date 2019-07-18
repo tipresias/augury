@@ -30,6 +30,7 @@
 from kedro.pipeline import Pipeline, node
 
 from .nodes.example import predict, report_accuracy, split_data, train_model
+from .nodes import betting
 
 # Here you can define your data-driven pipeline by importing your functions
 # and adding them to the pipeline as follows:
@@ -46,6 +47,19 @@ from .nodes.example import predict, report_accuracy, split_data, train_model
 #
 # $ kedro run
 #
+
+
+def betting_pipeline(**_kwargs):
+    return Pipeline(
+        [
+            node(betting.clean_data, ["betting_data"], "clean_betting_data"),
+            node(
+                betting.convert_match_rows_to_teammatch_rows,
+                ["clean_betting_data"],
+                "stacked_betting_data",
+            ),
+        ]
+    )
 
 
 def create_pipeline(**_kwargs):
