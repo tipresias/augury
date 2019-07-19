@@ -123,3 +123,60 @@ def convert_match_rows_to_teammatch_rows(
         .drop_duplicates(subset=INDEX_COLS, keep="last")
         .sort_index()
     )
+
+
+def add_betting_pred_win(data_frame: pd.DataFrame) -> pd.DataFrame:
+    """
+    Add whether a team is predicted to win per the betting odds
+
+    Args:
+        data_frame (pandas.DataFrame): A data frame with betting data.
+
+    Returns:
+        pandas.DataFrame with a 'betting_pred_win' column
+    """
+
+    REQUIRED_COLS: List[str] = [
+        "win_odds",
+        "oppo_win_odds",
+        "line_odds",
+        "oppo_line_odds",
+    ]
+    _validate_required_columns(data_frame.columns, REQUIRED_COLS)
+
+    is_favoured = (
+        (data_frame["win_odds"] < data_frame["oppo_win_odds"])
+        | (data_frame["line_odds"] < data_frame["oppo_line_odds"])
+    ).astype(int)
+    odds_are_even = (
+        (data_frame["win_odds"] == data_frame["oppo_win_odds"])
+        & (data_frame["line_odds"] == data_frame["oppo_line_odds"])
+    ).astype(int)
+
+    # Give half point for predicted draws
+    predicted_results = is_favoured + (odds_are_even * 0.5)
+
+    return data_frame.assign(betting_pred_win=predicted_results)
+
+
+def finalize_data(
+    data_frame: pd.DataFrame, index_cols: List[str] = INDEX_COLS
+) -> pd.DataFrame:
+    """
+    Perform final data cleaning after all the data transformations and feature
+    building steps.
+
+    Args:
+        data_frame (pandas.DataFrame): Data frame that has been cleaned & transformed.
+
+    Returns:
+        pandas.DataFrame that's ready to be fed into a machine-learning model.
+    """
+
+    return (
+        data_frame.astype({"year": int})
+        .fillna(0)
+        .set_index(index_cols, drop=False)
+        .rename_axis([None] * len(index_cols))
+        .sort_index()
+    )

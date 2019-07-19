@@ -29,6 +29,11 @@
 
 from kedro.pipeline import Pipeline, node
 
+from machine_learning.data_processors.feature_calculation import (
+    feature_calculator,
+    calculate_rolling_rate,
+)
+from machine_learning.data_processors import feature_functions
 from .nodes.example import predict, report_accuracy, split_data, train_model
 from .nodes import betting
 
@@ -58,6 +63,20 @@ def betting_pipeline(**_kwargs):
                 ["clean_betting_data"],
                 "stacked_betting_data",
             ),
+            node(
+                betting.add_betting_pred_win, ["stacked_betting_data"], "betting_data_a"
+            ),
+            node(
+                feature_calculator([(calculate_rolling_rate, [("betting_pred_win",)])]),
+                ["betting_data_a"],
+                "betting_data_b",
+            ),
+            node(
+                feature_functions.add_oppo_features,
+                ["betting_data_b"],
+                "betting_data_c",
+            ),
+            node(betting.finalize_data, ["betting_data_c"], "betting_data_d"),
         ]
     )
 
