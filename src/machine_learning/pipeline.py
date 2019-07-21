@@ -57,7 +57,7 @@ from .nodes import betting
 def betting_pipeline(**_kwargs):
     return Pipeline(
         [
-            node(betting.clean_data, ["betting_data"], "clean_betting_data"),
+            node(betting.clean_data, "betting_data", "clean_betting_data"),
             node(
                 betting.convert_match_rows_to_teammatch_rows,
                 ["clean_betting_data"],
@@ -72,11 +72,16 @@ def betting_pipeline(**_kwargs):
                 "betting_data_b",
             ),
             node(
-                feature_functions.add_oppo_features,
+                feature_functions.add_oppo_features(
+                    oppo_feature_cols=[
+                        "betting_pred_win",
+                        "rolling_betting_pred_win_rate",
+                    ]
+                ),
                 ["betting_data_b"],
                 "betting_data_c",
             ),
-            node(betting.finalize_data, ["betting_data_c"], "betting_data_d"),
+            node(betting.finalize_data, ["betting_data_c"], "data"),
         ]
     )
 

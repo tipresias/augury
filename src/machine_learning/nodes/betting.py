@@ -1,9 +1,13 @@
+"""Pipeline nodes for transforming betting data"""
+
 from typing import Callable, List
 
 import pandas as pd
 import numpy as np
 
 from machine_learning.data_config import TEAM_TRANSLATIONS, INDEX_COLS
+from machine_learning.settings import MELBOURNE_TIMEZONE
+from machine_learning.types import BettingData
 
 
 def _validate_required_columns(columns: pd.Index, required_columns: List[str]) -> None:
@@ -20,6 +24,10 @@ def _validate_required_columns(columns: pd.Index, required_columns: List[str]) -
     )
 
 
+def _parse_dates(data_frame: pd.DataFrame) -> pd.Series:
+    return pd.to_datetime(data_frame["date"]).dt.tz_localize(MELBOURNE_TIMEZONE)
+
+
 def _translate_team_name(team_name: str) -> str:
     return TEAM_TRANSLATIONS[team_name] if team_name in TEAM_TRANSLATIONS else team_name
 
@@ -28,7 +36,7 @@ def _translate_team_column(col_name: str) -> Callable[[pd.DataFrame], str]:
     return lambda data_frame: data_frame[col_name].map(_translate_team_name)
 
 
-def clean_data(betting_data: pd.DataFrame) -> pd.DataFrame:
+def clean_data(betting_data: List[BettingData]) -> pd.DataFrame:
     """
     Basic data cleaning, translation, and dropping in preparation for ML-specific
     transformations
@@ -40,7 +48,8 @@ def clean_data(betting_data: pd.DataFrame) -> pd.DataFrame:
         pandas.DataFrame
     """
     return (
-        betting_data.rename(columns={"season": "year"})
+        pd.DataFrame(betting_data)
+        .rename(columns={"season": "year"})
         .drop(
             [
                 "home_win_paid",
@@ -56,6 +65,7 @@ def clean_data(betting_data: pd.DataFrame) -> pd.DataFrame:
         .assign(
             home_team=_translate_team_column("home_team"),
             away_team=_translate_team_column("away_team"),
+            date=_parse_dates,
         )
         .drop("round", axis=1)
     )

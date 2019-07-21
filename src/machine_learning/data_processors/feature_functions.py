@@ -9,7 +9,7 @@ Returns:
     pandas.DataFrame
 """
 
-from typing import List, Tuple, Sequence, Set, Union, Optional
+from typing import List, Tuple, Sequence, Set, Union, Optional, Callable
 import math
 from functools import partial, reduce
 
@@ -593,35 +593,11 @@ def _cols_to_convert_to_oppo(
     return [col for col in data_frame.columns if col not in match_cols]
 
 
-def add_oppo_features(
+def _add_oppo_features_node(
     data_frame: pd.DataFrame,
     match_cols: List[str] = [],
     oppo_feature_cols: List[str] = [],
 ) -> pd.DataFrame:
-    """
-    Add oppo_team equivalents for team features based on the oppo_team for that
-    match based on match_cols (non-team-specific columns to ignore) or
-    oppo_feature_cols (team-specific features to add 'oppo' versions of). Including both
-    column arguments will raise an error.
-
-    Args:
-        data_frame (pandas.DataFrame): The data frame to add oppo features to.
-        match_cols (list of strings): Names of columns to ignore (calculates oppo
-            features for all columns not listed).
-        oppo_feature_cols (list of strings): Names of columns to add oppo features of
-            (ignores all columns not listed)
-
-    Returns:
-        pandas.DataFrame with 'oppo_' columns added.
-    """
-
-    if any(match_cols) and any(oppo_feature_cols):
-        raise ValueError(
-            "To avoid conflicts, you can't include both match_cols "
-            "and oppo_feature_cols. Choose the shorter list to determine which "
-            "columns to skip and which to turn into opposition features."
-        )
-
     cols_to_convert = _cols_to_convert_to_oppo(
         data_frame, match_cols=match_cols, oppo_feature_cols=oppo_feature_cols
     )
@@ -645,3 +621,37 @@ def add_oppo_features(
     _validate_no_duplicated_columns(concated_data_frame)
 
     return concated_data_frame
+
+
+def add_oppo_features(
+    match_cols: List[str] = [], oppo_feature_cols: List[str] = []
+) -> Callable[[pd.DataFrame], pd.DataFrame]:
+    """
+    Add oppo_team equivalents for team features based on the oppo_team for that
+    match based on match_cols (non-team-specific columns to ignore) or
+    oppo_feature_cols (team-specific features to add 'oppo' versions of). Including both
+    column arguments will raise an error.
+
+    Args:
+        match_cols (list of strings): Names of columns to ignore (calculates oppo
+            features for all columns not listed).
+        oppo_feature_cols (list of strings): Names of columns to add oppo features of
+            (ignores all columns not listed)
+
+    Returns:
+        Function that takes pandas.DataFrame and returns another pandas.DataFrame
+        with 'oppo_' columns added.
+    """
+
+    if any(match_cols) and any(oppo_feature_cols):
+        raise ValueError(
+            "To avoid conflicts, you can't include both match_cols "
+            "and oppo_feature_cols. Choose the shorter list to determine which "
+            "columns to skip and which to turn into opposition features."
+        )
+
+    return partial(
+        _add_oppo_features_node,
+        match_cols=match_cols,
+        oppo_feature_cols=oppo_feature_cols,
+    )

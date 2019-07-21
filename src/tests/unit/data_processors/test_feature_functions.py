@@ -395,7 +395,8 @@ class TestFeatureFunctions(TestCase):
         with self.subTest(data_frame=valid_data_frame, match_cols=match_cols):
             data_frame = valid_data_frame
             match_cols = match_cols
-            transformed_df = add_oppo_features(data_frame, match_cols=match_cols)
+            transform_func = add_oppo_features(match_cols=match_cols)
+            transformed_df = transform_func(data_frame)
 
             # OppoFeatureBuilder adds 1 column per non-match column
             self.assertEqual(len(data_frame.columns) + 2, len(transformed_df.columns))
@@ -430,9 +431,8 @@ class TestFeatureFunctions(TestCase):
             data_frame=valid_data_frame, oppo_feature_cols=oppo_feature_cols
         ):
             data_frame = valid_data_frame
-            transformed_df = add_oppo_features(
-                data_frame, oppo_feature_cols=oppo_feature_cols
-            )
+            transform_func = add_oppo_features(oppo_feature_cols=oppo_feature_cols)
+            transformed_df = transform_func(data_frame)
 
             # OppoFeatureBuilder adds 1 column per non-match column
             self.assertEqual(len(data_frame.columns) + 2, len(transformed_df.columns))
@@ -465,17 +465,14 @@ class TestFeatureFunctions(TestCase):
 
         with self.subTest(match_cols=match_cols, oppo_feature_cols=oppo_feature_cols):
             with self.assertRaises(ValueError):
-                (
-                    add_oppo_features(
-                        valid_data_frame,
-                        match_cols=match_cols,
-                        oppo_feature_cols=oppo_feature_cols,
-                    )
+                transform_func = add_oppo_features(
+                    match_cols=match_cols, oppo_feature_cols=oppo_feature_cols
                 )
 
         for required_col in REQUIRED_COLS:
             with self.subTest(data_frame=valid_data_frame.drop(required_col, axis=1)):
                 data_frame = valid_data_frame.drop(required_col, axis=1)
+                transform_func = add_oppo_features(match_cols=match_cols)
 
                 with self.assertRaises(ValueError):
-                    add_oppo_features(data_frame, match_cols=match_cols)
+                    transform_func(data_frame)

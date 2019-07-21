@@ -22,7 +22,7 @@ N_TEAMMATCH_ROWS = N_MATCHES_PER_SEASON * len(range(*YEAR_RANGE)) * 2
 class TestBetting(TestCase):
     def setUp(self):
         self.raw_betting_data = fake_footywire_betting_data(
-            N_MATCHES_PER_SEASON, YEAR_RANGE
+            N_MATCHES_PER_SEASON, YEAR_RANGE, clean=False
         )
 
     def test_clean_data(self):
