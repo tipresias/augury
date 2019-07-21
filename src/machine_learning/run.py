@@ -39,7 +39,9 @@ from kedro.io import DataCatalog
 from kedro.runner import SequentialRunner
 from kedro.utils import load_obj
 
-from machine_learning.pipeline import create_pipeline
+import pandas as pd
+
+from machine_learning.pipeline import create_pipeline, betting_pipeline
 
 # Name of root directory containing project configuration.
 CONF_ROOT = "conf"
@@ -113,6 +115,18 @@ def create_catalog(config: ConfigLoader, **_kwargs) -> DataCatalog:
     catalog = DataCatalog.from_config(conf_catalog, conf_creds)
     catalog.add_feed_dict({"parameters": conf_params})
     return catalog
+
+
+def run_betting_pipeline() -> pd.DataFrame:
+    # Load Catalog
+    conf = get_config(project_path=str(Path.cwd()), env=None)
+    catalog = create_catalog(config=conf)
+
+    # Load the runner
+    runner_func = SequentialRunner
+
+    # Run the runner
+    return runner_func().run(betting_pipeline(), catalog)
 
 
 def main(tags: Iterable[str] = None, env: str = None, runner: str = None):
