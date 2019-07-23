@@ -128,3 +128,7 @@ betting_data:
   filepath: data/01_raw/betting-data_2010-01-01_2018-12-31.json
   save_args:
     indent: 2
+
+remote_betting_data:
+  type: machine_learning.io.JSONRemoteDataSet
+  data_source: "machine_learning.data_import.betting_data.fetch_betting_data"
