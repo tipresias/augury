@@ -1,13 +1,75 @@
 """Pipeline nodes for transforming betting data"""
 
-from typing import Callable, List
+from typing import Callable, List, Sequence, Dict, Any, cast
+from functools import reduce
 
 import pandas as pd
 import numpy as np
 
 from machine_learning.data_config import TEAM_TRANSLATIONS, INDEX_COLS
 from machine_learning.settings import MELBOURNE_TIMEZONE
-from machine_learning.types import BettingData
+
+
+def convert_to_data_frame(
+    *data: Sequence[List[Dict[str, Any]]]
+) -> Sequence[pd.DataFrame]:
+    """
+    Converts JSON data in the form of a list of dictionaries into a data frame
+
+    Args:
+        data (sequence of list of dictionaries): Data received from a JSON data set.
+
+    Returns:
+        Sequence of pandas.DataFrame
+    """
+
+    return [pd.DataFrame(datum) for datum in data]
+
+
+def _combine_data_vertically(
+    acc_data_frame: pd.DataFrame, curr_data_frame: pd.DataFrame
+) -> pd.DataFrame:
+    """
+    Assumes the following:
+        - All data frames have a date column
+        - Data frames are sorted by date in ascending order
+        - Data frames have all data for a given date (i.e. all matches played
+            on a date, not 1 of 3, which would result in missing data)
+    """
+
+    max_accumulated_date = acc_data_frame[  # pylint: disable=unused-variable
+        "date"
+    ].max()
+    sliced_current_data_frame = curr_data_frame.query("date > @max_accumulated_date")
+
+    return acc_data_frame.append(sliced_current_data_frame)
+
+
+def combine_data(*data_frames: Sequence[pd.DataFrame], axis=0) -> pd.DataFrame:
+    """
+    Concatenate data frames from multiple sources into one data frame
+
+    Args:
+        data_frames (list of pandas.DataFrame): Data frames to be concatenated.
+        axis (0 or 1, defaults to 0): Whether to concatenate by rows (0) or columns (1).
+
+    Returns:
+        Concatenated data frame.
+    """
+
+    if len(data_frames) == 1:
+        return data_frames[0]
+
+    if axis == 0:
+        sorted_data_frames = sorted(
+            cast(Sequence[pd.DataFrame], data_frames), key=lambda df: df["date"].min()
+        )
+        return reduce(_combine_data_vertically, sorted_data_frames)
+
+    if axis == 1:
+        return pd.concat(data_frames, axis=axis)
+
+    raise ValueError(f"Expected axis to be 0 or 1, but recieved {axis}")
 
 
 def _validate_required_columns(columns: pd.Index, required_columns: List[str]) -> None:
@@ -36,7 +98,7 @@ def _translate_team_column(col_name: str) -> Callable[[pd.DataFrame], str]:
     return lambda data_frame: data_frame[col_name].map(_translate_team_name)
 
 
-def clean_data(betting_data: List[BettingData]) -> pd.DataFrame:
+def clean_data(betting_data: pd.DataFrame) -> pd.DataFrame:
     """
     Basic data cleaning, translation, and dropping in preparation for ML-specific
     transformations
@@ -48,8 +110,7 @@ def clean_data(betting_data: List[BettingData]) -> pd.DataFrame:
         pandas.DataFrame
     """
     return (
-        pd.DataFrame(betting_data)
-        .rename(columns={"season": "year"})
+        betting_data.rename(columns={"season": "year"})
         .drop(
             [
                 "home_win_paid",

@@ -57,7 +57,17 @@ from .nodes import betting
 def betting_pipeline(**_kwargs):
     return Pipeline(
         [
-            node(betting.clean_data, "betting_data", "clean_betting_data"),
+            node(
+                betting.convert_to_data_frame,
+                ["betting_data", "remote_betting_data"],
+                ["betting_data_frame", "remote_betting_data_frame"],
+            ),
+            node(
+                betting.combine_data,
+                ["betting_data_frame", "remote_betting_data_frame"],
+                "combined_betting_data",
+            ),
+            node(betting.clean_data, "combined_betting_data", "clean_betting_data"),
             node(
                 betting.convert_match_rows_to_teammatch_rows,
                 ["clean_betting_data"],
