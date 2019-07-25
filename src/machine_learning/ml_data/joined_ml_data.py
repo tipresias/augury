@@ -62,6 +62,8 @@ DATA_READERS: Dict[str, BaseMLData] = {
     "betting": BettingMLData(),
 }
 
+END_OF_YEAR = f"{date.today().year}-12-31"
+
 
 class JoinedMLData(BaseMLData, DataTransformerMixin):
     """Load and clean data from all data sources"""
@@ -75,7 +77,7 @@ class JoinedMLData(BaseMLData, DataTransformerMixin):
         data_transformers: List[DataFrameTransformer] = DATA_TRANSFORMERS,
         fetch_data: bool = False,
         start_date: str = "1897-01-01",
-        end_date: str = str(date.today()),
+        end_date: str = END_OF_YEAR,
     ) -> None:
         super().__init__(
             train_years=train_years,
