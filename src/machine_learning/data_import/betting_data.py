@@ -8,7 +8,6 @@ import json
 from machine_learning.data_import.base_data import fetch_afl_data
 from machine_learning.settings import RAW_DATA_DIR
 
-AFL_DATA_SERVICE = "http://afl_data:8001"
 FIRST_YEAR_OF_BETTING_DATA = 2010
 END_OF_YEAR = f"{date.today().year}-12-31"
 

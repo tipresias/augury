@@ -9,7 +9,7 @@ import requests
 
 
 LOCAL_AFL_DATA_SERVICE = "http://afl_data:8080"
-AFL_DATA_SERVICE = os.getenv("AFL_DATA_SERVICE", default=LOCAL_AFL_DATA_SERVICE)
+AFL_DATA_SERVICE = os.getenv("AFL_DATA_SERVICE", default="")
 
 
 def _handle_response_data(response: requests.Response) -> List[Dict[str, Any]]:
