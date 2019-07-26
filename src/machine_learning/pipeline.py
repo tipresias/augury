@@ -34,24 +34,7 @@ from machine_learning.data_processors.feature_calculation import (
     calculate_rolling_rate,
 )
 from machine_learning.data_processors import feature_functions
-from .nodes.example import predict, report_accuracy, split_data, train_model
 from .nodes import betting
-
-# Here you can define your data-driven pipeline by importing your functions
-# and adding them to the pipeline as follows:
-#
-# from nodes.data_wrangling import clean_data, compute_features
-#
-# pipeline = Pipeline([
-#     node(clean_data, 'customers', 'prepared_customers'),
-#     node(compute_features, 'prepared_customers', ['X_train', 'Y_train'])
-# ])
-#
-# Once you have your pipeline defined, you can run it from the root of your
-# project by calling:
-#
-# $ kedro run
-#
 
 
 def betting_pipeline(**_kwargs):
@@ -94,51 +77,3 @@ def betting_pipeline(**_kwargs):
             node(betting.finalize_data, ["betting_data_c"], "data"),
         ]
     )
-
-
-def create_pipeline(**_kwargs):
-    """Create the project's pipeline.
-
-    Args:
-        kwargs: Ignore any additional arguments added in the future.
-
-    Returns:
-        Pipeline: The resulting pipeline.
-
-    """
-
-    ###########################################################################
-    # Here you can find an example pipeline with 4 nodes.
-    #
-    # PLEASE DELETE THIS PIPELINE ONCE YOU START WORKING ON YOUR OWN PROJECT AS
-    # WELL AS THE FILE nodes/example.py
-    # -------------------------------------------------------------------------
-
-    pipeline = Pipeline(
-        [
-            node(
-                split_data,
-                ["example_iris_data", "parameters"],
-                dict(
-                    train_x="example_train_x",
-                    train_y="example_train_y",
-                    test_x="example_test_x",
-                    test_y="example_test_y",
-                ),
-            ),
-            node(
-                train_model,
-                ["example_train_x", "example_train_y", "parameters"],
-                "example_model",
-            ),
-            node(
-                predict,
-                dict(model="example_model", test_x="example_test_x"),
-                "example_predictions",
-            ),
-            node(report_accuracy, ["example_predictions", "example_test_y"], None),
-        ]
-    )
-    ###########################################################################
-
-    return pipeline
