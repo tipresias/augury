@@ -49,6 +49,7 @@ N_SEASONS_FOR_PREDICTION = 10
 # because we only need the full data set for model training and data analysis,
 # and we want to limit memory usage and speed up data processing for tipping
 PREDICTION_DATA_START_DATE = f"{date.today().year - N_SEASONS_FOR_PREDICTION}-01-01"
+END_OF_YEAR = f"{date.today().year}-12-31"
 
 
 def _clean_data_frame_for_json(data_frame: pd.DataFrame) -> List[Dict[str, Any]]:
@@ -167,7 +168,7 @@ def make_predictions(
     year_range: Tuple[int, int],
     round_number: Optional[int] = None,
     data: BaseMLData = JoinedMLData(
-        fetch_data=True, start_date=PREDICTION_DATA_START_DATE
+        fetch_data=True, start_date=PREDICTION_DATA_START_DATE, end_date=END_OF_YEAR
     ),
     ml_model_names: Optional[List[str]] = None,
     verbose=1,
