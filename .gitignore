@@ -52,9 +52,8 @@ results/**
 # also keep all .gitkeep files
 !.gitkeep
 
-# keep legacy datasets until we can automate generating them or decide
-# that we don't need them anymore
-!data/01_raw/**
+# Keep legacy datasets that can't be regenerated easily
+!data/00_legacy/**
 
 
 ##########################

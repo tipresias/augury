@@ -117,11 +117,18 @@
 #  type: kedro.contrib.io.pyspark.SparkDataSet  # https://kedro.readthedocs.io/en/latest/kedro.contrib.io.pyspark.SparkDataSet.html
 #  filepath: data/02_intermediate/cars.parquet
 
-
-
 # This is a data set used by the example pipeline provided with the projected
 # template. Please feel free to remove it once you remove the example pipeline.
 example_iris_data:
   type: CSVLocalDataSet
-  filepath: data/01_raw/iris.csv
+  filepath: data/00_legacy/iris.csv
 
+betting_data:
+  type: JSONLocalDataSet
+  filepath: data/01_raw/betting-data_2010-01-01_2018-12-31.json
+  save_args:
+    indent: 2
+
+remote_betting_data:
+  type: machine_learning.io.JSONRemoteDataSet
+  data_source: "machine_learning.data_import.betting_data.fetch_betting_data"

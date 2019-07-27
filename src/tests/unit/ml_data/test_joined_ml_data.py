@@ -9,7 +9,9 @@ from machine_learning.ml_data import JoinedMLData
 from machine_learning.data_transformation import data_cleaning
 from tests.fixtures.data_factories import fake_cleaned_match_data
 
-DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../fixtures"))
+RAW_DATA_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../fixtures")
+)
 FAKE = Faker()
 MATCH_COUNT_PER_YEAR = 10
 YEAR_RANGE = (2016, 2017)
@@ -28,8 +30,9 @@ class TestJoinedMLData(TestCase):
     def setUp(self):
         base_data = fake_cleaned_match_data(MATCH_COUNT_PER_YEAR, YEAR_RANGE)
 
-        betting_data_reader = Mock()
-        betting_data_reader.data = base_data.assign(line_odds=20, oppo_line_odds=-20)
+        betting_data_reader = Mock(
+            return_value={"data": base_data.assign(line_odds=20, oppo_line_odds=-20)}
+        )
 
         player_data_reader = Mock()
         player_data_reader.data = base_data.assign(

@@ -2,11 +2,11 @@ import re
 import pandas as pd
 import numpy as np
 
-from machine_learning.settings import DATA_DIR
+from machine_learning.settings import RAW_DATA_DIR
 
 
-def raw_betting_df(path=f"{DATA_DIR}/afl_betting.csv"):
-    raw_df = pd.read_csv(path, index_col=("date", "venue"), parse_dates=["date"])
+def raw_betting_df(path=f"{RAW_DATA_DIR}/afl_betting.json"):
+    raw_df = pd.read_json(path, convert_dates=["date"]).set_index(["date", "venue"])
     home_df = (
         raw_df[raw_df["home"] == 1]
         .drop("home", axis=1)
@@ -25,9 +25,9 @@ def raw_betting_df(path=f"{DATA_DIR}/afl_betting.csv"):
     )
 
 
-def raw_match_df(path=f"{DATA_DIR}/ft_match_list.csv"):
+def raw_match_df(path=f"{RAW_DATA_DIR}/ft_match_list.json"):
     return (
-        pd.read_csv(path, parse_dates=["date"])
+        pd.read_json(path, convert_dates=["date"])
         .rename(columns={"date": "datetime"})
         .assign(date=lambda x: x["datetime"].map(lambda y: y.date()))
         .set_index(["date", "venue", "home_team", "away_team"])

@@ -7,35 +7,10 @@ import numpy as np
 import pandas as pd
 from mypy_extensions import TypedDict
 
-from machine_learning.data_config import TEAM_NAMES, DEFUNCT_TEAM_NAMES
-from machine_learning.data_config import INDEX_COLS
+from machine_learning.data_config import TEAM_NAMES, DEFUNCT_TEAM_NAMES, INDEX_COLS
+from machine_learning.types import BettingData
 from machine_learning.settings import MELBOURNE_TIMEZONE
 
-
-BettingData = TypedDict(
-    "BettingData",
-    {
-        "date": datetime,
-        "season": int,
-        "round_number": int,
-        "round": str,
-        "home_team": str,
-        "away_team": str,
-        "home_score": int,
-        "away_score": int,
-        "home_margin": int,
-        "away_margin": int,
-        "home_win_odds": float,
-        "away_win_odds": float,
-        "home_win_paid": float,
-        "away_win_paid": float,
-        "home_line_odds": float,
-        "away_line_odds": float,
-        "home_line_paid": float,
-        "away_line_paid": float,
-        "venue": str,
-    },
-)
 
 CleanFixtureData = TypedDict(
     "CleanFixtureData",
@@ -267,17 +242,18 @@ def fake_cleaned_player_data(
     return pd.DataFrame(reduced_player_data)
 
 
-def _betting_data(year: int, team_names: Tuple[str, str]) -> BettingData:
+def _betting_data(year: int, team_names: Tuple[str, str], clean=True) -> BettingData:
     home_score, away_score = np.random.randint(50, 150), np.random.randint(50, 150)
     home_line_odds = np.random.randint(-50, 50)
     win_odds_diff = round((np.random.rand() * 0.8), 2)
     home_win_odds_diff = win_odds_diff if home_line_odds > 0 else -1 * win_odds_diff
     home_win_odds = BASELINE_BET_PAYOUT + home_win_odds_diff
     away_win_odds = BASELINE_BET_PAYOUT - home_win_odds_diff
+    tzinfo = MELBOURNE_TIMEZONE if clean else None
 
     return {
         "date": FAKE.date_time_between_dates(
-            **_min_max_datetimes_by_year(year), tzinfo=MELBOURNE_TIMEZONE
+            **_min_max_datetimes_by_year(year), tzinfo=tzinfo
         ),
         "season": year,
         "round_number": 1,
@@ -300,25 +276,27 @@ def _betting_data(year: int, team_names: Tuple[str, str]) -> BettingData:
     }
 
 
-def _betting_by_round(row_count: int, year: int) -> List[BettingData]:
+def _betting_by_round(row_count: int, year: int, clean=True) -> List[BettingData]:
     team_names = CyclicalTeamNames()
 
     return [
-        _betting_data(year, (team_names.next(), team_names.next()))
+        _betting_data(year, (team_names.next(), team_names.next()), clean=clean)
         for idx in range(row_count)
     ]
 
 
 def _betting_by_year(
-    row_count: int, year_range: Tuple[int, int]
+    row_count: int, year_range: Tuple[int, int], clean=True
 ) -> List[List[BettingData]]:
-    return [_betting_by_round(row_count, year) for year in range(*year_range)]
+    return [
+        _betting_by_round(row_count, year, clean=clean) for year in range(*year_range)
+    ]
 
 
 def fake_footywire_betting_data(
-    row_count: int, year_range: Tuple[int, int]
+    row_count: int, year_range: Tuple[int, int], clean=True
 ) -> pd.DataFrame:
-    data = _betting_by_year(row_count, year_range)
+    data = _betting_by_year(row_count, year_range, clean=clean)
     reduced_data = list(itertools.chain.from_iterable(data))
 
     return pd.DataFrame(list(reduced_data))

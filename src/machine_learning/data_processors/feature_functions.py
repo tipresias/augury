@@ -9,7 +9,7 @@ Returns:
     pandas.DataFrame
 """
 
-from typing import List, Tuple, Sequence, Set, Union
+from typing import List, Tuple, Sequence, Set, Union, Optional, Callable
 import math
 from functools import partial, reduce
 
@@ -549,3 +549,109 @@ def add_shifted_team_features(
     columns = shift_columns if shift else keep_columns
 
     return partial(_shift_features, columns, shift)
+
+
+def _validate_no_duplicated_columns(data_frame: pd.DataFrame) -> None:
+    are_duplicate_columns = data_frame.columns.duplicated()
+
+    if are_duplicate_columns.any():
+        raise ValueError(
+            "The data frame with 'oppo' features added has duplicate columns."
+            "The offending columns are: "
+            f"{data_frame.columns[are_duplicate_columns]}"
+        )
+
+
+def _oppo_features(data_frame: pd.DataFrame, cols_to_convert) -> Optional[pd.DataFrame]:
+    if not any(cols_to_convert):
+        return None
+
+    oppo_cols = {col_name: f"oppo_{col_name}" for col_name in cols_to_convert}
+    oppo_col_names = oppo_cols.values()
+    column_translations = {**{"oppo_team": "team"}, **oppo_cols}
+
+    return (
+        data_frame.reset_index(drop=True)
+        .loc[:, ["year", "round_number", "oppo_team"] + list(cols_to_convert)]
+        # We switch out oppo_team for team in the index,
+        # then assign feature as oppo_{feature_column}
+        .rename(columns=column_translations)
+        .set_index(INDEX_COLS)
+        .sort_index()
+        .loc[:, list(oppo_col_names)]
+    )
+
+
+def _cols_to_convert_to_oppo(
+    data_frame: pd.DataFrame,
+    match_cols: List[str] = [],
+    oppo_feature_cols: List[str] = [],
+) -> List[str]:
+    if any(oppo_feature_cols):
+        return oppo_feature_cols
+
+    return [col for col in data_frame.columns if col not in match_cols]
+
+
+def _add_oppo_features_node(
+    data_frame: pd.DataFrame,
+    match_cols: List[str] = [],
+    oppo_feature_cols: List[str] = [],
+) -> pd.DataFrame:
+    cols_to_convert = _cols_to_convert_to_oppo(
+        data_frame, match_cols=match_cols, oppo_feature_cols=oppo_feature_cols
+    )
+
+    REQUIRED_COLS: List[str] = (INDEX_COLS + ["oppo_team"] + cols_to_convert)
+
+    _validate_required_columns(REQUIRED_COLS, data_frame.columns, "oppo columns")
+
+    transform_data_frame = (
+        data_frame.copy()
+        .set_index(INDEX_COLS, drop=False)
+        .rename_axis([None] * len(INDEX_COLS))
+        .sort_index()
+    )
+
+    concated_data_frame = pd.concat(
+        [transform_data_frame, _oppo_features(transform_data_frame, cols_to_convert)],
+        axis=1,
+    )
+
+    _validate_no_duplicated_columns(concated_data_frame)
+
+    return concated_data_frame
+
+
+def add_oppo_features(
+    match_cols: List[str] = [], oppo_feature_cols: List[str] = []
+) -> Callable[[pd.DataFrame], pd.DataFrame]:
+    """
+    Add oppo_team equivalents for team features based on the oppo_team for that
+    match based on match_cols (non-team-specific columns to ignore) or
+    oppo_feature_cols (team-specific features to add 'oppo' versions of). Including both
+    column arguments will raise an error.
+
+    Args:
+        match_cols (list of strings): Names of columns to ignore (calculates oppo
+            features for all columns not listed).
+        oppo_feature_cols (list of strings): Names of columns to add oppo features of
+            (ignores all columns not listed)
+
+    Returns:
+        Function that takes pandas.DataFrame and returns another pandas.DataFrame
+        with 'oppo_' columns added.
+    """
+
+    if any(match_cols) and any(oppo_feature_cols):
+        raise ValueError(
+            "To avoid conflicts, you can't include both match_cols "
+            "and oppo_feature_cols. Choose the shorter list to determine which "
+            "columns to skip and which to turn into opposition features."
+        )
+
+    return partial(
+        _add_oppo_features_node,
+        match_cols=match_cols,
+        oppo_feature_cols=oppo_feature_cols,
+    )
