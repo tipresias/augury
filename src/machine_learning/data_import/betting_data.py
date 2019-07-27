@@ -34,7 +34,7 @@ def fetch_betting_data(
         )
 
     data = fetch_afl_data(
-        "betting_odds", params={"start_date": start_date, "end_date": end_date}
+        "/betting_odds", params={"start_date": start_date, "end_date": end_date}
     )
 
     if verbose == 1:

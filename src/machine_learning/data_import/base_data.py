@@ -2,7 +2,6 @@
 
 from typing import Dict, Any, List
 import json
-from urllib.parse import urljoin
 import os
 
 import requests
@@ -63,7 +62,7 @@ def fetch_afl_data(path: str, params: Dict[str, Any] = {}) -> List[Dict[str, Any
         service_host = LOCAL_AFL_DATA_SERVICE
         headers = {}
 
-    service_url = urljoin(service_host, path)
+    service_url = service_host + path
     response = _make_request(service_url, params=params, headers=headers)
 
     return _handle_response_data(response)
