@@ -1,6 +1,6 @@
 """Pipeline nodes for transforming betting data"""
 
-from typing import Callable, List, Sequence, Dict, Any, cast
+from typing import Callable, List, Sequence, cast
 from functools import reduce
 
 import pandas as pd
@@ -8,22 +8,6 @@ import numpy as np
 
 from machine_learning.data_config import TEAM_TRANSLATIONS, INDEX_COLS
 from machine_learning.settings import MELBOURNE_TIMEZONE
-
-
-def convert_to_data_frame(
-    *data: Sequence[List[Dict[str, Any]]]
-) -> Sequence[pd.DataFrame]:
-    """
-    Converts JSON data in the form of a list of dictionaries into a data frame
-
-    Args:
-        data (sequence of list of dictionaries): Data received from a JSON data set.
-
-    Returns:
-        Sequence of pandas.DataFrame
-    """
-
-    return [pd.DataFrame(datum) for datum in data]
 
 
 def _combine_data_vertically(

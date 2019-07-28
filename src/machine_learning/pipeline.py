@@ -7,7 +7,7 @@ from machine_learning.data_processors.feature_calculation import (
     calculate_rolling_rate,
 )
 from machine_learning.data_processors import feature_functions
-from .nodes import betting
+from .nodes import betting, common
 
 
 def betting_pipeline(**_kwargs):
@@ -16,7 +16,7 @@ def betting_pipeline(**_kwargs):
     return Pipeline(
         [
             node(
-                betting.convert_to_data_frame,
+                common.convert_to_data_frame,
                 ["betting_data", "remote_betting_data"],
                 ["betting_data_frame", "remote_betting_data_frame"],
             ),
@@ -51,4 +51,12 @@ def betting_pipeline(**_kwargs):
             ),
             node(betting.finalize_data, ["betting_data_c"], "data"),
         ]
+    )
+
+
+def match_pipeline(**_kwargs):
+    """Kedro pipeline for loading and transforming match data"""
+
+    return Pipeline(
+        [node(common.convert_to_data_frame, ["match_data"], ["match_data_frame"])]
     )
