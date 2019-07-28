@@ -1,59 +1,12 @@
 """Pipeline nodes for transforming betting data"""
 
-from typing import Callable, List, Sequence, cast
-from functools import reduce
+from typing import Callable, List
 
 import pandas as pd
 import numpy as np
 
-from machine_learning.data_config import TEAM_TRANSLATIONS, INDEX_COLS
-from machine_learning.settings import MELBOURNE_TIMEZONE
-
-
-def _combine_data_vertically(
-    acc_data_frame: pd.DataFrame, curr_data_frame: pd.DataFrame
-) -> pd.DataFrame:
-    """
-    Assumes the following:
-        - All data frames have a date column
-        - Data frames are sorted by date in ascending order
-        - Data frames have all data for a given date (i.e. all matches played
-            on a date, not 1 of 3, which would result in missing data)
-    """
-
-    max_accumulated_date = acc_data_frame[  # pylint: disable=unused-variable
-        "date"
-    ].max()
-    sliced_current_data_frame = curr_data_frame.query("date > @max_accumulated_date")
-
-    return acc_data_frame.append(sliced_current_data_frame)
-
-
-def combine_data(*data_frames: Sequence[pd.DataFrame], axis=0) -> pd.DataFrame:
-    """
-    Concatenate data frames from multiple sources into one data frame
-
-    Args:
-        data_frames (list of pandas.DataFrame): Data frames to be concatenated.
-        axis (0 or 1, defaults to 0): Whether to concatenate by rows (0) or columns (1).
-
-    Returns:
-        Concatenated data frame.
-    """
-
-    if len(data_frames) == 1:
-        return data_frames[0]
-
-    if axis == 0:
-        sorted_data_frames = sorted(
-            cast(Sequence[pd.DataFrame], data_frames), key=lambda df: df["date"].min()
-        )
-        return reduce(_combine_data_vertically, sorted_data_frames)
-
-    if axis == 1:
-        return pd.concat(data_frames, axis=axis)
-
-    raise ValueError(f"Expected axis to be 0 or 1, but recieved {axis}")
+from machine_learning.data_config import INDEX_COLS
+from .base import _parse_dates, _translate_team_column
 
 
 def _validate_required_columns(columns: pd.Index, required_columns: List[str]) -> None:
@@ -68,18 +21,6 @@ def _validate_required_columns(columns: pd.Index, required_columns: List[str]) -
     raise ValueError(
         f"Required columns {missing_columns} are missing from the data frame."
     )
-
-
-def _parse_dates(data_frame: pd.DataFrame) -> pd.Series:
-    return pd.to_datetime(data_frame["date"]).dt.tz_localize(MELBOURNE_TIMEZONE)
-
-
-def _translate_team_name(team_name: str) -> str:
-    return TEAM_TRANSLATIONS[team_name] if team_name in TEAM_TRANSLATIONS else team_name
-
-
-def _translate_team_column(col_name: str) -> Callable[[pd.DataFrame], str]:
-    return lambda data_frame: data_frame[col_name].map(_translate_team_name)
 
 
 def clean_data(betting_data: pd.DataFrame) -> pd.DataFrame:

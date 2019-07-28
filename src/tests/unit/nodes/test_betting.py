@@ -6,7 +6,6 @@ import numpy as np
 from tests.fixtures.data_factories import (
     fake_footywire_betting_data,
     fake_cleaned_match_data,
-    fake_raw_match_results_data,
 )
 from machine_learning.nodes import betting
 
@@ -26,36 +25,6 @@ class TestBetting(TestCase):
         self.raw_betting_data = fake_footywire_betting_data(
             N_MATCHES_PER_SEASON, YEAR_RANGE, clean=False
         )
-
-    def test_combine_data(self):
-        min_year_range = min(YEAR_RANGE)
-        older_data = fake_footywire_betting_data(
-            N_MATCHES_PER_SEASON, (min_year_range - 2, min_year_range), clean=False
-        ).append(self.raw_betting_data.query("season == @min_year_range"))
-
-        combined_data = betting.combine_data(self.raw_betting_data, older_data, axis=0)
-
-        total_year_range = range(min_year_range - 2, max(YEAR_RANGE))
-        self.assertEqual({*total_year_range}, {*combined_data["season"]})
-
-        self.assertEqual(
-            N_MATCHES_PER_SEASON * len(total_year_range), len(combined_data)
-        )
-
-        with self.subTest(axis=1):
-            match_data = fake_raw_match_results_data(N_MATCHES_PER_SEASON, YEAR_RANGE)
-
-            combined_data = betting.combine_data(
-                self.raw_betting_data, match_data, axis=1
-            )
-
-            self.assertEqual(
-                N_MATCHES_PER_SEASON * len(range(*YEAR_RANGE)), len(combined_data)
-            )
-            self.assertEqual(
-                len(self.raw_betting_data.columns) + len(match_data.columns),
-                len(combined_data.columns),
-            )
 
     def test_clean_data(self):
         data = betting.clean_data(self.raw_betting_data)

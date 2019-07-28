@@ -32,7 +32,8 @@ def fetch_match_data(
         print("Fetching match data from between " f"{start_date} and {end_date}...")
 
     data = fetch_afl_data(
-        "/matches", params={"start_date": start_date, "end_date": end_date}
+        "/matches",
+        params={"start_date": start_date, "end_date": end_date, "fetch_data": True},
     )
 
     if verbose == 1:
