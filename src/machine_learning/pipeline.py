@@ -58,5 +58,11 @@ def match_pipeline(**_kwargs):
     """Kedro pipeline for loading and transforming match data"""
 
     return Pipeline(
-        [node(common.convert_to_data_frame, ["match_data"], ["match_data_frame"])]
+        [
+            node(
+                common.convert_to_data_frame,
+                ["match_data", "remote_match_data", "fixture_data"],
+                ["match_data_frame", "remote_match_data_frame", "fixture_data_frame"],
+            )
+        ]
     )

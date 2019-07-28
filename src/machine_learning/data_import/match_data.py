@@ -58,6 +58,33 @@ def save_match_data(
         print("Match data saved")
 
 
+def fetch_fixture_data(
+    start_date: str = str(date.today()), end_date: str = END_OF_YEAR, verbose: int = 1
+) -> List[Dict[str, Any]]:
+    """
+    Get AFL fixture data for given date range.
+
+    Args:
+        start_date (string: YYYY-MM-DD): Earliest date for fixture data returned.
+        end_date (string: YYYY-MM-DD): Latest date for fixture data returned.
+
+    Returns
+        list of dicts of fixture data.
+    """
+
+    if verbose == 1:
+        print("Fetching fixture data from between " f"{start_date} and {end_date}...")
+
+    data = fetch_afl_data(
+        "/fixtures", params={"start_date": start_date, "end_date": end_date}
+    )
+
+    if verbose == 1:
+        print("Fixture data received!")
+
+    return data
+
+
 if __name__ == "__main__":
     last_year = date.today().year - 1
     end_of_last_year = f"{last_year}-12-31"

@@ -13,3 +13,11 @@ match_data:
   filepath: data/01_raw/match-data_1897-01-01_2018-12-31.json
   save_args:
     indent: 2
+
+remote_match_data:
+  type: machine_learning.io.JSONRemoteDataSet
+  data_source: "machine_learning.data_import.match_data.fetch_match_data"
+
+fixture_data:
+  type: machine_learning.io.JSONRemoteDataSet
+  data_source: "machine_learning.data_import.match_data.fetch_fixture_data"

@@ -6,7 +6,7 @@ from datetime import date, timedelta
 from betamax import Betamax
 from requests import Session
 
-from machine_learning.data_import.match_data import fetch_match_data
+from machine_learning.data_import.match_data import fetch_match_data, fetch_fixture_data
 from machine_learning.settings import CASSETTE_LIBRARY_DIR
 
 SEPT = 9
@@ -58,15 +58,32 @@ class TestMatchData(TestCase):
         self.assertLessEqual(self.start_date, min(dates))
         self.assertGreaterEqual(self.end_date, max(dates))
 
+    def test_fetch_fixture_data(self):
+        # Fixture data doesn't go very far back and is mostly for getting upcoming
+        # match data during the season, so these dates are better examples
+        # of actual usage
+        start_date = "2016-05-01"
+        end_date = "2016-08-31"
 
+        data = fetch_fixture_data(start_date=start_date, end_date=end_date, verbose=0)
+
+        self.assertIsInstance(data, list)
+        self.assertIsInstance(data[0], dict)
+        self.assertTrue(any(data))
+
+        dates = {datum["date"] for datum in data}
+        self.assertLessEqual(start_date, min(dates))
+        self.assertGreaterEqual(end_date, max(dates))
+
+
+@patch.dict(os.environ, {**ENV_VARS, **{"PYTHON_ENV": "production"}}, clear=True)
+@patch(f"{DATA_IMPORT_PATH}.match_data.json.dump", MagicMock())
 class TestMatchDataProd(TestCase):
     def setUp(self):
         self.session = Session()
         self.start_date = "2012-01-01"
         self.end_date = "2013-12-31"
 
-    @patch.dict(os.environ, {**ENV_VARS, **{"PYTHON_ENV": "production"}}, clear=True)
-    @patch(f"{DATA_IMPORT_PATH}.match_data.json.dump", MagicMock())
     def test_fetch_match_data(self):
         with Betamax(self.session).use_cassette("match_data"):
             with patch(f"{DATA_IMPORT_PATH}.base_data.requests.get", self.session.get):
@@ -80,3 +97,23 @@ class TestMatchDataProd(TestCase):
                 dates = {datum["date"] for datum in data}
                 self.assertLessEqual(self.start_date, min(dates))
                 self.assertGreaterEqual(self.end_date, max(dates))
+
+    def test_fetch_fixture_data(self):
+        # Fixture data doesn't go very far back and is mostly for getting upcoming
+        # match data during the season, so these dates are better examples
+        # of actual usage
+        start_date = "2016-05-01"
+        end_date = "2016-08-31"
+
+        with Betamax(self.session).use_cassette("fixture_data"):
+            with patch(f"{DATA_IMPORT_PATH}.base_data.requests.get", self.session.get):
+                data = fetch_fixture_data(
+                    start_date=start_date, end_date=end_date, verbose=0
+                )
+                self.assertIsInstance(data, list)
+                self.assertIsInstance(data[0], dict)
+                self.assertTrue(any(data))
+
+                dates = {datum["date"] for datum in data}
+                self.assertLessEqual(start_date, min(dates))
+                self.assertGreaterEqual(end_date, max(dates))
