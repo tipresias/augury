@@ -11,6 +11,8 @@ from .nodes import betting
 
 
 def betting_pipeline(**_kwargs):
+    """Kedro pipeline for loading and transforming betting data"""
+
     return Pipeline(
         [
             node(
