@@ -3,7 +3,7 @@ bottle
 
 # Data packages
 numpy
-pandas<0.24,>=0.23.0 # Required version for featuretools
+pandas>=0.23.0,<0.26 # Required version for featuretools
 scikit-learn==0.20.1
 scipy
 xgboost==0.80
