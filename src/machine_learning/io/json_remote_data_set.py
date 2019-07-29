@@ -11,9 +11,12 @@ from kedro.io.core import AbstractDataSet
 TODAY = date.today()
 JAN = 1
 FIRST = 1
+DEC = 12
+THIRTY_FIRST = 31
 # Saved data will generally go to the end of previous year, so default for start_date
 # for fetched data is beginning of this year
 BEGINNING_OF_YEAR = date(TODAY.year, JAN, FIRST)
+END_OF_YEAR = date(TODAY.year, DEC, THIRTY_FIRST)
 MODULE_SEPARATOR = "."
 
 
@@ -24,7 +27,7 @@ class JSONRemoteDataSet(AbstractDataSet):
         self,
         data_source: Union[Callable, str],
         start_date: str = str(BEGINNING_OF_YEAR),
-        end_date: str = str(TODAY),
+        end_date: str = str(END_OF_YEAR),
     ):
         self.start_date = start_date
         self.end_date = end_date
