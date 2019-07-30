@@ -1,15 +1,15 @@
 from unittest import TestCase
 from unittest.mock import Mock, patch
 
-from machine_learning.ml_data import BettingMLData
-from machine_learning.data_import import FootywireDataImporter, FitzroyDataImporter
-from machine_learning import api
-from machine_learning import settings
 from tests.fixtures.data_factories import (
     fake_footywire_betting_data,
     fake_fixture_data,
     fake_raw_match_results_data,
 )
+from machine_learning.ml_data import BettingMLData
+from machine_learning.data_import import FootywireDataImporter, FitzroyDataImporter
+from machine_learning import api
+from machine_learning import settings
 
 
 YEAR_RANGE = (2019, 2020)

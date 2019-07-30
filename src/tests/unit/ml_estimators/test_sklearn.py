@@ -6,6 +6,7 @@ from faker import Faker
 
 from machine_learning.ml_estimators.sklearn import AveragingRegressor, CorrelationSelector
 
+
 FAKE = Faker()
 ROW_COUNT = 10
 

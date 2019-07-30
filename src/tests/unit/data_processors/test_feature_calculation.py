@@ -2,6 +2,7 @@ from unittest import TestCase
 from faker import Faker
 import pandas as pd
 
+from tests.fixtures.data_factories import fake_cleaned_match_data
 from machine_learning.data_processors.feature_calculation import (
     feature_calculator,
     calculate_rolling_rate,
@@ -10,7 +11,7 @@ from machine_learning.data_processors.feature_calculation import (
     calculate_rolling_mean_by_dimension,
     calculate_addition,
 )
-from tests.fixtures.data_factories import fake_cleaned_match_data
+
 
 FAKE = Faker()
 ROW_COUNT = 10

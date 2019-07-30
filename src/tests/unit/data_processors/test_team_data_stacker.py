@@ -2,8 +2,9 @@ from unittest import TestCase
 from faker import Faker
 import pandas as pd
 
-from machine_learning.data_processors import TeamDataStacker
 from tests.fixtures.data_factories import fake_cleaned_match_data
+from machine_learning.data_processors import TeamDataStacker
+
 
 FAKE = Faker()
 N_ROWS_PER_YEAR = 10

@@ -9,6 +9,7 @@ from faker import Faker
 from machine_learning.ml_estimators import BaggingEstimator
 from machine_learning.ml_estimators.sklearn import AveragingRegressor
 
+
 FAKE = Faker()
 N_ROWS = 10
 

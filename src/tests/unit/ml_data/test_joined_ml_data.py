@@ -5,9 +5,10 @@ from unittest.mock import Mock
 import pandas as pd
 from faker import Faker
 
+from tests.fixtures.data_factories import fake_cleaned_match_data
 from machine_learning.ml_data import JoinedMLData
 from machine_learning.data_transformation import data_cleaning
-from tests.fixtures.data_factories import fake_cleaned_match_data
+
 
 RAW_DATA_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "../../fixtures")
