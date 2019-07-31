@@ -31,9 +31,8 @@ class TestJoinedMLData(TestCase):
     def setUp(self):
         base_data = fake_cleaned_match_data(MATCH_COUNT_PER_YEAR, YEAR_RANGE)
 
-        betting_data_reader = Mock(
-            return_value={"data": base_data.assign(line_odds=20, oppo_line_odds=-20)}
-        )
+        betting_data_reader = Mock()
+        betting_data_reader.data = base_data.assign(line_odds=20, oppo_line_odds=-20)
 
         player_data_reader = Mock()
         player_data_reader.data = base_data.assign(
