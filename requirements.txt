@@ -3,7 +3,7 @@ bottle
 
 # Data packages
 numpy
-pandas<0.24,>=0.23.0 # Required version for featuretools
+pandas>=0.23.0,<0.25.0 # kedro 0.14.3 has requirement pandas<0.25.0,>=0.23.0
 scikit-learn==0.20.1
 scipy
 xgboost==0.80
