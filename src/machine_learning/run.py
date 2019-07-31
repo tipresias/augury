@@ -14,6 +14,7 @@ from kedro.utils import load_obj
 import pandas as pd
 
 from machine_learning.pipeline import betting_pipeline
+from machine_learning.settings import BASE_DIR
 
 # Name of root directory containing project configuration.
 CONF_ROOT = "conf"
@@ -36,7 +37,7 @@ def __kedro_context__():
         "create_pipeline": betting_pipeline,
         "template_version": "0.14.3",
         "project_name": "Augury",
-        "project_path": Path.cwd(),
+        "project_path": BASE_DIR,
     }
 
 
