@@ -108,7 +108,7 @@ class BaseMLData:
         categorical_features = features.select_dtypes(
             # Excluding datetime for now, as it's useful for data processing, but isn't
             # a feature in the models
-            exclude=["number", "datetime64[ns, tz]", "datetime"]
+            exclude=["number", "datetimetz", "datetime"]
         )
 
         # Sorting columns with categorical features first to allow for positional indexing
