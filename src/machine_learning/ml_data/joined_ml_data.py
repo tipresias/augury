@@ -1,6 +1,6 @@
 """Module for machine learning data class that joins various data sources together"""
 
-from typing import List, Callable
+from typing import List
 from datetime import date
 
 from mypy_extensions import TypedDict
@@ -16,13 +16,11 @@ from machine_learning.types import YearPair, DataFrameTransformer, CalculatorPai
 from machine_learning.utils import DataTransformerMixin
 from machine_learning.data_config import CATEGORY_COLS, ORIGINAL_COLUMNS
 from machine_learning.data_transformation import data_cleaning
-from machine_learning.ml_data import PlayerMLData, MatchMLData
-from machine_learning.run import run_betting_pipeline
+from machine_learning.ml_data import PlayerMLData, MatchMLData, BettingMLData
 from . import BaseMLData
 
 DataReaders = TypedDict(
-    "DataReaders",
-    {"player": BaseMLData, "match": BaseMLData, "betting": Callable[[], pd.DataFrame]},
+    "DataReaders", {"player": BaseMLData, "match": BaseMLData, "betting": BaseMLData}
 )
 
 MATCH_STATS_COLS = [
@@ -67,7 +65,7 @@ DATA_READERS: DataReaders = {
     # already have at the team level.
     "player": PlayerMLData(start_date="1965-01-01"),
     "match": MatchMLData(),
-    "betting": run_betting_pipeline,
+    "betting": BettingMLData(),
 }
 
 END_OF_YEAR = f"{date.today().year}-12-31"
@@ -116,9 +114,11 @@ class JoinedMLData(BaseMLData, DataTransformerMixin):
             self.data_readers["match"].end_date = self.end_date
             match_data = self.data_readers["match"].data
 
+            self.data_readers["betting"].fetch_data = self.fetch_data
+            self.data_readers["betting"].start_date = self.start_date
             # Betting data dates are correct, but the times are arbitrarily set by the
             # parser, so better to leave the date definition to a different data source
-            betting_data = self.data_readers["betting"]()["data"].drop("date", axis=1)
+            betting_data = self.data_readers["betting"].data.drop("date", axis=1)
 
             self._data = (
                 self._compose_transformers(  # pylint: disable=E1102
