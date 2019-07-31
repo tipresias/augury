@@ -55,6 +55,9 @@ results/**
 # Keep legacy datasets that can't be regenerated easily
 !data/00_legacy/**
 
+# TODO: keep betting data until I set up prod data fetching
+!data/01_raw/betting-data_2010-01-01_2018-12-31.json
+
 
 ##########################
 # Common files
