@@ -3,12 +3,13 @@ from unittest import TestCase
 import pandas as pd
 import numpy as np
 
-from machine_learning.nodes import betting
 from tests.fixtures.data_factories import (
     fake_footywire_betting_data,
     fake_cleaned_match_data,
     fake_raw_match_results_data,
 )
+from machine_learning.nodes import betting
+
 
 N_MATCHES_PER_SEASON = 4
 START_YEAR = 2013

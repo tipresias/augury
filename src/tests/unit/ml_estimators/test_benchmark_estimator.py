@@ -13,6 +13,7 @@ from faker import Faker
 from machine_learning.settings import BASE_DIR
 from machine_learning.ml_estimators import BenchmarkEstimator
 
+
 FAKE = Faker()
 N_ROWS = 10
 

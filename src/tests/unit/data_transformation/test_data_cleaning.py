@@ -12,6 +12,7 @@ from machine_learning.data_transformation.data_cleaning import (
 )
 from machine_learning.settings import MELBOURNE_TIMEZONE, BASE_DIR
 
+
 TEST_DATA_DIR = os.path.join(BASE_DIR, "src/tests/fixtures")
 N_PLAYERS = 20
 N_MATCHES = 5

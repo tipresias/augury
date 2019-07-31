@@ -4,6 +4,7 @@ from collections import Counter
 from faker import Faker
 import numpy as np
 
+from tests.fixtures.data_factories import fake_cleaned_match_data
 from machine_learning.data_processors.feature_functions import (
     add_result,
     add_margin,
@@ -23,7 +24,7 @@ from machine_learning.data_processors.feature_functions import (
     add_oppo_features,
 )
 from machine_learning.data_config import VENUES, INDEX_COLS
-from tests.fixtures.data_factories import fake_cleaned_match_data
+
 
 FAKE = Faker()
 MATCH_COUNT_PER_YEAR = 10

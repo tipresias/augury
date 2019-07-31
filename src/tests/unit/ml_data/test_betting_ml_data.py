@@ -8,6 +8,7 @@ from machine_learning.ml_data import BettingMLData
 from machine_learning.data_import import FootywireDataImporter
 from machine_learning.settings import BASE_DIR
 
+
 TEST_DATA_DIR = os.path.join(BASE_DIR, "src/tests/fixtures")
 FAKE = Faker()
 
