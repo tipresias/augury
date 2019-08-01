@@ -92,7 +92,7 @@ def create_catalog(config: ConfigLoader, **_kwargs) -> DataCatalog:
 
 def run_betting_pipeline() -> pd.DataFrame:
     # Load Catalog
-    conf = get_config(project_path=str(Path.cwd()), env=None)
+    conf = get_config(project_path=BASE_DIR, env=None)
     catalog = create_catalog(config=conf)
 
     # Load the runner
@@ -119,10 +119,10 @@ def main(tags: Iterable[str] = None, env: str = None, runner: str = None):
 
     """
     # Report project name
-    logging.info("** Kedro project {}".format(Path.cwd().name))
+    logging.info("** Kedro project {}".format(BASE_DIR))
 
     # Load Catalog
-    conf = get_config(project_path=str(Path.cwd()), env=env)
+    conf = get_config(project_path=BASE_DIR, env=env)
     catalog = create_catalog(config=conf)
 
     # Load the pipeline

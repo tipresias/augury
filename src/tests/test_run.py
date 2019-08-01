@@ -36,7 +36,7 @@ named ``test_*`` which test a unit of logic.
 To run the tests, run ``kedro test``.
 """
 from os.path import abspath, curdir, join
-from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 from kedro.config import ConfigLoader
@@ -51,9 +51,8 @@ from machine_learning.run import (
 )
 
 
-def test_main_wrong_cwd(mocker):
-    cwd = mocker.MagicMock(name="mocked", __str__=mocker.Mock(return_value="invalid/"))
-    mocker.patch.object(Path, "cwd", return_value=cwd)
+@patch("machine_learning.run.BASE_DIR", "invalid/")
+def test_main_wrong_cwd():
     with pytest.raises(
         ValueError,
         match=r"Given configuration path either does not "
