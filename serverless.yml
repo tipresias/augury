@@ -25,7 +25,9 @@ package:
   exclude:
     - ./**
   include:
-    - conf
+    # TODO: Use GC storage instead of deploying data files
+    - data/01_raw/**
+    - conf/**
     - src/machine_learning/**
     - src/setup.py
     - main.py
