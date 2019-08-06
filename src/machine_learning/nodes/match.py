@@ -1,12 +1,25 @@
 """Pipeline nodes for transforming match data"""
 
-from typing import Callable
-from functools import partial
+from typing import Callable, List, Tuple
+from functools import partial, reduce
 
 import pandas as pd
+import numpy as np
+from sklearn.preprocessing import LabelEncoder
+from mypy_extensions import TypedDict
 
 from machine_learning.data_config import FOOTYWIRE_VENUE_TRANSLATIONS
-from .base import _parse_dates, _translate_team_column
+from .base import _parse_dates, _translate_team_column, _validate_required_columns
+
+
+EloDictionary = TypedDict(
+    "EloDictionary",
+    {
+        "home_away_elo_ratings": List[Tuple[float, float]],
+        "current_team_elo_ratings": np.ndarray,
+        "year": int,
+    },
+)
 
 
 MATCH_COL_TRANSLATIONS = {
@@ -29,6 +42,15 @@ SHARED_MATCH_FIXTURE_COLS = [
     "home_team",
     "away_team",
 ]
+
+# Constants for ELO calculations
+BASE_RATING = 1000
+K = 35.6
+X = 0.49
+M = 130
+HOME_GROUND_ADVANTAGE = 9
+S = 250
+SEASON_CARRYOVER = 0.575
 
 
 # ID values are converted to floats automatically, making for awkward strings later.
@@ -166,3 +188,114 @@ def clean_fixture_data(fixture_data: pd.DataFrame) -> pd.DataFrame:
         )
 
     return pd.DataFrame()
+
+
+# Basing ELO calculations on:
+# http://www.matterofstats.com/mafl-stats-journal/2013/10/13/building-your-own-team-rating-system.html
+def _elo_formula(
+    prev_elo_rating: float, prev_oppo_elo_rating: float, margin: int, at_home: bool
+) -> float:
+    home_ground_advantage = (
+        HOME_GROUND_ADVANTAGE if at_home else HOME_GROUND_ADVANTAGE * -1
+    )
+    expected_outcome = 1 / (
+        1 + 10 ** ((prev_oppo_elo_rating - prev_elo_rating - home_ground_advantage) / S)
+    )
+    actual_outcome = X + 0.5 - X ** (1 + (margin / M))
+
+    return prev_elo_rating + (K * (actual_outcome - expected_outcome))
+
+
+# Assumes df sorted by year & round_number with ascending=True in order to calculate
+# correct ELO ratings
+def _calculate_match_elo_rating(
+    elo_ratings: EloDictionary,
+    # match_row = [year, home_team, away_team, home_margin]
+    match_row: np.ndarray,
+) -> EloDictionary:
+    match_year = match_row[0]
+
+    # It's typical for ELO models to do a small adjustment toward the baseline between
+    # seasons
+    if match_year != elo_ratings["year"]:
+        prematch_team_elo_ratings = (
+            elo_ratings["current_team_elo_ratings"] * SEASON_CARRYOVER
+        ) + BASE_RATING * (1 - SEASON_CARRYOVER)
+    else:
+        prematch_team_elo_ratings = elo_ratings["current_team_elo_ratings"].copy()
+
+    home_team = int(match_row[1])
+    away_team = int(match_row[2])
+    home_margin = match_row[3]
+
+    prematch_home_elo_rating = prematch_team_elo_ratings[home_team]
+    prematch_away_elo_rating = prematch_team_elo_ratings[away_team]
+
+    home_elo_rating = _elo_formula(
+        prematch_home_elo_rating, prematch_away_elo_rating, home_margin, True
+    )
+    away_elo_rating = _elo_formula(
+        prematch_away_elo_rating, prematch_home_elo_rating, home_margin * -1, False
+    )
+
+    postmatch_team_elo_ratings = prematch_team_elo_ratings.copy()
+    postmatch_team_elo_ratings[home_team] = home_elo_rating
+    postmatch_team_elo_ratings[away_team] = away_elo_rating
+
+    return {
+        "home_away_elo_ratings": elo_ratings["home_away_elo_ratings"]
+        + [(prematch_home_elo_rating, prematch_away_elo_rating)],
+        "current_team_elo_ratings": postmatch_team_elo_ratings,
+        "year": match_year,
+    }
+
+
+def add_elo_rating(data_frame_arg: pd.DataFrame) -> pd.DataFrame:
+    """Add ELO rating of team prior to matches"""
+
+    INDEX_COLS = {"home_team", "year", "round_number"}
+    REQUIRED_COLS = INDEX_COLS | {"home_score", "away_score", "away_team", "date"}
+
+    _validate_required_columns(REQUIRED_COLS, data_frame_arg.columns)
+
+    data_frame = (
+        data_frame_arg.set_index(list(INDEX_COLS), drop=False).rename_axis(
+            [None] * len(INDEX_COLS)
+        )
+        if INDEX_COLS != {*data_frame_arg.index.names}
+        else data_frame_arg.copy()
+    )
+
+    if not data_frame.index.is_monotonic:
+        data_frame.sort_index(inplace=True)
+
+    le = LabelEncoder()
+    le.fit(data_frame["home_team"])
+    time_sorted_data_frame = data_frame.sort_values("date")
+
+    elo_matrix = (
+        time_sorted_data_frame.assign(
+            home_team=lambda df: le.transform(df["home_team"]),
+            away_team=lambda df: le.transform(df["away_team"]),
+        )
+        .eval("home_margin = home_score - away_score")
+        .loc[:, ["year", "home_team", "away_team", "home_margin"]]
+    ).values
+    current_team_elo_ratings = np.full(len(set(data_frame["home_team"])), BASE_RATING)
+    starting_elo_dictionary: EloDictionary = {
+        "home_away_elo_ratings": [],
+        "current_team_elo_ratings": current_team_elo_ratings,
+        "year": 0,
+    }
+
+    elo_columns = reduce(
+        _calculate_match_elo_rating, elo_matrix, starting_elo_dictionary
+    )["home_away_elo_ratings"]
+
+    elo_data_frame = pd.DataFrame(
+        elo_columns,
+        columns=["home_elo_rating", "away_elo_rating"],
+        index=time_sorted_data_frame.index,
+    ).sort_index()
+
+    return pd.concat([data_frame, elo_data_frame], axis=1)

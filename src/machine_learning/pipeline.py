@@ -93,5 +93,8 @@ def match_pipeline(**_kwargs):
                 ["clean_past_match_data", "clean_fixture_data"],
                 "combined_match_data",
             ),
+            # add_elo_rating depends on DF still being organized per-match
+            # with home_team/away_team columns
+            node(match.add_elo_rating, "combined_match_data", "match_data_a"),
         ]
     )
