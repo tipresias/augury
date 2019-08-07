@@ -132,7 +132,7 @@ def match_pipeline(**_kwargs):
             node(match.add_out_of_state, "match_data_b", "match_data_c"),
             node(match.add_travel_distance, "match_data_c", "match_data_d"),
             node(match.add_result, "match_data_d", "match_data_e"),
-            node(match.add_margin, "match_data_f", "match_data_g"),
+            node(match.add_margin, "match_data_e", "match_data_f"),
             node(
                 match.add_shifted_team_features(
                     shift_columns=[
@@ -144,11 +144,11 @@ def match_pipeline(**_kwargs):
                         "team_behinds",
                     ]
                 ),
+                "match_data_f",
                 "match_data_g",
-                "match_data_h",
             ),
-            node(match.add_cum_win_points, "match_data_h", "match_data_i"),
-            node(match.add_win_streak, "match_data_i", "match_data_j"),
+            node(match.add_cum_win_points, "match_data_g", "match_data_h"),
+            node(match.add_win_streak, "match_data_h", "match_data_i"),
             node(
                 feature_calculator(
                     [
@@ -166,18 +166,18 @@ def match_pipeline(**_kwargs):
                         ),
                     ]
                 ),
+                "match_data_i",
                 "match_data_j",
-                "match_data_k",
             ),
             node(
                 common.add_oppo_features(match_cols=MATCH_OPPO_COLS),
+                "match_data_j",
                 "match_data_k",
-                "match_data_l",
             ),
             # Features dependent on oppo columns
-            node(match.add_cum_percent, "match_data_l", "match_data_m"),
-            node(match.add_ladder_position, "match_data_m", "match_data_n"),
-            node(match.add_elo_pred_win, "match_data_n", "match_data_o"),
+            node(match.add_cum_percent, "match_data_k", "match_data_l"),
+            node(match.add_ladder_position, "match_data_l", "match_data_m"),
+            node(match.add_elo_pred_win, "match_data_m", "match_data_n"),
             node(
                 feature_calculator(
                     [
@@ -185,15 +185,15 @@ def match_pipeline(**_kwargs):
                         (calculate_division, [("elo_rating", "ladder_position")]),
                     ]
                 ),
+                "match_data_n",
                 "match_data_o",
-                "match_data_p",
             ),
             node(
                 common.add_oppo_features(
                     oppo_feature_cols=["cum_percent", "ladder_position"]
                 ),
-                "match_data_p",
-                "match_data_q",
+                "match_data_o",
+                "data",
             ),
         ]
     )
