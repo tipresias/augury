@@ -5,21 +5,7 @@ from typing import List
 import pandas as pd
 
 from machine_learning.data_config import INDEX_COLS
-from .base import _parse_dates, _translate_team_column
-
-
-def _validate_required_columns(columns: pd.Index, required_columns: List[str]) -> None:
-    req_col_set = {*required_columns}
-    column_set = {*columns}
-
-    if req_col_set == req_col_set & column_set:
-        return None
-
-    missing_columns = req_col_set - column_set
-
-    raise ValueError(
-        f"Required columns {missing_columns} are missing from the data frame."
-    )
+from .base import _parse_dates, _translate_team_column, _validate_required_columns
 
 
 def clean_data(betting_data: pd.DataFrame) -> pd.DataFrame:
@@ -73,7 +59,7 @@ def add_betting_pred_win(data_frame: pd.DataFrame) -> pd.DataFrame:
         "line_odds",
         "oppo_line_odds",
     ]
-    _validate_required_columns(data_frame.columns, REQUIRED_COLS)
+    _validate_required_columns(REQUIRED_COLS, data_frame.columns)
 
     is_favoured = (
         (data_frame["win_odds"] < data_frame["oppo_win_odds"])
