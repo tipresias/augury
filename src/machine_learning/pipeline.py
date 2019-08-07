@@ -6,6 +6,7 @@ from machine_learning.data_processors.feature_calculation import (
     feature_calculator,
     calculate_rolling_rate,
     calculate_rolling_mean_by_dimension,
+    calculate_division,
 )
 from .nodes import betting, common, match
 
@@ -172,6 +173,27 @@ def match_pipeline(**_kwargs):
                 common.add_oppo_features(match_cols=MATCH_OPPO_COLS),
                 "match_data_k",
                 "match_data_l",
+            ),
+            # Features dependent on oppo columns
+            node(match.add_cum_percent, "match_data_l", "match_data_m"),
+            node(match.add_ladder_position, "match_data_m", "match_data_n"),
+            node(match.add_elo_pred_win, "match_data_n", "match_data_o"),
+            node(
+                feature_calculator(
+                    [
+                        (calculate_rolling_rate, [("elo_pred_win",)]),
+                        (calculate_division, [("elo_rating", "ladder_position")]),
+                    ]
+                ),
+                "match_data_o",
+                "match_data_p",
+            ),
+            node(
+                common.add_oppo_features(
+                    oppo_feature_cols=["cum_percent", "ladder_position"]
+                ),
+                "match_data_p",
+                "match_data_q",
             ),
         ]
     )

@@ -14,6 +14,7 @@ from machine_learning.data_config import (
     CITIES,
     VENUE_CITIES,
     TEAM_CITIES,
+    INDEX_COLS
 )
 from .base import _parse_dates, _translate_team_column, _validate_required_columns
 
@@ -263,16 +264,16 @@ def _calculate_match_elo_rating(
 def add_elo_rating(data_frame_arg: pd.DataFrame) -> pd.DataFrame:
     """Add ELO rating of team prior to matches"""
 
-    INDEX_COLS = {"home_team", "year", "round_number"}
-    REQUIRED_COLS = INDEX_COLS | {"home_score", "away_score", "away_team", "date"}
+    ELO_INDEX_COLS = {"home_team", "year", "round_number"}
+    REQUIRED_COLS = ELO_INDEX_COLS | {"home_score", "away_score", "away_team", "date"}
 
     _validate_required_columns(REQUIRED_COLS, data_frame_arg.columns)
 
     data_frame = (
-        data_frame_arg.set_index(list(INDEX_COLS), drop=False).rename_axis(
-            [None] * len(INDEX_COLS)
+        data_frame_arg.set_index(list(ELO_INDEX_COLS), drop=False).rename_axis(
+            [None] * len(ELO_INDEX_COLS)
         )
-        if INDEX_COLS != {*data_frame_arg.index.names}
+        if ELO_INDEX_COLS != {*data_frame_arg.index.names}
         else data_frame_arg.copy()
     )
 
@@ -491,3 +492,73 @@ def add_win_streak(data_frame: pd.DataFrame) -> pd.DataFrame:
     return data_frame.assign(
         win_streak=pd.Series(streak_groups, index=data_frame.index)
     )
+
+def add_cum_percent(data_frame: pd.DataFrame) -> pd.DataFrame:
+    """Add a team's cumulative percent (cumulative score / cumulative opponents' score)"""
+
+    REQUIRED_COLS = {"prev_match_score", "prev_match_oppo_score"}
+    _validate_required_columns(REQUIRED_COLS, data_frame.columns)
+
+    cum_score = (
+        data_frame["prev_match_score"].groupby(level=[TEAM_LEVEL, YEAR_LEVEL]).cumsum()
+    )
+    cum_oppo_score = (
+        data_frame["prev_match_oppo_score"]
+        .groupby(level=[TEAM_LEVEL, YEAR_LEVEL])
+        .cumsum()
+    )
+
+    return data_frame.assign(cum_percent=cum_score / cum_oppo_score)
+
+def add_ladder_position(data_frame: pd.DataFrame) -> pd.DataFrame:
+    """Add a team's current ladder position (based on cumulative win points and percent)"""
+
+    REQUIRED_COLS = INDEX_COLS + ["cum_win_points", "cum_percent"]
+    _validate_required_columns(REQUIRED_COLS, data_frame.columns)
+
+    # Pivot to get round-by-round match points and cumulative percent
+    ladder_pivot_table = data_frame[
+        INDEX_COLS + ["cum_win_points", "cum_percent"]
+    ].pivot_table(
+        index=["year", "round_number"],
+        values=["cum_win_points", "cum_percent"],
+        columns="team",
+        aggfunc={"cum_win_points": np.sum, "cum_percent": np.mean},
+    )
+
+    # To get round-by-round ladder ranks, we sort each round by win points & percent,
+    # then save index numbers
+    ladder_index = []
+    ladder_values = []
+
+    for year_round_idx, round_row in ladder_pivot_table.iterrows():
+        sorted_row = round_row.unstack(level=TEAM_LEVEL).sort_values(
+            ["cum_win_points", "cum_percent"], ascending=False
+        )
+
+        for ladder_idx, team_name in enumerate(sorted_row.index.get_values()):
+            ladder_index.append(tuple([team_name, *year_round_idx]))
+            ladder_values.append(ladder_idx + 1)
+
+    ladder_multi_index = pd.MultiIndex.from_tuples(
+        ladder_index, names=tuple(INDEX_COLS)
+    )
+    ladder_position_col = pd.Series(
+        ladder_values, index=ladder_multi_index, name="ladder_position"
+    )
+
+    return data_frame.assign(ladder_position=ladder_position_col)
+
+def add_elo_pred_win(data_frame: pd.DataFrame) -> pd.DataFrame:
+    """Add whether a team is predicted to win per elo ratings"""
+
+    REQUIRED_COLS = {"elo_rating", "oppo_elo_rating"}
+    _validate_required_columns(REQUIRED_COLS, data_frame.columns)
+
+    is_favoured = (data_frame["elo_rating"] > data_frame["oppo_elo_rating"]).astype(int)
+    are_even = (data_frame["elo_rating"] == data_frame["oppo_elo_rating"]).astype(int)
+
+    # Give half point for predicted draws
+    predicted_results = is_favoured + (are_even * 0.5)
+
+    return data_frame.assign(elo_pred_win=predicted_results)

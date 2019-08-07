@@ -205,3 +205,49 @@ class TestMatch(TestCase, ColumnAssertionMixin):
             valid_data_frame=valid_data_frame,
             feature_function=feature_function,
         )
+
+    def test_add_cum_percent(self):
+        feature_function = match.add_cum_percent
+        valid_data_frame = self.data_frame.assign(
+            prev_match_score=np.random.randint(50, 150, N_TEAMMATCH_ROWS),
+            prev_match_oppo_score=np.random.randint(50, 150, N_TEAMMATCH_ROWS),
+        )
+
+        self._make_column_assertions(
+            self,
+            column_names=["cum_percent"],
+            req_cols=("prev_match_score", "prev_match_oppo_score"),
+            valid_data_frame=valid_data_frame,
+            feature_function=feature_function,
+        )
+
+    def test_add_ladder_position(self):
+        feature_function = match.add_ladder_position
+        valid_data_frame = self.data_frame.assign(
+            # Float from 0.5 to 2.0 covers most percentages
+            cum_percent=(2.5 * np.random.ranf(N_TEAMMATCH_ROWS)) - 0.5,
+            cum_win_points=np.random.randint(0, 60, N_TEAMMATCH_ROWS),
+        )
+
+        self._make_column_assertions(
+            self,
+            column_names=["ladder_position"],
+            req_cols=("cum_percent", "cum_win_points", "team", "year", "round_number"),
+            valid_data_frame=valid_data_frame,
+            feature_function=feature_function,
+        )
+
+    def test_add_elo_pred_win(self):
+        feature_function = match.add_elo_pred_win
+        valid_data_frame = self.data_frame.assign(
+            elo_rating=np.random.randint(900, 1100, N_TEAMMATCH_ROWS),
+            oppo_elo_rating=np.random.randint(900, 1100, N_TEAMMATCH_ROWS),
+        )
+
+        self._make_column_assertions(
+            self,
+            column_names=["elo_pred_win"],
+            req_cols=("elo_rating", "oppo_elo_rating"),
+            valid_data_frame=valid_data_frame,
+            feature_function=feature_function,
+        )
