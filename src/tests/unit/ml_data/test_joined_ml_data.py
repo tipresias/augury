@@ -40,9 +40,10 @@ class TestJoinedMLData(TestCase):
             rolling_kicks=50, oppo_rolling_kicks=75
         )
 
-        match_data_reader = Mock()
-        match_data_reader.data = base_data.assign(
-            ladder_position=2, oppo_ladder_position=6
+        match_data_reader = Mock(
+            return_value={
+                "data": base_data.assign(ladder_position=2, oppo_ladder_position=6)
+            }
         )
 
         self.data = JoinedMLData(

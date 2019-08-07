@@ -44,8 +44,7 @@ notebook_1  | [I 03:01:38.909 NotebookApp] Use Control-C to stop this server and
 
 ### Deploy
 
-- Deploy `machine_learning` to Google Cloud:
-  - `docker-compose run --rm data_science sls deploy`
+- `augury` is deployed to Google Cloud via Travis CI. See `scripts/deploy.sh` for specific commands.
 
 ## Troubleshooting
 

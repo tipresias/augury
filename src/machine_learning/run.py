@@ -13,7 +13,7 @@ from kedro.utils import load_obj
 
 import pandas as pd
 
-from machine_learning.pipeline import betting_pipeline
+from machine_learning.pipeline import betting_pipeline, match_pipeline
 from machine_learning.settings import BASE_DIR
 
 # Name of root directory containing project configuration.
@@ -90,16 +90,30 @@ def create_catalog(config: ConfigLoader, **_kwargs) -> DataCatalog:
     return catalog
 
 
-def run_betting_pipeline() -> pd.DataFrame:
+def run_betting_pipeline(runner: str = None) -> pd.DataFrame:
     # Load Catalog
     conf = get_config(project_path=BASE_DIR, env=None)
     catalog = create_catalog(config=conf)
 
     # Load the runner
-    runner_func = SequentialRunner
+    # When either --parallel or --runner is used, class_obj is assigned to runner
+    runner_func = load_obj(runner, "kedro.runner") if runner else SequentialRunner
 
     # Run the runner
     return runner_func().run(betting_pipeline(), catalog)
+
+
+def run_match_pipeline(runner: str = None) -> pd.DataFrame:
+    # Load Catalog
+    conf = get_config(project_path=str(Path.cwd()), env=None)
+    catalog = create_catalog(config=conf)
+
+    # Load the runner
+    # When either --parallel or --runner is used, class_obj is assigned to runner
+    runner_func = load_obj(runner, "kedro.runner") if runner else SequentialRunner
+
+    # Run the runner
+    return runner_func().run(match_pipeline(), catalog)
 
 
 def main(tags: Iterable[str] = None, env: str = None, runner: str = None):

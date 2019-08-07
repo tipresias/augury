@@ -57,6 +57,7 @@ results/**
 
 # TODO: keep betting data until I set up prod data fetching
 !data/01_raw/betting-data_2010-01-01_2018-12-31.json
+!data/01_raw/match-data_1897-01-01_2018-12-31.json
 
 
 ##########################
@@ -163,6 +164,7 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+notebooks/Untitled.ipynb
 
 # IPython
 .ipython/profile_default/history.sqlite

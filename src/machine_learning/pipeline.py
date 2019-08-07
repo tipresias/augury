@@ -1,30 +1,3 @@
-# Copyright 2018-2019 QuantumBlack Visual Analytics Limited
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
-# NONINFRINGEMENT. IN NO EVENT WILL THE LICENSOR OR OTHER CONTRIBUTORS
-# BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN
-# ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF, OR IN
-# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-#
-# The QuantumBlack Visual Analytics Limited ("QuantumBlack") name and logo
-# (either separately or in combination, "QuantumBlack Trademarks") are
-# trademarks of QuantumBlack. The License does not grant you any right or
-# license to the QuantumBlack Trademarks. You may not use the QuantumBlack
-# Trademarks or any confusingly similar mark as a trademark for your product,
-#     or use the QuantumBlack Trademarks in any other manner that might cause
-# confusion in the marketplace, including but not limited to in advertising,
-# on websites, or on software.
-#
-# See the License for the specific language governing permissions and
-# limitations under the License.
 """Pipeline construction."""
 
 from kedro.pipeline import Pipeline, node
@@ -32,27 +5,57 @@ from kedro.pipeline import Pipeline, node
 from machine_learning.data_processors.feature_calculation import (
     feature_calculator,
     calculate_rolling_rate,
+    calculate_rolling_mean_by_dimension,
+    calculate_division,
 )
-from machine_learning.data_processors import feature_functions
-from .nodes import betting
+from .nodes import betting, common, match
+
+MATCH_OPPO_COLS = [
+    "team",
+    "year",
+    "round_number",
+    "score",
+    "oppo_score",
+    "team_goals",
+    "oppo_team_goals",
+    "team_behinds",
+    "oppo_team_behinds",
+    # TODO: I have to omit these columns, because I accidentally left them in
+    # when building betting features, and I need the columns to be the same
+    # in order not to retrain my saved models.
+    # "result",
+    # "oppo_result",
+    "margin",
+    "oppo_margin",
+    "elo_rating",
+    "oppo_elo_rating",
+    "out_of_state",
+    "at_home",
+    "oppo_team",
+    "venue",
+    "round_type",
+    "date",
+]
 
 
 def betting_pipeline(**_kwargs):
+    """Kedro pipeline for loading and transforming betting data"""
+
     return Pipeline(
         [
             node(
-                betting.convert_to_data_frame,
+                common.convert_to_data_frame,
                 ["betting_data", "remote_betting_data"],
                 ["betting_data_frame", "remote_betting_data_frame"],
             ),
             node(
-                betting.combine_data,
+                common.combine_data,
                 ["betting_data_frame", "remote_betting_data_frame"],
                 "combined_betting_data",
             ),
             node(betting.clean_data, "combined_betting_data", "clean_betting_data"),
             node(
-                betting.convert_match_rows_to_teammatch_rows,
+                common.convert_match_rows_to_teammatch_rows,
                 ["clean_betting_data"],
                 "stacked_betting_data",
             ),
@@ -65,7 +68,7 @@ def betting_pipeline(**_kwargs):
                 "betting_data_b",
             ),
             node(
-                feature_functions.add_oppo_features(
+                common.add_oppo_features(
                     oppo_feature_cols=[
                         "betting_pred_win",
                         "rolling_betting_pred_win_rate",
@@ -75,5 +78,122 @@ def betting_pipeline(**_kwargs):
                 "betting_data_c",
             ),
             node(betting.finalize_data, ["betting_data_c"], "data"),
+        ]
+    )
+
+
+def match_pipeline(**_kwargs):
+    """Kedro pipeline for loading and transforming match data"""
+
+    past_match_pipeline = Pipeline(
+        [
+            node(
+                common.convert_to_data_frame,
+                ["match_data", "remote_match_data"],
+                ["match_data_frame", "remote_match_data_frame"],
+            ),
+            node(
+                common.combine_data,
+                ["match_data_frame", "remote_match_data_frame"],
+                "combined_past_match_data",
+            ),
+            node(
+                match.clean_match_data,
+                "combined_past_match_data",
+                "clean_past_match_data",
+            ),
+        ]
+    )
+
+    upcoming_match_pipeline = Pipeline(
+        [
+            node(common.convert_to_data_frame, "fixture_data", "fixture_data_frame"),
+            node(match.clean_fixture_data, "fixture_data_frame", "clean_fixture_data"),
+        ]
+    )
+
+    return Pipeline(
+        [
+            past_match_pipeline,
+            upcoming_match_pipeline,
+            node(
+                common.combine_data,
+                ["clean_past_match_data", "clean_fixture_data"],
+                "combined_match_data",
+            ),
+            # add_elo_rating depends on DF still being organized per-match
+            # with home_team/away_team columns
+            node(match.add_elo_rating, "combined_match_data", "match_data_a"),
+            node(
+                common.convert_match_rows_to_teammatch_rows,
+                "match_data_a",
+                "match_data_b",
+            ),
+            node(match.add_out_of_state, "match_data_b", "match_data_c"),
+            node(match.add_travel_distance, "match_data_c", "match_data_d"),
+            node(match.add_result, "match_data_d", "match_data_e"),
+            node(match.add_margin, "match_data_e", "match_data_f"),
+            node(
+                match.add_shifted_team_features(
+                    shift_columns=[
+                        "score",
+                        "oppo_score",
+                        "result",
+                        "margin",
+                        "team_goals",
+                        "team_behinds",
+                    ]
+                ),
+                "match_data_f",
+                "match_data_g",
+            ),
+            node(match.add_cum_win_points, "match_data_g", "match_data_h"),
+            node(match.add_win_streak, "match_data_h", "match_data_i"),
+            node(
+                feature_calculator(
+                    [
+                        (calculate_rolling_rate, [("prev_match_result",)]),
+                        (
+                            calculate_rolling_mean_by_dimension,
+                            [
+                                ("oppo_team", "margin"),
+                                ("oppo_team", "result"),
+                                ("oppo_team", "score"),
+                                ("venue", "margin"),
+                                ("venue", "result"),
+                                ("venue", "score"),
+                            ],
+                        ),
+                    ]
+                ),
+                "match_data_i",
+                "match_data_j",
+            ),
+            node(
+                common.add_oppo_features(match_cols=MATCH_OPPO_COLS),
+                "match_data_j",
+                "match_data_k",
+            ),
+            # Features dependent on oppo columns
+            node(match.add_cum_percent, "match_data_k", "match_data_l"),
+            node(match.add_ladder_position, "match_data_l", "match_data_m"),
+            node(match.add_elo_pred_win, "match_data_m", "match_data_n"),
+            node(
+                feature_calculator(
+                    [
+                        (calculate_rolling_rate, [("elo_pred_win",)]),
+                        (calculate_division, [("elo_rating", "ladder_position")]),
+                    ]
+                ),
+                "match_data_n",
+                "match_data_o",
+            ),
+            node(
+                common.add_oppo_features(
+                    oppo_feature_cols=["cum_percent", "ladder_position"]
+                ),
+                "match_data_o",
+                "data",
+            ),
         ]
     )
