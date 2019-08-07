@@ -2,13 +2,19 @@
 
 from typing import Callable, List, Tuple
 from functools import partial, reduce
+import math
 
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
 from mypy_extensions import TypedDict
 
-from machine_learning.data_config import FOOTYWIRE_VENUE_TRANSLATIONS
+from machine_learning.data_config import (
+    FOOTYWIRE_VENUE_TRANSLATIONS,
+    CITIES,
+    VENUE_CITIES,
+    TEAM_CITIES,
+)
 from .base import _parse_dates, _translate_team_column, _validate_required_columns
 
 
@@ -52,6 +58,10 @@ HOME_GROUND_ADVANTAGE = 9
 S = 250
 SEASON_CARRYOVER = 0.575
 
+EARTH_RADIUS = 6371
+TEAM_LEVEL = 0
+YEAR_LEVEL = 1
+WIN_POINTS = 4
 
 # ID values are converted to floats automatically, making for awkward strings later.
 # We want them as strings, because sometimes we have to use player names as replacement
@@ -299,3 +309,185 @@ def add_elo_rating(data_frame_arg: pd.DataFrame) -> pd.DataFrame:
     ).sort_index()
 
     return pd.concat([data_frame, elo_data_frame], axis=1)
+
+
+def add_out_of_state(data_frame: pd.DataFrame) -> pd.DataFrame:
+    """Add whether a team is playing out of their home state."""
+
+    REQUIRED_COLS = {"venue", "team"}
+    _validate_required_columns(REQUIRED_COLS, data_frame.columns)
+
+    venue_state = data_frame["venue"].map(lambda x: CITIES[VENUE_CITIES[x]]["state"])
+    team_state = data_frame["team"].map(lambda x: CITIES[TEAM_CITIES[x]]["state"])
+
+    return data_frame.assign(out_of_state=(team_state != venue_state).astype(int))
+
+
+# Got the formula from https://www.movable-type.co.uk/scripts/latlong.html
+def _haversine_formula(
+    lat_long1: Tuple[float, float], lat_long2: Tuple[float, float]
+) -> float:
+    """Formula for distance between two pairs of latitudes & longitudes"""
+
+    lat1, long1 = lat_long1
+    lat2, long2 = lat_long2
+    # Latitude & longitude are in degrees, so have to convert to radians for
+    # trigonometric functions
+    phi1 = math.radians(lat1)
+    phi2 = math.radians(lat2)
+    delta_phi = phi2 - phi1
+    delta_lambda = math.radians(long2 - long1)
+    a = math.sin(delta_phi / 2) ** 2 + (
+        math.cos(phi1) * math.cos(phi2) * math.sin(delta_lambda / 2) ** 2
+    )
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+    return EARTH_RADIUS * c
+
+
+def add_travel_distance(data_frame: pd.DataFrame) -> pd.DataFrame:
+    """Add distance between each team's home city and the venue city for the match"""
+
+    required_cols = {"venue", "team"}
+    _validate_required_columns(required_cols, data_frame.columns)
+
+    venue_lat_long = data_frame["venue"].map(
+        lambda x: (CITIES[VENUE_CITIES[x]]["lat"], CITIES[VENUE_CITIES[x]]["long"])
+    )
+    team_lat_long = data_frame["team"].map(
+        lambda x: (CITIES[TEAM_CITIES[x]]["lat"], CITIES[TEAM_CITIES[x]]["long"])
+    )
+
+    return data_frame.assign(
+        travel_distance=[
+            _haversine_formula(*lats_longs)
+            for lats_longs in zip(venue_lat_long, team_lat_long)
+        ]
+    )
+
+
+def add_result(data_frame: pd.DataFrame) -> pd.DataFrame:
+    """Add a team's match result (win, draw, loss) as float"""
+
+    REQUIRED_COLS = {"score", "oppo_score"}
+    _validate_required_columns(REQUIRED_COLS, data_frame.columns)
+
+    wins = (data_frame["score"] > data_frame["oppo_score"]).astype(int)
+    draws = (data_frame["score"] == data_frame["oppo_score"]).astype(int) * 0.5
+
+    return data_frame.assign(result=wins + draws)
+
+
+def add_margin(data_frame: pd.DataFrame) -> pd.DataFrame:
+    """Add a team's margin from the match"""
+
+    REQUIRED_COLS = {"score", "oppo_score"}
+    _validate_required_columns(REQUIRED_COLS, data_frame.columns)
+
+    return data_frame.assign(margin=data_frame["score"] - data_frame["oppo_score"])
+
+
+def _shift_features(columns: List[str], shift: bool, data_frame: pd.DataFrame):
+    if shift:
+        columns_to_shift = columns
+    else:
+        columns_to_shift = [col for col in data_frame.columns if col not in columns]
+
+    _validate_required_columns(columns_to_shift, data_frame.columns)
+
+    shifted_col_names = {col: f"prev_match_{col}" for col in columns_to_shift}
+
+    # Group by team (not team & year) to get final score from previous season for round 1.
+    # This reduces number of rows that need to be dropped and prevents gaps
+    # for cumulative features
+    shifted_features = (
+        data_frame.groupby("team")[columns_to_shift]
+        .shift()
+        .fillna(0)
+        .rename(columns=shifted_col_names)
+    )
+
+    return pd.concat([data_frame, shifted_features], axis=1)
+
+
+def add_shifted_team_features(
+    shift_columns: List[str] = [], keep_columns: List[str] = []
+):
+    """
+    Group features by team and shift by one to get previous match stats.
+    Use shift_columns to indicate which features to shift or keep_columns for features
+    to leave unshifted, but not both.
+    """
+
+    if any(shift_columns) and any(keep_columns):
+        raise ValueError(
+            "To avoid conflicts, you can't include both match_cols "
+            "and oppo_feature_cols. Choose the shorter list to determine which "
+            "columns to skip and which to turn into opposition features."
+        )
+
+    shift = any(shift_columns)
+    columns = shift_columns if shift else keep_columns
+
+    return partial(_shift_features, columns, shift)
+
+
+def add_cum_win_points(data_frame: pd.DataFrame) -> pd.DataFrame:
+    """Add a team's cumulative win points (based on cumulative result)"""
+
+    REQUIRED_COLS = {"prev_match_result"}
+    _validate_required_columns(REQUIRED_COLS, data_frame.columns)
+
+    cum_win_points_col = (
+        (data_frame["prev_match_result"] * WIN_POINTS)
+        .groupby(level=[TEAM_LEVEL, YEAR_LEVEL])
+        .cumsum()
+    )
+
+    return data_frame.assign(cum_win_points=cum_win_points_col)
+
+
+# Calculate win/loss streaks. Positive result (win or draw) adds 1 (or 0.5);
+# negative result subtracts 1. Changes in direction (i.e. broken streak) result in
+# starting at 1 or -1.
+def add_win_streak(data_frame: pd.DataFrame) -> pd.DataFrame:
+    """Add a team's running win/loss streak through the end of the current match"""
+
+    REQUIRED_COLS = {"prev_match_result"}
+    _validate_required_columns(REQUIRED_COLS, data_frame.columns)
+
+    win_groups = data_frame["prev_match_result"].groupby(
+        level=TEAM_LEVEL, group_keys=False
+    )
+    streak_groups = []
+
+    for team_group_key, team_group in win_groups:
+        streaks: List = []
+
+        for idx, result in enumerate(team_group):
+            # 1 represents win, 0.5 represents draw
+            if result > 0:
+                if idx == 0 or streaks[idx - 1] <= 0:
+                    streaks.append(result)
+                else:
+                    streaks.append(streaks[idx - 1] + result)
+            # 0 represents loss
+            elif result == 0:
+                if idx == 0 or streaks[idx - 1] >= 0:
+                    streaks.append(-1)
+                else:
+                    streaks.append(streaks[idx - 1] - 1)
+            elif result < 0:
+                raise ValueError(
+                    f"No results should be negative, but {result} "
+                    f"is at index {idx} of group {team_group_key}"
+                )
+            else:
+                # For a team's first match in the data set or any rogue NaNs, we add 0
+                streaks.append(0)
+
+        streak_groups.extend(streaks)
+
+    return data_frame.assign(
+        win_streak=pd.Series(streak_groups, index=data_frame.index)
+    )

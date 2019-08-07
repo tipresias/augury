@@ -5,6 +5,7 @@ from kedro.pipeline import Pipeline, node
 from machine_learning.data_processors.feature_calculation import (
     feature_calculator,
     calculate_rolling_rate,
+    calculate_rolling_mean_by_dimension,
 )
 from machine_learning.data_processors import feature_functions
 from .nodes import betting, common, match
@@ -27,7 +28,7 @@ def betting_pipeline(**_kwargs):
             ),
             node(betting.clean_data, "combined_betting_data", "clean_betting_data"),
             node(
-                betting.convert_match_rows_to_teammatch_rows,
+                common.convert_match_rows_to_teammatch_rows,
                 ["clean_betting_data"],
                 "stacked_betting_data",
             ),
@@ -96,5 +97,50 @@ def match_pipeline(**_kwargs):
             # add_elo_rating depends on DF still being organized per-match
             # with home_team/away_team columns
             node(match.add_elo_rating, "combined_match_data", "match_data_a"),
+            node(
+                common.convert_match_rows_to_teammatch_rows,
+                "match_data_a",
+                "match_data_b",
+            ),
+            node(match.add_out_of_state, "match_data_b", "match_data_c"),
+            node(match.add_travel_distance, "match_data_c", "match_data_d"),
+            node(match.add_result, "match_data_d", "match_data_e"),
+            node(match.add_margin, "match_data_f", "match_data_g"),
+            node(
+                match.add_shifted_team_features(
+                    shift_columns=[
+                        "score",
+                        "oppo_score",
+                        "result",
+                        "margin",
+                        "team_goals",
+                        "team_behinds",
+                    ]
+                ),
+                "match_data_g",
+                "match_data_h",
+            ),
+            node(match.add_cum_win_points, "match_data_h", "match_data_i"),
+            node(match.add_win_streak, "match_data_i", "match_data_j"),
+            node(
+                feature_calculator(
+                    [
+                        (calculate_rolling_rate, [("prev_match_result",)]),
+                        (
+                            calculate_rolling_mean_by_dimension,
+                            [
+                                ("oppo_team", "margin"),
+                                ("oppo_team", "result"),
+                                ("oppo_team", "score"),
+                                ("venue", "margin"),
+                                ("venue", "result"),
+                                ("venue", "score"),
+                            ],
+                        ),
+                    ]
+                ),
+                "match_data_j",
+                "match_data_k",
+            ),
         ]
     )
