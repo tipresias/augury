@@ -1,5 +1,6 @@
 requests
 bottle
+responses>=0.10.6,<0.11
 
 # Data packages
 numpy

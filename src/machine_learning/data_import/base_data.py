@@ -30,11 +30,17 @@ def _handle_response_data(response: requests.Response) -> List[Dict[str, Any]]:
 
 
 def _make_request(
-    url: str, params: Dict[str, Any] = {}, headers: Dict[str, str] = {}
+    url: str, params: Dict[str, Any] = {}, headers: Dict[str, str] = {}, retry=True
 ) -> requests.Response:
     response = requests.get(url, params=params, headers=headers)
 
     if response.status_code != 200:
+        # If it's the first call to afl_data service in awhile, the response takes
+        # longer due to the container getting started, and it sometimes times out,
+        # so we'll retry once just in case
+        if retry:
+            _make_request(url, params=params, headers=headers, retry=False)
+
         raise Exception(
             "Bad response from application: "
             f"{response.status_code} / {response.headers} / {response.text}"
