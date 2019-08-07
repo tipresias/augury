@@ -1,5 +1,4 @@
 from unittest import TestCase
-from collections import Counter
 
 from faker import Faker
 import numpy as np
@@ -21,9 +20,8 @@ from machine_learning.data_processors.feature_functions import (
     add_betting_pred_win,
     add_elo_pred_win,
     add_shifted_team_features,
-    add_oppo_features,
 )
-from machine_learning.data_config import VENUES, INDEX_COLS
+from machine_learning.data_config import VENUES
 
 
 FAKE = Faker()
@@ -374,106 +372,3 @@ class TestFeatureFunctions(TestCase):
                 col for col in shifted_data_frame.columns if "prev_match" in col
             ]
             self.assertEqual(len(prev_match_columns), 1)
-
-    def test_transform(self):
-        REQUIRED_COLS = INDEX_COLS + ["oppo_team"]
-
-        match_cols = [
-            "date",
-            "team",
-            "oppo_team",
-            "score",
-            "oppo_score",
-            "year",
-            "round_number",
-        ]
-        oppo_feature_cols = ["kicks", "marks"]
-        valid_data_frame = self.data_frame.assign(
-            kicks=np.random.randint(50, 100, TOTAL_ROWS),
-            marks=np.random.randint(50, 100, TOTAL_ROWS),
-        )
-
-        with self.subTest(data_frame=valid_data_frame, match_cols=match_cols):
-            data_frame = valid_data_frame
-            match_cols = match_cols
-            transform_func = add_oppo_features(match_cols=match_cols)
-            transformed_df = transform_func(data_frame)
-
-            # OppoFeatureBuilder adds 1 column per non-match column
-            self.assertEqual(len(data_frame.columns) + 2, len(transformed_df.columns))
-
-            # Should add the two new oppo columns
-            self.assertIn("oppo_kicks", transformed_df.columns)
-            self.assertIn("oppo_marks", transformed_df.columns)
-
-            # Shouldn't add the match columns
-            for match_col in match_cols:
-                if match_col not in ["team", "score"]:
-                    self.assertNotIn(f"oppo_{match_col}", transformed_df.columns)
-
-            self.assertEqual(Counter(transformed_df.columns)["oppo_team"], 1)
-            self.assertEqual(Counter(transformed_df.columns)["oppo_score"], 1)
-
-            # Columns & their 'oppo_' equivalents should have the same values
-            self.assertEqual(
-                len(
-                    np.setdiff1d(transformed_df["kicks"], transformed_df["oppo_kicks"])
-                ),
-                0,
-            )
-            self.assertEqual(
-                len(
-                    np.setdiff1d(transformed_df["marks"], transformed_df["oppo_marks"])
-                ),
-                0,
-            )
-
-        with self.subTest(
-            data_frame=valid_data_frame, oppo_feature_cols=oppo_feature_cols
-        ):
-            data_frame = valid_data_frame
-            transform_func = add_oppo_features(oppo_feature_cols=oppo_feature_cols)
-            transformed_df = transform_func(data_frame)
-
-            # OppoFeatureBuilder adds 1 column per non-match column
-            self.assertEqual(len(data_frame.columns) + 2, len(transformed_df.columns))
-
-            # Should add the two new oppo columns
-            self.assertIn("oppo_kicks", transformed_df.columns)
-            self.assertIn("oppo_marks", transformed_df.columns)
-
-            # Shouldn't add the match columns
-            for match_col in match_cols:
-                if match_col not in ["team", "score"]:
-                    self.assertNotIn(f"oppo_{match_col}", transformed_df.columns)
-
-            self.assertEqual(Counter(transformed_df.columns)["oppo_team"], 1)
-            self.assertEqual(Counter(transformed_df.columns)["oppo_score"], 1)
-
-            # Columns & their 'oppo_' equivalents should have the same values
-            self.assertEqual(
-                len(
-                    np.setdiff1d(transformed_df["kicks"], transformed_df["oppo_kicks"])
-                ),
-                0,
-            )
-            self.assertEqual(
-                len(
-                    np.setdiff1d(transformed_df["marks"], transformed_df["oppo_marks"])
-                ),
-                0,
-            )
-
-        with self.subTest(match_cols=match_cols, oppo_feature_cols=oppo_feature_cols):
-            with self.assertRaises(ValueError):
-                transform_func = add_oppo_features(
-                    match_cols=match_cols, oppo_feature_cols=oppo_feature_cols
-                )
-
-        for required_col in REQUIRED_COLS:
-            with self.subTest(data_frame=valid_data_frame.drop(required_col, axis=1)):
-                data_frame = valid_data_frame.drop(required_col, axis=1)
-                transform_func = add_oppo_features(match_cols=match_cols)
-
-                with self.assertRaises(ValueError):
-                    transform_func(data_frame)

@@ -7,8 +7,34 @@ from machine_learning.data_processors.feature_calculation import (
     calculate_rolling_rate,
     calculate_rolling_mean_by_dimension,
 )
-from machine_learning.data_processors import feature_functions
 from .nodes import betting, common, match
+
+MATCH_OPPO_COLS = [
+    "team",
+    "year",
+    "round_number",
+    "score",
+    "oppo_score",
+    "team_goals",
+    "oppo_team_goals",
+    "team_behinds",
+    "oppo_team_behinds",
+    # TODO: I have to omit these columns, because I accidentally left them in
+    # when building betting features, and I need the columns to be the same
+    # in order not to retrain my saved models.
+    # "result",
+    # "oppo_result",
+    "margin",
+    "oppo_margin",
+    "elo_rating",
+    "oppo_elo_rating",
+    "out_of_state",
+    "at_home",
+    "oppo_team",
+    "venue",
+    "round_type",
+    "date",
+]
 
 
 def betting_pipeline(**_kwargs):
@@ -41,7 +67,7 @@ def betting_pipeline(**_kwargs):
                 "betting_data_b",
             ),
             node(
-                feature_functions.add_oppo_features(
+                common.add_oppo_features(
                     oppo_feature_cols=[
                         "betting_pred_win",
                         "rolling_betting_pred_win_rate",
@@ -141,6 +167,11 @@ def match_pipeline(**_kwargs):
                 ),
                 "match_data_j",
                 "match_data_k",
+            ),
+            node(
+                common.add_oppo_features(match_cols=MATCH_OPPO_COLS),
+                "match_data_k",
+                "match_data_l",
             ),
         ]
     )
