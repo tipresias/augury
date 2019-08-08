@@ -5,12 +5,11 @@ import pandas as pd
 from faker import Faker
 
 from machine_learning.data_transformation.data_cleaning import (
-    clean_betting_data,
     clean_match_data,
     clean_player_data,
     clean_joined_data,
 )
-from machine_learning.settings import MELBOURNE_TIMEZONE, BASE_DIR
+from machine_learning.settings import BASE_DIR
 
 
 TEST_DATA_DIR = os.path.join(BASE_DIR, "src/tests/fixtures")
@@ -20,28 +19,6 @@ FAKE = Faker()
 
 
 class TestDataCleaning(TestCase):
-    def test_clean_betting_data(self):
-        betting_data = (
-            pd.read_json(
-                os.path.join(TEST_DATA_DIR, "afl_betting.json"), convert_dates=["date"]
-            )
-            .assign(
-                date=lambda df: pd.to_datetime(df["date"]).dt.tz_localize(
-                    MELBOURNE_TIMEZONE
-                )
-            )
-            .rename(columns={"round": "round_number", "round_label": "round"})
-        )
-
-        clean_data = clean_betting_data(betting_data)
-
-        self.assertIsInstance(clean_data, pd.DataFrame)
-
-        required_columns = ["home_team", "away_team", "year", "round_number"]
-
-        for col in required_columns:
-            self.assertTrue(col in clean_data.columns.values)
-
     def test_clean_match_data(self):
         match_data = pd.read_csv(
             os.path.join(TEST_DATA_DIR, "fitzroy_match_results.csv")

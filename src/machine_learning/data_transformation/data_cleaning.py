@@ -96,29 +96,6 @@ def _translate_team_column(col_name: str) -> Callable[[pd.DataFrame], str]:
     return lambda data_frame: data_frame[col_name].map(_translate_team_name)
 
 
-def clean_betting_data(betting_data: pd.DataFrame) -> pd.DataFrame:
-    return (
-        betting_data.rename(columns={"season": "year"})
-        .drop(
-            [
-                "home_win_paid",
-                "home_line_paid",
-                "away_win_paid",
-                "away_line_paid",
-                "venue",
-                "home_margin",
-                "away_margin",
-            ],
-            axis=1,
-        )
-        .assign(
-            home_team=_translate_team_column("home_team"),
-            away_team=_translate_team_column("away_team"),
-        )
-        .drop("round", axis=1)
-    )
-
-
 def _map_footywire_venues(venue: str) -> str:
     return (
         FOOTYWIRE_VENUE_TRANSLATIONS[venue]
