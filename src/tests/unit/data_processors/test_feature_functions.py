@@ -17,7 +17,6 @@ from machine_learning.data_processors.feature_functions import (
     add_rolling_player_stats,
     add_cum_matches_played,
     add_elo_rating,
-    add_betting_pred_win,
     add_elo_pred_win,
     add_shifted_team_features,
 )
@@ -133,23 +132,6 @@ class TestFeatureFunctions(TestCase):
             self,
             column_names=["cum_win_points"],
             req_cols=("prev_match_result",),
-            valid_data_frame=valid_data_frame,
-            feature_function=feature_function,
-        )
-
-    def test_add_betting_pred_win(self):
-        feature_function = add_betting_pred_win
-        valid_data_frame = self.data_frame.assign(
-            win_odds=np.random.randint(0, 2, TOTAL_ROWS),
-            oppo_win_odds=np.random.randint(0, 2, TOTAL_ROWS),
-            line_odds=np.random.randint(-50, 50, TOTAL_ROWS),
-            oppo_line_odds=np.random.randint(-50, 50, TOTAL_ROWS),
-        )
-
-        make_column_assertions(
-            self,
-            column_names=["betting_pred_win"],
-            req_cols=("win_odds", "oppo_win_odds", "line_odds", "oppo_line_odds"),
             valid_data_frame=valid_data_frame,
             feature_function=feature_function,
         )

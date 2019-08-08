@@ -108,11 +108,10 @@ def _make_model_predictions(
 
     X_test, _ = data.test_data(test_round=round_number)
 
-    if not X_test.any().any():
-        raise ValueError(
-            "X_test doesn't have any rows, likely due to some data for the "
-            "upcoming round not being available yet."
-        )
+    assert X_test.any().any(), (
+        "X_test doesn't have any rows, likely due to some data for the upcoming round "
+        "not being available yet."
+    )
 
     y_pred = trained_model.predict(X_test)
 

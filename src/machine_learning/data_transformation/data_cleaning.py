@@ -96,29 +96,6 @@ def _translate_team_column(col_name: str) -> Callable[[pd.DataFrame], str]:
     return lambda data_frame: data_frame[col_name].map(_translate_team_name)
 
 
-def clean_betting_data(betting_data: pd.DataFrame) -> pd.DataFrame:
-    return (
-        betting_data.rename(columns={"season": "year"})
-        .drop(
-            [
-                "home_win_paid",
-                "home_line_paid",
-                "away_win_paid",
-                "away_line_paid",
-                "venue",
-                "home_margin",
-                "away_margin",
-            ],
-            axis=1,
-        )
-        .assign(
-            home_team=_translate_team_column("home_team"),
-            away_team=_translate_team_column("away_team"),
-        )
-        .drop("round", axis=1)
-    )
-
-
 def _map_footywire_venues(venue: str) -> str:
     return (
         FOOTYWIRE_VENUE_TRANSLATIONS[venue]
@@ -155,11 +132,11 @@ def _map_round_type(year: int, round_number: int) -> str:
 def _round_type_column(data_frame: pd.DataFrame) -> pd.DataFrame:
     years = data_frame["year"].drop_duplicates()
 
-    if len(years) > 1:
-        raise ValueError(
-            "Fixture data should only include matches from the next round, but "
-            f"fixture data for seasons {years} were given"
-        )
+    assert len(years) == 1, (
+        "Fixture data should only include matches from the next round, but "
+        f"fixture data for seasons {years} were given. "
+        f"The offending series is:\n{data_frame['year']}"
+    )
 
     return data_frame["round_number"].map(partial(_map_round_type, years.iloc[0]))
 

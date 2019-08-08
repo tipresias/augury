@@ -126,27 +126,6 @@ def add_cum_win_points(data_frame: pd.DataFrame) -> pd.DataFrame:
     return data_frame.assign(cum_win_points=cum_win_points_col)
 
 
-def add_betting_pred_win(data_frame: pd.DataFrame) -> pd.DataFrame:
-    """Add whether a team is predicted to win per the betting odds"""
-
-    required_cols = {"win_odds", "oppo_win_odds", "line_odds", "oppo_line_odds"}
-    _validate_required_columns(required_cols, data_frame.columns, "betting_red_win")
-
-    is_favoured = (
-        (data_frame["win_odds"] < data_frame["oppo_win_odds"])
-        | (data_frame["line_odds"] < data_frame["oppo_line_odds"])
-    ).astype(int)
-    odds_are_even = (
-        (data_frame["win_odds"] == data_frame["oppo_win_odds"])
-        & (data_frame["line_odds"] == data_frame["oppo_line_odds"])
-    ).astype(int)
-
-    # Give half point for predicted draws
-    predicted_results = is_favoured + (odds_are_even * 0.5)
-
-    return data_frame.assign(betting_pred_win=predicted_results)
-
-
 def add_elo_pred_win(data_frame: pd.DataFrame) -> pd.DataFrame:
     """Add whether a team is predicted to win per elo ratings"""
 
