@@ -132,11 +132,11 @@ def _map_round_type(year: int, round_number: int) -> str:
 def _round_type_column(data_frame: pd.DataFrame) -> pd.DataFrame:
     years = data_frame["year"].drop_duplicates()
 
-    if len(years) > 1:
-        raise ValueError(
-            "Fixture data should only include matches from the next round, but "
-            f"fixture data for seasons {years} were given"
-        )
+    assert len(years) == 1, (
+        "Fixture data should only include matches from the next round, but "
+        f"fixture data for seasons {years} were given. "
+        f"The offending series is:\n{data_frame['year']}"
+    )
 
     return data_frame["round_number"].map(partial(_map_round_type, years.iloc[0]))
 
