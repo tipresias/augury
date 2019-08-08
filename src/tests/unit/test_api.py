@@ -1,18 +1,15 @@
 from unittest import TestCase
 from unittest.mock import Mock, patch
 
-from tests.fixtures.data_factories import (
-    fake_footywire_betting_data,
-    fake_fixture_data,
-    fake_raw_match_results_data,
-)
-from machine_learning.ml_data import BettingMLData
-from machine_learning.data_import import FootywireDataImporter, FitzroyDataImporter
+from tests.fixtures.data_factories import fake_fixture_data, fake_raw_match_results_data
+from tests.fixtures.fake_estimator import FakeEstimatorData
+from machine_learning.data_import import FitzroyDataImporter
 from machine_learning import api
 from machine_learning import settings
 
 
 YEAR_RANGE = (2019, 2020)
+PREDICTION_ROUND = 1
 N_MATCHES = 5
 FAKE_ML_MODELS = [
     {"name": "fake_estimator", "filepath": "src/tests/fixtures/fake_estimator.pkl"}
@@ -22,22 +19,23 @@ FAKE_ML_MODELS = [
 class TestApi(TestCase):
     @patch("machine_learning.api.ML_MODELS", FAKE_ML_MODELS)
     def test_make_predictions(self):
-        data_importer = FootywireDataImporter()
-        data_importer.get_betting_odds = Mock(
-            return_value=fake_footywire_betting_data(N_MATCHES, YEAR_RANGE)
-        )
-
-        betting_data = BettingMLData(
-            data_readers={"betting": (data_importer.get_betting_odds, {})}
+        max_year = YEAR_RANGE[1] - 1
+        fake_data = FakeEstimatorData(max_year=max_year)
+        prediction_matches = fake_data.data.query(
+            "year == @max_year & round_number == @PREDICTION_ROUND"
         )
 
         response = api.make_predictions(
-            YEAR_RANGE, 1, data=betting_data, ml_model_names="fake_estimator", verbose=0
+            YEAR_RANGE,
+            PREDICTION_ROUND,
+            data=fake_data,
+            ml_model_names="fake_estimator",
+            verbose=0,
         )
 
         predictions = response["data"]
-        # Two predictions per match per model: one for each team playing
-        self.assertEqual(len(predictions), N_MATCHES * 2)
+
+        self.assertEqual(len(predictions), len(prediction_matches))
 
         first_prediction = predictions[0]
 
