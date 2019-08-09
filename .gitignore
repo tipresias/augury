@@ -30,10 +30,6 @@ node_modules
 ##########################
 # KEDRO PROJECT
 
-# ignore all local configuration
-conf/local/**
-!conf/local/.gitkeep
-
 # ignore potentially sensitive credentials files
 conf/**/*credentials*
 
