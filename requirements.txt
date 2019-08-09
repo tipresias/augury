@@ -1,6 +1,7 @@
 requests
 bottle
 responses>=0.10.6,<0.11
+google-cloud-storage==1.18.0
 
 # Data packages
 numpy

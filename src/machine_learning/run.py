@@ -4,6 +4,7 @@ import logging.config
 from pathlib import Path
 from typing import Iterable
 from warnings import warn
+import os
 
 from kedro.cli.utils import KedroCliError
 from kedro.config import ConfigLoader, MissingConfigException
@@ -27,7 +28,7 @@ CONF_ROOT = "conf"
 # Default configuration environment to be used for running the pipeline.
 # Change this constant value if you want to load configuration
 # from a different location.
-DEFAULT_RUN_ENV = "local"
+DEFAULT_RUN_ENV = "development"
 
 
 def __kedro_context__():
@@ -97,7 +98,7 @@ def create_catalog(config: ConfigLoader, **_kwargs) -> DataCatalog:
 
 def run_betting_pipeline(runner: str = None) -> pd.DataFrame:
     # Load Catalog
-    conf = get_config(project_path=BASE_DIR, env=None)
+    conf = get_config(project_path=BASE_DIR, env=os.getenv("PYTHON_ENV"))
     catalog = create_catalog(config=conf)
 
     # Load the runner
@@ -110,7 +111,7 @@ def run_betting_pipeline(runner: str = None) -> pd.DataFrame:
 
 def run_match_pipeline(runner: str = None) -> pd.DataFrame:
     # Load Catalog
-    conf = get_config(project_path=str(Path.cwd()), env=None)
+    conf = get_config(project_path=str(Path.cwd()), env=os.getenv("PYTHON_ENV"))
     catalog = create_catalog(config=conf)
 
     # Load the runner
@@ -142,7 +143,7 @@ def main(tags: Iterable[str] = None, env: str = None, runner: str = None):
             filter the nodes of the ``Pipeline``. If specified, only the nodes
             containing *any* of these tags will be added to the ``Pipeline``.
         env: An optional parameter specifying the environment in which
-            the ``Pipeline`` should be run. If not specified defaults to "local".
+            the ``Pipeline`` should be run. If not specified defaults to "development".
         runner: An optional parameter specifying the runner that you want to run
             the pipeline with.
 

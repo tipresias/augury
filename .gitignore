@@ -30,10 +30,6 @@ node_modules
 ##########################
 # KEDRO PROJECT
 
-# ignore all local configuration
-conf/local/**
-!conf/local/.gitkeep
-
 # ignore potentially sensitive credentials files
 conf/**/*credentials*
 
@@ -54,10 +50,6 @@ results/**
 
 # Keep legacy datasets that can't be regenerated easily
 !data/00_legacy/**
-
-# TODO: keep betting data until I set up prod data fetching
-!data/01_raw/betting-data_2010-01-01_2018-12-31.json
-!data/01_raw/match-data_1897-01-01_2018-12-31.json
 
 
 ##########################
