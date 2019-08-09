@@ -204,7 +204,7 @@ def fake_estimator_pipeline():
 
     return Pipeline(
         [
-            node(common.convert_to_data_frame, "match_data", "match_data_frame"),
+            node(common.convert_to_data_frame, "fake_match_data", "match_data_frame"),
             node(match.clean_match_data, "match_data_frame", "clean_match_data"),
             node(
                 common.convert_match_rows_to_teammatch_rows,

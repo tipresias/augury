@@ -28,7 +28,7 @@ CONF_ROOT = "conf"
 # Default configuration environment to be used for running the pipeline.
 # Change this constant value if you want to load configuration
 # from a different location.
-DEFAULT_RUN_ENV = "local"
+DEFAULT_RUN_ENV = "development"
 
 
 def __kedro_context__():
@@ -143,7 +143,7 @@ def main(tags: Iterable[str] = None, env: str = None, runner: str = None):
             filter the nodes of the ``Pipeline``. If specified, only the nodes
             containing *any* of these tags will be added to the ``Pipeline``.
         env: An optional parameter specifying the environment in which
-            the ``Pipeline`` should be run. If not specified defaults to "local".
+            the ``Pipeline`` should be run. If not specified defaults to "development".
         runner: An optional parameter specifying the runner that you want to run
             the pipeline with.
 
