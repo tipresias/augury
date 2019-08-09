@@ -4,6 +4,7 @@ import logging.config
 from pathlib import Path
 from typing import Iterable
 from warnings import warn
+import os
 
 from kedro.cli.utils import KedroCliError
 from kedro.config import ConfigLoader, MissingConfigException
@@ -97,7 +98,7 @@ def create_catalog(config: ConfigLoader, **_kwargs) -> DataCatalog:
 
 def run_betting_pipeline(runner: str = None) -> pd.DataFrame:
     # Load Catalog
-    conf = get_config(project_path=BASE_DIR, env=None)
+    conf = get_config(project_path=BASE_DIR, env=os.getenv("PYTHON_ENV"))
     catalog = create_catalog(config=conf)
 
     # Load the runner
@@ -110,7 +111,7 @@ def run_betting_pipeline(runner: str = None) -> pd.DataFrame:
 
 def run_match_pipeline(runner: str = None) -> pd.DataFrame:
     # Load Catalog
-    conf = get_config(project_path=str(Path.cwd()), env=None)
+    conf = get_config(project_path=str(Path.cwd()), env=os.getenv("PYTHON_ENV"))
     catalog = create_catalog(config=conf)
 
     # Load the runner
