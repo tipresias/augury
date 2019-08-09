@@ -76,12 +76,6 @@ venv.bak/
 # JS stuff
 node_modules
 
-# Data files
-/data
-# keep legacy datasets until we can automate generating them or decide
-# that we don't need them anymore
-!data/01_raw/**
-
 # Dev stuff
 .git
 .gitignore
@@ -90,3 +84,22 @@ README.md
 deploy_rsa.enc
 .travis.yml
 .vscode
+
+
+##########################
+# KEDRO PROJECT
+
+# ignore potentially sensitive credentials files
+conf/**/*credentials*
+
+# ignore everything in the following folders
+data/**
+logs/**
+references/**
+results/**
+
+# except their sub-folders
+!data/**/
+!logs/**/
+!references/**/
+!results/**/
