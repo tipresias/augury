@@ -38,7 +38,7 @@ MATCH_OPPO_COLS = [
 ]
 
 
-def betting_pipeline(**_kwargs):
+def betting_pipeline(start_date: str, end_date: str, **_kwargs):
     """Kedro pipeline for loading and transforming betting data"""
 
     return Pipeline(
@@ -53,7 +53,12 @@ def betting_pipeline(**_kwargs):
                 ["betting_data_frame", "remote_betting_data_frame"],
                 "combined_betting_data",
             ),
-            node(betting.clean_data, "combined_betting_data", "clean_betting_data"),
+            node(
+                common.filter_by_date(start_date, end_date),
+                "combined_betting_data",
+                "filtered_betting_data",
+            ),
+            node(betting.clean_data, "filtered_betting_data", "clean_betting_data"),
             node(
                 common.convert_match_rows_to_teammatch_rows,
                 ["clean_betting_data"],
@@ -82,7 +87,7 @@ def betting_pipeline(**_kwargs):
     )
 
 
-def match_pipeline(**_kwargs):
+def match_pipeline(start_date: str, end_date: str, **_kwargs):
     """Kedro pipeline for loading and transforming match data"""
 
     past_match_pipeline = Pipeline(
@@ -98,8 +103,13 @@ def match_pipeline(**_kwargs):
                 "combined_past_match_data",
             ),
             node(
-                match.clean_match_data,
+                common.filter_by_date(start_date, end_date),
                 "combined_past_match_data",
+                "filtered_past_match_data",
+            ),
+            node(
+                match.clean_match_data,
+                "filtered_past_match_data",
                 "clean_past_match_data",
             ),
         ]
@@ -108,7 +118,16 @@ def match_pipeline(**_kwargs):
     upcoming_match_pipeline = Pipeline(
         [
             node(common.convert_to_data_frame, "fixture_data", "fixture_data_frame"),
-            node(match.clean_fixture_data, "fixture_data_frame", "clean_fixture_data"),
+            node(
+                common.filter_by_date(start_date, end_date),
+                "fixture_data_frame",
+                "filtered_fixture_data_frame",
+            ),
+            node(
+                match.clean_fixture_data,
+                "filtered_fixture_data_frame",
+                "clean_fixture_data",
+            ),
         ]
     )
 

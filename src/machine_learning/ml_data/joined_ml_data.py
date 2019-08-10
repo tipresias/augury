@@ -24,8 +24,8 @@ DataReaders = TypedDict(
     "DataReaders",
     {
         "player": BaseMLData,
-        "match": Callable[[], pd.DataFrame],
-        "betting": Callable[[], pd.DataFrame],
+        "match": Callable[[str, str], pd.DataFrame],
+        "betting": Callable[[str, str], pd.DataFrame],
     },
 )
 
@@ -115,11 +115,17 @@ class JoinedMLData(BaseMLData, DataTransformerMixin):
             self.data_readers["player"].end_date = self.end_date
             player_data = self.data_readers["player"].data
 
-            match_data = self.data_readers["match"]()["data"]
+            match_data = self.data_readers["match"](self.start_date, self.end_date).get(
+                "data"
+            )
 
             # Betting data dates are correct, but the times are arbitrarily set by the
             # parser, so better to leave the date definition to a different data source
-            betting_data = self.data_readers["betting"]()["data"].drop("date", axis=1)
+            betting_data = (
+                self.data_readers["betting"](self.start_date, self.end_date)
+                .get("data")
+                .drop("date", axis=1)
+            )
 
             self._data = (
                 self._compose_transformers(  # pylint: disable=E1102
