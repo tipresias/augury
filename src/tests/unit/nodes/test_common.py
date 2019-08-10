@@ -13,14 +13,12 @@ from tests.fixtures.data_factories import (
 from machine_learning.nodes import common
 from machine_learning.data_config import INDEX_COLS
 
-START_DATE = "2012-01-01"
+START_DATE = "2013-01-01"
+END_DATE = "2014-12-31"
 START_YEAR = int(START_DATE[:4])
-END_DATE = "2013-12-31"
 END_YEAR = int(END_DATE[:4]) + 1
 N_MATCHES_PER_SEASON = 4
-START_YEAR = 2013
-END_YEAR = 2015
-YEAR_RANGE = (2013, 2015)
+YEAR_RANGE = (START_YEAR, END_YEAR)
 REQUIRED_OUTPUT_COLS = ["home_team", "year", "round_number"]
 
 # Need to multiply by two, because we add team & oppo_team row per match
