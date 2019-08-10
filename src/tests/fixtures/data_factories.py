@@ -1,5 +1,5 @@
 from typing import List, Dict, Tuple, Any, Union, cast
-from datetime import datetime
+from datetime import datetime, timedelta
 import itertools
 
 from faker import Faker
@@ -81,10 +81,19 @@ class CyclicalTeamNames:
             return next(self.cyclical_team_names)
 
 
-def _min_max_datetimes_by_year(year: int) -> Dict[str, datetime]:
+def _min_max_datetimes_by_year(
+    year: int, force_future: bool = False
+) -> Dict[str, datetime]:
+    if force_future:
+        today = datetime.now()
+        tomorrow = today + timedelta(hours=24)
+        datetime_start = datetime(year, tomorrow.month, tomorrow.day)
+    else:
+        datetime_start = datetime(year, JAN, FIRST)
+
     return {
-        "datetime_start": datetime(year, JAN, FIRST),
-        "datetime_end": datetime(year, DEC, THIRTY_FIRST),
+        "datetime_start": datetime_start,
+        "datetime_end": datetime(year, DEC, THIRTY_FIRST, 11, 59, 59),
     }
 
 
@@ -303,7 +312,10 @@ def fake_footywire_betting_data(
 
 def _fixture_data(year: int, team_names: Tuple[str, str]) -> CleanFixtureData:
     return {
-        "date": FAKE.date_time_between_dates(**_min_max_datetimes_by_year(year)),
+        "date": FAKE.date_time_between_dates(
+            **_min_max_datetimes_by_year(year, force_future=True),
+            tzinfo=MELBOURNE_TIMEZONE,
+        ),
         "season": year,
         "round": 1,
         "home_team": team_names[0],

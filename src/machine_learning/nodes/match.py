@@ -14,7 +14,7 @@ from machine_learning.data_config import (
     CITIES,
     VENUE_CITIES,
     TEAM_CITIES,
-    INDEX_COLS
+    INDEX_COLS,
 )
 from .base import _parse_dates, _translate_team_column, _validate_required_columns
 
@@ -156,11 +156,11 @@ def _map_round_type(year: int, round_number: int) -> str:
 def _round_type_column(data_frame: pd.DataFrame) -> pd.DataFrame:
     years = data_frame["year"].drop_duplicates()
 
-    if len(years) > 1:
-        raise ValueError(
-            "Fixture data should only include matches from the next round, but "
-            f"fixture data for seasons {years} were given"
-        )
+    assert len(years) == 1, (
+        "Fixture data should only include matches from the next round, but "
+        f"fixture data for seasons {list(years.values)} were given. "
+        f"The offending series is:\n{data_frame['year']}"
+    )
 
     return data_frame["round_number"].map(partial(_map_round_type, years.iloc[0]))
 
@@ -493,6 +493,7 @@ def add_win_streak(data_frame: pd.DataFrame) -> pd.DataFrame:
         win_streak=pd.Series(streak_groups, index=data_frame.index)
     )
 
+
 def add_cum_percent(data_frame: pd.DataFrame) -> pd.DataFrame:
     """Add a team's cumulative percent (cumulative score / cumulative opponents' score)"""
 
@@ -509,6 +510,7 @@ def add_cum_percent(data_frame: pd.DataFrame) -> pd.DataFrame:
     )
 
     return data_frame.assign(cum_percent=cum_score / cum_oppo_score)
+
 
 def add_ladder_position(data_frame: pd.DataFrame) -> pd.DataFrame:
     """Add a team's current ladder position (based on cumulative win points and percent)"""
@@ -548,6 +550,7 @@ def add_ladder_position(data_frame: pd.DataFrame) -> pd.DataFrame:
     )
 
     return data_frame.assign(ladder_position=ladder_position_col)
+
 
 def add_elo_pred_win(data_frame: pd.DataFrame) -> pd.DataFrame:
     """Add whether a team is predicted to win per elo ratings"""
