@@ -10,6 +10,7 @@ from mypy_extensions import TypedDict
 from machine_learning.data_config import TEAM_NAMES, DEFUNCT_TEAM_NAMES, INDEX_COLS
 from machine_learning.types import BettingData
 from machine_learning.settings import MELBOURNE_TIMEZONE
+from machine_learning.nodes.base import _parse_dates
 
 
 CleanFixtureData = TypedDict(
@@ -91,9 +92,7 @@ def _raw_match_data(year: int, team_names: Tuple[str, str], idx: int) -> MatchDa
     return cast(
         MatchData,
         {
-            "date": FAKE.date_time_between_dates(
-                **_min_max_datetimes_by_year(year), tzinfo=MELBOURNE_TIMEZONE
-            ),
+            "date": FAKE.date_time_between_dates(**_min_max_datetimes_by_year(year)),
             "season": year,
             "round": "R1",
             "round_number": round(idx / (len(CONTEMPORARY_TEAM_NAMES) / 2)) + 1,
@@ -112,9 +111,7 @@ def _match_data(year: int, team_names: Tuple[str, str], idx: int) -> CleanedMatc
     return cast(
         CleanedMatchData,
         {
-            "date": FAKE.date_time_between_dates(
-                **_min_max_datetimes_by_year(year), tzinfo=MELBOURNE_TIMEZONE
-            ),
+            "date": FAKE.date_time_between_dates(**_min_max_datetimes_by_year(year)),
             "year": year,
             "round_number": round(idx / (len(CONTEMPORARY_TEAM_NAMES) / 2)) + 1,
             "team": team_names[0],
@@ -185,8 +182,10 @@ def fake_cleaned_match_data(
     else:
         data_frame = pd.DataFrame(reduced_data)
 
-    return data_frame.set_index(INDEX_COLS, drop=False).rename_axis(
-        [None] * len(INDEX_COLS)
+    return (
+        data_frame.assign(date=_parse_dates)
+        .set_index(INDEX_COLS, drop=False)
+        .rename_axis([None] * len(INDEX_COLS))
     )
 
 
@@ -304,9 +303,7 @@ def fake_footywire_betting_data(
 
 def _fixture_data(year: int, team_names: Tuple[str, str]) -> CleanFixtureData:
     return {
-        "date": FAKE.date_time_between_dates(
-            **_min_max_datetimes_by_year(year), tzinfo=MELBOURNE_TIMEZONE
-        ),
+        "date": FAKE.date_time_between_dates(**_min_max_datetimes_by_year(year)),
         "season": year,
         "round": 1,
         "home_team": team_names[0],
@@ -330,8 +327,15 @@ def _fixture_by_year(
     return [_fixture_by_round(row_count, year) for year in range(*year_range)]
 
 
-def fake_fixture_data(row_count: int, year_range: Tuple[int, int]) -> pd.DataFrame:
+def fake_fixture_data(
+    row_count: int, year_range: Tuple[int, int], clean=True
+) -> pd.DataFrame:
     data = _fixture_by_year(row_count, year_range)
     reduced_data = list(itertools.chain.from_iterable(data))
 
-    return pd.DataFrame(list(reduced_data))
+    data_frame = pd.DataFrame(list(reduced_data))
+
+    if clean:
+        return data_frame.assign(date=_parse_dates)
+
+    return data_frame

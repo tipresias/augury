@@ -63,7 +63,7 @@ class FitzroyDataImporter(BaseDataImporter):
 
             return pd.DataFrame()
 
-        return pd.DataFrame(data).assign(date=self._parse_dates)
+        return pd.DataFrame(data)
 
     def get_afltables_stats(
         self,
@@ -101,7 +101,7 @@ class FitzroyDataImporter(BaseDataImporter):
         if self.verbose == 1:
             print("All player data received!")
 
-        return pd.DataFrame(list(data)).assign(date=self._parse_dates)
+        return pd.DataFrame(list(data))
 
     def fetch_fixtures(
         self,
@@ -129,12 +129,7 @@ class FitzroyDataImporter(BaseDataImporter):
         if self.verbose == 1:
             print("Fixture data received!")
 
-        return (
-            pd.DataFrame(data)
-            .assign(date=self._parse_dates)
-            .drop("season_game", axis=1)
-            .sort_values("date")
-        )
+        return pd.DataFrame(data).drop("season_game", axis=1).sort_values("date")
 
     def _player_batch_date_ranges(self, start_date: str, end_date: str):
         start_date_dt = datetime.strptime(start_date, "%Y-%m-%d")

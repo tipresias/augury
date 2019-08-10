@@ -6,6 +6,7 @@ import re
 import pandas as pd
 
 from machine_learning.nodes import match
+from machine_learning.nodes.base import _parse_dates
 from machine_learning.data_config import TEAM_TRANSLATIONS
 
 
@@ -121,7 +122,8 @@ def _clean_roster_data(
         return roster_data.assign(player_id=[])
 
     roster_data_frame = (
-        roster_data.rename(columns={"season": "year"})
+        roster_data.assign(date=_parse_dates)
+        .rename(columns={"season": "year"})
         .merge(
             player_data_frame[["player_name", "player_id"]],
             on=["player_name"],
@@ -188,6 +190,7 @@ def clean_player_data(
             home_team=_translate_team_column("home_team"),
             away_team=_translate_team_column("away_team"),
             playing_for=_translate_team_column("playing_for"),
+            date=_parse_dates,
         )
         .drop(UNUSED_PLAYER_COLS + ["first_name", "surname", "round_number"], axis=1)
         # Player data match IDs are wrong for recent years.
