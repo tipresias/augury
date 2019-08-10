@@ -77,6 +77,30 @@ class TestCommon(TestCase):
                 len(combined_data.columns),
             )
 
+    def test_filter_by_date(self):
+        raw_betting_data = fake_footywire_betting_data(
+            N_MATCHES_PER_SEASON, YEAR_RANGE, clean=False
+        )
+        filter_start = f"{START_YEAR + 1}-06-01"
+        filter_end = f"{START_YEAR + 1}-06-30"
+
+        filter_func = common.filter_by_date(filter_start, filter_end)
+        filtered_data_frame = filter_func(raw_betting_data)
+
+        self.assertFalse(
+            filtered_data_frame.query("date < @filter_start | date > @filter_end")
+            .any()
+            .any()
+        )
+
+        with self.subTest("with invalid date strings"):
+            with self.assertRaises(ValueError):
+                common.filter_by_date("what", "the what?")
+
+        with self.subTest("without a date column"):
+            with self.assertRaises(AssertionError):
+                filter_func(raw_betting_data.drop("date", axis=1))
+
     def test_convert_match_rows_to_teammatch_rows(self):
         # DataFrame w/ minimum valid columns
         valid_data_frame = fake_cleaned_match_data(
