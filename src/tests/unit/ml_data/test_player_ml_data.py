@@ -15,7 +15,7 @@ get_afltables_stats_df = pd.read_csv(
 ).assign(date=lambda df: pd.to_datetime(df["date"]).dt.tz_localize(MELBOURNE_TIMEZONE))
 match_results_df = pd.read_csv(
     os.path.join(BASE_DIR, "src/tests/fixtures/fitzroy_match_results.csv")
-).assign(date=lambda df: pd.to_datetime(df["date"]).dt.tz_localize(MELBOURNE_TIMEZONE))
+).assign(date=lambda df: pd.to_datetime(df["date"]))
 
 get_afltables_stats_mock = Mock(return_value=get_afltables_stats_df)
 match_results_mock = Mock(return_value=match_results_df)

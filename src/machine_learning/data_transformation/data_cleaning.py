@@ -1,14 +1,13 @@
 """Module for data cleaning functions"""
 
 from typing import Optional, Pattern, Callable, List
-from datetime import datetime
 import re
-from functools import partial
 
 import pandas as pd
 
-from machine_learning.data_config import TEAM_TRANSLATIONS, FOOTYWIRE_VENUE_TRANSLATIONS
-from machine_learning.settings import MELBOURNE_TIMEZONE
+from machine_learning.nodes import match
+from machine_learning.data_config import TEAM_TRANSLATIONS
+
 
 MATCH_COL_TRANSLATIONS = {
     "home_points": "home_score",
@@ -96,138 +95,11 @@ def _translate_team_column(col_name: str) -> Callable[[pd.DataFrame], str]:
     return lambda data_frame: data_frame[col_name].map(_translate_team_name)
 
 
-def _map_footywire_venues(venue: str) -> str:
-    return (
-        FOOTYWIRE_VENUE_TRANSLATIONS[venue]
-        if venue in FOOTYWIRE_VENUE_TRANSLATIONS
-        else venue
-    )
-
-
-def _map_round_type(year: int, round_number: int) -> str:
-
-    TWENTY_ELEVEN_AND_LATER_FINALS = year > 2011 and round_number > 23
-    TWENTY_TEN_FINALS = year == 2010 and round_number > 24
-    TWO_THOUSAND_NINE_AND_EARLIER_FINALS = (
-        year > 1994 and year < 2010 and round_number > 22
-    )
-
-    if year <= 1994:
-        raise ValueError(
-            f"Tried to get fixtures for {year}, but fixture data is meant for "
-            "upcoming matches, not historical match data. Try getting fixture data "
-            "from 1995 or later, or fetch match results data for older matches."
-        )
-
-    if (
-        TWENTY_ELEVEN_AND_LATER_FINALS
-        or TWENTY_TEN_FINALS
-        or TWO_THOUSAND_NINE_AND_EARLIER_FINALS
-    ):
-        return "Finals"
-
-    return "Regular"
-
-
-def _round_type_column(data_frame: pd.DataFrame) -> pd.DataFrame:
-    years = data_frame["year"].drop_duplicates()
-
-    assert len(years) == 1, (
-        "Fixture data should only include matches from the next round, but "
-        f"fixture data for seasons {years} were given. "
-        f"The offending series is:\n{data_frame['year']}"
-    )
-
-    return data_frame["round_number"].map(partial(_map_round_type, years.iloc[0]))
-
-
-def clean_fixture_data(fixture_data: Optional[pd.DataFrame]) -> Optional[pd.DataFrame]:
-    if fixture_data is None:
-        return None
-
-    right_now = datetime.now(tz=MELBOURNE_TIMEZONE)  # pylint: disable=W0612
-    next_round = fixture_data.query("date > @right_now")["round"].min()
-
-    return (
-        fixture_data.loc[
-            fixture_data["round"] == next_round,
-            ["date", "venue", "season", "round", "home_team", "away_team"],
-        ]
-        .rename(columns={"round": "round_number", "season": "year"})
-        .assign(
-            venue=lambda df: df["venue"].map(_map_footywire_venues),
-            round_type=_round_type_column,
-            home_team=_translate_team_column("home_team"),
-            away_team=_translate_team_column("away_team"),
-        )
-    )
-
-
-def _append_fixture_to_match_data(
-    match_data: pd.DataFrame, fixture_data: pd.DataFrame
-) -> pd.DataFrame:
-    if fixture_data is None:
-        return match_data
-
-    return (
-        pd.concat([match_data, fixture_data], sort=False)
-        .reset_index(drop=True)
-        .drop_duplicates(
-            subset=["date", "venue", "year", "round_number", "home_team", "away_team"]
-        )
-        .fillna(0)
-    )
-
-
 # ID values are converted to floats automatically, making for awkward strings later.
 # We want them as strings, because sometimes we have to use player names as replacement
 # IDs, and we concatenate multiple ID values to create a unique index.
 def _convert_id_to_string(id_label: str) -> Callable:
     return lambda df: df[id_label].astype(int).astype(str)
-
-
-def _filter_out_dodgy_data(duplicate_subset=None) -> Callable:
-    return lambda df: (
-        df.sort_values("date", ascending=True)
-        # Some early matches (1800s) have fully-duplicated rows.
-        # Also, drawn finals get replayed, which screws up my indexing and a bunch of other
-        # data munging, so getting match_ids for the repeat matches, and filtering
-        # them out of the data frame
-        .drop_duplicates(subset=duplicate_subset, keep="last")
-        # There were some weird round-robin rounds in the early days, and it's easier to
-        # drop them rather than figure out how to split up the rounds.
-        .query(
-            "(year != 1897 | round_number != 15) "
-            "& (year != 1924 | round_number != 19)"
-        )
-    )
-
-
-def clean_match_data(
-    past_match_data: pd.DataFrame, fixture_data: Optional[pd.DataFrame] = None
-) -> pd.DataFrame:
-    if any(past_match_data):
-        match_data = (
-            past_match_data.rename(columns=MATCH_COL_TRANSLATIONS)
-            .astype({"year": int, "round_number": int})
-            .pipe(
-                _filter_out_dodgy_data(
-                    duplicate_subset=["year", "round_number", "home_team", "away_team"]
-                )
-            )
-            .assign(
-                match_id=_convert_id_to_string("match_id"),
-                home_team=_translate_team_column("home_team"),
-                away_team=_translate_team_column("away_team"),
-            )
-            .drop(["round"], axis=1)
-        )
-    else:
-        match_data = pd.DataFrame()
-
-    cleaned_fixture_data = clean_fixture_data(fixture_data)
-
-    return _append_fixture_to_match_data(match_data, cleaned_fixture_data)
 
 
 def _player_id_col(data_frame: pd.DataFrame) -> pd.DataFrame:
@@ -283,6 +155,23 @@ def _append_rosters_to_player_data(
     return pd.concat([player_data, cleaned_roster_data_frame], sort=False).fillna(0)
 
 
+def _filter_out_dodgy_data(duplicate_subset=None) -> Callable:
+    return lambda df: (
+        df.sort_values("date", ascending=True)
+        # Some early matches (1800s) have fully-duplicated rows.
+        # Also, drawn finals get replayed, which screws up my indexing and a bunch of other
+        # data munging, so getting match_ids for the repeat matches, and filtering
+        # them out of the data frame
+        .drop_duplicates(subset=duplicate_subset, keep="last")
+        # There were some weird round-robin rounds in the early days, and it's easier to
+        # drop them rather than figure out how to split up the rounds.
+        .query(
+            "(year != 1897 | round_number != 15) "
+            "& (year != 1924 | round_number != 19)"
+        )
+    )
+
+
 def clean_player_data(
     player_data: pd.DataFrame,
     match_data: pd.DataFrame,
@@ -303,10 +192,10 @@ def clean_player_data(
         .drop(UNUSED_PLAYER_COLS + ["first_name", "surname", "round_number"], axis=1)
         # Player data match IDs are wrong for recent years.
         # The easiest way to add correct ones is to graft on the IDs
-        # from match_results. Also, match_results round_numbers integers rather than
+        # from match_results. Also, match_results round_numbers are integers rather than
         # a mix of ints and strings.
         .merge(
-            match_data.pipe(clean_match_data).loc[
+            match_data.pipe(match.clean_match_data).loc[
                 :, ["date", "venue", "round_number", "match_id"]
             ],
             on=["date", "venue"],

@@ -11,10 +11,7 @@ from mypy_extensions import TypedDict
 from machine_learning.ml_data import JoinedMLData, BaseMLData
 from machine_learning.ml_estimators import BaseMLEstimator
 from machine_learning.data_import import FitzroyDataImporter
-from machine_learning.data_transformation.data_cleaning import (
-    clean_match_data,
-    clean_fixture_data,
-)
+from machine_learning.nodes import match
 from machine_learning.settings import ML_MODELS, BASE_DIR
 
 
@@ -210,7 +207,7 @@ def fetch_fixture_data(
 
     return _api_response(
         data_import.fetch_fixtures(start_date=start_date, end_date=end_date).pipe(
-            clean_fixture_data
+            match.clean_fixture_data
         )
     )
 
@@ -243,7 +240,7 @@ def fetch_match_results_data(
     return _api_response(
         data_import.match_results(
             start_date=start_date, end_date=end_date, fetch_data=fetch_data
-        ).pipe(clean_match_data)
+        ).pipe(match.clean_match_data)
     )
 
 

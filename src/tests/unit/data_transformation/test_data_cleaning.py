@@ -5,7 +5,6 @@ import pandas as pd
 from faker import Faker
 
 from machine_learning.data_transformation.data_cleaning import (
-    clean_match_data,
     clean_player_data,
     clean_joined_data,
 )
@@ -19,20 +18,6 @@ FAKE = Faker()
 
 
 class TestDataCleaning(TestCase):
-    def test_clean_match_data(self):
-        match_data = pd.read_csv(
-            os.path.join(TEST_DATA_DIR, "fitzroy_match_results.csv")
-        )
-
-        clean_data = clean_match_data(match_data)
-
-        self.assertIsInstance(clean_data, pd.DataFrame)
-
-        required_columns = ["home_team", "away_team", "year", "round_number"]
-
-        for col in required_columns:
-            self.assertTrue(col in clean_data.columns.values)
-
     def test_clean_player_data(self):
         match_data = pd.read_csv(
             os.path.join(TEST_DATA_DIR, "fitzroy_match_results.csv")
