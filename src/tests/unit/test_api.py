@@ -58,9 +58,20 @@ class TestApi(TestCase):
         self.assertEqual(prediction_years, [YEAR_RANGE[0]])
 
     def test_fetch_fixture_data(self):
+        PROCESSED_FIXTURE_FIELDS = [
+            "date",
+            "home_team",
+            "year",
+            "round_number",
+            "away_team",
+            "round_type",
+            "venue",
+            "match_id",
+        ]
+
         data_importer = FitzroyDataImporter()
         data_importer.fetch_fixtures = Mock(
-            return_value=fake_fixture_data(N_MATCHES, YEAR_RANGE)
+            return_value=fake_fixture_data(N_MATCHES, YEAR_RANGE, clean=False)
         )
 
         response = api.fetch_fixture_data(
@@ -73,20 +84,7 @@ class TestApi(TestCase):
 
         first_match = matches[0]
 
-        self.assertEqual(
-            set(first_match.keys()),
-            set(
-                [
-                    "date",
-                    "home_team",
-                    "year",
-                    "round_number",
-                    "away_team",
-                    "round_type",
-                    "venue",
-                ]
-            ),
-        )
+        self.assertEqual(set(first_match.keys()), set(PROCESSED_FIXTURE_FIELDS))
 
         fixture_years = list({match["year"] for match in matches})
         self.assertEqual(fixture_years, [YEAR_RANGE[0]])

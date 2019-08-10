@@ -6,9 +6,6 @@ from urllib.parse import urljoin
 import os
 
 import requests
-import pandas as pd
-
-from machine_learning.settings import MELBOURNE_TIMEZONE
 
 
 LOCAL_AFL_DATA_SERVICE = "http://afl_data:8080"
@@ -72,7 +69,3 @@ class BaseDataImporter:
             return data
 
         return []
-
-    @staticmethod
-    def _parse_dates(data_frame: pd.DataFrame) -> pd.Series:
-        return pd.to_datetime(data_frame["date"]).dt.tz_localize(MELBOURNE_TIMEZONE)

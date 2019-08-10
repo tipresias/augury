@@ -34,7 +34,7 @@ class AflDataImporter(BaseDataImporter):
         if self.verbose == 1:
             print("Roster data received!")
 
-        return pd.DataFrame(data).assign(date=self._parse_dates)
+        return pd.DataFrame(data)
 
     def __return_empty_data_frame(self, round_number: int) -> pd.DataFrame:
         if self.verbose == 1:

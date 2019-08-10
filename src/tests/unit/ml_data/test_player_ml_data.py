@@ -4,7 +4,7 @@ import os
 import pandas as pd
 from faker import Faker
 
-from machine_learning.settings import BASE_DIR, MELBOURNE_TIMEZONE
+from machine_learning.settings import BASE_DIR
 from machine_learning.ml_data import PlayerMLData
 
 
@@ -12,10 +12,10 @@ FAKE = Faker()
 
 get_afltables_stats_df = pd.read_csv(
     os.path.join(BASE_DIR, "src/tests/fixtures/fitzroy_get_afltables_stats.csv")
-).assign(date=lambda df: pd.to_datetime(df["date"]).dt.tz_localize(MELBOURNE_TIMEZONE))
+)
 match_results_df = pd.read_csv(
     os.path.join(BASE_DIR, "src/tests/fixtures/fitzroy_match_results.csv")
-).assign(date=lambda df: pd.to_datetime(df["date"]).dt.tz_localize(MELBOURNE_TIMEZONE))
+)
 
 get_afltables_stats_mock = Mock(return_value=get_afltables_stats_df)
 match_results_mock = Mock(return_value=match_results_df)
