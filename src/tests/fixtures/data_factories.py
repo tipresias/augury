@@ -313,8 +313,7 @@ def fake_footywire_betting_data(
 def _fixture_data(year: int, team_names: Tuple[str, str]) -> CleanFixtureData:
     return {
         "date": FAKE.date_time_between_dates(
-            **_min_max_datetimes_by_year(year, force_future=True),
-            tzinfo=MELBOURNE_TIMEZONE,
+            **_min_max_datetimes_by_year(year, force_future=True)
         ),
         "season": year,
         "round": 1,
