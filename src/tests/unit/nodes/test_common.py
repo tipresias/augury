@@ -13,14 +13,12 @@ from tests.fixtures.data_factories import (
 from machine_learning.nodes import common
 from machine_learning.data_config import INDEX_COLS
 
-START_DATE = "2012-01-01"
+START_DATE = "2013-01-01"
+END_DATE = "2014-12-31"
 START_YEAR = int(START_DATE[:4])
-END_DATE = "2013-12-31"
 END_YEAR = int(END_DATE[:4]) + 1
 N_MATCHES_PER_SEASON = 4
-START_YEAR = 2013
-END_YEAR = 2015
-YEAR_RANGE = (2013, 2015)
+YEAR_RANGE = (START_YEAR, END_YEAR)
 REQUIRED_OUTPUT_COLS = ["home_team", "year", "round_number"]
 
 # Need to multiply by two, because we add team & oppo_team row per match
@@ -78,6 +76,30 @@ class TestCommon(TestCase):
                 len(raw_betting_data.columns) + len(match_data.columns),
                 len(combined_data.columns),
             )
+
+    def test_filter_by_date(self):
+        raw_betting_data = fake_footywire_betting_data(
+            N_MATCHES_PER_SEASON, YEAR_RANGE, clean=False
+        )
+        filter_start = f"{START_YEAR + 1}-06-01"
+        filter_end = f"{START_YEAR + 1}-06-30"
+
+        filter_func = common.filter_by_date(filter_start, filter_end)
+        filtered_data_frame = filter_func(raw_betting_data)
+
+        self.assertFalse(
+            filtered_data_frame.query("date < @filter_start | date > @filter_end")
+            .any()
+            .any()
+        )
+
+        with self.subTest("with invalid date strings"):
+            with self.assertRaises(ValueError):
+                common.filter_by_date("what", "the what?")
+
+        with self.subTest("without a date column"):
+            with self.assertRaises(AssertionError):
+                filter_func(raw_betting_data.drop("date", axis=1))
 
     def test_convert_match_rows_to_teammatch_rows(self):
         # DataFrame w/ minimum valid columns

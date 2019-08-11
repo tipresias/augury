@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Iterable
 from warnings import warn
 import os
+from datetime import date
 
 from kedro.cli.utils import KedroCliError
 from kedro.config import ConfigLoader, MissingConfigException
@@ -96,7 +97,9 @@ def create_catalog(config: ConfigLoader, **_kwargs) -> DataCatalog:
     return catalog
 
 
-def run_betting_pipeline(runner: str = None) -> pd.DataFrame:
+def run_betting_pipeline(
+    start_date: str, end_date: str, runner: str = None
+) -> pd.DataFrame:
     # Load Catalog
     conf = get_config(project_path=BASE_DIR, env=os.getenv("PYTHON_ENV"))
     catalog = create_catalog(config=conf)
@@ -106,10 +109,12 @@ def run_betting_pipeline(runner: str = None) -> pd.DataFrame:
     runner_func = load_obj(runner, "kedro.runner") if runner else SequentialRunner
 
     # Run the runner
-    return runner_func().run(betting_pipeline(), catalog)
+    return runner_func().run(betting_pipeline(start_date, end_date), catalog)
 
 
-def run_match_pipeline(runner: str = None) -> pd.DataFrame:
+def run_match_pipeline(
+    start_date: str, end_date: str, runner: str = None
+) -> pd.DataFrame:
     # Load Catalog
     conf = get_config(project_path=str(Path.cwd()), env=os.getenv("PYTHON_ENV"))
     catalog = create_catalog(config=conf)
@@ -119,7 +124,7 @@ def run_match_pipeline(runner: str = None) -> pd.DataFrame:
     runner_func = load_obj(runner, "kedro.runner") if runner else SequentialRunner
 
     # Run the runner
-    return runner_func().run(match_pipeline(), catalog)
+    return runner_func().run(match_pipeline(start_date, end_date), catalog)
 
 
 def run_fake_estimator_pipeline(runner: str = None) -> pd.DataFrame:
@@ -159,7 +164,7 @@ def main(tags: Iterable[str] = None, env: str = None, runner: str = None):
     catalog = create_catalog(config=conf)
 
     # Load the pipeline
-    pipeline = betting_pipeline()
+    pipeline = betting_pipeline("2010-01-01", str(date.today()))
     pipeline = pipeline.only_nodes_with_tags(*tags) if tags else pipeline
     if not pipeline.nodes:
         if tags:

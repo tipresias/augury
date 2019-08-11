@@ -1,5 +1,8 @@
 from unittest import TestCase
 from unittest.mock import Mock, patch
+from datetime import date
+
+from freezegun import freeze_time
 
 from tests.fixtures.data_factories import fake_fixture_data, fake_raw_match_results_data
 from tests.fixtures.fake_estimator import FakeEstimatorData
@@ -8,7 +11,8 @@ from machine_learning import api
 from machine_learning import settings
 
 
-YEAR_RANGE = (2019, 2020)
+THIS_YEAR = date.today().year
+YEAR_RANGE = (THIS_YEAR, THIS_YEAR + 1)
 PREDICTION_ROUND = 1
 N_MATCHES = 5
 FAKE_ML_MODELS = [
@@ -16,6 +20,7 @@ FAKE_ML_MODELS = [
 ]
 
 
+@freeze_time(f"{THIS_YEAR}-06-15")
 class TestApi(TestCase):
     @patch("machine_learning.api.ML_MODELS", FAKE_ML_MODELS)
     def test_make_predictions(self):

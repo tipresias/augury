@@ -2,6 +2,7 @@
 
 from typing import Sequence, List, Dict, Any, cast, Callable, Optional
 from functools import reduce, partial
+import re
 
 import pandas as pd
 import numpy as np
@@ -9,6 +10,9 @@ import numpy as np
 
 from machine_learning.data_config import INDEX_COLS
 from .base import _validate_required_columns
+
+
+DATE_STRING_REGEX = re.compile(r"\d{4}\-\d{2}\-\d{2}")
 
 
 def convert_to_data_frame(
@@ -74,6 +78,42 @@ def combine_data(*data_frames: Sequence[pd.DataFrame], axis=0) -> pd.DataFrame:
         return pd.concat(data_frames, axis=axis, sort=False).fillna(0)
 
     raise ValueError(f"Expected axis to be 0 or 1, but recieved {axis}")
+
+
+def _filter_by_date(
+    start_date: str,  # pylint: disable=unused-argument
+    end_date: str,  # pylint: disable=unused-argument
+    data_frame: pd.DataFrame,
+) -> pd.DataFrame:
+    assert "date" in data_frame.columns, (
+        "Expected data frame to have a date column, but columns received were "
+        f"{data_frame.columns}"
+    )
+
+    return data_frame.query("date >= @start_date & date <= @end_date")
+
+
+def filter_by_date(
+    start_date: str, end_date: str
+) -> Callable[[pd.DataFrame], pd.DataFrame]:
+    """
+    Returns function that filters data frames by the given start and end_dates.
+
+    Args:
+        start_date (str, YYYY-MM-DD): Earliest date (inclusive) for match data.
+        end_date (str, YYYY-MM-DD): Latest date (inclusive) for match data.
+
+    Returns:
+        Callable function that filters data frames by the given dates.
+    """
+
+    if not DATE_STRING_REGEX.match(start_date) or not DATE_STRING_REGEX.match(end_date):
+        raise ValueError(
+            f"Expected date string parameters start_date ({start_date}) and "
+            f"end_date ({end_date}) to be of the form YYYY-MM-DD."
+        )
+
+    return partial(_filter_by_date, start_date, end_date)
 
 
 def _replace_col_names(team_type: str, oppo_team_type: str) -> Callable[[str], str]:
