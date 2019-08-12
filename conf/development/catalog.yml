@@ -9,3 +9,9 @@ match_data:
   filepath: data/01_raw/match-data_1897-01-01_2018-12-31.json
   save_args:
     indent: 2
+
+player_data:
+  type: JSONLocalDataSet
+  filepath: data/01_raw/player-data_1965-01-01_2018-12-31.json
+  save_args:
+    indent: 2
