@@ -6,7 +6,10 @@ from datetime import date, timedelta
 from betamax import Betamax
 from requests import Session
 
-from machine_learning.data_import.player_data import fetch_player_data
+from machine_learning.data_import.player_data import (
+    fetch_player_data,
+    fetch_roster_data,
+)
 from machine_learning.settings import CASSETTE_LIBRARY_DIR
 
 SEPT = 9
@@ -17,6 +20,19 @@ AFL_DATA_SERVICE = os.getenv("AFL_DATA_SERVICE", default="")
 GCR_TOKEN = os.getenv("GCR_TOKEN", default="")
 ENV_VARS = os.environ.copy()
 DATA_IMPORT_PATH = "machine_learning.data_import"
+ARBITRARY_PLAYED_ROUND_NUMBER = 5
+ROSTER_COLS = set(
+    [
+        "player_name",
+        "playing_for",
+        "home_team",
+        "away_team",
+        "date",
+        "match_id",
+        "season",
+    ]
+)
+
 
 with Betamax.configure() as config:
     config.cassette_library_dir = CASSETTE_LIBRARY_DIR
@@ -67,7 +83,7 @@ class TestPlayerDataProd(TestCase):
         self.start_date = "2013-06-01"
         self.end_date = "2013-06-30"
 
-    def test_fetch_match_data(self):
+    def test_fetch_player_data(self):
         with Betamax(self.session).use_cassette("player_data"):
             with patch(f"{DATA_IMPORT_PATH}.base_data.requests.get", self.session.get):
                 data = fetch_player_data(
@@ -80,3 +96,14 @@ class TestPlayerDataProd(TestCase):
                 dates = {datum["date"] for datum in data}
                 self.assertLessEqual(self.start_date, min(dates))
                 self.assertGreaterEqual(self.end_date, max(dates))
+
+    def test_fetch_roster_data(self):
+        with Betamax(self.session).use_cassette("roster_data"):
+            with patch(f"{DATA_IMPORT_PATH}.base_data.requests.get", self.session.get):
+                data = fetch_roster_data(ARBITRARY_PLAYED_ROUND_NUMBER, verbose=0)
+                self.assertIsInstance(data, list)
+                self.assertIsInstance(data[0], dict)
+                self.assertTrue(any(data))
+
+                data_fields = set(data[0].keys())
+                self.assertEqual(data_fields & ROSTER_COLS, ROSTER_COLS)

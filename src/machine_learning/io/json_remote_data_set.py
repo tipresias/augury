@@ -19,20 +19,27 @@ BEGINNING_OF_YEAR = date(TODAY.year, JAN, FIRST)
 END_OF_YEAR = date(TODAY.year, DEC, THIRTY_FIRST)
 MODULE_SEPARATOR = "."
 
-DATE_RANGE_TYPE = {
+DATE_RANGE_TYPE: Dict[str, Dict[str, str]] = {
     "whole_season": {
         "start_date": str(BEGINNING_OF_YEAR),
         "end_date": str(END_OF_YEAR),
     },
     "past_rounds": {"start_date": str(BEGINNING_OF_YEAR), "end_date": str(TODAY)},
     "future_rounds": {"start_date": str(TODAY), "end_date": str(END_OF_YEAR)},
+    "round_number": {},
 }
 
 
 class JSONRemoteDataSet(AbstractDataSet):
     """kedro data set based on fetching fresh data from the afl_data service"""
 
-    def __init__(self, data_source: Union[Callable, str], date_range_type: str):
+    def __init__(
+        self,
+        data_source: Union[Callable, str],
+        date_range_type: str,
+        load_kwargs={},
+        **_kwargs,
+    ):
         if date_range_type not in DATE_RANGE_TYPE.keys():
             raise ValueError(
                 f"Argument date_range_type must be one of {DATE_RANGE_TYPE.keys()}, "
@@ -40,6 +47,7 @@ class JSONRemoteDataSet(AbstractDataSet):
             )
 
         self._date_range = DATE_RANGE_TYPE[date_range_type]
+        self._data_source_kwargs: Dict[str, Any] = {**self._date_range, **load_kwargs}
 
         if callable(data_source):
             self.data_source = data_source
@@ -52,10 +60,10 @@ class JSONRemoteDataSet(AbstractDataSet):
             self.data_source = getattr(module, function_name)
 
     def _load(self) -> List[Dict[str, Any]]:
-        return self.data_source(**self._date_range)
+        return self.data_source(**self._data_source_kwargs)
 
     def _save(self, data: pd.DataFrame) -> None:
         pass
 
     def _describe(self):
-        return self._date_range
+        return self._data_source_kwargs

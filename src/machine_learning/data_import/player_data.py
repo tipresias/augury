@@ -8,8 +8,6 @@ from functools import partial
 import os
 import json
 
-import pandas as pd
-
 from machine_learning.data_import.base_data import fetch_afl_data
 from machine_learning.settings import RAW_DATA_DIR
 
@@ -130,3 +128,35 @@ def save_player_data(
 
     if verbose == 1:
         print("Player data saved")
+
+
+def fetch_roster_data(
+    round_number: int = None, verbose: int = 1
+) -> List[Dict[str, Any]]:
+    """
+    Get player data from AFL tables
+
+    Args:
+        start_date (string: YYYY-MM-DD): Earliest date for match data returned.
+        end_date (string: YYYY-MM-DD): Latest date for match data returned.
+        verbose (int): Whether to print info statements (1 means yes, 0 means no).
+
+    Returns:
+    list of dicts of player data.
+    """
+
+    if verbose == 1:
+        print(f"Fetching roster data for round {round_number}...")
+
+    data = fetch_afl_data("/rosters", params={"round_number": round_number})
+
+    if verbose == 1:
+        if not any(data):
+            print(
+                "No roster data was received. It's likely that the team roster page "
+                "hasn't been updated for the upcoming round."
+            )
+        else:
+            print("Roster data received!")
+
+    return data

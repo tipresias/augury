@@ -18,9 +18,11 @@ import pandas as pd
 from machine_learning.pipeline import (
     betting_pipeline,
     match_pipeline,
+    player_pipeline,
     fake_estimator_pipeline,
 )
 from machine_learning.settings import BASE_DIR
+from machine_learning.io import JSONRemoteDataSet
 
 
 # Name of root directory containing project configuration.
@@ -69,7 +71,9 @@ def get_config(project_path: str, env: str = None, **_kwargs) -> ConfigLoader:
     return ConfigLoader(conf_paths)
 
 
-def create_catalog(config: ConfigLoader, **_kwargs) -> DataCatalog:
+def create_catalog(
+    config: ConfigLoader, round_number: Optional[int] = None, **kwargs
+) -> DataCatalog:
     """Loads Kedro's ``DataCatalog``.
 
     Args:
@@ -94,6 +98,17 @@ def create_catalog(config: ConfigLoader, **_kwargs) -> DataCatalog:
     logging.config.dictConfig(conf_logging)
     catalog = DataCatalog.from_config(conf_catalog, conf_creds)
     catalog.add_feed_dict({"parameters": conf_params})
+
+    if round_number is not None:
+        catalog.add(
+            "roster_data",
+            JSONRemoteDataSet(
+                data_source="machine_learning.data_import.player_data.fetch_roster_data",
+                date_range_type="round_number",
+                load_kwargs={"round_number": round_number},
+            ),
+        )
+
     return catalog
 
 
