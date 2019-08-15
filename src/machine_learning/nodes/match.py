@@ -3,6 +3,7 @@
 from typing import Callable, List, Tuple
 from functools import partial, reduce
 import math
+from datetime import datetime
 
 import pandas as pd
 import numpy as np
@@ -183,10 +184,16 @@ def clean_fixture_data(fixture_data: pd.DataFrame) -> pd.DataFrame:
         Cleanish pandas.DataFrame
     """
 
+    # TODO: Created a regression bug by removing this time-based filtering,
+    # but it probably should be somewhere else
+    right_now = str(datetime.now())  # pylint: disable=W0612
+    next_round = fixture_data.query("date > @right_now")["round"].min()
+    filter_fixture_by_round = fixture_data["round"] == next_round
+
     if any(fixture_data):
         return (
             fixture_data.rename(columns={"round": "round_number", "season": "year"})
-            .loc[:, SHARED_MATCH_FIXTURE_COLS]
+            .loc[filter_fixture_by_round, SHARED_MATCH_FIXTURE_COLS]
             .assign(
                 venue=lambda df: df["venue"].map(_map_footywire_venues),
                 round_type=_round_type_column,
