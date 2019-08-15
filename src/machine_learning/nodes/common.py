@@ -34,7 +34,11 @@ def convert_to_data_frame(
     return [pd.DataFrame(datum) for datum in data]
 
 
-def _combine_data_vertically(
+def _combine_data_horizontally(*data_frames: Sequence[pd.DataFrame]):
+    return pd.concat(data_frames, axis=1, sort=False).fillna(0)
+
+
+def _append_data_frames(
     acc_data_frame: pd.DataFrame, curr_data_frame: pd.DataFrame
 ) -> pd.DataFrame:
     """
@@ -53,7 +57,17 @@ def _combine_data_vertically(
     return acc_data_frame.append(sliced_current_data_frame, sort=False)
 
 
-def combine_data(*data_frames: Sequence[pd.DataFrame], axis=0) -> pd.DataFrame:
+def _combine_data_vertically(*data_frames: Sequence[pd.DataFrame]):
+    if len(data_frames) == 1:
+        return data_frames[0]
+
+    sorted_data_frames = sorted(
+        cast(Sequence[pd.DataFrame], data_frames), key=lambda df: df["date"].min()
+    )
+    return reduce(_append_data_frames, sorted_data_frames).fillna(0)
+
+
+def combine_data(axis: int) -> pd.DataFrame:
     """
     Concatenate data frames from multiple sources into one data frame
 
@@ -65,17 +79,11 @@ def combine_data(*data_frames: Sequence[pd.DataFrame], axis=0) -> pd.DataFrame:
         Concatenated data frame.
     """
 
-    if len(data_frames) == 1:
-        return data_frames[0]
-
     if axis == 0:
-        sorted_data_frames = sorted(
-            cast(Sequence[pd.DataFrame], data_frames), key=lambda df: df["date"].min()
-        )
-        return reduce(_combine_data_vertically, sorted_data_frames).fillna(0)
+        return _combine_data_vertically
 
     if axis == 1:
-        return pd.concat(data_frames, axis=axis, sort=False).fillna(0)
+        return _combine_data_horizontally
 
     raise ValueError(f"Expected axis to be 0 or 1, but recieved {axis}")
 

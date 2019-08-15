@@ -49,7 +49,7 @@ def betting_pipeline(start_date: str, end_date: str, **_kwargs):
                 ["betting_data_frame", "remote_betting_data_frame"],
             ),
             node(
-                common.combine_data,
+                common.combine_data(axis=0),
                 ["betting_data_frame", "remote_betting_data_frame"],
                 "combined_betting_data",
             ),
@@ -98,7 +98,7 @@ def match_pipeline(start_date: str, end_date: str, **_kwargs):
                 ["match_data_frame", "remote_match_data_frame"],
             ),
             node(
-                common.combine_data,
+                common.combine_data(axis=0),
                 ["match_data_frame", "remote_match_data_frame"],
                 "combined_past_match_data",
             ),
@@ -136,7 +136,7 @@ def match_pipeline(start_date: str, end_date: str, **_kwargs):
             past_match_pipeline,
             upcoming_match_pipeline,
             node(
-                common.combine_data,
+                common.combine_data(axis=0),
                 ["clean_past_match_data", "clean_fixture_data"],
                 "combined_match_data",
             ),
@@ -229,7 +229,7 @@ def player_pipeline(start_date: str, end_date: str, **_kwargs):
                 ["match_data_frame", "remote_match_data_frame"],
             ),
             node(
-                common.combine_data,
+                common.combine_data(axis=0),
                 ["match_data_frame", "remote_match_data_frame"],
                 "combined_past_match_data",
             ),
@@ -249,7 +249,7 @@ def player_pipeline(start_date: str, end_date: str, **_kwargs):
                 ["player_data_frame", "remote_player_data_frame"],
             ),
             node(
-                common.combine_data,
+                common.combine_data(axis=0),
                 ["player_data_frame", "remote_player_data_frame"],
                 "combined_past_player_data",
             ),
