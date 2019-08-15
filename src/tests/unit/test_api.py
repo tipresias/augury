@@ -80,12 +80,18 @@ class TestApi(TestCase):
         )
 
         response = api.fetch_fixture_data(
-            "2019-01-01", "2019-12-31", data_import=data_importer, verbose=0
+            f"{THIS_YEAR}-01-01",
+            f"{THIS_YEAR}-12-31",
+            data_import=data_importer,
+            verbose=0,
         )
 
         matches = response["data"]
 
-        self.assertEqual(len(matches), N_MATCHES)
+        older_matches = [
+            match for match in matches if match["date"] < str(date.today())
+        ]
+        self.assertFalse(any(older_matches))
 
         first_match = matches[0]
 
