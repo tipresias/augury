@@ -1,6 +1,6 @@
 """Pipeline nodes for transforming match data"""
 
-from typing import Callable, List, Tuple
+from typing import List, Tuple
 from functools import partial, reduce
 import math
 from datetime import datetime

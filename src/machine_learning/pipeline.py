@@ -218,6 +218,30 @@ def match_pipeline(start_date: str, end_date: str, **_kwargs):
     )
 
 
+def player_pipeline(start_date: str, end_date: str, **_kwargs):
+    """Kedro pipeline for loading and transforming player data"""
+
+    past_player_pipeline = Pipeline(
+        [
+            node(
+                common.convert_to_data_frame,
+                ["player_data", "remote_player_data"],
+                ["player_data_frame", "remote_player_data_frame"],
+            ),
+            node(
+                common.combine_data,
+                ["player_data_frame", "remote_player_data_frame"],
+                "combined_past_player_data",
+            ),
+            node(
+                common.filter_by_date(start_date, end_date),
+                "combined_past_player_data",
+                "filtered_past_player_data",
+            ),
+        ]
+    )
+
+
 def fake_estimator_pipeline():
     """Kedro pipeline for loading and transforming match data for test estimator"""
 
