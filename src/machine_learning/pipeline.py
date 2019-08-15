@@ -266,6 +266,30 @@ def player_pipeline(start_date: str, end_date: str, **_kwargs):
         ]
     )
 
+    roster_pipeline = Pipeline(
+        [
+            node(common.convert_to_data_frame, "roster_data", "roster_data_frame"),
+            node(
+                player.clean_roster_data,
+                ["roster_data_frame", "clean_player_data"],
+                "clean_roster_data",
+            ),
+        ]
+    )
+
+    return Pipeline(
+        [
+            past_match_pipeline,
+            past_player_pipeline,
+            roster_pipeline,
+            node(
+                common.combine_data(axis=0),
+                ["clean_player_data", "clean_roster_data"],
+                "combined_player_data",
+            ),
+        ]
+    )
+
 
 def fake_estimator_pipeline():
     """Kedro pipeline for loading and transforming match data for test estimator"""

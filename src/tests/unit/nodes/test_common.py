@@ -55,7 +55,8 @@ class TestCommon(TestCase):
             N_MATCHES_PER_SEASON, (min_year_range - 2, min_year_range), clean=False
         ).append(raw_betting_data.query("season == @min_year_range"))
 
-        combined_data = common.combine_data(raw_betting_data, older_data, axis=0)
+        combine_data_func = common.combine_data(axis=0)
+        combined_data = combine_data_func(raw_betting_data, older_data)
 
         total_year_range = range(min_year_range - 2, max(YEAR_RANGE))
         self.assertEqual({*total_year_range}, {*combined_data["season"]})
@@ -67,7 +68,8 @@ class TestCommon(TestCase):
         with self.subTest(axis=1):
             match_data = fake_raw_match_results_data(N_MATCHES_PER_SEASON, YEAR_RANGE)
 
-            combined_data = common.combine_data(raw_betting_data, match_data, axis=1)
+            combine_data_func = common.combine_data(axis=1)
+            combined_data = combine_data_func(raw_betting_data, match_data)
 
             self.assertEqual(
                 N_MATCHES_PER_SEASON * len(range(*YEAR_RANGE)), len(combined_data)

@@ -123,3 +123,34 @@ def clean_player_data(
     )
 
     return cleaned_player_data
+
+
+def clean_roster_data(
+    roster_data: pd.DataFrame, clean_player_data_frame: pd.DataFrame
+) -> pd.DataFrame:
+    if not roster_data.any().any():
+        return roster_data.assign(player_id=[])
+
+    roster_data_frame = (
+        roster_data.assign(date=_parse_dates)
+        .rename(columns={"season": "year"})
+        .merge(
+            clean_player_data_frame[["player_name", "player_id"]],
+            on=["player_name"],
+            how="left",
+        )
+        .sort_values("player_id", ascending=False)
+        # There are some duplicate player names over the years, so we drop the oldest,
+        # hoping that the contemporary player matches the one with the most-recent
+        # entry into the AFL. If two players with the same name are playing in the
+        # league at the same time, that will likely result in errors
+        .drop_duplicates(subset=["player_name"], keep="first")
+    )
+
+    # If a player is new to the league, he won't have a player_id per AFL Tables data,
+    # so we make one up just using his name
+    roster_data_frame["player_id"].fillna(
+        roster_data_frame["player_name"], inplace=True
+    )
+
+    return roster_data_frame.assign(id=_player_id_col).set_index("id")
