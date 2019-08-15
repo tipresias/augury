@@ -10,6 +10,7 @@ from machine_learning.settings import RAW_DATA_DIR
 
 FIRST_YEAR_OF_MATCH_DATA = 1897
 END_OF_YEAR = f"{date.today().year}-12-31"
+END_OF_LAST_YEAR = f"{date.today().year - 1}-12-31"
 
 
 def fetch_match_data(
@@ -44,7 +45,7 @@ def fetch_match_data(
 
 def save_match_data(
     start_date: str = f"{FIRST_YEAR_OF_MATCH_DATA}-01-01",
-    end_date: str = END_OF_YEAR,
+    end_date: str = END_OF_LAST_YEAR,
     verbose: int = 1,
 ) -> None:
     """Save match data as a *.json file with name based on date range of data"""
