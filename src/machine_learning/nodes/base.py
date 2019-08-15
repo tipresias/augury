@@ -30,3 +30,27 @@ def _validate_required_columns(
         "but the provided columns are:\n"
         f"{data_frame_column_set}"
     )
+
+
+def _filter_out_dodgy_data(duplicate_subset=None) -> Callable:
+    return lambda df: (
+        df.sort_values("date", ascending=True)
+        # Some early matches (1800s) have fully-duplicated rows.
+        # Also, drawn finals get replayed, which screws up my indexing and a bunch of other
+        # data munging, so getting match_ids for the repeat matches, and filtering
+        # them out of the data frame
+        .drop_duplicates(subset=duplicate_subset, keep="last")
+        # There were some weird round-robin rounds in the early days, and it's easier to
+        # drop them rather than figure out how to split up the rounds.
+        .query(
+            "(year != 1897 | round_number != 15) "
+            "& (year != 1924 | round_number != 19)"
+        )
+    )
+
+
+# ID values are converted to floats automatically, making for awkward strings later.
+# We want them as strings, because sometimes we have to use player names as replacement
+# IDs, and we concatenate multiple ID values to create a unique index.
+def _convert_id_to_string(id_label: str) -> Callable:
+    return lambda df: df[id_label].astype(int).astype(str)

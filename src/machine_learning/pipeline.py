@@ -8,7 +8,7 @@ from machine_learning.data_processors.feature_calculation import (
     calculate_rolling_mean_by_dimension,
     calculate_division,
 )
-from .nodes import betting, common, match
+from .nodes import betting, common, match, player
 
 MATCH_OPPO_COLS = [
     "team",
@@ -221,6 +221,26 @@ def match_pipeline(start_date: str, end_date: str, **_kwargs):
 def player_pipeline(start_date: str, end_date: str, **_kwargs):
     """Kedro pipeline for loading and transforming player data"""
 
+    past_match_pipeline = Pipeline(
+        [
+            node(
+                common.convert_to_data_frame,
+                ["match_data", "remote_match_data"],
+                ["match_data_frame", "remote_match_data_frame"],
+            ),
+            node(
+                common.combine_data,
+                ["match_data_frame", "remote_match_data_frame"],
+                "combined_past_match_data",
+            ),
+            node(
+                common.filter_by_date(start_date, end_date),
+                "combined_past_match_data",
+                "filtered_past_match_data",
+            ),
+        ]
+    )
+
     past_player_pipeline = Pipeline(
         [
             node(
@@ -237,6 +257,11 @@ def player_pipeline(start_date: str, end_date: str, **_kwargs):
                 common.filter_by_date(start_date, end_date),
                 "combined_past_player_data",
                 "filtered_past_player_data",
+            ),
+            node(
+                player.clean_player_data,
+                ["filtered_past_player_data", "filtered_past_match_data"],
+                "clean_player_data",
             ),
         ]
     )
