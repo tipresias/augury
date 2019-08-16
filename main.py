@@ -61,7 +61,9 @@ def predictions(request):
 
     ml_models_param = request.args.get("ml_models", None)
     ml_models_param = (
-        ml_models_param.split(",") if ml_models_param is not None else None
+        ml_models_param.split(",")
+        if ml_models_param is not None and ml_models_param != ""
+        else None
     )
 
     return json.dumps(
