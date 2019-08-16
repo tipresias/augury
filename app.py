@@ -46,7 +46,9 @@ def predictions():
 
     ml_models_param = request.query.ml_models
     ml_models_param = (
-        ml_models_param.split(",") if ml_models_param is not None else None
+        ml_models_param.split(",")
+        if ml_models_param is not None and ml_models_param != ""
+        else None
     )
 
     return api.make_predictions(
