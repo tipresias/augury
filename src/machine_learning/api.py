@@ -114,7 +114,7 @@ def _make_model_predictions(
 
     data_row_slice = (slice(None), year, slice(round_number, round_number))
 
-    return (
+    model_predictions = (
         data.data.loc[data_row_slice, :]
         .assign(predicted_margin=y_pred, ml_model=ml_model["name"])
         .set_index("ml_model", append=True, drop=False)
@@ -131,6 +131,13 @@ def _make_model_predictions(
             ],
         ]
     )
+
+    assert model_predictions.any().any(), (
+        "Model predictions data frame is empty, possibly due to a bad row slice:\n"
+        f"{data_row_slice}"
+    )
+
+    return model_predictions
 
 
 def _make_predictions_by_year(
