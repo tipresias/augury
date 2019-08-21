@@ -88,7 +88,7 @@ def create_catalog(config: ConfigLoader, **_kwargs) -> DataCatalog:
         conf_creds = config.get("credentials*", "credentials*/**")
     except MissingConfigException:
         warn("Your Kedro project is missing a credentials file!")
-        conf_creds = None
+        conf_creds = {}
 
     conf_params = config.get("parameters*", "parameters*/**")
     logging.config.dictConfig(conf_logging)
