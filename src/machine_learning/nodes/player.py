@@ -1,10 +1,15 @@
 """Pipeline nodes for transforming player data"""
 
-from typing import Callable
+from typing import Callable, List, Dict, Union, Tuple
+from functools import partial
 
 import pandas as pd
 
-from machine_learning.data_config import TEAM_TRANSLATIONS, AVG_SEASON_LENGTH
+from machine_learning.data_config import (
+    TEAM_TRANSLATIONS,
+    AVG_SEASON_LENGTH,
+    INDEX_COLS,
+)
 from machine_learning.nodes import match
 from .base import (
     _parse_dates,
@@ -45,6 +50,31 @@ UNUSED_PLAYER_COLS = [
     "umpire_2",
     "umpire_3",
     "umpire_4",
+]
+
+PLAYER_STATS_COLS = [
+    "rolling_prev_match_kicks",
+    "rolling_prev_match_marks",
+    "rolling_prev_match_handballs",
+    "rolling_prev_match_goals",
+    "rolling_prev_match_behinds",
+    "rolling_prev_match_hit_outs",
+    "rolling_prev_match_tackles",
+    "rolling_prev_match_rebounds",
+    "rolling_prev_match_inside_50s",
+    "rolling_prev_match_clearances",
+    "rolling_prev_match_clangers",
+    "rolling_prev_match_frees_for",
+    "rolling_prev_match_frees_against",
+    "rolling_prev_match_contested_possessions",
+    "rolling_prev_match_uncontested_possessions",
+    "rolling_prev_match_contested_marks",
+    "rolling_prev_match_marks_inside_50",
+    "rolling_prev_match_one_percenters",
+    "rolling_prev_match_bounces",
+    "rolling_prev_match_goal_assists",
+    "rolling_prev_match_time_on_ground",
+    "last_year_brownlow_votes",
 ]
 
 
@@ -251,4 +281,81 @@ def add_cum_matches_played(data_frame: pd.DataFrame):
 
     return data_frame.assign(
         cum_matches_played=data_frame.groupby("player_id").cumcount()
+    )
+
+
+def _aggregations(
+    match_stats_cols: List[str], aggregations: List[str] = []
+) -> Dict[str, Union[str, List[str]]]:
+    player_aggs = {col: aggregations for col in PLAYER_STATS_COLS}
+    # Since match stats are the same across player rows, taking the mean
+    # is the easiest way to aggregate them
+    match_aggs = {col: "mean" for col in match_stats_cols}
+
+    return {**player_aggs, **match_aggs}
+
+
+def _agg_column_name(match_stats_cols: List[str], column_pair: Tuple[str, str]) -> str:
+    column_label, _ = column_pair
+    return column_label if column_label in match_stats_cols else "_".join(column_pair)
+
+
+def _aggregate_player_stats_by_team_match_node(
+    player_data_frame: pd.DataFrame, aggregations: List[str] = []
+) -> pd.DataFrame:
+    REQUIRED_COLS = (
+        ["oppo_team", "player_id", "player_name", "date"]
+        + PLAYER_STATS_COLS
+        + INDEX_COLS
+    )
+
+    _validate_required_columns(REQUIRED_COLS, player_data_frame.columns)
+
+    match_stats_cols = [
+        col
+        for col in player_data_frame.select_dtypes("number")
+        # Excluding player stats columns & index columns, which are included in the
+        # groupby index and readded to the dataframe later
+        if col not in PLAYER_STATS_COLS + INDEX_COLS
+    ]
+
+    agg_data_frame = (
+        player_data_frame.drop(["player_id", "player_name"], axis=1)
+        .sort_values(INDEX_COLS)
+        # Adding some non-index columns in the groupby, because it doesn't change
+        # the grouping and makes it easier to keep for the final data frame.
+        .groupby(INDEX_COLS + ["oppo_team", "date"])
+        .aggregate(_aggregations(match_stats_cols, aggregations=aggregations))
+    )
+
+    agg_data_frame.columns = [
+        _agg_column_name(match_stats_cols, column_pair)
+        for column_pair in agg_data_frame.columns.values
+    ]
+
+    # Various finals matches have been draws and replayed,
+    # and sometimes home/away is switched requiring us to drop duplicates
+    # at the end.
+    # This eliminates some matches from Round 15 in 1897, because they
+    # played some sort of round-robin tournament for finals, but I'm
+    # not too worried about the loss of that data.
+    return (
+        agg_data_frame.dropna()
+        .reset_index()
+        .sort_values("date")
+        .drop_duplicates(subset=INDEX_COLS, keep="last")
+        .astype({match_col: int for match_col in match_stats_cols})
+        .set_index(INDEX_COLS, drop=False)
+        .rename_axis([None] * len(INDEX_COLS))
+        .sort_index()
+    )
+
+
+def aggregate_player_stats_by_team_match(
+    aggregations: List[str]
+) -> Callable[[pd.DataFrame], pd.DataFrame]:
+    """Perform aggregations to turn player-match data into team-match data."""
+
+    return partial(
+        _aggregate_player_stats_by_team_match_node, aggregations=aggregations
     )

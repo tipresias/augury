@@ -38,6 +38,17 @@ MATCH_OPPO_COLS = [
     "date",
 ]
 
+PLAYER_MATCH_STATS_COLS = [
+    "at_home",
+    "score",
+    "oppo_score",
+    "team",
+    "oppo_team",
+    "year",
+    "round_number",
+    "date",
+]
+
 
 def betting_pipeline(start_date: str, end_date: str, **_kwargs):
     """Kedro pipeline for loading and transforming betting data"""
@@ -328,6 +339,18 @@ def player_pipeline(start_date: str, end_date: str, **_kwargs):
                 ),
                 "player_data_d",
                 "player_data_e",
+            ),
+            node(
+                player.aggregate_player_stats_by_team_match(
+                    ["sum", "max", "min", "skew", "std"]
+                ),
+                "player_data_e",
+                "aggregated_player_data",
+            ),
+            node(
+                common.add_oppo_features(match_cols=PLAYER_MATCH_STATS_COLS),
+                "aggregated_player_data",
+                "oppo_player_data",
             ),
         ]
     )

@@ -8,6 +8,7 @@ import numpy as np
 from tests.fixtures.data_factories import fake_cleaned_player_data
 from machine_learning.nodes import player
 from machine_learning.settings import BASE_DIR
+from machine_learning.data_config import INDEX_COLS
 from .node_test_mixins import ColumnAssertionMixin
 
 
@@ -16,9 +17,8 @@ YEAR_RANGE = (2015, 2016)
 TEST_DATA_DIR = os.path.join(BASE_DIR, "src/tests/fixtures")
 N_PLAYERS_PER_TEAM = 10
 # Need to multiply by two, because we add team & oppo_team row per match
-N_TEAMMATCH_ROWS = (
-    N_PLAYERS_PER_TEAM * N_MATCHES_PER_SEASON * len(range(*YEAR_RANGE)) * 2
-)
+N_TEAMMATCH_ROWS = N_MATCHES_PER_SEASON * len(range(*YEAR_RANGE)) * 2
+N_PLAYER_ROWS = N_TEAMMATCH_ROWS * N_PLAYERS_PER_TEAM
 
 FAKE = Faker()
 
@@ -66,8 +66,8 @@ class TestPlayer(TestCase, ColumnAssertionMixin):
 
     def test_add_last_year_brownlow_votes(self):
         valid_data_frame = self.data_frame.assign(
-            player_id=np.random.randint(100, 1000, N_TEAMMATCH_ROWS),
-            brownlow_votes=np.random.randint(0, 20, N_TEAMMATCH_ROWS),
+            player_id=np.random.randint(100, 1000, N_PLAYER_ROWS),
+            brownlow_votes=np.random.randint(0, 20, N_PLAYER_ROWS),
         )
 
         self._make_column_assertions(
@@ -107,7 +107,7 @@ class TestPlayer(TestCase, ColumnAssertionMixin):
 
         valid_data_frame = self.data_frame.assign(
             **{
-                stats_col: np.random.randint(0, 20, N_TEAMMATCH_ROWS)
+                stats_col: np.random.randint(0, 20, N_PLAYER_ROWS)
                 for stats_col in STATS_COLS
             }
         )
@@ -127,7 +127,7 @@ class TestPlayer(TestCase, ColumnAssertionMixin):
 
     def test_add_cum_matches_played(self):
         valid_data_frame = self.data_frame.assign(
-            player_id=np.random.randint(100, 1000, N_TEAMMATCH_ROWS)
+            player_id=np.random.randint(100, 1000, N_PLAYER_ROWS)
         )
 
         self._make_column_assertions(
@@ -136,4 +136,60 @@ class TestPlayer(TestCase, ColumnAssertionMixin):
             req_cols=("player_id",),
             valid_data_frame=valid_data_frame,
             feature_function=player.add_cum_matches_played,
+        )
+
+    def test_aggregate_player_stats_by_team_match(self):
+        stats_col_assignments = {
+            stats_col: np.random.randint(0, 20, N_PLAYER_ROWS)
+            for stats_col in player.PLAYER_STATS_COLS
+        }
+        # Drop 'playing_for', because it gets dropped by PlayerDataStacker,
+        # which comes before PlayerDataAggregator in the pipeline
+        valid_data_frame = self.data_frame.assign(**stats_col_assignments).drop(
+            "playing_for", axis=1
+        )
+
+        aggregation_func = player.aggregate_player_stats_by_team_match(["sum", "std"])
+
+        transformed_df = aggregation_func(valid_data_frame)
+
+        self.assertIsInstance(transformed_df, pd.DataFrame)
+
+        # We drop player_id & player_name, but add new stats cols for each aggregation
+        expected_col_count = (
+            len(valid_data_frame.columns) - 2 + len(player.PLAYER_STATS_COLS)
+        )
+        self.assertEqual(expected_col_count, len(transformed_df.columns))
+
+        # Match data should remain unchanged (requires a little extra manipulation,
+        # because I can't be bothered to make the score data realistic)
+        for idx, value in enumerate(
+            valid_data_frame.groupby(["team", "year", "round_number"])["score"]
+            .mean()
+            .astype(int)
+        ):
+            self.assertEqual(value, transformed_df["score"].iloc[idx])
+
+        for idx, value in enumerate(
+            valid_data_frame.groupby(["team", "year", "round_number"])["oppo_score"]
+            .mean()
+            .astype(int)
+        ):
+            self.assertEqual(value, transformed_df["oppo_score"].iloc[idx])
+
+        # Player data should be aggregated, but same sum
+        self.assertEqual(
+            valid_data_frame["rolling_prev_match_kicks"].sum(),
+            transformed_df["rolling_prev_match_kicks_sum"].sum(),
+        )
+
+        self._assert_required_columns(
+            self,
+            req_cols=(
+                INDEX_COLS
+                + player.PLAYER_STATS_COLS
+                + ["oppo_team", "player_id", "player_name", "date"]
+            ),
+            valid_data_frame=valid_data_frame,
+            feature_function=aggregation_func,
         )
