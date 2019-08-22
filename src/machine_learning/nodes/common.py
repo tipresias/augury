@@ -291,3 +291,26 @@ def add_oppo_features(
         match_cols=match_cols,
         oppo_feature_cols=oppo_feature_cols,
     )
+
+
+def finalize_data(
+    data_frame: pd.DataFrame, index_cols: List[str] = INDEX_COLS
+) -> pd.DataFrame:
+    """
+    Perform final data cleaning after all the data transformations and feature
+    building steps.
+
+    Args:
+        data_frame (pandas.DataFrame): Data frame that has been cleaned & transformed.
+
+    Returns:
+        pandas.DataFrame that's ready to be fed into a machine-learning model.
+    """
+
+    return (
+        data_frame.astype({"year": int})
+        .fillna(0)
+        .set_index(index_cols, drop=False)
+        .rename_axis([None] * len(index_cols))
+        .sort_index()
+    )

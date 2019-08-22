@@ -94,7 +94,7 @@ def betting_pipeline(start_date: str, end_date: str, **_kwargs):
                 ["betting_data_b"],
                 "betting_data_c",
             ),
-            node(betting.finalize_data, ["betting_data_c"], "data"),
+            node(common.finalize_data, ["betting_data_c"], "data"),
         ]
     )
 
@@ -224,8 +224,9 @@ def match_pipeline(start_date: str, end_date: str, **_kwargs):
                     oppo_feature_cols=["cum_percent", "ladder_position"]
                 ),
                 "match_data_o",
-                "data",
+                "match_data_p",
             ),
+            node(common.finalize_data, "match_data_p", "data"),
         ]
     )
 
@@ -352,6 +353,7 @@ def player_pipeline(start_date: str, end_date: str, **_kwargs):
                 "aggregated_player_data",
                 "oppo_player_data",
             ),
+            node(common.finalize_data, "oppo_player_data", "data"),
         ]
     )
 

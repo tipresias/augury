@@ -12,6 +12,7 @@ from tests.fixtures.data_factories import (
 )
 from machine_learning.nodes import common
 from machine_learning.data_config import INDEX_COLS
+from .node_test_mixins import ColumnAssertionMixin
 
 START_DATE = "2013-01-01"
 END_DATE = "2014-12-31"
@@ -25,7 +26,7 @@ REQUIRED_OUTPUT_COLS = ["home_team", "year", "round_number"]
 N_TEAMMATCH_ROWS = N_MATCHES_PER_SEASON * len(range(*YEAR_RANGE)) * 2
 
 
-class TestCommon(TestCase):
+class TestCommon(TestCase, ColumnAssertionMixin):
     def setUp(self):
         self.data_frame = fake_cleaned_match_data(N_MATCHES_PER_SEASON, YEAR_RANGE)
 
@@ -236,10 +237,20 @@ class TestCommon(TestCase):
                     match_cols=match_cols, oppo_feature_cols=oppo_feature_cols
                 )
 
-        for required_col in REQUIRED_COLS:
-            with self.subTest(data_frame=valid_data_frame.drop(required_col, axis=1)):
-                data_frame = valid_data_frame.drop(required_col, axis=1)
-                transform_func = common.add_oppo_features(match_cols=match_cols)
+        self._assert_required_columns(
+            req_cols=REQUIRED_COLS,
+            valid_data_frame=valid_data_frame,
+            feature_function=transform_func,
+        )
 
-                with self.assertRaises(AssertionError):
-                    transform_func(data_frame)
+    def test_finalize_data(self):
+        data_frame = (
+            fake_cleaned_match_data(N_MATCHES_PER_SEASON, YEAR_RANGE)
+            .assign(nans=None)
+            .astype({"year": "str"})
+        )
+
+        finalized_data_frame = common.finalize_data(data_frame)
+
+        self.assertEqual(finalized_data_frame["year"].dtype, int)
+        self.assertFalse(finalized_data_frame["nans"].isna().any())
