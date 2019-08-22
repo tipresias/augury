@@ -4,9 +4,14 @@ from typing import Callable
 
 import pandas as pd
 
-from machine_learning.data_config import TEAM_TRANSLATIONS
+from machine_learning.data_config import TEAM_TRANSLATIONS, AVG_SEASON_LENGTH
 from machine_learning.nodes import match
-from .base import _parse_dates, _filter_out_dodgy_data, _convert_id_to_string
+from .base import (
+    _parse_dates,
+    _filter_out_dodgy_data,
+    _convert_id_to_string,
+    _validate_required_columns,
+)
 
 PLAYER_COL_TRANSLATIONS = {
     "time_on_ground__": "time_on_ground",
@@ -154,3 +159,96 @@ def clean_roster_data(
     )
 
     return roster_data_frame.assign(id=_player_id_col).set_index("id")
+
+
+def add_last_year_brownlow_votes(data_frame: pd.DataFrame):
+    """Add column for a player's total brownlow votes from the previous season"""
+
+    REQUIRED_COLS = {"player_id", "year", "brownlow_votes"}
+    _validate_required_columns(REQUIRED_COLS, data_frame.columns)
+
+    brownlow_last_year = (
+        data_frame[["player_id", "year", "brownlow_votes"]]
+        .groupby(["player_id", "year"], group_keys=True)
+        .sum()
+        # Grouping by player to shift by year
+        .groupby(level=0)
+        .shift()
+        .fillna(0)
+        .rename(columns={"brownlow_votes": "last_year_brownlow_votes"})
+    )
+
+    return (
+        data_frame.drop("brownlow_votes", axis=1)
+        .merge(brownlow_last_year, on=["player_id", "year"], how="left")
+        .set_index(data_frame.index)
+    )
+
+
+def add_rolling_player_stats(data_frame: pd.DataFrame):
+    """Replace players' invidual match stats with rolling averages of those stats"""
+
+    STATS_COLS = [
+        "kicks",
+        "marks",
+        "handballs",
+        "goals",
+        "behinds",
+        "hit_outs",
+        "tackles",
+        "rebounds",
+        "inside_50s",
+        "clearances",
+        "clangers",
+        "frees_for",
+        "frees_against",
+        "contested_possessions",
+        "uncontested_possessions",
+        "contested_marks",
+        "marks_inside_50",
+        "one_percenters",
+        "bounces",
+        "goal_assists",
+        "time_on_ground",
+    ]
+
+    REQUIRED_COLS = STATS_COLS + ["player_id"]
+    _validate_required_columns(REQUIRED_COLS, data_frame.columns)
+
+    player_data_frame = data_frame.sort_values(["player_id", "year", "round_number"])
+    player_groups = (
+        player_data_frame[STATS_COLS + ["player_id"]]
+        .groupby("player_id", group_keys=False)
+        .shift()
+        .assign(player_id=player_data_frame["player_id"])
+        .fillna(0)
+        .groupby("player_id", group_keys=False)
+    )
+
+    rolling_stats = player_groups.rolling(window=AVG_SEASON_LENGTH).mean()
+    expanding_stats = player_groups.expanding(1).mean()
+
+    player_stats = rolling_stats.fillna(expanding_stats).sort_index()
+    rolling_stats_cols = {
+        stats_col: f"rolling_prev_match_{stats_col}" for stats_col in STATS_COLS
+    }
+
+    return (
+        player_data_frame.assign(**player_stats.to_dict("series")).rename(
+            columns=rolling_stats_cols
+        )
+        # Data types get inferred when assigning dictionary columns, which converts
+        # 'player_id' to float
+        .astype({"player_id": str})
+    )
+
+
+def add_cum_matches_played(data_frame: pd.DataFrame):
+    """Add cumulative number of matches each player has played"""
+
+    REQUIRED_COLS = {"player_id"}
+    _validate_required_columns(REQUIRED_COLS, data_frame.columns)
+
+    return data_frame.assign(
+        cum_matches_played=data_frame.groupby("player_id").cumcount()
+    )

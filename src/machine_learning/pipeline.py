@@ -7,6 +7,7 @@ from machine_learning.data_processors.feature_calculation import (
     calculate_rolling_rate,
     calculate_rolling_mean_by_dimension,
     calculate_division,
+    calculate_addition,
 )
 from .nodes import betting, common, match, player
 
@@ -286,6 +287,47 @@ def player_pipeline(start_date: str, end_date: str, **_kwargs):
                 common.combine_data(axis=0),
                 ["clean_player_data", "clean_roster_data"],
                 "combined_player_data",
+            ),
+            node(
+                player.add_last_year_brownlow_votes,
+                "combined_player_data",
+                "player_data_a",
+            ),
+            node(player.add_rolling_player_stats, "player_data_a", "player_data_b"),
+            node(player.add_cum_matches_played, "player_data_b", "player_data_c"),
+            node(
+                feature_calculator(
+                    [
+                        (
+                            calculate_addition,
+                            [
+                                (
+                                    "rolling_prev_match_goals",
+                                    "rolling_prev_match_behinds",
+                                )
+                            ],
+                        )
+                    ]
+                ),
+                "player_data_c",
+                "player_data_d",
+            ),
+            node(
+                feature_calculator(
+                    [
+                        (
+                            calculate_division,
+                            [
+                                (
+                                    "rolling_prev_match_goals",
+                                    "rolling_prev_match_goals_plus_rolling_prev_match_behinds",
+                                )
+                            ],
+                        )
+                    ]
+                ),
+                "player_data_d",
+                "player_data_e",
             ),
         ]
     )
