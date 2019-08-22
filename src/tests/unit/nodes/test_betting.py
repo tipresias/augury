@@ -50,7 +50,6 @@ class TestBetting(TestCase, ColumnAssertionMixin):
         )
 
         self._make_column_assertions(
-            self,
             column_names=["betting_pred_win"],
             req_cols=("win_odds", "oppo_win_odds", "line_odds", "oppo_line_odds"),
             valid_data_frame=valid_data_frame,

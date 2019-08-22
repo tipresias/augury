@@ -71,7 +71,6 @@ class TestPlayer(TestCase, ColumnAssertionMixin):
         )
 
         self._make_column_assertions(
-            self,
             column_names=["last_year_brownlow_votes"],
             req_cols=("player_id", "year", "brownlow_votes"),
             valid_data_frame=valid_data_frame,
@@ -113,7 +112,6 @@ class TestPlayer(TestCase, ColumnAssertionMixin):
         )
 
         self._make_column_assertions(
-            self,
             column_names=[
                 f"rolling_prev_match_{stats_col}"
                 for stats_col in STATS_COLS
@@ -131,7 +129,6 @@ class TestPlayer(TestCase, ColumnAssertionMixin):
         )
 
         self._make_column_assertions(
-            self,
             column_names=["cum_matches_played"],
             req_cols=("player_id",),
             valid_data_frame=valid_data_frame,
@@ -184,7 +181,6 @@ class TestPlayer(TestCase, ColumnAssertionMixin):
         )
 
         self._assert_required_columns(
-            self,
             req_cols=(
                 INDEX_COLS
                 + player.PLAYER_STATS_COLS
