@@ -1,0 +1,116 @@
+{
+  "consumer": {
+    "name": "Consumer"
+  },
+  "provider": {
+    "name": "Provider"
+  },
+  "interactions": [
+    {
+      "description": "a request for betting data",
+      "providerState": "Betting data exists",
+      "request": {
+        "method": "get",
+        "path": "/betting_odds",
+        "query": "start_date=2018-01-01&end_date=2018-12-31"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+        },
+        "body": [
+          {
+            "date": "2018-05-21",
+            "venue": "MCG",
+            "round": "2018 Round 5",
+            "round_number": 5,
+            "season": 2018,
+            "home_team": "Blues",
+            "away_team": "Tigers",
+            "home_score": 64,
+            "away_score": 97,
+            "home_margin": -33,
+            "away_margin": 33,
+            "home_win_odds": 6.75,
+            "away_win_odds": 1.12,
+            "home_win_paid": 0.0,
+            "away_win_paid": 1.12,
+            "home_line_odds": 39.5,
+            "away_line_odds": -39.5,
+            "home_line_paid": 1.91,
+            "away_line_paid": 0.0
+          }
+        ],
+        "matchingRules": {
+          "$.body": {
+            "min": 1
+          },
+          "$.body[*].*": {
+            "match": "type"
+          },
+          "$.body[*].date": {
+            "match": "regex",
+            "regex": "2018-\\d{2}-\\d{2}"
+          },
+          "$.body[*].venue": {
+            "match": "type"
+          },
+          "$.body[*].round": {
+            "match": "regex",
+            "regex": "2018 Round \\d{1,2}"
+          },
+          "$.body[*].round_number": {
+            "match": "type"
+          },
+          "$.body[*].home_team": {
+            "match": "type"
+          },
+          "$.body[*].away_team": {
+            "match": "type"
+          },
+          "$.body[*].home_score": {
+            "match": "type"
+          },
+          "$.body[*].away_score": {
+            "match": "type"
+          },
+          "$.body[*].home_margin": {
+            "match": "type"
+          },
+          "$.body[*].away_margin": {
+            "match": "type"
+          },
+          "$.body[*].home_win_odds": {
+            "match": "type"
+          },
+          "$.body[*].away_win_odds": {
+            "match": "type"
+          },
+          "$.body[*].home_win_paid": {
+            "match": "type"
+          },
+          "$.body[*].away_win_paid": {
+            "match": "type"
+          },
+          "$.body[*].home_line_odds": {
+            "match": "type"
+          },
+          "$.body[*].away_line_odds": {
+            "match": "type"
+          },
+          "$.body[*].home_line_paid": {
+            "match": "type"
+          },
+          "$.body[*].away_line_paid": {
+            "match": "type"
+          }
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "2.0.0"
+    }
+  }
+}

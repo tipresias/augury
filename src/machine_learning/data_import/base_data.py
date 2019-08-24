@@ -8,16 +8,17 @@ import requests
 
 
 LOCAL_AFL_DATA_SERVICE = "http://afl_data:8080"
-AFL_DATA_SERVICE = os.getenv("AFL_DATA_SERVICE", default="")
 
 
 def _handle_response_data(response: requests.Response) -> List[Dict[str, Any]]:
-    data = response.json()
+    response_body = response.json()
 
-    if isinstance(data, dict) and "error" in data.keys():
-        raise RuntimeError(data["error"])
+    if isinstance(response_body, dict) and "error" in response_body.keys():
+        raise RuntimeError(response_body["error"])
 
-    if len(data) == 1:
+    data = response_body.get("data")
+
+    if len(data) == 1 and isinstance(data[0], str):
         # For some reason, when returning match data with fetch_data=False,
         # plumber returns JSON as a big string inside a list, so we have to parse
         # the first element
@@ -62,7 +63,7 @@ def fetch_afl_data(path: str, params: Dict[str, Any] = {}) -> List[Dict[str, Any
     """
 
     if os.getenv("PYTHON_ENV") == "production":
-        service_host = AFL_DATA_SERVICE
+        service_host = os.getenv("AFL_DATA_SERVICE", default="")
         headers = {"Authorization": f'Bearer {os.getenv("GCR_TOKEN")}'}
     else:
         service_host = LOCAL_AFL_DATA_SERVICE
