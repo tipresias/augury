@@ -27,8 +27,8 @@ def _validate_required_columns(
 
     assert column_intersection == required_column_set, (
         f"{required_column_set} are required columns for this transformation, "
-        "but the provided columns are:\n"
-        f"{data_frame_column_set}"
+        "the missing columns are:\n"
+        f"{required_column_set - column_intersection}"
     )
 
 
