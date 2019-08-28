@@ -191,6 +191,58 @@ def clean_roster_data(
     return roster_data_frame.assign(id=_player_id_col).set_index("id")
 
 
+def _sort_columns(data_frame: pd.DataFrame) -> pd.DataFrame:
+    return data_frame[data_frame.columns.sort_values()]
+
+
+def _replace_col_names(team_type: str) -> Callable[[str], str]:
+    oppo_team_type = "away" if team_type == "home" else "home"
+
+    return lambda col_name: (
+        col_name.replace(f"{team_type}_", "").replace(f"{oppo_team_type}_", "oppo_")
+    )
+
+
+def _team_data_frame(data_frame: pd.DataFrame, team_type: str) -> pd.DataFrame:
+    return (
+        data_frame[data_frame["playing_for"] == data_frame[f"{team_type}_team"]]
+        .rename(columns=_replace_col_names(team_type))
+        .assign(at_home=1 if team_type == "home" else 0)
+        .pipe(_sort_columns)
+    )
+
+
+def convert_player_match_rows_to_player_teammatch_rows(
+    data_frame: pd.DataFrame
+) -> pd.DataFrame:
+    """Stack home & away player data, and add 'oppo_' team columns.
+
+    Args:
+        data_frame (pandas.DataFrame): Data frame to be transformed.
+
+    Returns:
+        pandas.DataFrame
+    """
+
+    REQUIRED_COLS = {
+        "playing_for",
+        "home_team",
+        "away_team",
+        "home_score",
+        "away_score",
+        "match_id",
+    }
+
+    _validate_required_columns(REQUIRED_COLS, data_frame.columns)
+
+    team_dfs = [
+        _team_data_frame(data_frame, "home"),
+        _team_data_frame(data_frame, "away"),
+    ]
+
+    return pd.concat(team_dfs, sort=True).drop(["match_id", "playing_for"], axis=1)
+
+
 def add_last_year_brownlow_votes(data_frame: pd.DataFrame):
     """Add column for a player's total brownlow votes from the previous season"""
 
