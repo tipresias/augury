@@ -1,6 +1,6 @@
 from unittest import TestCase
 from collections import Counter
-
+from datetime import datetime
 
 import pandas as pd
 import numpy as np
@@ -12,6 +12,7 @@ from tests.fixtures.data_factories import (
 )
 from machine_learning.nodes import common
 from machine_learning.data_config import INDEX_COLS
+from machine_learning.settings import MELBOURNE_TIMEZONE
 from .node_test_mixins import ColumnAssertionMixin
 
 START_DATE = "2013-01-01"
@@ -82,16 +83,24 @@ class TestCommon(TestCase, ColumnAssertionMixin):
 
     def test_filter_by_date(self):
         raw_betting_data = fake_footywire_betting_data(
-            N_MATCHES_PER_SEASON, YEAR_RANGE, clean=False
+            N_MATCHES_PER_SEASON, YEAR_RANGE, clean=True
         )
         filter_start = f"{START_YEAR + 1}-06-01"
+        filter_start_date = datetime.strptime(  # pylint: disable=unused-variable
+            filter_start, "%Y-%m-%d"
+        ).replace(tzinfo=MELBOURNE_TIMEZONE)
         filter_end = f"{START_YEAR + 1}-06-30"
+        filter_end_date = datetime.strptime(  # pylint: disable=unused-variable
+            filter_end, "%Y-%m-%d"
+        ).replace(tzinfo=MELBOURNE_TIMEZONE)
 
         filter_func = common.filter_by_date(filter_start, filter_end)
         filtered_data_frame = filter_func(raw_betting_data)
 
         self.assertFalse(
-            filtered_data_frame.query("date < @filter_start | date > @filter_end")
+            filtered_data_frame.query(
+                "date < @filter_start_date | date > @filter_end_date"
+            )
             .any()
             .any()
         )

@@ -3,12 +3,14 @@
 from typing import Sequence, List, Dict, Any, cast, Callable, Optional
 from functools import reduce, partial
 import re
+from datetime import datetime
 
 import pandas as pd
 import numpy as np
 
 
 from machine_learning.data_config import INDEX_COLS
+from machine_learning.settings import MELBOURNE_TIMEZONE
 from .base import _validate_required_columns
 
 
@@ -89,16 +91,19 @@ def combine_data(axis: int) -> pd.DataFrame:
 
 
 def _filter_by_date(
-    start_date: str,  # pylint: disable=unused-argument
-    end_date: str,  # pylint: disable=unused-argument
-    data_frame: pd.DataFrame,
+    start_date: str, end_date: str, data_frame: pd.DataFrame
 ) -> pd.DataFrame:
-    assert "date" in data_frame.columns, (
-        "Expected data frame to have a date column, but columns received were "
-        f"{data_frame.columns}"
-    )
+    REQUIRED_COLS = {"date"}
+    _validate_required_columns(REQUIRED_COLS, data_frame.columns)
 
-    return data_frame.query("date >= @start_date & date <= @end_date")
+    start_datetime = datetime.strptime(  # pylint: disable=unused-variable
+        start_date, "%Y-%m-%d"
+    ).replace(tzinfo=MELBOURNE_TIMEZONE)
+    end_datetime = datetime.strptime(  # pylint: disable=unused-variable
+        end_date, "%Y-%m-%d"
+    ).replace(hour=11, minute=59, second=59, tzinfo=MELBOURNE_TIMEZONE)
+
+    return data_frame.query("date >= @start_datetime & date <= @end_datetime")
 
 
 def filter_by_date(

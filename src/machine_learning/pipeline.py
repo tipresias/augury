@@ -65,15 +65,15 @@ def betting_pipeline(start_date: str, end_date: str, **_kwargs):
                 ["betting_data_frame", "remote_betting_data_frame"],
                 "combined_betting_data",
             ),
+            node(betting.clean_data, "combined_betting_data", "clean_betting_data"),
             node(
                 common.filter_by_date(start_date, end_date),
-                "combined_betting_data",
+                "clean_betting_data",
                 "filtered_betting_data",
             ),
-            node(betting.clean_data, "filtered_betting_data", "clean_betting_data"),
             node(
                 common.convert_match_rows_to_teammatch_rows,
-                ["clean_betting_data"],
+                "filtered_betting_data",
                 "stacked_betting_data",
             ),
             node(
@@ -115,13 +115,8 @@ def match_pipeline(start_date: str, end_date: str, **_kwargs):
                 "combined_past_match_data",
             ),
             node(
-                common.filter_by_date(start_date, end_date),
-                "combined_past_match_data",
-                "filtered_past_match_data",
-            ),
-            node(
                 match.clean_match_data,
-                "filtered_past_match_data",
+                "combined_past_match_data",
                 "clean_past_match_data",
             ),
         ]
@@ -130,16 +125,7 @@ def match_pipeline(start_date: str, end_date: str, **_kwargs):
     upcoming_match_pipeline = Pipeline(
         [
             node(common.convert_to_data_frame, "fixture_data", "fixture_data_frame"),
-            node(
-                common.filter_by_date(start_date, end_date),
-                "fixture_data_frame",
-                "filtered_fixture_data_frame",
-            ),
-            node(
-                match.clean_fixture_data,
-                "filtered_fixture_data_frame",
-                "clean_fixture_data",
-            ),
+            node(match.clean_fixture_data, "fixture_data_frame", "clean_fixture_data"),
         ]
     )
 
@@ -152,9 +138,14 @@ def match_pipeline(start_date: str, end_date: str, **_kwargs):
                 ["clean_past_match_data", "clean_fixture_data"],
                 "combined_match_data",
             ),
+            node(
+                common.filter_by_date(start_date, end_date),
+                "combined_match_data",
+                "filtered_past_match_data",
+            ),
             # add_elo_rating depends on DF still being organized per-match
             # with home_team/away_team columns
-            node(match.add_elo_rating, "combined_match_data", "match_data_a"),
+            node(match.add_elo_rating, "filtered_past_match_data", "match_data_a"),
             node(
                 common.convert_match_rows_to_teammatch_rows,
                 "match_data_a",
@@ -246,11 +237,6 @@ def player_pipeline(start_date: str, end_date: str, **_kwargs):
                 ["match_data_frame", "remote_match_data_frame"],
                 "combined_past_match_data",
             ),
-            node(
-                common.filter_by_date(start_date, end_date),
-                "combined_past_match_data",
-                "filtered_past_match_data",
-            ),
         ]
     )
 
@@ -267,13 +253,8 @@ def player_pipeline(start_date: str, end_date: str, **_kwargs):
                 "combined_past_player_data",
             ),
             node(
-                common.filter_by_date(start_date, end_date),
-                "combined_past_player_data",
-                "filtered_past_player_data",
-            ),
-            node(
                 player.clean_player_data,
-                ["filtered_past_player_data", "filtered_past_match_data"],
+                ["combined_past_player_data", "combined_past_match_data"],
                 "clean_player_data",
             ),
         ]
@@ -301,8 +282,18 @@ def player_pipeline(start_date: str, end_date: str, **_kwargs):
                 "combined_player_data",
             ),
             node(
-                player.add_last_year_brownlow_votes,
+                common.filter_by_date(start_date, end_date),
                 "combined_player_data",
+                "filtered_player_data",
+            ),
+            node(
+                player.convert_player_match_rows_to_player_teammatch_rows,
+                "filtered_player_data",
+                "stacked_player_data",
+            ),
+            node(
+                player.add_last_year_brownlow_votes,
+                "stacked_player_data",
                 "player_data_a",
             ),
             node(player.add_rolling_player_stats, "player_data_a", "player_data_b"),
