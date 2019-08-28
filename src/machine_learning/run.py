@@ -99,15 +99,14 @@ def create_catalog(
     catalog = DataCatalog.from_config(conf_catalog, conf_creds)
     catalog.add_feed_dict({"parameters": conf_params})
 
-    if round_number is not None:
-        catalog.add(
-            "roster_data",
-            JSONRemoteDataSet(
-                data_source="machine_learning.data_import.player_data.fetch_roster_data",
-                date_range_type="round_number",
-                load_kwargs={"round_number": round_number},
-            ),
-        )
+    catalog.add(
+        "roster_data",
+        JSONRemoteDataSet(
+            data_source="machine_learning.data_import.player_data.fetch_roster_data",
+            date_range_type="round_number",
+            load_kwargs={"round_number": round_number},
+        ),
+    )
 
     return catalog
 
@@ -143,7 +142,10 @@ def run_match_pipeline(
 
 
 def run_player_pipeline(
-    start_date: str, end_date: str, round_number: int, runner: str = None
+    start_date: str,
+    end_date: str,
+    round_number: Optional[int] = None,
+    runner: str = None,
 ) -> pd.DataFrame:
     # Load Catalog
     conf = get_config(project_path=str(Path.cwd()), env=os.getenv("PYTHON_ENV"))

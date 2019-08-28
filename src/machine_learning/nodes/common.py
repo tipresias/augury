@@ -63,9 +63,12 @@ def _combine_data_vertically(*data_frames: Sequence[pd.DataFrame]):
     if len(data_frames) == 1:
         return data_frames[0]
 
-    sorted_data_frames = sorted(
-        cast(Sequence[pd.DataFrame], data_frames), key=lambda df: df["date"].min()
-    )
+    valid_data_frames = [
+        df for df in cast(Sequence[pd.DataFrame], data_frames) if df.any().any()
+    ]
+
+    sorted_data_frames = sorted(valid_data_frames, key=lambda df: df["date"].min())
+
     return reduce(_append_data_frames, sorted_data_frames).fillna(0)
 
 
