@@ -1,5 +1,6 @@
 from unittest import TestCase
 import os
+from datetime import datetime, timedelta
 
 import pandas as pd
 import numpy as np
@@ -44,6 +45,15 @@ class TestMatch(TestCase, ColumnAssertionMixin):
         fixture_data = pd.read_csv(
             os.path.join(TEST_DATA_DIR, "ft_match_list.csv")
         ).query("season == 2019")
+
+        max_date = pd.to_datetime(fixture_data["date"]).max()
+        # Adding an extra week to the shift to make it somewhat realistic
+        date_shift = datetime.now() - max_date + timedelta(days=7)
+
+        # Doing this to guarantee future fixture matches
+        fixture_data.loc[:, "date"] = (
+            pd.to_datetime(fixture_data["date"]) + date_shift
+        ).astype(str)
 
         clean_data = match.clean_fixture_data(fixture_data)
 
