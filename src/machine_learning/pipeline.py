@@ -1,7 +1,5 @@
 """Pipeline construction."""
 
-from typing import Optional
-
 from kedro.pipeline import Pipeline, node
 
 from machine_learning.data_processors.feature_calculation import (

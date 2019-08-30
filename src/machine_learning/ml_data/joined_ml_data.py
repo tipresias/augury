@@ -16,14 +16,17 @@ from machine_learning.types import YearPair, DataFrameTransformer, CalculatorPai
 from machine_learning.utils import DataTransformerMixin
 from machine_learning.data_config import CATEGORY_COLS, ORIGINAL_COLUMNS
 from machine_learning.data_transformation import data_cleaning
-from machine_learning.ml_data import PlayerMLData
-from machine_learning.run import run_betting_pipeline, run_match_pipeline
+from machine_learning.run import (
+    run_betting_pipeline,
+    run_match_pipeline,
+    run_player_pipeline,
+)
 from . import BaseMLData
 
 DataReaders = TypedDict(
     "DataReaders",
     {
-        "player": BaseMLData,
+        "player": Callable[[str, str], pd.DataFrame],
         "match": Callable[[str, str], pd.DataFrame],
         "betting": Callable[[str, str], pd.DataFrame],
     },
@@ -66,15 +69,13 @@ DATA_TRANSFORMERS: List[DataFrameTransformer] = [
 ]
 
 DATA_READERS: DataReaders = {
-    # Defaulting to start_date as the 1965 season, because earlier seasons don't
-    # have much in the way of player stats, just goals and behinds, which we
-    # already have at the team level.
-    "player": PlayerMLData(start_date="1965-01-01"),
+    "player": run_player_pipeline,
     "match": run_match_pipeline,
     "betting": run_betting_pipeline,
 }
 
 END_OF_YEAR = f"{date.today().year}-12-31"
+EARLIEST_SEASON_WITH_PLAYER_STATS = "1965"
 
 
 class JoinedMLData(BaseMLData, DataTransformerMixin):
@@ -107,13 +108,15 @@ class JoinedMLData(BaseMLData, DataTransformerMixin):
     @property
     def data(self) -> pd.DataFrame:
         if self._data is None:
-            self.data_readers["player"].fetch_data = self.fetch_data
-            # TODO: We don't wan to overwrite player data start date when training,
-            # because the original model was trained on data starting in 1965
-            # Allow for MLData to pass params to data readers to remedy this
-            self.data_readers["player"].start_date = self.start_date
-            self.data_readers["player"].end_date = self.end_date
-            player_data = self.data_readers["player"].data
+            # Defaulting to earliest start_date being the 1965 season,
+            # because earlier seasons don't have much in the way of player stats,
+            # just goals and behinds, which we already have at the team level.
+            player_start_date = max(
+                self.start_date, f"{EARLIEST_SEASON_WITH_PLAYER_STATS}-01-01"
+            )
+            player_data = self.data_readers["player"](
+                player_start_date, self.end_date
+            ).get("data")
 
             match_data = self.data_readers["match"](self.start_date, self.end_date).get(
                 "data"

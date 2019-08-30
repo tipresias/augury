@@ -35,9 +35,10 @@ class TestJoinedMLData(TestCase):
             return_value={"data": base_data.assign(line_odds=20, oppo_line_odds=-20)}
         )
 
-        player_data_reader = Mock()
-        player_data_reader.data = base_data.assign(
-            rolling_kicks=50, oppo_rolling_kicks=75
+        player_data_reader = Mock(
+            return_value={
+                "data": base_data.assign(rolling_kicks=50, oppo_rolling_kicks=75)
+            }
         )
 
         match_data_reader = Mock(
