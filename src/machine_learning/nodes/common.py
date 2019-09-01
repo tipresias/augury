@@ -1,7 +1,7 @@
 """Pipeline nodes for transforming data"""
 
 from typing import Sequence, List, Dict, Any, cast, Callable, Optional
-from functools import reduce, partial
+from functools import reduce, partial, update_wrapper
 import re
 from datetime import datetime
 
@@ -137,7 +137,9 @@ def filter_by_date(
             f"end_date ({end_date}) to be of the form YYYY-MM-DD."
         )
 
-    return partial(_filter_by_date, start_date, end_date)
+    return update_wrapper(
+        partial(_filter_by_date, start_date, end_date), _filter_by_date
+    )
 
 
 def _replace_col_names(team_type: str, oppo_team_type: str) -> Callable[[str], str]:
@@ -302,10 +304,13 @@ def add_oppo_features(
             "columns to skip and which to turn into opposition features."
         )
 
-    return partial(
+    return update_wrapper(
+        partial(
+            _add_oppo_features_node,
+            match_cols=match_cols,
+            oppo_feature_cols=oppo_feature_cols,
+        ),
         _add_oppo_features_node,
-        match_cols=match_cols,
-        oppo_feature_cols=oppo_feature_cols,
     )
 
 
@@ -351,7 +356,10 @@ def _sort_data_frame_columns_node(
 def sort_data_frame_columns(
     category_cols: Optional[List[str]] = None
 ) -> Callable[[pd.DataFrame], pd.DataFrame]:
-    return partial(_sort_data_frame_columns_node, category_cols)
+    return update_wrapper(
+        partial(_sort_data_frame_columns_node, category_cols),
+        _sort_data_frame_columns_node,
+    )
 
 
 # TODO: This can probably be removed in favour of the standard finalize_data

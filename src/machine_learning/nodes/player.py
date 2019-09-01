@@ -1,7 +1,7 @@
 """Pipeline nodes for transforming player data"""
 
 from typing import Callable, List, Dict, Union, Tuple
-from functools import partial
+from functools import partial, update_wrapper
 
 import pandas as pd
 
@@ -408,6 +408,7 @@ def aggregate_player_stats_by_team_match(
 ) -> Callable[[pd.DataFrame], pd.DataFrame]:
     """Perform aggregations to turn player-match data into team-match data."""
 
-    return partial(
-        _aggregate_player_stats_by_team_match_node, aggregations=aggregations
+    return update_wrapper(
+        partial(_aggregate_player_stats_by_team_match_node, aggregations=aggregations),
+        _aggregate_player_stats_by_team_match_node,
     )
