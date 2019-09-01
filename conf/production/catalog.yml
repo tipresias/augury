@@ -7,3 +7,8 @@ match_data:
   type: machine_learning.io.JSONGCStorageDataSet
   filepath: match-data_1897-01-01_2018-12-31.json
   bucket_name: afl_data
+
+player_data:
+  type: machine_learning.io.JSONGCStorageDataSet
+  filepath: player-data_1965-01-01_2018-12-31.json
+  bucket_name: afl_data
