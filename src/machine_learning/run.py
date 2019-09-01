@@ -2,7 +2,7 @@
 
 import logging.config
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Optional
 from warnings import warn
 import os
 from datetime import date
@@ -18,9 +18,11 @@ import pandas as pd
 from machine_learning.pipeline import (
     betting_pipeline,
     match_pipeline,
+    player_pipeline,
     fake_estimator_pipeline,
 )
 from machine_learning.settings import BASE_DIR
+from machine_learning.io import JSONRemoteDataSet
 
 
 # Name of root directory containing project configuration.
@@ -69,7 +71,9 @@ def get_config(project_path: str, env: str = None, **_kwargs) -> ConfigLoader:
     return ConfigLoader(conf_paths)
 
 
-def create_catalog(config: ConfigLoader, **_kwargs) -> DataCatalog:
+def create_catalog(
+    config: ConfigLoader, round_number: Optional[int] = None, **_kwargs
+) -> DataCatalog:
     """Loads Kedro's ``DataCatalog``.
 
     Args:
@@ -94,6 +98,16 @@ def create_catalog(config: ConfigLoader, **_kwargs) -> DataCatalog:
     logging.config.dictConfig(conf_logging)
     catalog = DataCatalog.from_config(conf_catalog, conf_creds)
     catalog.add_feed_dict({"parameters": conf_params})
+
+    catalog.add(
+        "roster_data",
+        JSONRemoteDataSet(
+            data_source="machine_learning.data_import.player_data.fetch_roster_data",
+            date_range_type="round_number",
+            load_kwargs={"round_number": round_number},
+        ),
+    )
+
     return catalog
 
 
@@ -125,6 +139,24 @@ def run_match_pipeline(
 
     # Run the runner
     return runner_func().run(match_pipeline(start_date, end_date), catalog)
+
+
+def run_player_pipeline(
+    start_date: str,
+    end_date: str,
+    round_number: Optional[int] = None,
+    runner: str = None,
+) -> pd.DataFrame:
+    # Load Catalog
+    conf = get_config(project_path=str(Path.cwd()), env=os.getenv("PYTHON_ENV"))
+    catalog = create_catalog(config=conf, round_number=round_number)
+
+    # Load the runner
+    # When either --parallel or --runner is used, class_obj is assigned to runner
+    runner_func = load_obj(runner, "kedro.runner") if runner else SequentialRunner
+
+    # Run the runner
+    return runner_func().run(player_pipeline(start_date, end_date), catalog)
 
 
 def run_fake_estimator_pipeline(runner: str = None) -> pd.DataFrame:

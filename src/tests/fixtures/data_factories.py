@@ -1,5 +1,5 @@
 from typing import List, Dict, Tuple, Any, Union, cast
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import itertools
 
 from faker import Faker
@@ -65,6 +65,16 @@ CONTEMPORARY_TEAM_NAMES = [
     name for name in TEAM_NAMES if name not in DEFUNCT_TEAM_NAMES
 ]
 BASELINE_BET_PAYOUT = 1.92
+
+ROSTER_COLS = [
+    "player_name",
+    "playing_for",
+    "home_team",
+    "away_team",
+    "date",
+    "match_id",
+    "season",
+]
 
 
 class CyclicalTeamNames:
@@ -350,3 +360,20 @@ def fake_fixture_data(
         return data_frame.assign(date=_parse_dates)
 
     return data_frame
+
+
+def fake_roster_data(match_count: int, n_players_per_team: int) -> pd.DataFrame:
+    this_year = date.today().year
+    match_data = cast(
+        List[List[CleanedMatchData]],
+        _matches_by_year(match_count, (this_year, this_year + 1)),
+    )
+    reduced_match_data = list(itertools.chain.from_iterable(match_data))
+
+    roster_data = [
+        _players_by_match(match_data, n_players_per_team, idx)
+        for idx, match_data in enumerate(_add_oppo_rows(reduced_match_data))
+    ]
+    reduced_roster_data = list(itertools.chain.from_iterable(roster_data))
+
+    return pd.DataFrame(reduced_roster_data).loc[:, ROSTER_COLS]

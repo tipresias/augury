@@ -50,21 +50,8 @@ class TestBetting(TestCase, ColumnAssertionMixin):
         )
 
         self._make_column_assertions(
-            self,
             column_names=["betting_pred_win"],
             req_cols=("win_odds", "oppo_win_odds", "line_odds", "oppo_line_odds"),
             valid_data_frame=valid_data_frame,
             feature_function=feature_function,
         )
-
-    def test_finalize_data(self):
-        data_frame = (
-            fake_cleaned_match_data(N_MATCHES_PER_SEASON, YEAR_RANGE)
-            .assign(nans=None)
-            .astype({"year": "str"})
-        )
-
-        finalized_data_frame = betting.finalize_data(data_frame)
-
-        self.assertEqual(finalized_data_frame["year"].dtype, int)
-        self.assertFalse(finalized_data_frame["nans"].isna().any())

@@ -4,7 +4,6 @@ from typing import List
 
 import pandas as pd
 
-from machine_learning.data_config import INDEX_COLS
 from .base import _parse_dates, _translate_team_column, _validate_required_columns
 
 
@@ -74,26 +73,3 @@ def add_betting_pred_win(data_frame: pd.DataFrame) -> pd.DataFrame:
     predicted_results = is_favoured + (odds_are_even * 0.5)
 
     return data_frame.assign(betting_pred_win=predicted_results)
-
-
-def finalize_data(
-    data_frame: pd.DataFrame, index_cols: List[str] = INDEX_COLS
-) -> pd.DataFrame:
-    """
-    Perform final data cleaning after all the data transformations and feature
-    building steps.
-
-    Args:
-        data_frame (pandas.DataFrame): Data frame that has been cleaned & transformed.
-
-    Returns:
-        pandas.DataFrame that's ready to be fed into a machine-learning model.
-    """
-
-    return (
-        data_frame.astype({"year": int})
-        .fillna(0)
-        .set_index(index_cols, drop=False)
-        .rename_axis([None] * len(index_cols))
-        .sort_index()
-    )

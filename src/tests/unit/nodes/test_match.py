@@ -76,7 +76,6 @@ class TestMatch(TestCase, ColumnAssertionMixin):
         )
 
         self._make_column_assertions(
-            self,
             column_names=["home_elo_rating", "away_elo_rating"],
             req_cols=(
                 "home_score",
@@ -99,7 +98,6 @@ class TestMatch(TestCase, ColumnAssertionMixin):
         )
 
         self._make_column_assertions(
-            self,
             column_names=["out_of_state"],
             req_cols=("venue", "team"),
             valid_data_frame=valid_data_frame,
@@ -113,7 +111,6 @@ class TestMatch(TestCase, ColumnAssertionMixin):
         )
 
         self._make_column_assertions(
-            self,
             column_names=["travel_distance"],
             req_cols=("venue", "team"),
             valid_data_frame=valid_data_frame,
@@ -125,7 +122,6 @@ class TestMatch(TestCase, ColumnAssertionMixin):
         valid_data_frame = self.data_frame
 
         self._make_column_assertions(
-            self,
             column_names=["result"],
             req_cols=("score", "oppo_score"),
             valid_data_frame=valid_data_frame,
@@ -137,7 +133,6 @@ class TestMatch(TestCase, ColumnAssertionMixin):
         valid_data_frame = self.data_frame
 
         self._make_column_assertions(
-            self,
             column_names=["margin"],
             req_cols=("score", "oppo_score"),
             valid_data_frame=valid_data_frame,
@@ -149,7 +144,6 @@ class TestMatch(TestCase, ColumnAssertionMixin):
         valid_data_frame = self.data_frame.assign(team=FAKE.company())
 
         self._make_column_assertions(
-            self,
             column_names=["prev_match_score"],
             req_cols=("score",),
             valid_data_frame=valid_data_frame,
@@ -171,7 +165,6 @@ class TestMatch(TestCase, ColumnAssertionMixin):
             valid_data_frame = self.data_frame.assign(team=FAKE.company())
 
             self._assert_column_added(
-                self,
                 column_names=["prev_match_score"],
                 valid_data_frame=valid_data_frame,
                 feature_function=feature_function,
@@ -195,7 +188,6 @@ class TestMatch(TestCase, ColumnAssertionMixin):
         )
 
         self._make_column_assertions(
-            self,
             column_names=["cum_win_points"],
             req_cols=("prev_match_result",),
             valid_data_frame=valid_data_frame,
@@ -209,7 +201,6 @@ class TestMatch(TestCase, ColumnAssertionMixin):
         )
 
         self._make_column_assertions(
-            self,
             column_names=["win_streak"],
             req_cols=("prev_match_result",),
             valid_data_frame=valid_data_frame,
@@ -224,7 +215,6 @@ class TestMatch(TestCase, ColumnAssertionMixin):
         )
 
         self._make_column_assertions(
-            self,
             column_names=["cum_percent"],
             req_cols=("prev_match_score", "prev_match_oppo_score"),
             valid_data_frame=valid_data_frame,
@@ -240,7 +230,6 @@ class TestMatch(TestCase, ColumnAssertionMixin):
         )
 
         self._make_column_assertions(
-            self,
             column_names=["ladder_position"],
             req_cols=("cum_percent", "cum_win_points", "team", "year", "round_number"),
             valid_data_frame=valid_data_frame,
@@ -255,7 +244,6 @@ class TestMatch(TestCase, ColumnAssertionMixin):
         )
 
         self._make_column_assertions(
-            self,
             column_names=["elo_pred_win"],
             req_cols=("elo_rating", "oppo_elo_rating"),
             valid_data_frame=valid_data_frame,

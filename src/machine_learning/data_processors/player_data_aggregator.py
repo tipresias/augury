@@ -30,7 +30,9 @@ STATS_COLS = [
     "last_year_brownlow_votes",
 ]
 
-REQUIRED_COLS = ["oppo_team", "player_id", "player_name", "date"] + STATS_COLS
+REQUIRED_COLS = (
+    ["oppo_team", "player_id", "player_name", "date"] + STATS_COLS + INDEX_COLS
+)
 
 
 class PlayerDataAggregator:
