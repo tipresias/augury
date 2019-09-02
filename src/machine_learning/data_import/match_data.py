@@ -6,7 +6,7 @@ import os
 import json
 
 from machine_learning.data_import.base_data import fetch_afl_data
-from machine_learning.settings import RAW_DATA_DIR
+from machine_learning.settings import RAW_DATA_DIR, PREDICTION_DATA_START_DATE
 
 FIRST_YEAR_OF_MATCH_DATA = 1897
 END_OF_YEAR = f"{date.today().year}-12-31"
@@ -47,8 +47,25 @@ def save_match_data(
     start_date: str = f"{FIRST_YEAR_OF_MATCH_DATA}-01-01",
     end_date: str = END_OF_LAST_YEAR,
     verbose: int = 1,
+    for_prod: bool = False,
 ) -> None:
-    """Save match data as a *.json file with name based on date range of data"""
+    """
+    Save match data as a *.json file with name based on date range of data
+
+    Args:
+        start_date (string: YYYY-MM-DD): Earliest date for match data returned.
+        end_date (string: YYYY-MM-DD): Latest date for match data returned.
+        verbose (int): Whether to print info statements (1 means yes, 0 means no).
+        for_prod (bool): Whether saved data set is meant for loading in production.
+            If True, this overwrites the given start_date to limit the data set
+            to the last 10 years to limit memory usage.
+
+    Returns:
+        None
+    """
+
+    if for_prod:
+        start_date = max(start_date, PREDICTION_DATA_START_DATE)
 
     data = fetch_match_data(start_date=start_date, end_date=end_date, verbose=verbose)
     filepath = os.path.join(RAW_DATA_DIR, f"match-data_{start_date}_{end_date}.json")

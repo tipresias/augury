@@ -12,7 +12,7 @@ from machine_learning.ml_data import JoinedMLData, BaseMLData
 from machine_learning.ml_estimators import BaseMLEstimator
 from machine_learning.data_import import FitzroyDataImporter
 from machine_learning.nodes import match
-from machine_learning.settings import ML_MODELS, BASE_DIR
+from machine_learning.settings import ML_MODELS, BASE_DIR, PREDICTION_DATA_START_DATE
 
 
 PredictionData = TypedDict(
@@ -39,13 +39,6 @@ ApiResponse = TypedDict(
     "ApiResponse", {"data": Union[List[Dict[str, Any]], Dict[str, Any]]}
 )
 
-# We calculate rolling sums/means for some features that can span over 5 seasons
-# of data, so we're setting it to 10 to be on the safe side.
-N_SEASONS_FOR_PREDICTION = 10
-# We want to limit the amount of data loaded as much as possible,
-# because we only need the full data set for model training and data analysis,
-# and we want to limit memory usage and speed up data processing for tipping
-PREDICTION_DATA_START_DATE = f"{date.today().year - N_SEASONS_FOR_PREDICTION}-01-01"
 END_OF_YEAR = f"{date.today().year}-12-31"
 
 
