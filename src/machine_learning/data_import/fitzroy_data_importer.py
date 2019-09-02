@@ -1,6 +1,4 @@
 from datetime import date, datetime, timedelta
-from typing import List, Dict, Any
-import itertools
 import math
 from functools import partial
 
@@ -65,44 +63,6 @@ class FitzroyDataImporter(BaseDataImporter):
 
         return pd.DataFrame(data)
 
-    def get_afltables_stats(
-        self,
-        start_date: str = f"{EARLIEST_FOOTYWIRE_SEASON}-01-01",
-        end_date: str = str(date.today()),
-    ) -> pd.DataFrame:
-        """Get player data from AFL tables
-        Args:
-            start_date (string: YYYY-MM-DD): Earliest date for match data returned.
-            end_date (string: YYYY-MM-DD): Latest date for match data returned.
-
-        Returns:
-            pandas.DataFrame
-        """
-
-        if self.verbose == 1:
-            print(
-                f"Fetching player data from between {start_date} and {end_date} "
-                "in yearly baches..."
-            )
-
-        data_batch_date_ranges = self._player_batch_date_ranges(start_date, end_date)
-
-        # TODO: Temporary(?) solution to the issue of GCR not being able to handle such a
-        # large data set. The documentation isn't too clear, but I might be able to
-        # dump the full set in a storage bucket and retrieve it from there, but this
-        # is good enough for now.
-        data = itertools.chain.from_iterable(
-            [
-                self._fetch_player_stats_batch(*date_pair)
-                for date_pair in data_batch_date_ranges
-            ]
-        )
-
-        if self.verbose == 1:
-            print("All player data received!")
-
-        return pd.DataFrame(list(data))
-
     def fetch_fixtures(
         self,
         start_date: str = f"{EARLIEST_FOOTYWIRE_SEASON}-01-01",
@@ -149,21 +109,3 @@ class FitzroyDataImporter(BaseDataImporter):
         range_end = min(range_start + time_spread - timedelta(days=1), end_date)
 
         return (str(range_start.date()), str(range_end.date()))
-
-    def _fetch_player_stats_batch(
-        self, start_date: str, end_date: str
-    ) -> List[Dict[str, Any]]:  # Just being lazy on the definition
-        if self.verbose == 1:
-            print(
-                f"\tFetching player data from between {start_date} and "
-                f"{end_date}..."
-            )
-
-        data = self._fetch_afl_data(
-            "players", params={"start_date": start_date, "end_date": end_date}
-        )
-
-        if self.verbose == 1:
-            print(f"\tPlayer data for {start_date} to {end_date} received!\n")
-
-        return data
