@@ -173,7 +173,7 @@ def clean_fixture_data(fixture_data: pd.DataFrame) -> pd.DataFrame:
     filter_fixture_by_round = fixture_data["round"] == next_round
 
     if any(fixture_data):
-        return (
+        fixture_data_frame = (
             fixture_data.rename(columns={"round": "round_number", "season": "year"})
             .loc[filter_fixture_by_round, SHARED_MATCH_FIXTURE_COLS]
             .assign(
@@ -186,6 +186,21 @@ def clean_fixture_data(fixture_data: pd.DataFrame) -> pd.DataFrame:
             )
             .fillna(0)
         )
+
+        round_24_2019 = (fixture_data_frame["year"] == 2019) & (
+            fixture_data_frame["round_number"] == 24
+        )
+
+        # Fixes bad fixture data on footywire.com that hasn't been updated/corrected
+        # as of 2019-09-04
+        fixture_data_frame.loc[
+            round_24_2019 & (fixture_data_frame["home_team"] == "Geelong"), "away_team"
+        ] = "Collingwood"
+        fixture_data_frame.loc[
+            round_24_2019 & (fixture_data_frame["home_team"] == "Brisbane"), "away_team"
+        ] = "Richmond"
+
+        return fixture_data_frame
 
     return pd.DataFrame()
 
