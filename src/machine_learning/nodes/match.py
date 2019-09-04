@@ -21,7 +21,8 @@ from .base import (
     _parse_dates,
     _translate_team_column,
     _validate_required_columns,
-    _filter_out_dodgy_data, _convert_id_to_string
+    _filter_out_dodgy_data,
+    _convert_id_to_string,
 )
 
 
