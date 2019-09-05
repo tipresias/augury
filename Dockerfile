@@ -17,8 +17,8 @@ COPY package.json package-lock.json ./
 RUN npm install
 
 # Install Python dependencies
-COPY requirements.txt /app
-RUN pip3 install --upgrade pip -r requirements.txt
+COPY requirements.txt requirements.dev.txt /app/
+RUN pip3 install --upgrade pip -r requirements.dev.txt
 
 # Add the rest of the code
 COPY . /app
