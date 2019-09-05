@@ -12,3 +12,6 @@ xgboost==0.80
 
 # Kedro packages
 kedro==0.15.0
+
+# Testing/Linting
+mypy>=0.70 # Need mypy due to references to mypy_extensions in production code
