@@ -167,3 +167,12 @@ def fetch_roster_data(
             print("Roster data received!")
 
     return data
+
+
+if __name__ == "__main__":
+    last_year = date.today().year - 1
+    end_of_last_year = f"{last_year}-12-31"
+
+    # A bit arbitrary, but in general I prefer to keep the static, raw data up to the
+    # end of last season, fetching more recent data as necessary
+    save_player_data(end_date=end_of_last_year)
