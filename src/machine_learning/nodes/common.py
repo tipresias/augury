@@ -37,7 +37,15 @@ def convert_to_data_frame(
 
 
 def _combine_data_horizontally(*data_frames: Sequence[pd.DataFrame]):
-    return pd.concat(data_frames, axis=1, sort=False).fillna(0)
+    # We need to sort by length (going from longest to shortest), then keeping first
+    # duplicated column to make sure we don't lose earlier values of shared columns
+    # (e.g. dropping match data's 'date' column in favor of the betting data 'date'
+    # column results in lots of NaT values, because betting data only goes back to 2010)
+    sorted_data_frames = sorted(data_frames, key=len, reverse=True)
+    joined_data_frame = pd.concat(sorted_data_frames, axis=1, sort=False)
+    duplicate_columns = joined_data_frame.columns.duplicated(keep="first")
+
+    return joined_data_frame.loc[:, ~duplicate_columns].fillna(0)
 
 
 def _append_data_frames(
