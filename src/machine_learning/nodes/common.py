@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 
 
-from machine_learning.data_config import INDEX_COLS
+from machine_learning.data_config import INDEX_COLS, ORIGINAL_COLUMNS
 from machine_learning.settings import MELBOURNE_TIMEZONE
 from .base import _validate_required_columns
 
@@ -329,4 +329,44 @@ def finalize_data(
         .set_index(index_cols, drop=False)
         .rename_axis([None] * len(index_cols))
         .sort_index()
+    )
+
+
+def _sort_data_frame_columns_node(
+    category_cols: List[str], data_frame: pd.DataFrame
+) -> pd.DataFrame:
+    numeric_data_frame = data_frame.select_dtypes(include="number").fillna(0)
+
+    if category_cols is None:
+        category_data_frame = data_frame.drop(numeric_data_frame.columns, axis=1)
+    else:
+        category_data_frame = data_frame[category_cols]
+
+    return pd.concat([category_data_frame, numeric_data_frame], axis=1)
+
+
+# TODO: This is for sorting columns in preparation for the ML pipeline.
+# It should probably be at the start of that pipeline instead of at the end of the data
+# pipeline
+def sort_data_frame_columns(
+    category_cols: Optional[List[str]] = None
+) -> Callable[[pd.DataFrame], pd.DataFrame]:
+    return partial(_sort_data_frame_columns_node, category_cols)
+
+
+# TODO: This can probably be removed in favour of the standard finalize_data
+# once the season ends and I can clean up a few things and retrain the saved models
+def finalize_joined_data(data_frame: pd.DataFrame):
+    return (
+        data_frame.dropna()
+        .sort_index()
+        # TODO: This is only a temporary renaming to keep column names
+        # consistent with saved models in order to avoid having to retrain them
+        .rename(columns=lambda col: col.replace("team_goals", "goals"))
+        .rename(columns=lambda col: col.replace("team_behinds", "behinds"))
+        # TODO: The data refactor reordered the columns, which completely
+        # messed up predictions. I don't want to retrain the models, so I'll
+        # just use the original column list to make sure they're in the same
+        # order as before, and figure out a better solution later
+        .loc[:, ORIGINAL_COLUMNS]
     )
