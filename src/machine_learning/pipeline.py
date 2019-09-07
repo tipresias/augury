@@ -8,7 +8,9 @@ from machine_learning.data_processors.feature_calculation import (
     calculate_rolling_mean_by_dimension,
     calculate_division,
     calculate_addition,
+    calculate_multiplication,
 )
+from machine_learning.data_config import CATEGORY_COLS
 from .nodes import betting, common, match, player
 
 MATCH_OPPO_COLS = [
@@ -94,7 +96,7 @@ def betting_pipeline(start_date: str, end_date: str, **_kwargs):
                 ["betting_data_b"],
                 "betting_data_c",
             ),
-            node(common.finalize_data, ["betting_data_c"], "data"),
+            node(common.finalize_data, ["betting_data_c"], "final_betting_data"),
         ]
     )
 
@@ -217,7 +219,7 @@ def match_pipeline(start_date: str, end_date: str, **_kwargs):
                 "match_data_o",
                 "match_data_p",
             ),
-            node(common.finalize_data, "match_data_p", "data"),
+            node(common.finalize_data, "match_data_p", "final_match_data"),
         ]
     )
 
@@ -344,7 +346,38 @@ def player_pipeline(start_date: str, end_date: str, **_kwargs):
                 "aggregated_player_data",
                 "oppo_player_data",
             ),
-            node(common.finalize_data, "oppo_player_data", "data"),
+            node(common.finalize_data, "oppo_player_data", "final_player_data"),
+        ]
+    )
+
+
+def pipeline(start_date: str, end_date: str, **_kwargs):
+    return Pipeline(
+        [
+            betting_pipeline(start_date, end_date),
+            match_pipeline(start_date, end_date),
+            player_pipeline(start_date, end_date),
+            node(
+                common.combine_data(axis=1),
+                ["final_betting_data", "final_match_data", "final_player_data"],
+                "joined_data",
+            ),
+            node(
+                feature_calculator(
+                    [
+                        (calculate_division, [("elo_rating", "win_odds")]),
+                        (calculate_multiplication, [("win_odds", "ladder_position")]),
+                    ]
+                ),
+                "joined_data",
+                "data_a",
+            ),
+            node(
+                common.sort_data_frame_columns(category_cols=CATEGORY_COLS),
+                "data_a",
+                "data_b",
+            ),
+            node(common.finalize_joined_data, "data_b", "data"),
         ]
     )
 
