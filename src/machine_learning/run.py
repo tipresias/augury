@@ -21,6 +21,7 @@ from machine_learning.pipeline import (
     player_pipeline,
     fake_estimator_pipeline,
 )
+from machine_learning.pipeline import pipeline as joined_pipeline
 from machine_learning.settings import BASE_DIR
 from machine_learning.io import JSONRemoteDataSet
 
@@ -159,6 +160,24 @@ def run_player_pipeline(
     return runner_func().run(player_pipeline(start_date, end_date), catalog)
 
 
+def run_pipeline(
+    start_date: str,
+    end_date: str,
+    round_number: Optional[int] = None,
+    runner: str = None,
+) -> pd.DataFrame:
+    # Load Catalog
+    conf = get_config(project_path=str(Path.cwd()), env=os.getenv("PYTHON_ENV"))
+    catalog = create_catalog(config=conf, round_number=round_number)
+
+    # Load the runner
+    # When either --parallel or --runner is used, class_obj is assigned to runner
+    runner_func = load_obj(runner, "kedro.runner") if runner else SequentialRunner
+
+    # Run the runner
+    return runner_func().run(joined_pipeline(start_date, end_date), catalog)
+
+
 def run_fake_estimator_pipeline(runner: str = None) -> pd.DataFrame:
     # Load Catalog
     conf = get_config(project_path=str(Path.cwd()), env=None)
@@ -196,7 +215,7 @@ def main(tags: Iterable[str] = None, env: str = None, runner: str = None):
     catalog = create_catalog(config=conf)
 
     # Load the pipeline
-    pipeline = betting_pipeline("2010-01-01", str(date.today()))
+    pipeline = joined_pipeline("2010-01-01", str(date.today()))
     pipeline = pipeline.only_nodes_with_tags(*tags) if tags else pipeline
     if not pipeline.nodes:
         if tags:
