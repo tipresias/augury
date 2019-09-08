@@ -202,8 +202,10 @@ def fetch_fixture_data(
     """
 
     return _api_response(
-        data_import.fetch_fixture_data(
-            start_date=start_date, end_date=end_date, verbose=verbose
+        pd.DataFrame(
+            data_import.fetch_fixture_data(
+                start_date=start_date, end_date=end_date, verbose=verbose
+            )
         ).pipe(match.clean_fixture_data)
     )
 
@@ -226,8 +228,10 @@ def fetch_match_results_data(
     """
 
     return _api_response(
-        data_import.fetch_match_data(
-            start_date=start_date, end_date=end_date, verbose=verbose
+        pd.DataFrame(
+            data_import.fetch_match_data(
+                start_date=start_date, end_date=end_date, verbose=verbose
+            )
         ).pipe(match.clean_match_data)
     )
 
