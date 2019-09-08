@@ -1,12 +1,12 @@
 import os
 import warnings
 from unittest import TestCase
-from unittest.mock import Mock
+
 import pandas as pd
 from faker import Faker
 
-from tests.fixtures.data_factories import fake_cleaned_match_data
 from machine_learning.ml_data import MLData
+from machine_learning.pipeline import fake_estimator_pipeline
 
 
 RAW_DATA_DIR = os.path.abspath(
@@ -28,13 +28,7 @@ class TestMLData(TestCase):
     """Tests for MLData class"""
 
     def setUp(self):
-        pipeline_runner = Mock(
-            return_value=fake_cleaned_match_data(
-                MATCH_COUNT_PER_YEAR, YEAR_RANGE
-            ).sort_index()
-        )
-
-        self.data = MLData(pipeline_runner=pipeline_runner, train_years=(None, 2016))
+        self.data = MLData(pipeline=fake_estimator_pipeline, train_years=(None, 2016))
 
     def test_train_data(self):
         X_train, y_train = self.data.train_data()

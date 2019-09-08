@@ -1,11 +1,13 @@
 """Module for holding model data and returning it in a form useful for ML pipelines"""
 
-from typing import Tuple, Callable
+from typing import Tuple, Optional, Callable
 from datetime import date
 
 import pandas as pd
+from kedro.pipeline import Pipeline
 
 from machine_learning.run import run_pipeline
+from machine_learning.pipeline import pipeline as data_pipeline
 from machine_learning.types import YearPair
 
 
@@ -23,23 +25,30 @@ class MLData:
 
     def __init__(
         self,
-        pipeline_runner: Callable[[str, str], pd.DataFrame] = run_pipeline,
+        pipeline: Callable[[str, str], Pipeline] = data_pipeline,
         train_years: YearPair = (None, 2015),
         test_years: YearPair = (2016, 2016),
         start_date: str = "1897-01-01",
         end_date: str = str(date.today()),
+        round_number: Optional[int] = None,
     ) -> None:
-        self._pipeline_runner = pipeline_runner
+        self._pipeline = pipeline
         self._train_years = train_years
         self._test_years = test_years
         self.start_date = start_date
         self.end_date = end_date
+        self.round_number = round_number
         self._data = None
 
     @property
     def data(self) -> pd.DataFrame:
         if self._data is None:
-            self._data = self._pipeline_runner(self.start_date, self.end_date)
+            self._data = run_pipeline(
+                self.start_date,
+                self.end_date,
+                pipeline=self._pipeline,
+                round_number=self.round_number,
+            ).get("data")
 
         return self._data
 

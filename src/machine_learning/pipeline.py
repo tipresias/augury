@@ -101,10 +101,10 @@ def betting_pipeline(start_date: str, end_date: str, **_kwargs):
     )
 
 
-def match_pipeline(start_date: str, end_date: str, **_kwargs):
-    """Kedro pipeline for loading and transforming match data"""
+def create_past_match_pipeline():
+    """Kedro pipeline for match data to the end of last year"""
 
-    past_match_pipeline = Pipeline(
+    return Pipeline(
         [
             node(
                 common.convert_to_data_frame,
@@ -123,6 +123,15 @@ def match_pipeline(start_date: str, end_date: str, **_kwargs):
             ),
         ]
     )
+
+
+def match_pipeline(
+    start_date: str,
+    end_date: str,
+    past_match_pipeline=create_past_match_pipeline(),
+    **_kwargs
+):
+    """Kedro pipeline for loading and transforming match data"""
 
     upcoming_match_pipeline = Pipeline(
         [
@@ -224,23 +233,15 @@ def match_pipeline(start_date: str, end_date: str, **_kwargs):
     )
 
 
-def player_pipeline(start_date: str, end_date: str, **_kwargs):
-    """Kedro pipeline for loading and transforming player data"""
+def player_pipeline(
+    start_date: str, end_date: str, past_match_pipeline=Pipeline([]), **_kwargs
+):
+    """
+    Kedro pipeline for loading and transforming player data.
 
-    past_match_pipeline = Pipeline(
-        [
-            node(
-                common.convert_to_data_frame,
-                ["match_data", "remote_match_data"],
-                ["match_data_frame", "remote_match_data_frame"],
-            ),
-            node(
-                common.combine_data(axis=0),
-                ["match_data_frame", "remote_match_data_frame"],
-                "combined_past_match_data",
-            ),
-        ]
-    )
+    Args:
+        start_date (str): Stringified date (yyyy-mm-dd)
+    """
 
     past_player_pipeline = Pipeline(
         [
@@ -382,7 +383,7 @@ def pipeline(start_date: str, end_date: str, **_kwargs):
     )
 
 
-def fake_estimator_pipeline():
+def fake_estimator_pipeline(*_args, **_kwargs):
     """Kedro pipeline for loading and transforming match data for test estimator"""
 
     return Pipeline(
