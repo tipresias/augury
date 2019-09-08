@@ -108,8 +108,6 @@ def match_results(request):
             (inclusive) for which you want data.
         start_date (string of form 'yyyy-mm-dd', required): End of date range
             (inclusive) for which you want data.
-        fetch_data (string, 'true' or 'false'): Whether to fetch fresh data,
-            will take longer if true. Default = 'false'
     Args:
         request (flask.Request): HTTP request object.
     Returns:
@@ -121,11 +119,8 @@ def match_results(request):
 
     start_date = request.args.get("start_date")
     end_date = request.args.get("end_date")
-    fetch_data = request.args.get("fetch_data", FALSE).lower() == TRUE
 
-    return json.dumps(
-        api.fetch_match_results_data(start_date, end_date, fetch_data=fetch_data)
-    )
+    return json.dumps(api.fetch_match_results_data(start_date, end_date))
 
 
 def ml_models(request):

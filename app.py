@@ -88,17 +88,14 @@ def match_results():
             (inclusive) for which you want data.
         start_date (string of form 'yyyy-mm-dd', required): End of date range
             (inclusive) for which you want data.
-        fetch_data (string, 'true' or 'false'): Whether to fetch fresh data,
-            will take longer if true. Default = 'false'
     Returns:
         flask.Response with a body that has a JSON of match results data.
     """
 
     start_date = request.query.start_date
     end_date = request.query.end_date
-    fetch_data = (request.query.fetch_data or FALSE).lower() == TRUE
 
-    return api.fetch_match_results_data(start_date, end_date, fetch_data=fetch_data)
+    return api.fetch_match_results_data(start_date, end_date)
 
 
 @app.route("/ml_models")

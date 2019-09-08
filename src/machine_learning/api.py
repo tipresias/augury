@@ -10,7 +10,7 @@ from mypy_extensions import TypedDict
 
 from machine_learning.ml_data import MLData
 from machine_learning.ml_estimators import BaseMLEstimator
-from machine_learning.data_import import FitzroyDataImporter
+from machine_learning.data_import import match_data
 from machine_learning.nodes import match
 from machine_learning.settings import ML_MODELS, BASE_DIR, PREDICTION_DATA_START_DATE
 
@@ -185,7 +185,7 @@ def make_predictions(
 
 
 def fetch_fixture_data(
-    start_date: str, end_date: str, data_import=FitzroyDataImporter(), verbose: int = 1
+    start_date: str, end_date: str, data_import=match_data, verbose: int = 1
 ) -> ApiResponse:
     """
     Fetch fixture data (doesn't include match results) from afl_data service.
@@ -201,21 +201,15 @@ def fetch_fixture_data(
         List of fixture data dictionaries.
     """
 
-    data_import.verbose = verbose
-
     return _api_response(
-        data_import.fetch_fixtures(start_date=start_date, end_date=end_date).pipe(
-            match.clean_fixture_data
-        )
+        data_import.fetch_fixture_data(
+            start_date=start_date, end_date=end_date, verbose=verbose
+        ).pipe(match.clean_fixture_data)
     )
 
 
 def fetch_match_results_data(
-    start_date: str,
-    end_date: str,
-    fetch_data: bool = False,
-    data_import=FitzroyDataImporter(),
-    verbose: int = 1,
+    start_date: str, end_date: str, data_import=match_data, verbose: int = 1
 ) -> ApiResponse:
     """
     Fetch results data for past matches from afl_data service.
@@ -225,19 +219,15 @@ def fetch_match_results_data(
             the earliest date for which to fetch data.
         end_date (str): Stringified date of form yyy-mm-dd that determines
             the latest date for which to fetch data.
-        fetch_data (bool): Whether to fetch fresh data or use saved data
-            (usually a few weeks old).
         verbose (0 or 1): Whether to print info messages while fetching data.
 
     Returns:
         List of match results data dictionaries.
     """
 
-    data_import.verbose = verbose
-
     return _api_response(
-        data_import.match_results(
-            start_date=start_date, end_date=end_date, fetch_data=fetch_data
+        data_import.fetch_match_data(
+            start_date=start_date, end_date=end_date, verbose=verbose
         ).pipe(match.clean_match_data)
     )
 
