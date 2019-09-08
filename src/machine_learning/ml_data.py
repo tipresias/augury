@@ -1,15 +1,23 @@
-"""Module for base class for machine learning data class"""
+"""Module for holding model data and returning it in a form useful for ML pipelines"""
 
-from typing import Tuple
+from typing import Tuple, Optional, Callable
 from datetime import date
 
 import pandas as pd
+from kedro.pipeline import Pipeline
 
+from machine_learning.run import run_pipeline
+from machine_learning.pipeline import pipeline as data_pipeline
 from machine_learning.types import YearPair
 
 
-class BaseMLData:
-    """Base class for model data"""
+END_OF_YEAR = f"{date.today().year}-12-31"
+
+
+class MLData:
+    """
+    Class for holding model data and returning it in a form useful for ML pipelines
+    """
 
     @classmethod
     def class_path(cls):
@@ -17,17 +25,32 @@ class BaseMLData:
 
     def __init__(
         self,
+        pipeline: Callable[[str, str], Pipeline] = data_pipeline,
         train_years: YearPair = (None, 2015),
         test_years: YearPair = (2016, 2016),
-        fetch_data: bool = False,
         start_date: str = "1897-01-01",
         end_date: str = str(date.today()),
+        round_number: Optional[int] = None,
     ) -> None:
+        self._pipeline = pipeline
         self._train_years = train_years
         self._test_years = test_years
-        self.fetch_data = fetch_data
         self.start_date = start_date
         self.end_date = end_date
+        self.round_number = round_number
+        self._data = None
+
+    @property
+    def data(self) -> pd.DataFrame:
+        if self._data is None:
+            self._data = run_pipeline(
+                self.start_date,
+                self.end_date,
+                pipeline=self._pipeline,
+                round_number=self.round_number,
+            ).get("data")
+
+        return self._data
 
     def train_data(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """Filter data by year to produce training data"""
@@ -65,12 +88,6 @@ class BaseMLData:
         y_test = self.__y(data_test)
 
         return X_test, y_test
-
-    @property
-    def data(self) -> pd.DataFrame:
-        """Get the data frame"""
-
-        raise NotImplementedError("The data() method must be defined.")
 
     @property
     def train_years(self) -> YearPair:

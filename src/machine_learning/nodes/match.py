@@ -167,43 +167,44 @@ def clean_fixture_data(fixture_data: pd.DataFrame) -> pd.DataFrame:
         Cleanish pandas.DataFrame
     """
 
+    if not fixture_data.any().any():
+        return pd.DataFrame()
+
+
     # TODO: Created a regression bug by removing this time-based filtering,
     # but it probably should be somewhere else
     right_now = str(datetime.now())  # pylint: disable=W0612
     next_round = fixture_data.query("date > @right_now")["round"].min()
     filter_fixture_by_round = fixture_data["round"] == next_round
 
-    if any(fixture_data):
-        fixture_data_frame = (
-            fixture_data.rename(columns={"round": "round_number", "season": "year"})
-            .loc[filter_fixture_by_round, SHARED_MATCH_FIXTURE_COLS]
-            .assign(
-                venue=lambda df: df["venue"].map(_map_footywire_venues),
-                round_type=_round_type_column,
-                home_team=_translate_team_column("home_team"),
-                away_team=_translate_team_column("away_team"),
-                date=_parse_dates,
-                match_id=_match_id_column,
-            )
-            .fillna(0)
+    fixture_data_frame = (
+        fixture_data.rename(columns={"round": "round_number", "season": "year"})
+        .loc[filter_fixture_by_round, SHARED_MATCH_FIXTURE_COLS]
+        .assign(
+            venue=lambda df: df["venue"].map(_map_footywire_venues),
+            round_type=_round_type_column,
+            home_team=_translate_team_column("home_team"),
+            away_team=_translate_team_column("away_team"),
+            date=_parse_dates,
+            match_id=_match_id_column,
         )
+        .fillna(0)
+    )
 
-        round_24_2019 = (fixture_data_frame["year"] == 2019) & (
-            fixture_data_frame["round_number"] == 24
-        )
+    round_24_2019 = (fixture_data_frame["year"] == 2019) & (
+        fixture_data_frame["round_number"] == 24
+    )
 
-        # Fixes bad fixture data on footywire.com that hasn't been updated/corrected
-        # as of 2019-09-04
-        fixture_data_frame.loc[
-            round_24_2019 & (fixture_data_frame["home_team"] == "Geelong"), "away_team"
-        ] = "Collingwood"
-        fixture_data_frame.loc[
-            round_24_2019 & (fixture_data_frame["home_team"] == "Brisbane"), "away_team"
-        ] = "Richmond"
+    # Fixes bad fixture data on footywire.com that hasn't been updated/corrected
+    # as of 2019-09-04
+    fixture_data_frame.loc[
+        round_24_2019 & (fixture_data_frame["home_team"] == "Geelong"), "away_team"
+    ] = "Collingwood"
+    fixture_data_frame.loc[
+        round_24_2019 & (fixture_data_frame["home_team"] == "Brisbane"), "away_team"
+    ] = "Richmond"
 
-        return fixture_data_frame
-
-    return pd.DataFrame()
+    return fixture_data_frame
 
 
 # Basing ELO calculations on:

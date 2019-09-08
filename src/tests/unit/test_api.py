@@ -6,7 +6,7 @@ from freezegun import freeze_time
 
 from tests.fixtures.data_factories import fake_fixture_data, fake_raw_match_results_data
 from tests.fixtures.fake_estimator import FakeEstimatorData
-from machine_learning.data_import import FitzroyDataImporter
+from machine_learning.data_import import match_data
 from machine_learning import api
 from machine_learning import settings
 
@@ -74,8 +74,8 @@ class TestApi(TestCase):
             "match_id",
         ]
 
-        data_importer = FitzroyDataImporter()
-        data_importer.fetch_fixtures = Mock(
+        data_importer = match_data
+        data_importer.fetch_fixture_data = Mock(
             return_value=fake_fixture_data(N_MATCHES, YEAR_RANGE, clean=False)
         )
 
@@ -101,8 +101,8 @@ class TestApi(TestCase):
         self.assertEqual(fixture_years, [YEAR_RANGE[0]])
 
     def test_fetch_match_results_data(self):
-        data_importer = FitzroyDataImporter()
-        data_importer.match_results = Mock(
+        data_importer = match_data
+        data_importer.fetch_match_data = Mock(
             return_value=fake_raw_match_results_data(N_MATCHES, YEAR_RANGE)
         )
 

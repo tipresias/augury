@@ -2,14 +2,8 @@
 
 from kedro.pipeline import Pipeline, node
 
-from machine_learning.data_processors.feature_calculation import (
-    feature_calculator,
-    calculate_rolling_rate,
-    calculate_rolling_mean_by_dimension,
-    calculate_division,
-    calculate_addition,
-)
-from .nodes import betting, common, match, player
+from machine_learning.data_config import CATEGORY_COLS
+from .nodes import betting, common, match, player, feature_calculation
 
 MATCH_OPPO_COLS = [
     "team",
@@ -80,7 +74,14 @@ def betting_pipeline(start_date: str, end_date: str, **_kwargs):
                 betting.add_betting_pred_win, ["stacked_betting_data"], "betting_data_a"
             ),
             node(
-                feature_calculator([(calculate_rolling_rate, [("betting_pred_win",)])]),
+                feature_calculation.feature_calculator(
+                    [
+                        (
+                            feature_calculation.calculate_rolling_rate,
+                            [("betting_pred_win",)],
+                        )
+                    ]
+                ),
                 ["betting_data_a"],
                 "betting_data_b",
             ),
@@ -94,15 +95,15 @@ def betting_pipeline(start_date: str, end_date: str, **_kwargs):
                 ["betting_data_b"],
                 "betting_data_c",
             ),
-            node(common.finalize_data, ["betting_data_c"], "data"),
+            node(common.finalize_data, ["betting_data_c"], "final_betting_data"),
         ]
     )
 
 
-def match_pipeline(start_date: str, end_date: str, **_kwargs):
-    """Kedro pipeline for loading and transforming match data"""
+def create_past_match_pipeline():
+    """Kedro pipeline for match data to the end of last year"""
 
-    past_match_pipeline = Pipeline(
+    return Pipeline(
         [
             node(
                 common.convert_to_data_frame,
@@ -121,6 +122,15 @@ def match_pipeline(start_date: str, end_date: str, **_kwargs):
             ),
         ]
     )
+
+
+def match_pipeline(
+    start_date: str,
+    end_date: str,
+    past_match_pipeline=create_past_match_pipeline(),
+    **_kwargs
+):
+    """Kedro pipeline for loading and transforming match data"""
 
     upcoming_match_pipeline = Pipeline(
         [
@@ -172,11 +182,14 @@ def match_pipeline(start_date: str, end_date: str, **_kwargs):
             node(match.add_cum_win_points, "match_data_g", "match_data_h"),
             node(match.add_win_streak, "match_data_h", "match_data_i"),
             node(
-                feature_calculator(
+                feature_calculation.feature_calculator(
                     [
-                        (calculate_rolling_rate, [("prev_match_result",)]),
                         (
-                            calculate_rolling_mean_by_dimension,
+                            feature_calculation.calculate_rolling_rate,
+                            [("prev_match_result",)],
+                        ),
+                        (
+                            feature_calculation.calculate_rolling_mean_by_dimension,
                             [
                                 ("oppo_team", "margin"),
                                 ("oppo_team", "result"),
@@ -201,10 +214,16 @@ def match_pipeline(start_date: str, end_date: str, **_kwargs):
             node(match.add_ladder_position, "match_data_l", "match_data_m"),
             node(match.add_elo_pred_win, "match_data_m", "match_data_n"),
             node(
-                feature_calculator(
+                feature_calculation.feature_calculator(
                     [
-                        (calculate_rolling_rate, [("elo_pred_win",)]),
-                        (calculate_division, [("elo_rating", "ladder_position")]),
+                        (
+                            feature_calculation.calculate_rolling_rate,
+                            [("elo_pred_win",)],
+                        ),
+                        (
+                            feature_calculation.calculate_division,
+                            [("elo_rating", "ladder_position")],
+                        ),
                     ]
                 ),
                 "match_data_n",
@@ -217,28 +236,20 @@ def match_pipeline(start_date: str, end_date: str, **_kwargs):
                 "match_data_o",
                 "match_data_p",
             ),
-            node(common.finalize_data, "match_data_p", "data"),
+            node(common.finalize_data, "match_data_p", "final_match_data"),
         ]
     )
 
 
-def player_pipeline(start_date: str, end_date: str, **_kwargs):
-    """Kedro pipeline for loading and transforming player data"""
+def player_pipeline(
+    start_date: str, end_date: str, past_match_pipeline=Pipeline([]), **_kwargs
+):
+    """
+    Kedro pipeline for loading and transforming player data.
 
-    past_match_pipeline = Pipeline(
-        [
-            node(
-                common.convert_to_data_frame,
-                ["match_data", "remote_match_data"],
-                ["match_data_frame", "remote_match_data_frame"],
-            ),
-            node(
-                common.combine_data(axis=0),
-                ["match_data_frame", "remote_match_data_frame"],
-                "combined_past_match_data",
-            ),
-        ]
-    )
+    Args:
+        start_date (str): Stringified date (yyyy-mm-dd)
+    """
 
     past_player_pipeline = Pipeline(
         [
@@ -299,10 +310,10 @@ def player_pipeline(start_date: str, end_date: str, **_kwargs):
             node(player.add_rolling_player_stats, "player_data_a", "player_data_b"),
             node(player.add_cum_matches_played, "player_data_b", "player_data_c"),
             node(
-                feature_calculator(
+                feature_calculation.feature_calculator(
                     [
                         (
-                            calculate_addition,
+                            feature_calculation.calculate_addition,
                             [
                                 (
                                     "rolling_prev_match_goals",
@@ -316,10 +327,10 @@ def player_pipeline(start_date: str, end_date: str, **_kwargs):
                 "player_data_d",
             ),
             node(
-                feature_calculator(
+                feature_calculation.feature_calculator(
                     [
                         (
-                            calculate_division,
+                            feature_calculation.calculate_division,
                             [
                                 (
                                     "rolling_prev_match_goals",
@@ -344,12 +355,49 @@ def player_pipeline(start_date: str, end_date: str, **_kwargs):
                 "aggregated_player_data",
                 "oppo_player_data",
             ),
-            node(common.finalize_data, "oppo_player_data", "data"),
+            node(common.finalize_data, "oppo_player_data", "final_player_data"),
         ]
     )
 
 
-def fake_estimator_pipeline():
+def pipeline(start_date: str, end_date: str, **_kwargs):
+    return Pipeline(
+        [
+            betting_pipeline(start_date, end_date),
+            match_pipeline(start_date, end_date),
+            player_pipeline(start_date, end_date),
+            node(
+                common.combine_data(axis=1),
+                ["final_betting_data", "final_match_data", "final_player_data"],
+                "joined_data",
+            ),
+            node(
+                feature_calculation.feature_calculator(
+                    [
+                        (
+                            feature_calculation.calculate_division,
+                            [("elo_rating", "win_odds")],
+                        ),
+                        (
+                            feature_calculation.calculate_multiplication,
+                            [("win_odds", "ladder_position")],
+                        ),
+                    ]
+                ),
+                "joined_data",
+                "data_a",
+            ),
+            node(
+                common.sort_data_frame_columns(category_cols=CATEGORY_COLS),
+                "data_a",
+                "data_b",
+            ),
+            node(common.finalize_joined_data, "data_b", "data"),
+        ]
+    )
+
+
+def fake_estimator_pipeline(*_args, **_kwargs):
     """Kedro pipeline for loading and transforming match data for test estimator"""
 
     return Pipeline(

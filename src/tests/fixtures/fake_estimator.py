@@ -4,9 +4,10 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 
 from machine_learning.ml_estimators import BaseMLEstimator
-from machine_learning.ml_data import BaseMLData
+from machine_learning.ml_data import MLData
 from machine_learning.data_config import TEAM_NAMES, VENUES, ROUND_TYPES
-from machine_learning.run import run_fake_estimator_pipeline
+from machine_learning.pipeline import fake_estimator_pipeline
+from machine_learning.run import run_pipeline
 
 CATEGORY_COLS = ["team", "oppo_team", "venue", "round_type"]
 PIPELINE = make_pipeline(
@@ -35,20 +36,22 @@ class FakeEstimator(BaseMLEstimator):
         super().__init__(pipeline=pipeline, name=name)
 
 
-class FakeEstimatorData(BaseMLData):
+class FakeEstimatorData(MLData):
     """Process data for FakeEstimator"""
 
-    def __init__(self, data_reader=run_fake_estimator_pipeline, max_year=2019):
-        super().__init__()
+    def __init__(self, pipeline=fake_estimator_pipeline, max_year=2019):
+        super().__init__(pipeline=pipeline)
 
         self.max_year = max_year
-        self.data_reader = data_reader
-        self._data = None
 
     @property
     def data(self):
         if self._data is None:
-            self._data = self.data_reader().get("data").query("year > 2000")
+            self._data = (
+                run_pipeline(self.start_date, self.end_date, pipeline=self._pipeline)
+                .get("data")
+                .query("year > 2000")
+            )
 
             max_data_year = self._data["year"].max()
 

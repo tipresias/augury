@@ -2,7 +2,7 @@
 
 import logging.config
 from pathlib import Path
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Callable
 from warnings import warn
 import os
 from datetime import date
@@ -12,15 +12,11 @@ from kedro.config import ConfigLoader, MissingConfigException
 from kedro.io import DataCatalog
 from kedro.runner import SequentialRunner
 from kedro.utils import load_obj
+from kedro.pipeline import Pipeline
 
 import pandas as pd
 
-from machine_learning.pipeline import (
-    betting_pipeline,
-    match_pipeline,
-    player_pipeline,
-    fake_estimator_pipeline,
-)
+from machine_learning.pipeline import pipeline as pipeline_func
 from machine_learning.settings import BASE_DIR
 from machine_learning.io import JSONRemoteDataSet
 
@@ -43,7 +39,7 @@ def __kedro_context__():
     return {
         "get_config": get_config,
         "create_catalog": create_catalog,
-        "create_pipeline": betting_pipeline,
+        "create_pipeline": run_pipeline,
         "template_version": "0.14.3",
         "project_name": "Augury",
         "project_path": BASE_DIR,
@@ -111,39 +107,10 @@ def create_catalog(
     return catalog
 
 
-def run_betting_pipeline(
-    start_date: str, end_date: str, runner: str = None
-) -> pd.DataFrame:
-    # Load Catalog
-    conf = get_config(project_path=BASE_DIR, env=os.getenv("PYTHON_ENV"))
-    catalog = create_catalog(config=conf)
-
-    # Load the runner
-    # When either --parallel or --runner is used, class_obj is assigned to runner
-    runner_func = load_obj(runner, "kedro.runner") if runner else SequentialRunner
-
-    # Run the runner
-    return runner_func().run(betting_pipeline(start_date, end_date), catalog)
-
-
-def run_match_pipeline(
-    start_date: str, end_date: str, runner: str = None
-) -> pd.DataFrame:
-    # Load Catalog
-    conf = get_config(project_path=str(Path.cwd()), env=os.getenv("PYTHON_ENV"))
-    catalog = create_catalog(config=conf)
-
-    # Load the runner
-    # When either --parallel or --runner is used, class_obj is assigned to runner
-    runner_func = load_obj(runner, "kedro.runner") if runner else SequentialRunner
-
-    # Run the runner
-    return runner_func().run(match_pipeline(start_date, end_date), catalog)
-
-
-def run_player_pipeline(
+def run_pipeline(
     start_date: str,
     end_date: str,
+    pipeline: Callable[[str, str], Pipeline] = pipeline_func,
     round_number: Optional[int] = None,
     runner: str = None,
 ) -> pd.DataFrame:
@@ -156,20 +123,7 @@ def run_player_pipeline(
     runner_func = load_obj(runner, "kedro.runner") if runner else SequentialRunner
 
     # Run the runner
-    return runner_func().run(player_pipeline(start_date, end_date), catalog)
-
-
-def run_fake_estimator_pipeline(runner: str = None) -> pd.DataFrame:
-    # Load Catalog
-    conf = get_config(project_path=str(Path.cwd()), env=None)
-    catalog = create_catalog(config=conf)
-
-    # Load the runner
-    # When either --parallel or --runner is used, class_obj is assigned to runner
-    runner_func = load_obj(runner, "kedro.runner") if runner else SequentialRunner
-
-    # Run the runner
-    return runner_func().run(fake_estimator_pipeline(), catalog)
+    return runner_func().run(pipeline(start_date, end_date), catalog)
 
 
 def main(tags: Iterable[str] = None, env: str = None, runner: str = None):
@@ -196,7 +150,7 @@ def main(tags: Iterable[str] = None, env: str = None, runner: str = None):
     catalog = create_catalog(config=conf)
 
     # Load the pipeline
-    pipeline = betting_pipeline("2010-01-01", str(date.today()))
+    pipeline = pipeline_func("2010-01-01", str(date.today()))
     pipeline = pipeline.only_nodes_with_tags(*tags) if tags else pipeline
     if not pipeline.nodes:
         if tags:

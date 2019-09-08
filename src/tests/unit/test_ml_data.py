@@ -1,13 +1,12 @@
 import os
 import warnings
 from unittest import TestCase
-from unittest.mock import Mock
+
 import pandas as pd
 from faker import Faker
 
-from tests.fixtures.data_factories import fake_cleaned_match_data
-from machine_learning.ml_data import JoinedMLData
-from machine_learning.data_transformation import data_cleaning
+from machine_learning.ml_data import MLData
+from machine_learning.pipeline import fake_estimator_pipeline
 
 
 RAW_DATA_DIR = os.path.abspath(
@@ -19,44 +18,17 @@ YEAR_RANGE = (2016, 2017)
 # Need to multiply by two, because we add team & oppo_team row per match
 ROW_COUNT = MATCH_COUNT_PER_YEAR * len(range(*YEAR_RANGE)) * 2
 
-# JoinedMLData does a .loc call with all the column names, resulting in a
+# MLData does a .loc call with all the column names, resulting in a
 # warning about passing missing column names to .loc when we run tests, so
 # we're ignoring the warnings rather than adding all the columns
 warnings.simplefilter("ignore", FutureWarning)
 
 
-class TestJoinedMLData(TestCase):
-    """Tests for JoinedMLData class"""
+class TestMLData(TestCase):
+    """Tests for MLData class"""
 
     def setUp(self):
-        base_data = fake_cleaned_match_data(MATCH_COUNT_PER_YEAR, YEAR_RANGE)
-
-        betting_data_reader = Mock(
-            return_value={"data": base_data.assign(line_odds=20, oppo_line_odds=-20)}
-        )
-
-        player_data_reader = Mock(
-            return_value={
-                "data": base_data.assign(rolling_kicks=50, oppo_rolling_kicks=75)
-            }
-        )
-
-        match_data_reader = Mock(
-            return_value={
-                "data": base_data.assign(ladder_position=2, oppo_ladder_position=6)
-            }
-        )
-
-        self.data = JoinedMLData(
-            data_readers={
-                "betting": betting_data_reader,
-                "player": player_data_reader,
-                "match": match_data_reader,
-            },
-            data_transformers=[data_cleaning.clean_joined_data, self.__set_valid_index],
-            category_cols=None,
-            train_years=(None, 2016),
-        )
+        self.data = MLData(pipeline=fake_estimator_pipeline, train_years=(None, 2016))
 
     def test_train_data(self):
         X_train, y_train = self.data.train_data()

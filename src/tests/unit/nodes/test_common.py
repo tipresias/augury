@@ -68,18 +68,24 @@ class TestCommon(TestCase, ColumnAssertionMixin):
         )
 
         with self.subTest(axis=1):
-            match_data = fake_raw_match_results_data(N_MATCHES_PER_SEASON, YEAR_RANGE)
+            match_year_range = (START_YEAR - 2, END_YEAR)
+            match_data = fake_raw_match_results_data(
+                N_MATCHES_PER_SEASON, match_year_range
+            )
 
             combine_data_func = common.combine_data(axis=1)
             combined_data = combine_data_func(raw_betting_data, match_data)
 
             self.assertEqual(
-                N_MATCHES_PER_SEASON * len(range(*YEAR_RANGE)), len(combined_data)
+                N_MATCHES_PER_SEASON * len(range(*match_year_range)), len(combined_data)
             )
+
             self.assertEqual(
-                len(raw_betting_data.columns) + len(match_data.columns),
-                len(combined_data.columns),
+                set(raw_betting_data.columns) | set(match_data.columns),
+                set(combined_data.columns),
             )
+            self.assertFalse((combined_data["date"] == 0).any())
+            self.assertFalse(combined_data["date"].isna().any())
 
     def test_filter_by_date(self):
         raw_betting_data = fake_footywire_betting_data(
@@ -263,3 +269,22 @@ class TestCommon(TestCase, ColumnAssertionMixin):
 
         self.assertEqual(finalized_data_frame["year"].dtype, int)
         self.assertFalse(finalized_data_frame["nans"].isna().any())
+
+    def test_sort_columns(self):
+        sort_data_frame_func = common.sort_data_frame_columns()
+        sorted_data_frame = sort_data_frame_func(self.data_frame)
+
+        non_numeric_cols = {"date", "team", "oppo_team"}
+        first_cols = set(sorted_data_frame.columns[:3])
+
+        self.assertEqual(non_numeric_cols, non_numeric_cols & first_cols)
+
+        with self.subTest("with category_cols argument"):
+            category_cols = ["team", "oppo_team"]
+
+            sort_data_frame_func = common.sort_data_frame_columns(category_cols)
+            sorted_data_frame = sort_data_frame_func(self.data_frame)
+
+            first_cols = set(sorted_data_frame.columns[:2])
+
+            self.assertEqual(set(category_cols), set(category_cols) & first_cols)
