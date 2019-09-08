@@ -3,14 +3,7 @@ from faker import Faker
 import pandas as pd
 
 from tests.fixtures.data_factories import fake_cleaned_match_data
-from machine_learning.data_processors.feature_calculation import (
-    feature_calculator,
-    calculate_rolling_rate,
-    calculate_division,
-    calculate_multiplication,
-    calculate_rolling_mean_by_dimension,
-    calculate_addition,
-)
+from machine_learning.nodes import feature_calculation
 
 
 FAKE = Faker()
@@ -40,14 +33,14 @@ class TestFeatureCalculations(TestCase):
             (calc_func, ["team", "year"]),
             (calc_func, ["round_number", "score"]),
         ]
-        calc_function = feature_calculator(calculators)
+        calc_function = feature_calculation.feature_calculator(calculators)
         calculated_data_frame = calc_function(self.data_frame)
 
         self.assertIsInstance(calculated_data_frame, pd.DataFrame)
         self.assertFalse(any(calculated_data_frame.columns.duplicated()))
 
     def test_calculate_rolling_rate(self):
-        calc_function = calculate_rolling_rate(("score",))
+        calc_function = feature_calculation.calculate_rolling_rate(("score",))
 
         assert_required_columns(
             self,
@@ -61,7 +54,7 @@ class TestFeatureCalculations(TestCase):
         self.assertEqual(rolling_score.name, "rolling_score_rate")
 
     def test_calculate_division(self):
-        calc_function = calculate_division(("score", "oppo_score"))
+        calc_function = feature_calculation.calculate_division(("score", "oppo_score"))
 
         assert_required_columns(
             self,
@@ -75,7 +68,9 @@ class TestFeatureCalculations(TestCase):
         self.assertEqual(divided_scores.name, "score_divided_by_oppo_score")
 
     def test_calculate_multiplication(self):
-        calc_function = calculate_multiplication(("score", "oppo_score"))
+        calc_function = feature_calculation.calculate_multiplication(
+            ("score", "oppo_score")
+        )
 
         assert_required_columns(
             self,
@@ -89,7 +84,9 @@ class TestFeatureCalculations(TestCase):
         self.assertEqual(multiplied_scores.name, "score_multiplied_by_oppo_score")
 
     def test_calculate_rolling_mean_by_dimension(self):
-        calc_function = calculate_rolling_mean_by_dimension(("oppo_team", "score"))
+        calc_function = feature_calculation.calculate_rolling_mean_by_dimension(
+            ("oppo_team", "score")
+        )
 
         assert_required_columns(
             self,
@@ -105,7 +102,7 @@ class TestFeatureCalculations(TestCase):
         )
 
     def test_calculate_addition(self):
-        calc_function = calculate_addition(("score", "oppo_score"))
+        calc_function = feature_calculation.calculate_addition(("score", "oppo_score"))
 
         assert_required_columns(
             self,

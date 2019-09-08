@@ -2,16 +2,8 @@
 
 from kedro.pipeline import Pipeline, node
 
-from machine_learning.data_processors.feature_calculation import (
-    feature_calculator,
-    calculate_rolling_rate,
-    calculate_rolling_mean_by_dimension,
-    calculate_division,
-    calculate_addition,
-    calculate_multiplication,
-)
 from machine_learning.data_config import CATEGORY_COLS
-from .nodes import betting, common, match, player
+from .nodes import betting, common, match, player, feature_calculation
 
 MATCH_OPPO_COLS = [
     "team",
@@ -82,7 +74,14 @@ def betting_pipeline(start_date: str, end_date: str, **_kwargs):
                 betting.add_betting_pred_win, ["stacked_betting_data"], "betting_data_a"
             ),
             node(
-                feature_calculator([(calculate_rolling_rate, [("betting_pred_win",)])]),
+                feature_calculation.feature_calculator(
+                    [
+                        (
+                            feature_calculation.calculate_rolling_rate,
+                            [("betting_pred_win",)],
+                        )
+                    ]
+                ),
                 ["betting_data_a"],
                 "betting_data_b",
             ),
@@ -183,11 +182,14 @@ def match_pipeline(
             node(match.add_cum_win_points, "match_data_g", "match_data_h"),
             node(match.add_win_streak, "match_data_h", "match_data_i"),
             node(
-                feature_calculator(
+                feature_calculation.feature_calculator(
                     [
-                        (calculate_rolling_rate, [("prev_match_result",)]),
                         (
-                            calculate_rolling_mean_by_dimension,
+                            feature_calculation.calculate_rolling_rate,
+                            [("prev_match_result",)],
+                        ),
+                        (
+                            feature_calculation.calculate_rolling_mean_by_dimension,
                             [
                                 ("oppo_team", "margin"),
                                 ("oppo_team", "result"),
@@ -212,10 +214,16 @@ def match_pipeline(
             node(match.add_ladder_position, "match_data_l", "match_data_m"),
             node(match.add_elo_pred_win, "match_data_m", "match_data_n"),
             node(
-                feature_calculator(
+                feature_calculation.feature_calculator(
                     [
-                        (calculate_rolling_rate, [("elo_pred_win",)]),
-                        (calculate_division, [("elo_rating", "ladder_position")]),
+                        (
+                            feature_calculation.calculate_rolling_rate,
+                            [("elo_pred_win",)],
+                        ),
+                        (
+                            feature_calculation.calculate_division,
+                            [("elo_rating", "ladder_position")],
+                        ),
                     ]
                 ),
                 "match_data_n",
@@ -302,10 +310,10 @@ def player_pipeline(
             node(player.add_rolling_player_stats, "player_data_a", "player_data_b"),
             node(player.add_cum_matches_played, "player_data_b", "player_data_c"),
             node(
-                feature_calculator(
+                feature_calculation.feature_calculator(
                     [
                         (
-                            calculate_addition,
+                            feature_calculation.calculate_addition,
                             [
                                 (
                                     "rolling_prev_match_goals",
@@ -319,10 +327,10 @@ def player_pipeline(
                 "player_data_d",
             ),
             node(
-                feature_calculator(
+                feature_calculation.feature_calculator(
                     [
                         (
-                            calculate_division,
+                            feature_calculation.calculate_division,
                             [
                                 (
                                     "rolling_prev_match_goals",
@@ -364,10 +372,16 @@ def pipeline(start_date: str, end_date: str, **_kwargs):
                 "joined_data",
             ),
             node(
-                feature_calculator(
+                feature_calculation.feature_calculator(
                     [
-                        (calculate_division, [("elo_rating", "win_odds")]),
-                        (calculate_multiplication, [("win_odds", "ladder_position")]),
+                        (
+                            feature_calculation.calculate_division,
+                            [("elo_rating", "win_odds")],
+                        ),
+                        (
+                            feature_calculation.calculate_multiplication,
+                            [("win_odds", "ladder_position")],
+                        ),
                     ]
                 ),
                 "joined_data",
