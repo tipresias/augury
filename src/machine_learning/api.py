@@ -8,7 +8,7 @@ import pandas as pd
 from sklearn.externals import joblib
 from mypy_extensions import TypedDict
 
-from machine_learning.ml_data import JoinedMLData, BaseMLData
+from machine_learning.ml_data import MLData
 from machine_learning.ml_estimators import BaseMLEstimator
 from machine_learning.data_import import FitzroyDataImporter
 from machine_learning.nodes import match
@@ -60,7 +60,7 @@ def _api_response(data: Union[pd.DataFrame, Dict[str, Any]]) -> ApiResponse:
     return {"data": response_data}
 
 
-def _train_model(ml_model: BaseMLEstimator, data: BaseMLData) -> BaseMLEstimator:
+def _train_model(ml_model: BaseMLEstimator, data: MLData) -> BaseMLEstimator:
     X_train, y_train = data.train_data()
 
     # On the off chance that we try to run predictions for years that have no relevant
@@ -81,7 +81,7 @@ def _train_model(ml_model: BaseMLEstimator, data: BaseMLData) -> BaseMLEstimator
 
 def _make_model_predictions(
     year: int,
-    data: BaseMLData,
+    data: MLData,
     ml_model: Dict[str, str],
     round_number: Optional[int] = None,
     verbose=1,
@@ -134,7 +134,7 @@ def _make_model_predictions(
 
 
 def _make_predictions_by_year(
-    data: BaseMLData,
+    data: MLData,
     ml_model_names: Optional[List[str]],
     year: int,
     round_number: Optional[int] = None,
@@ -163,9 +163,7 @@ def _make_predictions_by_year(
 def make_predictions(
     year_range: Tuple[int, int],
     round_number: Optional[int] = None,
-    data: BaseMLData = JoinedMLData(
-        fetch_data=True, start_date=PREDICTION_DATA_START_DATE, end_date=END_OF_YEAR
-    ),
+    data: MLData = MLData(start_date=PREDICTION_DATA_START_DATE, end_date=END_OF_YEAR),
     ml_model_names: Optional[List[str]] = None,
     verbose=1,
     train=False,

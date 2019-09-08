@@ -1,15 +1,21 @@
-"""Module for base class for machine learning data class"""
+"""Module for holding model data and returning it in a form useful for ML pipelines"""
 
-from typing import Tuple
+from typing import Tuple, Callable
 from datetime import date
 
 import pandas as pd
 
+from machine_learning.run import run_pipeline
 from machine_learning.types import YearPair
 
 
-class BaseMLData:
-    """Base class for model data"""
+END_OF_YEAR = f"{date.today().year}-12-31"
+
+
+class MLData:
+    """
+    Class for holding model data and returning it in a form useful for ML pipelines
+    """
 
     @classmethod
     def class_path(cls):
@@ -17,15 +23,25 @@ class BaseMLData:
 
     def __init__(
         self,
+        pipeline_runner: Callable[[str, str], pd.DataFrame] = run_pipeline,
         train_years: YearPair = (None, 2015),
         test_years: YearPair = (2016, 2016),
         start_date: str = "1897-01-01",
         end_date: str = str(date.today()),
     ) -> None:
+        self._pipeline_runner = pipeline_runner
         self._train_years = train_years
         self._test_years = test_years
         self.start_date = start_date
         self.end_date = end_date
+        self._data = None
+
+    @property
+    def data(self) -> pd.DataFrame:
+        if self._data is None:
+            self._data = self._pipeline_runner(self.start_date, self.end_date)
+
+        return self._data
 
     def train_data(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """Filter data by year to produce training data"""
@@ -63,12 +79,6 @@ class BaseMLData:
         y_test = self.__y(data_test)
 
         return X_test, y_test
-
-    @property
-    def data(self) -> pd.DataFrame:
-        """Get the data frame"""
-
-        raise NotImplementedError("The data() method must be defined.")
 
     @property
     def train_years(self) -> YearPair:
