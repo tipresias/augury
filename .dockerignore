@@ -91,6 +91,8 @@ deploy_rsa.enc
 
 # ignore potentially sensitive credentials files
 conf/**/*credentials*
+.gcloud
+keyfile.json
 
 # ignore everything in the following folders
 data/**
