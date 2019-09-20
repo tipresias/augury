@@ -168,6 +168,8 @@ def make_predictions(
     verbose=1,
     train=False,
 ) -> ApiResponse:
+    data.round_number = round_number
+
     partial_make_predictions_by_year = partial(
         _make_predictions_by_year,
         data,
