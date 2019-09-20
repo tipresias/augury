@@ -84,7 +84,7 @@ def clean_match_data(match_data: pd.DataFrame) -> pd.DataFrame:
         Cleanish pandas.DataFrame
     """
     if any(match_data):
-        return (
+        clean_data = (
             match_data.rename(columns=MATCH_COL_TRANSLATIONS)
             .astype({"year": int, "round_number": int})
             .pipe(
@@ -101,6 +101,31 @@ def clean_match_data(match_data: pd.DataFrame) -> pd.DataFrame:
             .drop("round", axis=1)
             .sort_values("date")
         )
+
+        # AFLTables has some incorrect home/away team designations for finals 2019
+        round_24_2019 = (clean_data["year"] == 2019) & (
+            clean_data["round_number"] == 24
+        )
+
+        clean_data.loc[
+            round_24_2019 & (clean_data["home_team"] == "Collingwood"),
+            ["home_team", "away_team"],
+        ] = ["Geelong", "Collingwood"]
+        clean_data.loc[
+            round_24_2019 & (clean_data["home_team"] == "Richmond"),
+            ["home_team", "away_team"],
+        ] = ["Brisbane", "Richmond"]
+
+        round_25_2019 = (clean_data["year"] == 2019) & (
+            clean_data["round_number"] == 25
+        )
+
+        clean_data.loc[
+            round_25_2019 & (clean_data["home_team"] == "GWS"),
+            ["home_team", "away_team"],
+        ] = ["Brisbane", "GWS"]
+
+        return clean_data
 
     return pd.DataFrame()
 
