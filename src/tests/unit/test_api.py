@@ -87,12 +87,6 @@ class TestApi(TestCase):
         )
 
         matches = response["data"]
-
-        older_matches = [
-            match for match in matches if match["date"] < str(date.today())
-        ]
-        self.assertFalse(any(older_matches))
-
         first_match = matches[0]
 
         self.assertEqual(set(first_match.keys()), set(PROCESSED_FIXTURE_FIELDS))

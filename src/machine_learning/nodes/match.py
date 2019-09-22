@@ -195,27 +195,19 @@ def clean_fixture_data(fixture_data: pd.DataFrame) -> pd.DataFrame:
     if not fixture_data.any().any():
         return pd.DataFrame()
 
-    # TODO: Created a regression bug by removing this time-based filtering,
-    # but it probably should be somewhere else
-    right_now = str(datetime.now())  # pylint: disable=W0612
-    next_round = fixture_data.query("date > @right_now")["round"].min()
-    filter_fixture_by_round = fixture_data["round"] == next_round
-
-    filtered_fixture_data = fixture_data.rename(
-        columns={"round": "round_number", "season": "year"}
-    ).loc[filter_fixture_by_round, SHARED_MATCH_FIXTURE_COLS]
-
-    if not filtered_fixture_data.any().any():
-        return pd.DataFrame()
-
-    fixture_data_frame = filtered_fixture_data.assign(
-        venue=lambda df: df["venue"].map(_map_footywire_venues),
-        round_type=_round_type_column,
-        home_team=_translate_team_column("home_team"),
-        away_team=_translate_team_column("away_team"),
-        date=_parse_dates,
-        match_id=_match_id_column,
-    ).fillna(0)
+    fixture_data_frame = (
+        fixture_data.rename(columns={"round": "round_number", "season": "year"})
+        .loc[:, SHARED_MATCH_FIXTURE_COLS]
+        .assign(
+            venue=lambda df: df["venue"].map(_map_footywire_venues),
+            round_type=_round_type_column,
+            home_team=_translate_team_column("home_team"),
+            away_team=_translate_team_column("away_team"),
+            date=_parse_dates,
+            match_id=_match_id_column,
+        )
+        .fillna(0)
+    )
 
     # Fixes bad fixture data on footywire.com that hasn't been updated/corrected
     # as of 2019-09-20.
