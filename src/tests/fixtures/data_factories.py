@@ -18,6 +18,18 @@ from machine_learning.settings import MELBOURNE_TIMEZONE
 from machine_learning.nodes.base import _parse_dates
 
 
+FixtureData = TypedDict(
+    "FixtureData",
+    {
+        "date": str,
+        "season": int,
+        "round": int,
+        "home_team": str,
+        "away_team": str,
+        "venue": str,
+    },
+)
+
 CleanFixtureData = TypedDict(
     "CleanFixtureData",
     {
@@ -337,7 +349,7 @@ def fake_footywire_betting_data(
     return pd.DataFrame(list(reduced_data))
 
 
-def _fixture_data(year: int, team_names: Tuple[str, str]) -> CleanFixtureData:
+def _fixture_data(year: int, team_names: Tuple[str, str]) -> FixtureData:
     return {
         "date": str(
             FAKE.date_time_between_dates(
@@ -352,7 +364,7 @@ def _fixture_data(year: int, team_names: Tuple[str, str]) -> CleanFixtureData:
     }
 
 
-def _fixture_by_round(row_count: int, year: int) -> List[CleanFixtureData]:
+def _fixture_by_round(row_count: int, year: int) -> List[FixtureData]:
     team_names = CyclicalTeamNames()
 
     return [
@@ -363,7 +375,7 @@ def _fixture_by_round(row_count: int, year: int) -> List[CleanFixtureData]:
 
 def _fixture_by_year(
     row_count: int, year_range: Tuple[int, int]
-) -> List[List[CleanFixtureData]]:
+) -> List[List[FixtureData]]:
     return [_fixture_by_round(row_count, year) for year in range(*year_range)]
 
 
