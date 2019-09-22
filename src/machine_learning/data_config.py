@@ -1,5 +1,7 @@
 """Module for data transformations and internal conventions"""
 
+from typing import Dict, Union
+
 TEAM_TRANSLATIONS = {
     "Tigers": "Richmond",
     "Blues": "Carlton",
@@ -59,27 +61,127 @@ FOOTYWIRE_VENUE_TRANSLATIONS = {
     "TIO Traegar Park": "Traeger Park",
 }
 
-CITIES = {
-    "Adelaide": {"state": "SA", "lat": -34.9285, "long": 138.6007},
-    "Sydney": {"state": "NSW", "lat": -33.8688, "long": 151.2093},
-    "Melbourne": {"state": "VIC", "lat": -37.8136, "long": 144.9631},
-    "Geelong": {"state": "VIC", "lat": -38.1499, "long": 144.3617},
-    "Perth": {"state": "WA", "lat": -31.9505, "long": 115.8605},
-    "Gold Coast": {"state": "QLD", "lat": -28.0167, "long": 153.4000},
-    "Brisbane": {"state": "QLD", "lat": -27.4698, "long": 153.0251},
-    "Launceston": {"state": "TAS", "lat": -41.4332, "long": 147.1441},
-    "Canberra": {"state": "ACT", "lat": -35.2809, "long": 149.1300},
-    "Hobart": {"state": "TAS", "lat": -42.8821, "long": 147.3272},
-    "Darwin": {"state": "NT", "lat": -12.4634, "long": 130.8456},
-    "Alice Springs": {"state": "NT", "lat": -23.6980, "long": 133.8807},
-    "Wellington": {"state": "NZ", "lat": -41.2865, "long": 174.7762},
-    "Euroa": {"state": "VIC", "lat": -36.7500, "long": 145.5667},
-    "Yallourn": {"state": "VIC", "lat": -38.1803, "long": 146.3183},
-    "Cairns": {"state": "QLD", "lat": -6.9186, "long": 145.7781},
-    "Ballarat": {"state": "VIC", "lat": -37.5622, "long": 143.8503},
-    "Shanghai": {"state": "CHN", "lat": 31.2304, "long": 121.4737},
-    "Albury": {"state": "NSW", "lat": -36.0737, "long": 146.9135},
-    "Townsville": {"state": "QLD", "lat": -19.2590, "long": 146.8169},
+CITIES: Dict[str, Dict[str, Union[str, float]]] = {
+    "Adelaide": {
+        "state": "SA",
+        "lat": -34.9285,
+        "long": 138.6007,
+        "timezone": "Australia/Adelaide",
+    },
+    "Sydney": {
+        "state": "NSW",
+        "lat": -33.8688,
+        "long": 151.2093,
+        "timezone": "Australia/Sydney",
+    },
+    "Melbourne": {
+        "state": "VIC",
+        "lat": -37.8136,
+        "long": 144.9631,
+        "timezone": "Australia/Melbourne",
+    },
+    "Geelong": {
+        "state": "VIC",
+        "lat": -38.1499,
+        "long": 144.3617,
+        "timezone": "Australia/Melbourne",
+    },
+    "Perth": {
+        "state": "WA",
+        "lat": -31.9505,
+        "long": 115.8605,
+        "timezone": "Australia/Perth",
+    },
+    "Gold Coast": {
+        "state": "QLD",
+        "lat": -28.0167,
+        "long": 153.4000,
+        "timezone": "Australia/Brisbane",
+    },
+    "Brisbane": {
+        "state": "QLD",
+        "lat": -27.4698,
+        "long": 153.0251,
+        "timezone": "Australia/Brisbane",
+    },
+    "Launceston": {
+        "state": "TAS",
+        "lat": -41.4332,
+        "long": 147.1441,
+        "timezone": "Australia/Hobart",
+    },
+    "Canberra": {
+        "state": "ACT",
+        "lat": -35.2809,
+        "long": 149.1300,
+        "timezone": "Australia/Sydney",
+    },
+    "Hobart": {
+        "state": "TAS",
+        "lat": -42.8821,
+        "long": 147.3272,
+        "timezone": "Australia/Hobart",
+    },
+    "Darwin": {
+        "state": "NT",
+        "lat": -12.4634,
+        "long": 130.8456,
+        "timezone": "Australia/Darwin",
+    },
+    "Alice Springs": {
+        "state": "NT",
+        "lat": -23.6980,
+        "long": 133.8807,
+        "timezone": "Australia/Darwin",
+    },
+    "Wellington": {
+        "state": "NZ",
+        "lat": -41.2865,
+        "long": 174.7762,
+        "timezone": "Pacific/Auckland",
+    },
+    "Euroa": {
+        "state": "VIC",
+        "lat": -36.7500,
+        "long": 145.5667,
+        "timezone": "Australia/Melbourne",
+    },
+    "Yallourn": {
+        "state": "VIC",
+        "lat": -38.1803,
+        "long": 146.3183,
+        "timezone": "Australia/Melbourne",
+    },
+    "Cairns": {
+        "state": "QLD",
+        "lat": -6.9186,
+        "long": 145.7781,
+        "timezone": "Australia/Brisbane",
+    },
+    "Ballarat": {
+        "state": "VIC",
+        "lat": -37.5622,
+        "long": 143.8503,
+        "timezone": "Australia/Melbourne",
+    },
+    "Shanghai": {
+        "state": "CHN",
+        "lat": 31.2304,
+        "long": 121.4737,
+        "timezone": "Asia/Shanghai",
+    },
+    "Albury": {
+        "state": "NSW",
+        "lat": -36.0737,
+        "long": 146.9135,
+        "timezone": "Australia/Sidney",
+    },
+    "Townsville": {
+        "state": "QLD",
+        "lat": -19.2590,
+        "long": 146.8169,
+        "timezone": "Australia/Brisbane",
+    },
 }
 
 TEAM_CITIES = {
