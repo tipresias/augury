@@ -7,11 +7,28 @@ import numpy as np
 import pandas as pd
 from mypy_extensions import TypedDict
 
-from machine_learning.data_config import TEAM_NAMES, DEFUNCT_TEAM_NAMES, INDEX_COLS
+from machine_learning.data_config import (
+    TEAM_NAMES,
+    DEFUNCT_TEAM_NAMES,
+    INDEX_COLS,
+    VENUE_CITIES,
+)
 from machine_learning.types import BettingData
 from machine_learning.settings import MELBOURNE_TIMEZONE
 from machine_learning.nodes.base import _parse_dates
 
+
+FixtureData = TypedDict(
+    "FixtureData",
+    {
+        "date": str,
+        "season": int,
+        "round": int,
+        "home_team": str,
+        "away_team": str,
+        "venue": str,
+    },
+)
 
 CleanFixtureData = TypedDict(
     "CleanFixtureData",
@@ -111,13 +128,15 @@ def _raw_match_data(year: int, team_names: Tuple[str, str], idx: int) -> MatchDa
     return cast(
         MatchData,
         {
-            "date": FAKE.date_time_between_dates(**_min_max_datetimes_by_year(year)),
+            "date": str(
+                FAKE.date_time_between_dates(**_min_max_datetimes_by_year(year))
+            ),
             "season": year,
             "round": "R1",
             "round_number": round(idx / (len(CONTEMPORARY_TEAM_NAMES) / 2)) + 1,
             "home_team": team_names[0],
             "away_team": team_names[1],
-            "venue": FAKE.city(),
+            "venue": np.random.choice(list(VENUE_CITIES.keys())),
             "home_score": np.random.randint(50, 150),
             "away_score": np.random.randint(50, 150),
             "match_id": FAKE.ean(),
@@ -202,7 +221,11 @@ def fake_cleaned_match_data(
         data_frame = pd.DataFrame(reduced_data)
 
     return (
-        data_frame.assign(date=_parse_dates)
+        data_frame.assign(
+            date=lambda df: pd.to_datetime(df["date"]).dt.tz_localize(
+                MELBOURNE_TIMEZONE
+            )
+        )
         .set_index(INDEX_COLS, drop=False)
         .rename_axis([None] * len(INDEX_COLS))
     )
@@ -267,12 +290,18 @@ def _betting_data(year: int, team_names: Tuple[str, str], clean=True) -> Betting
     home_win_odds_diff = win_odds_diff if home_line_odds > 0 else -1 * win_odds_diff
     home_win_odds = BASELINE_BET_PAYOUT + home_win_odds_diff
     away_win_odds = BASELINE_BET_PAYOUT - home_win_odds_diff
-    tzinfo = MELBOURNE_TIMEZONE if clean else None
+
+    if clean:
+        betting_date = FAKE.date_time_between_dates(
+            **_min_max_datetimes_by_year(year), tzinfo=MELBOURNE_TIMEZONE
+        )
+    else:
+        betting_date = str(
+            FAKE.date_time_between_dates(**_min_max_datetimes_by_year(year))
+        )
 
     return {
-        "date": FAKE.date_time_between_dates(
-            **_min_max_datetimes_by_year(year), tzinfo=tzinfo
-        ),
+        "date": betting_date,
         "season": year,
         "round_number": 1,
         "round": f"{year} Round 1",
@@ -290,7 +319,7 @@ def _betting_data(year: int, team_names: Tuple[str, str], clean=True) -> Betting
         "away_line_odds": -1 * home_line_odds,
         "home_line_paid": BASELINE_BET_PAYOUT * int(home_score > away_score),
         "away_line_paid": BASELINE_BET_PAYOUT * int(away_score > home_score),
-        "venue": FAKE.city(),
+        "venue": np.random.choice(list(VENUE_CITIES.keys())),
     }
 
 
@@ -320,20 +349,22 @@ def fake_footywire_betting_data(
     return pd.DataFrame(list(reduced_data))
 
 
-def _fixture_data(year: int, team_names: Tuple[str, str]) -> CleanFixtureData:
+def _fixture_data(year: int, team_names: Tuple[str, str]) -> FixtureData:
     return {
-        "date": FAKE.date_time_between_dates(
-            **_min_max_datetimes_by_year(year, force_future=True)
+        "date": str(
+            FAKE.date_time_between_dates(
+                **_min_max_datetimes_by_year(year, force_future=True)
+            )
         ),
         "season": year,
         "round": 1,
         "home_team": team_names[0],
         "away_team": team_names[1],
-        "venue": FAKE.city(),
+        "venue": np.random.choice(list(VENUE_CITIES.keys())),
     }
 
 
-def _fixture_by_round(row_count: int, year: int) -> List[CleanFixtureData]:
+def _fixture_by_round(row_count: int, year: int) -> List[FixtureData]:
     team_names = CyclicalTeamNames()
 
     return [
@@ -344,7 +375,7 @@ def _fixture_by_round(row_count: int, year: int) -> List[CleanFixtureData]:
 
 def _fixture_by_year(
     row_count: int, year_range: Tuple[int, int]
-) -> List[List[CleanFixtureData]]:
+) -> List[List[FixtureData]]:
     return [_fixture_by_round(row_count, year) for year in range(*year_range)]
 
 

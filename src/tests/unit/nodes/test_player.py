@@ -47,7 +47,9 @@ class TestPlayer(TestCase, ColumnAssertionMixin):
             self.assertTrue(col in clean_data.columns.values)
 
     def test_clean_roster_data(self):
-        roster_data = pd.read_json(os.path.join(TEST_DATA_DIR, "team_rosters.json"))
+        roster_data = pd.read_json(
+            os.path.join(TEST_DATA_DIR, "team_rosters.json"), convert_dates=False
+        )
         dummy_player_data = pd.DataFrame(
             {
                 "player_id": [FAKE.ean() for _ in range(len(roster_data))],

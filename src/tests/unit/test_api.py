@@ -12,7 +12,7 @@ from machine_learning import settings
 
 
 THIS_YEAR = date.today().year
-YEAR_RANGE = (THIS_YEAR, THIS_YEAR + 1)
+YEAR_RANGE = (2018, 2019)
 PREDICTION_ROUND = 1
 N_MATCHES = 5
 FAKE_ML_MODELS = [
@@ -20,7 +20,6 @@ FAKE_ML_MODELS = [
 ]
 
 
-@freeze_time(f"{THIS_YEAR}-06-15")
 class TestApi(TestCase):
     @patch("machine_learning.api.ML_MODELS", FAKE_ML_MODELS)
     def test_make_predictions(self):
@@ -30,13 +29,14 @@ class TestApi(TestCase):
             "year == @max_year & round_number == @PREDICTION_ROUND"
         )
 
-        response = api.make_predictions(
-            YEAR_RANGE,
-            PREDICTION_ROUND,
-            data=fake_data,
-            ml_model_names="fake_estimator",
-            verbose=0,
-        )
+        with freeze_time(f"{max_year}-06-15"):
+            response = api.make_predictions(
+                YEAR_RANGE,
+                PREDICTION_ROUND,
+                data=fake_data,
+                ml_model_names="fake_estimator",
+                verbose=0,
+            )
 
         predictions = response["data"]
 
@@ -80,19 +80,13 @@ class TestApi(TestCase):
         )
 
         response = api.fetch_fixture_data(
-            f"{THIS_YEAR}-01-01",
-            f"{THIS_YEAR}-12-31",
+            f"{YEAR_RANGE[0]}-01-01",
+            f"{YEAR_RANGE[0]}-12-31",
             data_import=data_importer,
             verbose=0,
         )
 
         matches = response["data"]
-
-        older_matches = [
-            match for match in matches if match["date"] < str(date.today())
-        ]
-        self.assertFalse(any(older_matches))
-
         first_match = matches[0]
 
         self.assertEqual(set(first_match.keys()), set(PROCESSED_FIXTURE_FIELDS))
