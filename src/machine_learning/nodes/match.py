@@ -208,26 +208,6 @@ def clean_fixture_data(fixture_data: pd.DataFrame) -> pd.DataFrame:
         .fillna(0)
     )
 
-    # Fixes bad fixture data on footywire.com that hasn't been updated/corrected
-    # as of 2019-09-20.
-    # The finals round numbers skip from 24 to 26, 27, etc. This is likely due to how
-    # fitzRoy calculates round numbers, which is vulnerable to unusual start/end days-of-week
-    # for rounds
-    post_first_round_finals_2019 = (fixture_data_frame["year"] == 2019) & (
-        fixture_data_frame["round_number"] > 24
-    )
-
-    if fixture_data_frame.loc[post_first_round_finals_2019, "round_number"].min() == 25:
-        return fixture_data_frame
-
-    correct_finals_round_numbers = fixture_data_frame.loc[
-        post_first_round_finals_2019, "round_number"
-    ].map(lambda round_number: round_number - 1)
-
-    fixture_data_frame.loc[
-        post_first_round_finals_2019, "round_number"
-    ] = correct_finals_round_numbers
-
     return fixture_data_frame
 
 

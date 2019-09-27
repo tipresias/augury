@@ -3,6 +3,7 @@
 from typing import Dict, Any, List
 import json
 import os
+import time
 
 import requests
 
@@ -39,6 +40,8 @@ def _make_request(
         # longer due to the container getting started, and it sometimes times out,
         # so we'll retry once just in case
         if retry:
+            print(f"Received an error response from {url}, retrying...")
+            time.sleep(5)
             _make_request(url, params=params, headers=headers, retry=False)
 
         raise Exception(
