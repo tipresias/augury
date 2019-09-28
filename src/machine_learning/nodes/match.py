@@ -22,6 +22,7 @@ from .base import (
     _validate_required_columns,
     _filter_out_dodgy_data,
     _convert_id_to_string,
+    _validate_unique_team_index_columns,
 )
 
 
@@ -124,6 +125,8 @@ def clean_match_data(match_data: pd.DataFrame) -> pd.DataFrame:
             ["home_team", "away_team"],
         ] = ["Brisbane", "GWS"]
 
+        _validate_unique_team_index_columns(clean_data)
+
         return clean_data
 
     return pd.DataFrame()
@@ -207,6 +210,8 @@ def clean_fixture_data(fixture_data: pd.DataFrame) -> pd.DataFrame:
         )
         .fillna(0)
     )
+
+    _validate_unique_team_index_columns(fixture_data_frame)
 
     return fixture_data_frame
 

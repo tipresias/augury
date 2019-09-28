@@ -52,6 +52,24 @@ def _validate_required_columns(
     )
 
 
+def _validate_unique_team_index_columns(data_frame: pd.DataFrame):
+    duplicate_home_team_indices = data_frame[
+        ["home_team", "year", "round_number"]
+    ].duplicated(keep=False)
+    assert not duplicate_home_team_indices.any().any(), (
+        "Cleaning player data resulted in rows with duplicate indices:\n"
+        f"{data_frame[duplicate_home_team_indices]}"
+    )
+
+    duplicate_away_indices = data_frame[
+        ["away_team", "year", "round_number"]
+    ].duplicated(keep=False)
+    assert not duplicate_away_indices.any().any(), (
+        "Cleaning player data resulted in rows with duplicate indices:\n"
+        f"{data_frame[duplicate_away_indices]}"
+    )
+
+
 def _filter_out_dodgy_data(duplicate_subset=None) -> Callable:
     return lambda df: (
         df.sort_values("date", ascending=True)
