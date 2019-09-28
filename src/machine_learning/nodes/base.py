@@ -6,18 +6,15 @@ import pytz
 import pandas as pd
 
 from machine_learning.data_config import TEAM_TRANSLATIONS, VENUE_CITIES, CITIES
-from machine_learning.settings import MELBOURNE_TIMEZONE
 
 
 def _localize_dates(row: pd.Series) -> datetime:
-    if row.get("venue") is None:
-        # Defaulting to Melbourne time, when the datetime isn't location specific,
-        # because the AFL has a pro-Melbourne bias, so why shouldn't we?
-        venue_timezone: Union[str, float, None] = MELBOURNE_TIMEZONE.zone
-    else:
-        venue_city = VENUE_CITIES[row["venue"]]
-        # Footywire displays times local to each match's venue
-        venue_timezone = CITIES[venue_city].get("timezone")
+    # Defaulting to Melbourne time, when the datetime isn't location specific,
+    # because the AFL has a pro-Melbourne bias, so why shouldn't we?
+    venue_city = VENUE_CITIES[row["venue"]] if "venue" in row.index else "Melbourne"
+
+    # Footywire displays times local to each match's venue
+    venue_timezone = CITIES[venue_city].get("timezone")
 
     assert isinstance(
         venue_timezone, str
@@ -28,13 +25,9 @@ def _localize_dates(row: pd.Series) -> datetime:
 
 def _parse_dates(data_frame: pd.DataFrame) -> pd.Series:
     localize_columns = ["date", "venue"] if "venue" in data_frame.columns else ["date"]
+    localized_dates = data_frame[localize_columns].apply(_localize_dates, axis=1)
 
-    return pd.to_datetime(
-        pd.Series(
-            [_localize_dates(row) for _, row in data_frame[localize_columns].iterrows()]
-        ),
-        utc=True,
-    )
+    return pd.to_datetime(localized_dates, utc=True)
 
 
 def _translate_team_name(team_name: str) -> str:
