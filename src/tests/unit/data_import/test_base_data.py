@@ -8,7 +8,7 @@ from machine_learning.data_import.base_data import (
 )
 
 
-FAKE_JSON = [{"number": 5, "name": "bob"}, {"number": 454, "name": "jim"}]
+FAKE_JSON = {"data": [{"number": 5, "name": "bob"}, {"number": 454, "name": "jim"}]}
 
 
 class TestBaseData(TestCase):
@@ -28,14 +28,14 @@ class TestBaseData(TestCase):
         self.add_success_response()
 
         res = fetch_afl_data("/data")
-        self.assertEqual(res, FAKE_JSON)
+        self.assertEqual(res, FAKE_JSON.get("data"))
 
         with self.subTest("when first response isn't 200"):
             self.add_failure_response()
             self.add_success_response()
 
             res = fetch_afl_data("/data")
-            self.assertEqual(res, FAKE_JSON)
+            self.assertEqual(res, FAKE_JSON.get("data"))
 
         with self.subTest("when the retry returns a failure response"):
             self.add_failure_response()
