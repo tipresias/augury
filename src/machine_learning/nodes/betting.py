@@ -4,7 +4,12 @@ from typing import List
 
 import pandas as pd
 
-from .base import _parse_dates, _translate_team_column, _validate_required_columns
+from .base import (
+    _parse_dates,
+    _translate_team_column,
+    _validate_required_columns,
+    _validate_unique_team_index_columns,
+)
 
 
 def clean_data(betting_data: pd.DataFrame) -> pd.DataFrame:
@@ -18,7 +23,7 @@ def clean_data(betting_data: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pandas.DataFrame
     """
-    return (
+    clean_betting_data = (
         betting_data.rename(columns={"season": "year"})
         .drop(
             [
@@ -39,6 +44,10 @@ def clean_data(betting_data: pd.DataFrame) -> pd.DataFrame:
         )
         .drop("round", axis=1)
     )
+
+    _validate_unique_team_index_columns(clean_betting_data)
+
+    return clean_betting_data
 
 
 def add_betting_pred_win(data_frame: pd.DataFrame) -> pd.DataFrame:
