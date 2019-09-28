@@ -115,6 +115,10 @@ def clean_player_data(
         pandas.DataFrame: Clean player data
     """
 
+    match_data = match_data.pipe(match.clean_match_data).loc[
+        :, ["date", "venue", "round_number", "match_id"]
+    ]
+
     cleaned_player_data = (
         player_data.rename(columns=PLAYER_COL_TRANSLATIONS)
         .astype({"year": int})
@@ -133,19 +137,13 @@ def clean_player_data(
         # The easiest way to add correct ones is to graft on the IDs
         # from match_results. Also, match_results round_numbers are integers rather than
         # a mix of ints and strings.
-        .merge(
-            match_data.pipe(match.clean_match_data).loc[
-                :, ["date", "venue", "round_number", "match_id"]
-            ],
-            on=["date", "venue"],
-            how="left",
-        )
+        .merge(match_data, on=["date", "venue"], how="left")
         .pipe(
             _filter_out_dodgy_data(
                 duplicate_subset=["year", "round_number", "player_id"]
             )
         )
-        .drop(["venue"], axis=1)
+        .drop("venue", axis=1)
         # brownlow_votes aren't known until the end of the season
         .fillna({"brownlow_votes": 0})
         # Joining on date/venue leaves two duplicates played at M.C.G.
