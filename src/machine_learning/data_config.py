@@ -174,7 +174,7 @@ CITIES: Dict[str, Dict[str, Union[str, float]]] = {
         "state": "NSW",
         "lat": -36.0737,
         "long": 146.9135,
-        "timezone": "Australia/Sidney",
+        "timezone": "Australia/Sydney",
     },
     "Townsville": {
         "state": "QLD",

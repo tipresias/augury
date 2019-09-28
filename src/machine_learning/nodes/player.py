@@ -145,7 +145,7 @@ def clean_player_data(
                 duplicate_subset=["year", "round_number", "player_id"]
             )
         )
-        .drop("venue", axis=1)
+        .drop(["venue"], axis=1)
         # brownlow_votes aren't known until the end of the season
         .fillna({"brownlow_votes": 0})
         # Joining on date/venue leaves two duplicates played at M.C.G.
