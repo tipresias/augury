@@ -1,7 +1,6 @@
 """Base module for fetching data from afl_data service"""
 
 from typing import Dict, Any, List
-import json
 import os
 import time
 
@@ -13,16 +12,12 @@ AFL_DATA_SERVICE = os.getenv("AFL_DATA_SERVICE", default="")
 
 
 def _handle_response_data(response: requests.Response) -> List[Dict[str, Any]]:
-    data = response.json()
+    parsed_response = response.json()
 
-    if isinstance(data, dict) and "error" in data.keys():
-        raise RuntimeError(data["error"])
+    if isinstance(parsed_response, dict) and "error" in parsed_response.keys():
+        raise RuntimeError(parsed_response["error"])
 
-    if len(data) == 1:
-        # For some reason, when returning match data with fetch_data=False,
-        # plumber returns JSON as a big string inside a list, so we have to parse
-        # the first element
-        return json.loads(data[0])
+    data = parsed_response.get("data")
 
     if any(data):
         return data
