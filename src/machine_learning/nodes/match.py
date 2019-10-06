@@ -72,6 +72,40 @@ YEAR_LEVEL = 1
 WIN_POINTS = 4
 
 
+# AFLTables has some incorrect home/away team designations for finals 2019
+def _correct_home_away_teams(match_data: pd.DataFrame) -> pd.DataFrame:
+    round_24_2019 = (match_data["year"] == 2019) & (match_data["round_number"] == 24)
+    incorrect_24_home_team = (match_data["home_team"] == "Collingwood") | (
+        match_data["home_team"] == "Richmond"
+    )
+
+    round_25_2019 = (match_data["year"] == 2019) & (match_data["round_number"] == 25)
+    incorrect_25_home_team = match_data["home_team"] == "GWS"
+
+    round_26_2019 = (match_data["year"] == 2019) & (match_data["round_number"] == 26)
+    incorrect_26_home_team = match_data["home_team"] == "GWS"
+
+    reversed_home_away_teams = (
+        (round_24_2019 & incorrect_24_home_team)
+        | (round_25_2019 & incorrect_25_home_team)
+        | (round_26_2019 & incorrect_26_home_team)
+    )
+
+    correct_match_data = match_data.loc[~reversed_home_away_teams, :]
+    incorrect_match_data = match_data.loc[reversed_home_away_teams, :]
+
+    incorrect_match_data.rename(
+        columns=lambda col_name: (
+            col_name.replace("home_", "away_")
+            if "home_" in col_name
+            else col_name.replace("away_", "home_")
+        ),
+        inplace=True,
+    )
+
+    return correct_match_data.append(incorrect_match_data, sort=False)
+
+
 def clean_match_data(match_data: pd.DataFrame) -> pd.DataFrame:
     """
     Basic data cleaning, translation, and dropping in preparation for ML-specific
@@ -100,39 +134,8 @@ def clean_match_data(match_data: pd.DataFrame) -> pd.DataFrame:
             )
             .drop("round", axis=1)
             .sort_values("date")
+            .pipe(_correct_home_away_teams)
         )
-
-        # AFLTables has some incorrect home/away team designations for finals 2019
-        round_24_2019 = (clean_data["year"] == 2019) & (
-            clean_data["round_number"] == 24
-        )
-
-        clean_data.loc[
-            round_24_2019 & (clean_data["home_team"] == "Collingwood"),
-            ["home_team", "away_team"],
-        ] = ["Geelong", "Collingwood"]
-        clean_data.loc[
-            round_24_2019 & (clean_data["home_team"] == "Richmond"),
-            ["home_team", "away_team"],
-        ] = ["Brisbane", "Richmond"]
-
-        round_25_2019 = (clean_data["year"] == 2019) & (
-            clean_data["round_number"] == 25
-        )
-
-        clean_data.loc[
-            round_25_2019 & (clean_data["home_team"] == "GWS"),
-            ["home_team", "away_team"],
-        ] = ["Brisbane", "GWS"]
-
-        round_26_2019 = (clean_data["year"] == 2019) & (
-            clean_data["round_number"] == 26
-        )
-
-        clean_data.loc[
-            round_26_2019 & (clean_data["home_team"] == "GWS"),
-            ["home_team", "away_team"],
-        ] = ["Collingwood", "GWS"]
 
         _validate_unique_team_index_columns(clean_data)
 
