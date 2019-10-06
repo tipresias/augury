@@ -125,6 +125,15 @@ def clean_match_data(match_data: pd.DataFrame) -> pd.DataFrame:
             ["home_team", "away_team"],
         ] = ["Brisbane", "GWS"]
 
+        round_26_2019 = (clean_data["year"] == 2019) & (
+            clean_data["round_number"] == 26
+        )
+
+        clean_data.loc[
+            round_26_2019 & (clean_data["home_team"] == "GWS"),
+            ["home_team", "away_team"],
+        ] = ["Collingwood", "GWS"]
+
         _validate_unique_team_index_columns(clean_data)
 
         return clean_data
