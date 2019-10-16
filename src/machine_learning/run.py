@@ -113,7 +113,7 @@ def run_pipeline(
     runner: str = None,
 ) -> pd.DataFrame:
     # Load Catalog
-    conf = get_config(project_path=str(Path.cwd()), env=os.getenv("PYTHON_ENV"))
+    conf = get_config(project_path=BASE_DIR, env=os.getenv("PYTHON_ENV"))
     catalog = create_catalog(config=conf, round_number=round_number)
 
     # Load the runner
