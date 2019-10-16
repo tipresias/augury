@@ -3,7 +3,6 @@
 import logging.config
 from pathlib import Path
 from typing import Iterable, Optional, Callable
-from warnings import warn
 import os
 from datetime import date
 
@@ -87,7 +86,6 @@ def create_catalog(
     try:
         conf_creds = config.get("credentials*", "credentials*/**")
     except MissingConfigException:
-        warn("Your Kedro project is missing a credentials file!")
         conf_creds = {}
 
     conf_params = config.get("parameters*", "parameters*/**")
@@ -115,7 +113,7 @@ def run_pipeline(
     runner: str = None,
 ) -> pd.DataFrame:
     # Load Catalog
-    conf = get_config(project_path=str(Path.cwd()), env=os.getenv("PYTHON_ENV"))
+    conf = get_config(project_path=BASE_DIR, env=os.getenv("PYTHON_ENV"))
     catalog = create_catalog(config=conf, round_number=round_number)
 
     # Load the runner

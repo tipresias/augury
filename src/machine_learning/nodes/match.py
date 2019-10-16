@@ -1,7 +1,7 @@
 """Pipeline nodes for transforming match data"""
 
 from typing import List, Tuple
-from functools import partial, reduce
+from functools import partial, reduce, update_wrapper
 import math
 
 import pandas as pd
@@ -185,7 +185,9 @@ def _round_type_column(data_frame: pd.DataFrame) -> pd.DataFrame:
         f"The offending series is:\n{data_frame['year']}"
     )
 
-    return data_frame["round_number"].map(partial(_map_round_type, years.iloc[0]))
+    return data_frame["round_number"].map(
+        update_wrapper(partial(_map_round_type, years.iloc[0]), _map_round_type)
+    )
 
 
 def _match_id_column(data_frame: pd.DataFrame) -> pd.Series:
@@ -457,7 +459,7 @@ def add_shifted_team_features(
     shift = any(shift_columns)
     columns = shift_columns if shift else keep_columns
 
-    return partial(_shift_features, columns, shift)
+    return update_wrapper(partial(_shift_features, columns, shift), _shift_features)
 
 
 def add_cum_win_points(data_frame: pd.DataFrame) -> pd.DataFrame:
@@ -565,7 +567,7 @@ def add_ladder_position(data_frame: pd.DataFrame) -> pd.DataFrame:
             ["cum_win_points", "cum_percent"], ascending=False
         )
 
-        for ladder_idx, team_name in enumerate(sorted_row.index.get_values()):
+        for ladder_idx, team_name in enumerate(sorted_row.index.to_numpy()):
             ladder_index.append(tuple([team_name, *year_round_idx]))
             ladder_values.append(ladder_idx + 1)
 

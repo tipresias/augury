@@ -1,5 +1,5 @@
 from typing import List, Sequence, Dict
-from functools import partial, reduce
+from functools import partial, reduce, update_wrapper
 import itertools
 import pandas as pd
 import numpy as np
@@ -50,7 +50,9 @@ def _calculate_features(calculators: List[CalculatorPair], data_frame: pd.DataFr
 
 
 def feature_calculator(calculators: List[CalculatorPair]) -> DataFrameTransformer:
-    return partial(_calculate_features, calculators)
+    return update_wrapper(
+        partial(_calculate_features, calculators), _calculate_features
+    )
 
 
 def _rolling_rate(column: str, data_frame: pd.DataFrame) -> pd.Series:
@@ -89,7 +91,7 @@ def calculate_rolling_rate(column: Sequence[str]) -> DataFrameCalculator:
             "Can only calculate one rolling average at a time, but received "
             f"{column}"
         )
-    return partial(_rolling_rate, column[0])
+    return update_wrapper(partial(_rolling_rate, column[0]), _rolling_rate)
 
 
 def _rolling_mean_by_dimension(
@@ -152,7 +154,10 @@ def calculate_rolling_mean_by_dimension(
             f"at a time, but received {column_pair}"
         )
 
-    return partial(_rolling_mean_by_dimension, column_pair, rolling_windows)
+    return update_wrapper(
+        partial(_rolling_mean_by_dimension, column_pair, rolling_windows),
+        _rolling_mean_by_dimension,
+    )
 
 
 def _division(column_pair: Sequence[str], data_frame: pd.DataFrame) -> pd.Series:
@@ -183,7 +188,7 @@ def calculate_division(column_pair: Sequence[str]) -> DataFrameCalculator:
             f"{column_pair}"
         )
 
-    return partial(_division, column_pair)
+    return update_wrapper(partial(_division, column_pair), _division)
 
 
 def _multiplication(column_pair: Sequence[str], data_frame: pd.DataFrame) -> pd.Series:
@@ -209,7 +214,7 @@ def calculate_multiplication(column_pair: Sequence[str]) -> DataFrameCalculator:
             f"{column_pair}"
         )
 
-    return partial(_multiplication, column_pair)
+    return update_wrapper(partial(_multiplication, column_pair), _multiplication)
 
 
 def _add_columns(
@@ -229,7 +234,9 @@ def _addition(columns: Sequence[str], data_frame: pd.DataFrame) -> pd.Series:
             f"{data_frame.columns}"
         )
 
-    addition_column = reduce(partial(_add_columns, data_frame), columns, None)
+    addition_column = reduce(
+        update_wrapper(partial(_add_columns, data_frame), _add_columns), columns, None
+    )
     column_label = "_plus_".join(columns)
 
     return addition_column.rename(column_label)
@@ -243,4 +250,4 @@ def calculate_addition(columns: Sequence[str]) -> DataFrameCalculator:
             "Must have at least two columns to add together, but received " f"{columns}"
         )
 
-    return partial(_addition, columns)
+    return update_wrapper(partial(_addition, columns), _addition)
