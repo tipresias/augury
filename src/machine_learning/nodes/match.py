@@ -567,7 +567,7 @@ def add_ladder_position(data_frame: pd.DataFrame) -> pd.DataFrame:
             ["cum_win_points", "cum_percent"], ascending=False
         )
 
-        for ladder_idx, team_name in enumerate(sorted_row.index.get_values()):
+        for ladder_idx, team_name in enumerate(sorted_row.index.to_numpy()):
             ladder_index.append(tuple([team_name, *year_round_idx]))
             ladder_values.append(ladder_idx + 1)
 
