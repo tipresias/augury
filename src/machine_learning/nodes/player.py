@@ -115,11 +115,11 @@ def clean_player_data(
         pandas.DataFrame: Clean player data
     """
 
-    match_data = match_data.pipe(match.clean_match_data).loc[
+    cleaned_match_data = match_data.pipe(match.clean_match_data).loc[
         :, ["date", "venue", "round_number", "match_id"]
     ]
 
-    cleaned_player_data = (
+    return (
         player_data.rename(columns=PLAYER_COL_TRANSLATIONS)
         .astype({"year": int})
         .assign(
@@ -137,7 +137,7 @@ def clean_player_data(
         # The easiest way to add correct ones is to graft on the IDs
         # from match_results. Also, match_results round_numbers are integers rather than
         # a mix of ints and strings.
-        .merge(match_data, on=["date", "venue"], how="left")
+        .merge(cleaned_match_data, on=["date", "venue"], how="left")
         .pipe(
             _filter_out_dodgy_data(
                 duplicate_subset=["year", "round_number", "player_id"]
@@ -156,8 +156,6 @@ def clean_player_data(
         .set_index("id")
         .sort_index()
     )
-
-    return cleaned_player_data
 
 
 def clean_roster_data(

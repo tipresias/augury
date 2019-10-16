@@ -9,6 +9,7 @@ from .base import (
     _translate_team_column,
     _validate_required_columns,
     _validate_unique_team_index_columns,
+    _filter_out_dodgy_data,
 )
 
 
@@ -25,6 +26,11 @@ def clean_data(betting_data: pd.DataFrame) -> pd.DataFrame:
     """
     clean_betting_data = (
         betting_data.rename(columns={"season": "year"})
+        .pipe(
+            _filter_out_dodgy_data(
+                duplicate_subset=["year", "round_number", "home_team", "away_team"]
+            )
+        )
         .drop(
             [
                 "home_win_paid",
