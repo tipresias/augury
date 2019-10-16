@@ -57,7 +57,7 @@ def _validate_unique_team_index_columns(data_frame: pd.DataFrame):
         ["home_team", "year", "round_number"]
     ].duplicated(keep=False)
     assert not duplicate_home_team_indices.any().any(), (
-        "Cleaning player data resulted in rows with duplicate indices:\n"
+        "Cleaning data resulted in rows with duplicate indices:\n"
         f"{data_frame[duplicate_home_team_indices]}"
     )
 
@@ -65,7 +65,7 @@ def _validate_unique_team_index_columns(data_frame: pd.DataFrame):
         ["away_team", "year", "round_number"]
     ].duplicated(keep=False)
     assert not duplicate_away_indices.any().any(), (
-        "Cleaning player data resulted in rows with duplicate indices:\n"
+        "Cleaning data resulted in rows with duplicate indices:\n"
         f"{data_frame[duplicate_away_indices]}"
     )
 
