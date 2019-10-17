@@ -11,7 +11,7 @@ scikit-learn==0.20.1
 xgboost==0.80
 
 # Kedro packages
-kedro==0.15.2
+kedro==0.15.3
 
 # Testing/Linting
 mypy>=0.70 # Need mypy due to references to mypy_extensions in production code
