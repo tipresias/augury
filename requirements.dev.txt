@@ -24,6 +24,13 @@ wheel==0.33.6
 seaborn
 matplotlib
 
+# Model analysis packages
+eli5
+pdpbox
+yellowbrick
+shap
+featexp
+
 # Testing/Linting
 pylint==2.3.1
 black
