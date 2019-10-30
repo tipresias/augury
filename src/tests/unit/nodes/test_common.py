@@ -175,7 +175,6 @@ class TestCommon(TestCase, ColumnAssertionMixin):
 
         with self.subTest(data_frame=valid_data_frame, match_cols=match_cols):
             data_frame = valid_data_frame
-            match_cols = match_cols
             transform_func = common.add_oppo_features(match_cols=match_cols)
             transformed_df = transform_func(data_frame)
 
