@@ -7,13 +7,17 @@ import itertools
 import pandas as pd
 from sklearn.externals import joblib
 from mypy_extensions import TypedDict
+import numpy as np
 
 from machine_learning.ml_data import MLData
 from machine_learning.ml_estimators import BaseMLEstimator
 from machine_learning.data_import import match_data
 from machine_learning.nodes import match
 from machine_learning.settings import ML_MODELS, BASE_DIR, PREDICTION_DATA_START_DATE
+from machine_learning.data_config import SEED
 
+
+np.random.seed(SEED)
 
 PredictionData = TypedDict(
     "PredictionData",
