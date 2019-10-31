@@ -10,7 +10,7 @@ from machine_learning.types import (
     Calculator,
     DataFrameCalculator,
 )
-from machine_learning.data_config import AVG_SEASON_LENGTH
+from machine_learning.settings import AVG_SEASON_LENGTH
 
 TEAM_LEVEL = 0
 # Varies by season and number of teams, but teams play each other about 1.5 times per season,

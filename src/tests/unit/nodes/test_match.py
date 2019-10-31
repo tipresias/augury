@@ -8,8 +8,7 @@ from faker import Faker
 
 from tests.fixtures.data_factories import fake_cleaned_match_data
 from machine_learning.nodes import match
-from machine_learning.settings import BASE_DIR
-from machine_learning.data_config import VENUES
+from machine_learning.settings import VENUES, BASE_DIR
 from .node_test_mixins import ColumnAssertionMixin
 
 

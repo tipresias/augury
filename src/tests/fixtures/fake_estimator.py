@@ -5,7 +5,7 @@ from sklearn.preprocessing import OneHotEncoder
 
 from machine_learning.ml_estimators import BaseMLEstimator
 from machine_learning.ml_data import MLData
-from machine_learning.data_config import TEAM_NAMES, VENUES, ROUND_TYPES
+from machine_learning.settings import TEAM_NAMES, VENUES, ROUND_TYPES
 from machine_learning.pipeline import fake_estimator_pipeline
 from machine_learning.run import run_pipeline
 

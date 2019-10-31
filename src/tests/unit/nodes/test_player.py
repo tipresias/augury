@@ -7,8 +7,7 @@ import numpy as np
 
 from tests.fixtures.data_factories import fake_cleaned_player_data
 from machine_learning.nodes import player
-from machine_learning.settings import BASE_DIR
-from machine_learning.data_config import INDEX_COLS
+from machine_learning.settings import INDEX_COLS, BASE_DIR
 from .node_test_mixins import ColumnAssertionMixin
 
 

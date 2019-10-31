@@ -8,7 +8,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import BaggingRegressor
 from xgboost import XGBRegressor
 
-from machine_learning.data_config import TEAM_NAMES, ROUND_TYPES, VENUES, CATEGORY_COLS
+from machine_learning.settings import TEAM_NAMES, ROUND_TYPES, VENUES, CATEGORY_COLS
 from machine_learning.ml_estimators.sklearn import CorrelationSelector
 from .. import BaseMLEstimator
 

@@ -5,7 +5,7 @@ from functools import partial, update_wrapper
 
 import pandas as pd
 
-from machine_learning.data_config import (
+from machine_learning.settings import (
     TEAM_TRANSLATIONS,
     AVG_SEASON_LENGTH,
     INDEX_COLS,

@@ -13,8 +13,7 @@ from machine_learning.ml_data import MLData
 from machine_learning.ml_estimators import BaseMLEstimator
 from machine_learning.data_import import match_data
 from machine_learning.nodes import match
-from machine_learning.settings import ML_MODELS, BASE_DIR, PREDICTION_DATA_START_DATE
-from machine_learning.data_config import SEED
+from machine_learning.settings import SEED, ML_MODELS, BASE_DIR, PREDICTION_DATA_START_DATE
 
 
 np.random.seed(SEED)

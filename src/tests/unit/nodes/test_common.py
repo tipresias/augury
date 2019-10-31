@@ -11,8 +11,7 @@ from tests.fixtures.data_factories import (
     fake_cleaned_match_data,
 )
 from machine_learning.nodes import common
-from machine_learning.data_config import INDEX_COLS
-from machine_learning.settings import MELBOURNE_TIMEZONE
+from machine_learning.settings import MELBOURNE_TIMEZONE, INDEX_COLS
 from .node_test_mixins import ColumnAssertionMixin
 
 START_DATE = "2013-01-01"

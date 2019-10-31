@@ -5,7 +5,7 @@ import pytz
 
 import pandas as pd
 
-from machine_learning.data_config import TEAM_TRANSLATIONS, VENUE_CITIES, CITIES
+from machine_learning.settings import TEAM_TRANSLATIONS, VENUE_CITIES, CITIES
 
 
 def _localize_dates(row: pd.Series) -> datetime:
