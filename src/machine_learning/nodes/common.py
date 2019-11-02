@@ -10,7 +10,7 @@ import numpy as np
 
 from machine_learning.data_config import ORIGINAL_COLUMNS
 from machine_learning.settings import MELBOURNE_TIMEZONE, INDEX_COLS
-from .base import _validate_required_columns
+from .base import _validate_required_columns, _validate_no_dodgy_zeros
 
 
 DATE_STRING_REGEX = re.compile(r"\d{4}\-\d{2}\-\d{2}")
@@ -44,7 +44,11 @@ def _combine_data_horizontally(*data_frames: Sequence[pd.DataFrame]):
     joined_data_frame = pd.concat(sorted_data_frames, axis=1, sort=False)
     duplicate_columns = joined_data_frame.columns.duplicated(keep="first")
 
-    return joined_data_frame.loc[:, ~duplicate_columns].fillna(0)
+    combined_data_frame = joined_data_frame.loc[:, ~duplicate_columns].fillna(0)
+
+    _validate_no_dodgy_zeros(combined_data_frame)
+
+    return combined_data_frame
 
 
 def _append_data_frames(
@@ -76,7 +80,11 @@ def _combine_data_vertically(*data_frames: Sequence[pd.DataFrame]):
 
     sorted_data_frames = sorted(valid_data_frames, key=lambda df: df["date"].min())
 
-    return reduce(_append_data_frames, sorted_data_frames).fillna(0)
+    combined_data_frame = reduce(_append_data_frames, sorted_data_frames).fillna(0)
+
+    _validate_no_dodgy_zeros(combined_data_frame)
+
+    return combined_data_frame
 
 
 def combine_data(axis: int) -> pd.DataFrame:
@@ -327,13 +335,17 @@ def finalize_data(
         pandas.DataFrame that's ready to be fed into a machine-learning model.
     """
 
-    return (
+    final_data_frame = (
         data_frame.astype({"year": int})
         .fillna(0)
         .set_index(index_cols, drop=False)
         .rename_axis([None] * len(index_cols))
         .sort_index()
     )
+
+    _validate_no_dodgy_zeros(final_data_frame)
+
+    return final_data_frame
 
 
 def _sort_data_frame_columns_node(
@@ -364,7 +376,7 @@ def sort_data_frame_columns(
 # TODO: This can probably be removed in favour of the standard finalize_data
 # once the season ends and I can clean up a few things and retrain the saved models
 def finalize_joined_data(data_frame: pd.DataFrame):
-    return (
+    final_data_frame = (
         data_frame.dropna()
         .sort_index()
         # TODO: This is only a temporary renaming to keep column names
@@ -377,3 +389,7 @@ def finalize_joined_data(data_frame: pd.DataFrame):
         # order as before, and figure out a better solution later
         .loc[:, ORIGINAL_COLUMNS]
     )
+
+    _validate_no_dodgy_zeros(final_data_frame)
+
+    return final_data_frame

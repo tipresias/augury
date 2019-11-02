@@ -109,6 +109,20 @@ def _validate_unique_team_index_columns(data_frame: pd.DataFrame):
     )
 
 
+def _validate_no_dodgy_zeros(data_frame: pd.DataFrame):
+    cols_to_check = list(set(data_frame.columns) & set(INDEX_COLS))
+
+    if not any(cols_to_check):
+        return None
+
+    zero_value_query = " | ".join([f"{col} == 0" for col in cols_to_check])
+    zeros_data_frame = data_frame.query(zero_value_query)
+
+    assert (
+        not zeros_data_frame.any().any()
+    ), f"An invalid fillna produced index column values of 0:\n{zeros_data_frame}"
+
+
 def _filter_out_dodgy_data(duplicate_subset=None) -> Callable:
     return lambda df: (
         df.sort_values("date", ascending=True)
