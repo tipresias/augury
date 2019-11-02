@@ -13,7 +13,7 @@ if BASE_DIR not in sys.path:
 from machine_learning import api
 from machine_learning.ml_data import MLData
 from machine_learning.data_import import match_data
-from machine_learning.data_config import INDEX_COLS, SEED
+from machine_learning.settings import INDEX_COLS, SEED
 
 np.random.seed(SEED)
 

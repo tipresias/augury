@@ -1,6 +1,8 @@
 from unittest import TestCase
+from datetime import time
 
 import numpy as np
+import pytz
 
 from tests.fixtures.data_factories import (
     fake_footywire_betting_data,
@@ -27,15 +29,18 @@ class TestBetting(TestCase, ColumnAssertionMixin):
         )
 
     def test_clean_data(self):
-        data = betting.clean_data(self.raw_betting_data)
+        clean_data = betting.clean_data(self.raw_betting_data)
 
-        self.assertIn("year", data.columns)
+        self.assertIn("year", clean_data.columns)
 
-        invalid_cols = data.filter(regex="_paid|_margin|venue|^round$").columns
+        invalid_cols = clean_data.filter(regex="_paid|_margin|venue|^round$").columns
         self.assertFalse(any(invalid_cols))
         self.assertEqual(
-            {*REQUIRED_OUTPUT_COLS}, {*data.columns} & {*REQUIRED_OUTPUT_COLS}
+            {*REQUIRED_OUTPUT_COLS}, {*clean_data.columns} & {*REQUIRED_OUTPUT_COLS}
         )
+
+        self.assertEqual(clean_data["date"].dt.tz, pytz.UTC)
+        self.assertFalse((clean_data["date"].dt.time == time()).any())
 
     def test_add_betting_pred_win(self):
         feature_function = betting.add_betting_pred_win

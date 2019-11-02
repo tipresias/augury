@@ -9,7 +9,7 @@ import numpy as np
 from sklearn.preprocessing import LabelEncoder
 from mypy_extensions import TypedDict
 
-from machine_learning.data_config import (
+from machine_learning.settings import (
     FOOTYWIRE_VENUE_TRANSLATIONS,
     CITIES,
     VENUE_CITIES,

@@ -7,14 +7,14 @@ import numpy as np
 import pandas as pd
 from mypy_extensions import TypedDict
 
-from machine_learning.data_config import (
+from machine_learning.settings import (
     TEAM_NAMES,
     DEFUNCT_TEAM_NAMES,
     INDEX_COLS,
     VENUE_CITIES,
+    MELBOURNE_TIMEZONE,
 )
 from machine_learning.types import BettingData
-from machine_learning.settings import MELBOURNE_TIMEZONE
 from machine_learning.nodes.base import _parse_dates
 
 

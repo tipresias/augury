@@ -10,7 +10,7 @@ from sklearn.pipeline import make_pipeline, Pipeline
 from sklearn.exceptions import DataConversionWarning
 from xgboost import XGBRegressor
 
-from machine_learning.data_config import (
+from machine_learning.settings import (
     TEAM_NAMES,
     ROUND_TYPES,
     VENUES,

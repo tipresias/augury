@@ -2,7 +2,7 @@
 
 from kedro.pipeline import Pipeline, node
 
-from machine_learning.data_config import CATEGORY_COLS
+from machine_learning.settings import CATEGORY_COLS
 from .nodes import betting, common, match, player, feature_calculation
 
 MATCH_OPPO_COLS = [
