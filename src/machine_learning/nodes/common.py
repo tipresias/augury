@@ -63,7 +63,7 @@ def _append_data_frames(
     ].max()
     sliced_current_data_frame = curr_data_frame.query("date > @max_accumulated_date")
 
-    return acc_data_frame.append(sliced_current_data_frame, sort=False)
+    return pd.concat([acc_data_frame, sliced_current_data_frame], axis=0, sort=False)
 
 
 def _combine_data_vertically(*data_frames: Sequence[pd.DataFrame]):
