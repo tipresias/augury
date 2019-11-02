@@ -309,8 +309,13 @@ VENUE_CITIES = {
 
 DEFUNCT_TEAM_NAMES = ["Fitzroy", "University"]
 TEAM_NAMES = sorted(DEFUNCT_TEAM_NAMES + list(set(TEAM_TRANSLATIONS.values())))
-ROUND_TYPES = ["Finals", "Regular"]
+
 VENUES = list(set(VENUE_CITIES.keys()))
+VENUE_TIMEZONES = {
+    venue: CITIES[city]["timezone"] for venue, city in VENUE_CITIES.items()
+}
+
+ROUND_TYPES = ["Finals", "Regular"]
 INDEX_COLS = ["team", "year", "round_number"]
 SEED = 42
 AVG_SEASON_LENGTH = 23

@@ -1,9 +1,11 @@
 from unittest import TestCase
 import os
+from datetime import time
 
 import pandas as pd
 from faker import Faker
 import numpy as np
+import pytz
 
 from tests.fixtures.data_factories import fake_cleaned_player_data
 from machine_learning.nodes import player
@@ -45,6 +47,9 @@ class TestPlayer(TestCase, ColumnAssertionMixin):
         for col in required_columns:
             self.assertTrue(col in clean_data.columns.values)
 
+        self.assertEqual(clean_data["date"].dt.tz, pytz.UTC)
+        self.assertFalse((clean_data["date"].dt.time == time()).any())
+
     def test_clean_roster_data(self):
         roster_data = pd.read_json(
             os.path.join(TEST_DATA_DIR, "team_rosters.json"), convert_dates=False
@@ -64,6 +69,9 @@ class TestPlayer(TestCase, ColumnAssertionMixin):
 
         for col in required_columns:
             self.assertTrue(col in clean_data.columns.values)
+
+        self.assertEqual(clean_data["date"].dt.tz, pytz.UTC)
+        self.assertFalse((clean_data["date"].dt.time == time()).any())
 
     def test_add_last_year_brownlow_votes(self):
         valid_data_frame = self.data_frame.assign(

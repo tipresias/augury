@@ -27,7 +27,6 @@ PLAYER_COL_TRANSLATIONS = {
 
 
 UNUSED_PLAYER_COLS = [
-    "local_start_time",
     "attendance",
     "hq1g",
     "hq1b",
@@ -115,14 +114,23 @@ def clean_player_data(
         pandas.DataFrame: Clean player data
     """
 
-    cleaned_match_data = match_data.pipe(match.clean_match_data).loc[
-        :, ["date", "venue", "round_number", "match_id"]
-    ]
+    cleaned_match_data = (
+        # Sometimes the time part of date differs between data sources,
+        # so we merge player and match data on date without time.
+        # This must happen before making datetimes timezone-aware
+        match_data.assign(merge_date=lambda df: pd.to_datetime(df["date"]).dt.date)
+        .pipe(match.clean_match_data)
+        .loc[:, ["merge_date", "venue", "round_number", "match_id"]]
+    )
 
     return (
         player_data.rename(columns=PLAYER_COL_TRANSLATIONS)
         .astype({"year": int})
         .assign(
+            # Sometimes the time part of date differs between data sources,
+            # so we merge player and match data on date without time.
+            # This must happen before making datetimes timezone-aware
+            merge_date=lambda df: pd.to_datetime(df["date"]).dt.date,
             # Some player data venues have trailing spaces
             venue=lambda x: x["venue"].str.strip(),
             player_name=lambda x: x["first_name"] + " " + x["surname"],
@@ -130,28 +138,30 @@ def clean_player_data(
             home_team=_translate_team_column("home_team"),
             away_team=_translate_team_column("away_team"),
             playing_for=_translate_team_column("playing_for"),
-            date=_parse_dates,
+            date=partial(_parse_dates, time_col="local_start_time"),
         )
-        .drop(UNUSED_PLAYER_COLS + ["first_name", "surname", "round_number"], axis=1)
+        .drop(
+            UNUSED_PLAYER_COLS
+            + ["first_name", "surname", "round_number", "local_start_time"],
+            axis=1,
+        )
         # Player data match IDs are wrong for recent years.
         # The easiest way to add correct ones is to graft on the IDs
         # from match_results. Also, match_results round_numbers are integers rather than
         # a mix of ints and strings.
-        .merge(cleaned_match_data, on=["date", "venue"], how="left")
+        .merge(cleaned_match_data, on=["merge_date", "venue"], how="left")
         .pipe(
             _filter_out_dodgy_data(
                 duplicate_subset=["year", "round_number", "player_id"]
             )
         )
-        .drop("venue", axis=1)
+        .drop(["venue", "merge_date"], axis=1)
         # brownlow_votes aren't known until the end of the season
         .fillna({"brownlow_votes": 0})
         # Joining on date/venue leaves two duplicates played at M.C.G.
         # on 29-4-1986 & 9-8-1986, but that's an acceptable loss of data
         # and easier than munging team names
         .dropna()
-        # Need to add year to ID, because there are some
-        # player_id/match_id combos, decades apart, that by chance overlap
         .assign(id=_player_id_col)
         .set_index("id")
         .sort_index()
