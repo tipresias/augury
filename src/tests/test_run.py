@@ -35,12 +35,9 @@ named ``test_*`` which test a unit of logic.
 
 To run the tests, run ``kedro test``.
 """
-from os.path import abspath, curdir, join
 from pathlib import Path
 
 import pytest
-from kedro.config import ConfigLoader
-from kedro.io import DataCatalog
 
 from machine_learning.run import ProjectContext
 
@@ -51,8 +48,10 @@ def project_context():
 
 
 class TestProjectContext:
-    def test_project_name(self, project_context):
+    @staticmethod
+    def test_project_name(project_context):  # pylint: disable=redefined-outer-name
         assert project_context.project_name == "augury"
 
-    def test_project_version(self, project_context):
+    @staticmethod
+    def test_project_version(project_context):  # pylint: disable=redefined-outer-name
         assert project_context.project_version == "0.15.2"

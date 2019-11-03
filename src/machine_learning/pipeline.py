@@ -64,6 +64,7 @@ def create_pipelines(start_date, end_date, **_kwargs) -> Dict[str, Pipeline]:
         "match": match_pipeline(start_date, end_date),
         "player": player_pipeline(start_date, end_date),
         "full": create_full_pipeline(start_date, end_date),
+        "fake": fake_estimator_pipeline(),
     }
 
 
