@@ -33,4 +33,6 @@ services:
       - "8888:8888"
     depends_on:
       - data_science
+    environment:
+      - PYTHON_ENV=development
     command: kedro jupyter notebook --ip 0.0.0.0 --no-browser --allow-root

@@ -36,43 +36,23 @@ named ``test_*`` which test a unit of logic.
 To run the tests, run ``kedro test``.
 """
 from os.path import abspath, curdir, join
-from unittest.mock import patch
+from pathlib import Path
 
 import pytest
 from kedro.config import ConfigLoader
 from kedro.io import DataCatalog
 
-from machine_learning.run import (
-    CONF_ROOT,
-    DEFAULT_RUN_ENV,
-    create_catalog,
-    get_config,
-    main,
-)
+from machine_learning.run import ProjectContext
 
 
-@patch("machine_learning.run.BASE_DIR", "invalid/")
-def test_main_wrong_cwd():
-    with pytest.raises(
-        ValueError,
-        match=r"Given configuration path either does not "
-        r"exist or is not a valid directory: invalid.*",
-    ):
-        main()
+@pytest.fixture
+def project_context():
+    return ProjectContext(str(Path.cwd()))
 
 
-def test_get_config():
-    project_dir = abspath(curdir)
-    local_env = join(project_dir, CONF_ROOT, DEFAULT_RUN_ENV)
+class TestProjectContext:
+    def test_project_name(self, project_context):
+        assert project_context.project_name == "augury"
 
-    conf = get_config(project_dir, env=None)
-
-    assert isinstance(conf, ConfigLoader)
-    assert local_env in conf.conf_paths
-
-
-def test_create_catalog():
-    project_dir = abspath(curdir)
-    conf = get_config(project_dir)
-    catalog = create_catalog(conf)
-    assert isinstance(catalog, DataCatalog)
+    def test_project_version(self, project_context):
+        assert project_context.project_version == "0.15.2"

@@ -26,18 +26,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 from setuptools import find_packages, setup
-from machine_learning.settings import BASE_DIR
 
 entry_point = "machine_learning = machine_learning.run:main"
 
 # get the dependencies and installs
-with open(os.path.join(BASE_DIR, "requirements.txt"), "r", encoding="utf-8") as f:
+with open("requirements.txt", "r", encoding="utf-8") as f:
     requires = [x.strip() for x in f if x.strip()]
 
 setup(
-    name="machine_learning",
+    name="Augury",
     version="0.1",
     packages=find_packages(exclude=["tests"]),
     entry_points={"console_scripts": [entry_point]},
@@ -48,7 +46,9 @@ setup(
             "sphinx_rtd_theme==0.4.1",
             "nbsphinx==0.3.4",
             "nbstripout==0.3.3",
+            "recommonmark==0.5.0",
             "sphinx-autodoc-typehints==1.6.0",
+            "sphinx_copybutton==0.2.5",
             "jupyter_client>=5.1.0, <6.0",
             "tornado>=4.2, <6.0",
             "ipykernel>=4.8.1, <5.0",

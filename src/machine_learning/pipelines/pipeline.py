@@ -1,12 +1,9 @@
 """Pipeline construction."""
 
-from typing import Dict
-
 from kedro.pipeline import Pipeline, node
 
 from machine_learning.settings import CATEGORY_COLS
-from .nodes import betting, common, match, player, feature_calculation
-
+from machine_learning.nodes import betting, common, match, player, feature_calculation
 
 MATCH_OPPO_COLS = [
     "team",
@@ -45,26 +42,6 @@ PLAYER_MATCH_STATS_COLS = [
     "round_number",
     "date",
 ]
-
-
-def create_pipelines(start_date, end_date, **_kwargs) -> Dict[str, Pipeline]:
-    """Create the project's pipeline.
-
-    Args:
-        kwargs: Ignore any additional arguments added in the future.
-
-    Returns:
-        A mapping from a pipeline name to a ``Pipeline`` object.
-
-    """
-
-    return {
-        "__default__": Pipeline([]),
-        "betting": betting_pipeline(start_date, end_date),
-        "match": match_pipeline(start_date, end_date),
-        "player": player_pipeline(start_date, end_date),
-        "full": create_full_pipeline(start_date, end_date),
-    }
 
 
 def betting_pipeline(start_date: str, end_date: str, **_kwargs):
@@ -383,7 +360,7 @@ def player_pipeline(
     )
 
 
-def create_full_pipeline(start_date: str, end_date: str, **_kwargs):
+def pipeline(start_date: str, end_date: str, **_kwargs):
     return Pipeline(
         [
             betting_pipeline(start_date, end_date),
