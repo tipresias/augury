@@ -6,7 +6,6 @@ import pandas as pd
 from faker import Faker
 
 from machine_learning.ml_data import MLData
-from machine_learning.pipeline import fake_estimator_pipeline
 
 
 RAW_DATA_DIR = os.path.abspath(
@@ -28,7 +27,7 @@ class TestMLData(TestCase):
     """Tests for MLData class"""
 
     def setUp(self):
-        self.data = MLData(pipeline=fake_estimator_pipeline, train_years=(None, 2016))
+        self.data = MLData(pipeline="fake", train_years=(None, 2016))
 
     def test_train_data(self):
         X_train, y_train = self.data.train_data()

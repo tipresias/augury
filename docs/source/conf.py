@@ -29,7 +29,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# machine_learning documentation build
+# Augury documentation build
 # configuration file, created by sphinx-quickstart.
 #
 # This file is execfile()d with the current directory set to its
@@ -46,14 +46,17 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import re
+from typing import Dict
+
+from kedro.cli.utils import find_stylesheets
+from recommonmark.transform import AutoStructify
 
 from machine_learning import __version__ as release
 
 # -- Project information -----------------------------------------------------
 
-project = "machine_learning"
-copyright = "2018-2019, QuantumBlack Visual Analytics Limited"
-author = "QuantumBlack"
+project = "Augury"
+author = "Craig Franklin"
 
 # The short X.Y version.
 version = re.match(r"^([0-9]+\.[0-9]+).*", release).group(1)
@@ -79,7 +82,13 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.mathjax",
     "nbsphinx",
+    "recommonmark",
+    "sphinx_copybutton",
 ]
+
+# enable autosummary plugin (table of contents for modules/classes/class
+# methods)
+autosummary_generate = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -87,8 +96,7 @@ templates_path = ["_templates"]
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-# source_suffix = ['.rst', '.md']
-source_suffix = ".rst"
+source_suffix = {".rst": "restructuredtext", ".md": "markdown"}
 
 # The master toctree document.
 master_doc = "index"
@@ -119,7 +127,7 @@ html_theme = "sphinx_rtd_theme"
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-# html_theme_options = {}
+html_theme_options = {"collapse_navigation": False, "style_external_links": True}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -141,11 +149,11 @@ html_show_sourcelink = False
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "machine_learningdoc"
+htmlhelp_basename = "augurydoc"
 
 # -- Options for LaTeX output ------------------------------------------------
 
-latex_elements = {
+latex_elements: Dict[str, str] = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
@@ -167,28 +175,14 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (
-        master_doc,
-        "machine_learning.tex",
-        "machine_learning Documentation",
-        "QuantumBlack",
-        "manual",
-    )
+    (master_doc, "augury.tex", "Augury Documentation", "Craig Franklin", "manual",)
 ]
 
 # -- Options for manual page output ------------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    (
-        master_doc,
-        "machine_learning",
-        "machine_learning Documentation",
-        [author],
-        1,
-    )
-]
+man_pages = [(master_doc, "augury", "Augury Documentation", [author], 1,)]
 
 # -- Options for Texinfo output ----------------------------------------------
 
@@ -198,11 +192,11 @@ man_pages = [
 texinfo_documents = [
     (
         master_doc,
-        "machine_learning",
-        "machine_learning Documentation",
+        "Augury",
+        "Augury Documentation",
         author,
-        "machine_learning",
-        "Project machine_learning codebase.",
+        "Augury",
+        "Project Augury codebase.",
         "Data-Science",
     )
 ]
@@ -241,3 +235,9 @@ def skip(app, what, name, obj, skip, options):
 def setup(app):
     app.connect("autodoc-process-docstring", autodoc_process_docstring)
     app.connect("autodoc-skip-member", skip)
+    # add Kedro stylesheets
+    for stylesheet in find_stylesheets():
+        app.add_stylesheet(stylesheet)
+    # enable rendering RST tables in Markdown
+    app.add_config_value("recommonmark_config", {"enable_eval_rst": True}, True)
+    app.add_transform(AutoStructify)

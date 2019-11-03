@@ -1,14 +1,13 @@
 """Module for holding model data and returning it in a form useful for ML pipelines"""
 
-from typing import Tuple, Optional, Callable
+from typing import Tuple, Optional
 from datetime import date
 
 import pandas as pd
-from kedro.pipeline import Pipeline
+from kedro.context import load_context
 
-from machine_learning.run import run_pipeline
-from machine_learning.pipeline import pipeline as data_pipeline
 from machine_learning.types import YearPair
+from machine_learning.settings import BASE_DIR, INDEX_COLS
 
 
 END_OF_YEAR = f"{date.today().year}-12-31"
@@ -25,14 +24,14 @@ class MLData:
 
     def __init__(
         self,
-        pipeline: Callable[[str, str], Pipeline] = data_pipeline,
+        pipeline: str = "full",
         train_years: YearPair = (None, 2015),
         test_years: YearPair = (2016, 2016),
         start_date: str = "1897-01-01",
         end_date: str = str(date.today()),
         round_number: Optional[int] = None,
     ) -> None:
-        self._pipeline = pipeline
+        self.pipeline = pipeline
         self._train_years = train_years
         self._test_years = test_years
         self.start_date = start_date
@@ -43,12 +42,16 @@ class MLData:
     @property
     def data(self) -> pd.DataFrame:
         if self._data is None:
-            self._data = run_pipeline(
-                self.start_date,
-                self.end_date,
-                pipeline=self._pipeline,
-                round_number=self.round_number,
-            ).get("data")
+            self._data = pd.DataFrame(
+                load_context(
+                    BASE_DIR,
+                    start_date=self.start_date,
+                    end_date=self.end_date,
+                    round_number=self.round_number,
+                )
+                .run(pipeline_name=self.pipeline)
+                .get("data")
+            ).set_index(INDEX_COLS, drop=False)
 
         return self._data
 

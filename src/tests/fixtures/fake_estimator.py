@@ -2,12 +2,18 @@ from sklearn.linear_model import Lasso
 from sklearn.pipeline import make_pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
+from kedro.context import load_context
 
 from machine_learning.ml_estimators import BaseMLEstimator
 from machine_learning.ml_data import MLData
-from machine_learning.settings import TEAM_NAMES, VENUES, ROUND_TYPES
-from machine_learning.pipeline import fake_estimator_pipeline
-from machine_learning.run import run_pipeline
+from machine_learning.settings import (
+    TEAM_NAMES,
+    VENUES,
+    ROUND_TYPES,
+    BASE_DIR,
+    INDEX_COLS,
+)
+
 
 CATEGORY_COLS = ["team", "oppo_team", "venue", "round_type"]
 PIPELINE = make_pipeline(
@@ -39,7 +45,7 @@ class FakeEstimator(BaseMLEstimator):
 class FakeEstimatorData(MLData):
     """Process data for FakeEstimator"""
 
-    def __init__(self, pipeline=fake_estimator_pipeline, max_year=2019):
+    def __init__(self, pipeline="fake", max_year=2019):
         super().__init__(pipeline=pipeline)
 
         self.max_year = max_year
@@ -48,8 +54,12 @@ class FakeEstimatorData(MLData):
     def data(self):
         if self._data is None:
             self._data = (
-                run_pipeline(self.start_date, self.end_date, pipeline=self._pipeline)
+                load_context(
+                    BASE_DIR, start_date=self.start_date, end_date=self.end_date
+                )
+                .run(pipeline_name=self.pipeline)
                 .get("data")
+                .set_index(INDEX_COLS, drop=False)
                 .query("year > 2000")
             )
 
