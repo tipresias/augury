@@ -94,16 +94,15 @@ def _correct_home_away_teams(match_data: pd.DataFrame) -> pd.DataFrame:
     correct_match_data = match_data.loc[~reversed_home_away_teams, :]
     incorrect_match_data = match_data.loc[reversed_home_away_teams, :]
 
-    incorrect_match_data.rename(
+    renamed_match_data = incorrect_match_data.rename(
         columns=lambda col_name: (
             col_name.replace("home_", "away_")
             if "home_" in col_name
             else col_name.replace("away_", "home_")
-        ),
-        inplace=True,
+        )
     )
 
-    return correct_match_data.append(incorrect_match_data, sort=False)
+    return correct_match_data.append(renamed_match_data, sort=False)
 
 
 def clean_match_data(match_data: pd.DataFrame) -> pd.DataFrame:
