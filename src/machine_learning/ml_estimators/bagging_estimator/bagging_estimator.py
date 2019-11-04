@@ -25,6 +25,7 @@ BEST_PARAMS = {
     "baggingregressor__base_estimator__reg_alpha": 0.07296244459829336,
     "baggingregressor__base_estimator__reg_lambda": 0.11334834444556088,
     "baggingregressor__base_estimator__subsample": 0.8285733635843882,
+    "baggingregressor__base_estimator__objective": "reg:squarederror",
     "baggingregressor__n_estimators": 7,
     "correlationselector__threshold": 0.030411689885916048,
 }

@@ -34,7 +34,7 @@ PIPELINE = make_pipeline(
         ],
         remainder=StandardScaler(),
     ),
-    XGBRegressor(),
+    XGBRegressor(objective="reg:squarederror"),
 )
 
 # Using ColumnTransformer to run OneHotEncoder & StandardScaler causes this warning
