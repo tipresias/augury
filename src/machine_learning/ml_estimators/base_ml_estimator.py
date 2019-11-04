@@ -6,7 +6,7 @@ from typing import Optional, Union, Type
 from sklearn.pipeline import Pipeline
 from sklearn.utils.metaestimators import _BaseComposition
 from sklearn.base import RegressorMixin
-from sklearn.externals import joblib
+import joblib
 import pandas as pd
 import numpy as np
 

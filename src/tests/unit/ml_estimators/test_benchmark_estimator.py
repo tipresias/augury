@@ -7,7 +7,7 @@ from sklearn.linear_model import Ridge
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.pipeline import make_pipeline
-from sklearn.externals import joblib
+import joblib
 from faker import Faker
 
 from machine_learning.settings import BASE_DIR

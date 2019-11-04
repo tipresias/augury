@@ -5,7 +5,6 @@ from sklearn.base import clone
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import make_scorer, mean_absolute_error, log_loss, accuracy_score
 
-# from sklearn.externals.joblib import Parallel, delayed
 from dask import compute, delayed
 
 np.random.seed(42)

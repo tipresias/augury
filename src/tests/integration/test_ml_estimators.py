@@ -1,5 +1,5 @@
 from unittest import TestCase
-from sklearn.externals import joblib
+import joblib
 
 from machine_learning.ml_estimators.base_ml_estimator import BaseMLEstimator
 

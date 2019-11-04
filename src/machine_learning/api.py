@@ -5,7 +5,7 @@ from functools import partial
 import itertools
 
 import pandas as pd
-from sklearn.externals import joblib
+import joblib
 from mypy_extensions import TypedDict
 import numpy as np
 
