@@ -8,7 +8,6 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 
-from machine_learning.data_config import ORIGINAL_COLUMNS
 from machine_learning.settings import MELBOURNE_TIMEZONE, INDEX_COLS
 from .base import _validate_required_columns, _validate_no_dodgy_zeros
 
@@ -365,31 +364,9 @@ def _sort_data_frame_columns_node(
 # It should probably be at the start of that pipeline instead of at the end of the data
 # pipeline
 def sort_data_frame_columns(
-    category_cols: Optional[List[str]] = None
+    category_cols: Optional[List[str]] = None,
 ) -> Callable[[pd.DataFrame], pd.DataFrame]:
     return update_wrapper(
         partial(_sort_data_frame_columns_node, category_cols),
         _sort_data_frame_columns_node,
     )
-
-
-# TODO: This can probably be removed in favour of the standard finalize_data
-# once the season ends and I can clean up a few things and retrain the saved models
-def finalize_joined_data(data_frame: pd.DataFrame):
-    final_data_frame = (
-        data_frame.dropna()
-        .sort_index()
-        # TODO: This is only a temporary renaming to keep column names
-        # consistent with saved models in order to avoid having to retrain them
-        .rename(columns=lambda col: col.replace("team_goals", "goals"))
-        .rename(columns=lambda col: col.replace("team_behinds", "behinds"))
-        # TODO: The data refactor reordered the columns, which completely
-        # messed up predictions. I don't want to retrain the models, so I'll
-        # just use the original column list to make sure they're in the same
-        # order as before, and figure out a better solution later
-        .loc[:, ORIGINAL_COLUMNS]
-    )
-
-    _validate_no_dodgy_zeros(final_data_frame)
-
-    return final_data_frame

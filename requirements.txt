@@ -3,6 +3,7 @@
 
 requests
 google-cloud-storage==1.21.0
+joblib
 
 # Data packages
 numpy
