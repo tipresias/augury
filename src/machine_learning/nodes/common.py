@@ -174,7 +174,7 @@ def _team_data_frame(data_frame: pd.DataFrame, team_type: str) -> pd.DataFrame:
 
 
 def convert_match_rows_to_teammatch_rows(
-    match_row_data_frame: pd.DataFrame
+    match_row_data_frame: pd.DataFrame,
 ) -> pd.DataFrame:
     """
     Reshape data frame from one match per row, with home_team and away_team columns,
