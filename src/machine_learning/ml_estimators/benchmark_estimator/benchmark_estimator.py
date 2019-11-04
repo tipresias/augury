@@ -1,7 +1,6 @@
 """Class for model trained on all AFL data and its associated data class"""
 
 import warnings
-from typing import Optional
 
 import numpy as np
 from sklearn.compose import ColumnTransformer
@@ -49,6 +48,6 @@ class BenchmarkEstimator(BaseMLEstimator):
     """Create pipeline for fitting/predicting with model trained on all AFL data"""
 
     def __init__(
-        self, pipeline: Pipeline = PIPELINE, name: Optional[str] = None
+        self, pipeline: Pipeline = PIPELINE, name: str = "benchmark_estimator"
     ) -> None:
         super().__init__(pipeline=pipeline, name=name)

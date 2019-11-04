@@ -1,7 +1,9 @@
 """Class for model trained on all AFL data and its associated data class"""
 
-from typing import Optional
+from typing import Optional, Union, Type
+
 import numpy as np
+import pandas as pd
 from sklearn.pipeline import make_pipeline, Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
@@ -10,6 +12,7 @@ from xgboost import XGBRegressor
 
 from machine_learning.settings import TEAM_NAMES, ROUND_TYPES, VENUES, CATEGORY_COLS
 from machine_learning.ml_estimators.sklearn import CorrelationSelector
+from machine_learning.types import R
 from .. import BaseMLEstimator
 
 SEED = 42
@@ -56,3 +59,19 @@ class BaggingEstimator(BaseMLEstimator):
         self, pipeline: Pipeline = PIPELINE, name: Optional[str] = None
     ) -> None:
         super().__init__(pipeline=pipeline, name=name)
+
+    def fit(
+        self, X: Union[pd.DataFrame, np.ndarray], y: Union[pd.Series, np.ndarray]
+    ) -> Type[R]:
+        """Fit estimator to the data"""
+
+        assert (
+            self.pipeline is not None
+        ), "pipeline must be a scikit learn estimator but is None"
+
+        pipeline_params = self.pipeline.get_params().keys()
+
+        if "correlationselector__labels" in pipeline_params:
+            self.pipeline.set_params(correlationselector__labels=y)
+
+        return super().fit(X, y)
