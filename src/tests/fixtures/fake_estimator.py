@@ -46,7 +46,11 @@ class FakeEstimatorData(MLData):
     """Process data for FakeEstimator"""
 
     def __init__(self, pipeline="fake", max_year=2019):
-        super().__init__(pipeline=pipeline)
+        super().__init__(
+            pipeline=pipeline,
+            train_years=(None, max_year - 1),
+            test_years=(max_year, max_year),
+        )
 
         self.max_year = max_year
 

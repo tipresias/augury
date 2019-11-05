@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from sklearn.linear_model import Ridge, Lasso
 from sklearn.pipeline import make_pipeline
-from sklearn.externals import joblib
+import joblib
 from faker import Faker
 
 from machine_learning.ml_estimators import BaggingEstimator

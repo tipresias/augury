@@ -18,11 +18,8 @@ MATCH_OPPO_COLS = [
     "oppo_team_goals",
     "team_behinds",
     "oppo_team_behinds",
-    # TODO: I have to omit these columns, because I accidentally left them in
-    # when building betting features, and I need the columns to be the same
-    # in order not to retrain my saved models.
-    # "result",
-    # "oppo_result",
+    "result",
+    "oppo_result",
     "margin",
     "oppo_margin",
     "elo_rating",
@@ -416,7 +413,7 @@ def create_full_pipeline(start_date: str, end_date: str, **_kwargs):
                 "data_a",
                 "data_b",
             ),
-            node(common.finalize_joined_data, "data_b", "data"),
+            node(common.finalize_data, "data_b", "data"),
         ]
     )
 

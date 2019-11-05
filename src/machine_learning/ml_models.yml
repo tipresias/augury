@@ -1,5 +1,7 @@
 models:
   - name: tipresias
     filepath: src/machine_learning/ml_estimators/bagging_estimator/tipresias.pkl
+    trained_to: 2018
   - name: benchmark_estimator
     filepath: src/machine_learning/ml_estimators/benchmark_estimator/benchmark_estimator.pkl
+    trained_to: 2018
