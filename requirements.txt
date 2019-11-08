@@ -2,7 +2,7 @@
 # This reduces the file size deployed to Google Cloud.
 
 requests
-google-cloud-storage==1.21.0
+google-cloud-storage==1.22.0
 joblib
 
 # Data packages
