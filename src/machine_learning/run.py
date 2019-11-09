@@ -65,8 +65,18 @@ class ProjectContext(KedroContext):
         self.end_date = end_date
 
     @property
-    def catalog(self) -> DataCatalog:
-        catalog = super().catalog
+    def pipeline(self):
+        return create_full_pipeline(self.start_date, self.end_date)
+
+    def _get_pipelines(self) -> Dict[str, Pipeline]:
+        return create_pipelines(self.start_date, self.end_date)
+
+    def _get_catalog(
+        self, save_version=None, journal=None, load_versions=None
+    ) -> DataCatalog:
+        catalog = super()._get_catalog(
+            save_version=save_version, journal=journal, load_versions=load_versions
+        )
         catalog.add(
             "roster_data",
             JSONRemoteDataSet(
@@ -77,13 +87,6 @@ class ProjectContext(KedroContext):
         )
 
         return catalog
-
-    @property
-    def pipeline(self):
-        return create_full_pipeline(self.start_date, self.end_date)
-
-    def _get_pipelines(self) -> Dict[str, Pipeline]:
-        return create_pipelines(self.start_date, self.end_date)
 
 
 def main(
