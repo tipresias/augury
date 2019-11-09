@@ -18,11 +18,6 @@ remote_player_data:
   data_source: "machine_learning.data_import.player_data.fetch_player_data"
   date_range_type: past_rounds
 
-roster_data:
-  type: machine_learning.io.JSONRemoteDataSet
-  data_source: "machine_learning.data_import.player_data.fetch_roster_data"
-  date_range_type: round_number
-
 fake_match_data:
   type: JSONLocalDataSet
   filepath: src/tests/fixtures/afl_match.json
