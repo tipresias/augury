@@ -25,33 +25,31 @@ class MLData:
     def __init__(
         self,
         pipeline: str = "full",
+        data_set: str = "model_data",
         train_years: YearPair = (None, 2015),
         test_years: YearPair = (2016, 2016),
         start_date: str = "1897-01-01",
         end_date: str = str(date.today()),
         round_number: Optional[int] = None,
+        update_data: bool = False,
+        index_cols=INDEX_COLS,
     ) -> None:
         self.pipeline = pipeline
+        self.data_set = data_set
         self._train_years = train_years
         self._test_years = test_years
         self.start_date = start_date
         self.end_date = end_date
         self.round_number = round_number
+        self.update_data = update_data
+        self.index_cols = index_cols
         self._data = None
+        self._data_context = None
 
     @property
     def data(self) -> pd.DataFrame:
         if self._data is None:
-            self._data = pd.DataFrame(
-                load_context(
-                    BASE_DIR,
-                    start_date=self.start_date,
-                    end_date=self.end_date,
-                    round_number=self.round_number,
-                )
-                .run(pipeline_name=self.pipeline)
-                .get("data")
-            ).set_index(INDEX_COLS, drop=False)
+            self._data = self.__load_data()
 
         return self._data
 
@@ -111,6 +109,29 @@ class MLData:
     @test_years.setter
     def test_years(self, years: YearPair) -> None:
         self._test_years = years
+
+    def __load_data(self):
+        if self.update_data or not self.__data_context.catalog.exists(self.data_set):
+            self.__data_context.run(pipeline_name=self.pipeline)
+
+        return (
+            pd.DataFrame(self.__data_context.catalog.load(self.data_set))
+            .set_index(self.index_cols, drop=False)
+            .rename_axis([None] * len(self.index_cols))
+            .sort_index()
+        )
+
+    @property
+    def __data_context(self):
+        if self._data_context is None:
+            self._data_context = load_context(
+                BASE_DIR,
+                start_date=self.start_date,
+                end_date=self.end_date,
+                round_number=self.round_number,
+            )
+
+        return self._data_context
 
     @staticmethod
     def __X(data_frame: pd.DataFrame) -> pd.DataFrame:
