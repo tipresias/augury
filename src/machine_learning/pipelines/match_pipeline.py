@@ -17,8 +17,6 @@ MATCH_OPPO_COLS = [
     "oppo_result",
     "margin",
     "oppo_margin",
-    "elo_rating",
-    "oppo_elo_rating",
     "out_of_state",
     "at_home",
     "oppo_team",
@@ -242,7 +240,9 @@ def create_legacy_match_pipeline(
                 "match_data_j",
             ),
             node(
-                common.add_oppo_features(match_cols=MATCH_OPPO_COLS),
+                common.add_oppo_features(
+                    match_cols=MATCH_OPPO_COLS + ["elo_rating", "oppo_elo_rating"]
+                ),
                 "match_data_j",
                 "match_data_k",
             ),
