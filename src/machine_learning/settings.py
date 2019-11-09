@@ -320,3 +320,6 @@ INDEX_COLS = ["team", "year", "round_number"]
 SEED = 42
 AVG_SEASON_LENGTH = 23
 CATEGORY_COLS = ["team", "oppo_team", "round_type", "venue"]
+TRAIN_YEARS = (None, 2016)
+VALIDATION_YEARS = (2017, 2018)
+TEST_YEARS = (2019, 2019)

@@ -32,7 +32,7 @@ class TestBaggingEstimator(TestCase):
         pipeline = make_pipeline(
             AveragingRegressor([("ridge", Ridge()), ("lasso", Lasso())])
         )
-        self.model = BaggingEstimator(pipeline=pipeline, name="tipresias")
+        self.model = BaggingEstimator(pipeline=pipeline, name="tipresias_2019")
 
     def test_predict(self):
         self.model.fit(self.X, self.y)
