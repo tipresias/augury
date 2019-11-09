@@ -413,7 +413,7 @@ def create_full_pipeline(start_date: str, end_date: str, **_kwargs):
                 "data_a",
                 "data_b",
             ),
-            node(common.finalize_data, "data_b", "data"),
+            node(common.finalize_data, "data_b", "model_data"),
         ]
     )
 
