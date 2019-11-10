@@ -27,3 +27,9 @@ model_data:
   filepath: /app/data/05_model_input/model-data_1897-01-01_2019-12-31.json
   save_args:
     indent: 2
+
+elo_data:
+  type: JSONLocalDataSet
+  filepath: /app/data/05_model_input/elo-data_1897-01-01_2019-12-31.json
+  save_args:
+    indent: 2

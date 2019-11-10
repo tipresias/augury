@@ -57,7 +57,7 @@ SHARED_MATCH_FIXTURE_COLS = [
     "away_team",
 ]
 
-# Constants for ELO calculations
+# Constants for Elo calculations
 BASE_RATING = 1000
 K = 35.6
 X = 0.49
@@ -229,7 +229,7 @@ def clean_fixture_data(fixture_data: pd.DataFrame) -> pd.DataFrame:
     return fixture_data_frame
 
 
-# Basing ELO calculations on:
+# Basing Elo calculations on:
 # http://www.matterofstats.com/mafl-stats-journal/2013/10/13/building-your-own-team-rating-system.html
 def _elo_formula(
     prev_elo_rating: float, prev_oppo_elo_rating: float, margin: int, at_home: bool
@@ -246,7 +246,7 @@ def _elo_formula(
 
 
 # Assumes df sorted by year & round_number with ascending=True in order to calculate
-# correct ELO ratings
+# correct Elo ratings
 def _calculate_match_elo_rating(
     elo_ratings: EloDictionary,
     # match_row = [year, home_team, away_team, home_margin]
@@ -254,7 +254,7 @@ def _calculate_match_elo_rating(
 ) -> EloDictionary:
     match_year = match_row[0]
 
-    # It's typical for ELO models to do a small adjustment toward the baseline between
+    # It's typical for Elo models to do a small adjustment toward the baseline between
     # seasons
     if match_year != elo_ratings["year"]:
         prematch_team_elo_ratings = (
@@ -290,7 +290,7 @@ def _calculate_match_elo_rating(
 
 
 def add_elo_rating(data_frame_arg: pd.DataFrame) -> pd.DataFrame:
-    """Add ELO rating of team prior to matches"""
+    """Add Elo rating of team prior to matches"""
 
     ELO_INDEX_COLS = {"home_team", "year", "round_number"}
     REQUIRED_COLS = ELO_INDEX_COLS | {"home_score", "away_score", "away_team", "date"}

@@ -1,10 +1,8 @@
 """Pipeline construction."""
 
-import os
-
 from kedro.pipeline import Pipeline, node
 
-from machine_learning.settings import CATEGORY_COLS, BASE_DIR
+from machine_learning.settings import CATEGORY_COLS
 from machine_learning.nodes import common, feature_calculation
 from .player_pipeline import create_player_pipeline
 from .betting_pipeline import create_betting_pipeline
@@ -12,7 +10,7 @@ from .match_pipeline import create_match_pipeline
 
 
 DEFAULT_FEATURE_CALCS = [
-    (feature_calculation.calculate_multiplication, [("win_odds", "ladder_position")],),
+    (feature_calculation.calculate_multiplication, [("win_odds", "ladder_position")])
 ]
 
 
@@ -21,6 +19,7 @@ def create_full_pipeline(
     end_date: str,
     match_pipeline_func=create_match_pipeline,
     feature_calcs=DEFAULT_FEATURE_CALCS,
+    final_data_set="model_data",
 ):
     return Pipeline(
         [
@@ -43,16 +42,6 @@ def create_full_pipeline(
                 "data_b",
             ),
             node(common.finalize_data, "data_b", "data_c"),
-            node(
-                common.convert_to_json(
-                    os.path.join(
-                        BASE_DIR,
-                        "data/05_model_input/",
-                        f"model-data_{start_date}_{end_date}.json",
-                    )
-                ),
-                "data_c",
-                "model_data",
-            ),
+            node(common.convert_to_json, "data_c", final_data_set),
         ]
     )
