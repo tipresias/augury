@@ -1,7 +1,6 @@
 """Classes based on existing Scikit-learn functionality with slight modifications"""
 
 from typing import Sequence, Type, List, Union, Optional, Any, Tuple
-from functools import reduce
 
 import pandas as pd
 import numpy as np
@@ -12,16 +11,21 @@ from mypy_extensions import TypedDict
 
 from machine_learning.types import R, T
 from machine_learning.nodes.base import _validate_required_columns
+from machine_learning.nodes import common
 
 
 EloDictionary = TypedDict(
     "EloDictionary",
     {
-        "home_away_elo_ratings": List[Tuple[float, float]],
+        "prev_team_elo_ratings": np.ndarray,
         "current_team_elo_ratings": np.ndarray,
         "year": int,
+        "round_number": int,
     },
 )
+
+ELO_INDEX_COLS = ["home_team", "year", "round_number"]
+NULL_TEAM_NAME = "0"
 
 BASE_RATING = 1000
 K = 35.6
@@ -30,6 +34,29 @@ M = 130
 HOME_GROUND_ADVANTAGE = 9
 S = 250
 SEASON_CARRYOVER = 0.575
+
+MATRIX_COLS = [
+    "year",
+    "round_number",
+    "home_team",
+    "home_prev_match_at_home",
+    "home_prev_match_oppo_team",
+    "home_prev_match_margin",
+    "away_team",
+    "away_prev_match_at_home",
+    "away_prev_match_oppo_team",
+    "away_prev_match_margin",
+]
+YEAR_IDX = MATRIX_COLS.index("year")
+ROUND_NUMBER_IDX = MATRIX_COLS.index("round_number")
+HOME_TEAM_IDX = MATRIX_COLS.index("home_team")
+AWAY_TEAM_IDX = MATRIX_COLS.index("away_team")
+PREV_AT_HOME_OFFSET = 1
+PREV_OPPO_OFFSET = 2
+PREV_MARGIN_OFFSET = 3
+
+YEAR_LVL = 1
+ROUND_NUMBER_LVL = 2
 
 
 class AveragingRegressor(_BaseComposition, RegressorMixin):
@@ -139,7 +166,6 @@ class EloRegressor(BaseEstimator, RegressorMixin):
 
     def __init__(
         self,
-        base_rating=BASE_RATING,
         k=K,
         x=ELO_X,
         m=M,
@@ -147,191 +173,242 @@ class EloRegressor(BaseEstimator, RegressorMixin):
         s=S,
         season_carryover=SEASON_CARRYOVER,
     ):
-        self.base_rating = base_rating
         self.k = k
         self.x = x
         self.m = m
         self.home_ground_advantage = home_ground_advantage
         self.s = s
         self.season_carryover = season_carryover
+        self._null_team = 0
         self._team_encoder = LabelEncoder()
-        self._elo_ratings = None
+        self._elo_dictionary: EloDictionary = {
+            "prev_team_elo_ratings": np.array([]),
+            "current_team_elo_ratings": np.array([]),
+            "year": 0,
+            "round_number": 0,
+        }
 
-    def fit(self, X: pd.DataFrame, y: pd.Series) -> Type[R]:
+    def fit(self, X: pd.DataFrame, _y: pd.Series) -> Type[R]:
         """Fit estimators to data"""
 
-        ELO_INDEX_COLS = {"home_team", "year", "round_number"}
-        REQUIRED_COLS = ELO_INDEX_COLS | {
-            "home_score",
-            "away_score",
-            "away_team",
-            "date",
-        }
+        REQUIRED_COLS = set(ELO_INDEX_COLS) | set(MATRIX_COLS)
+        _validate_required_columns(REQUIRED_COLS, X.columns)
 
-        joined_data_frame: pd.DataFrame = pd.concat([X, y], axis=1)
+        # Have to add '0' to team names to account for filling in prev_match_oppo_team
+        # for a new team's first match
+        self._team_encoder.fit(np.append(X["home_team"].to_numpy(), NULL_TEAM_NAME))
+        self._null_team = self._team_encoder.transform([NULL_TEAM_NAME])[0]
 
-        _validate_required_columns(REQUIRED_COLS, joined_data_frame.columns)
-
-        data_frame = (
-            joined_data_frame.set_index(list(ELO_INDEX_COLS), drop=False).rename_axis(
-                [None] * len(ELO_INDEX_COLS)
+        data_frame: pd.DataFrame = (
+            X.set_index(ELO_INDEX_COLS, drop=False)
+            .rename_axis([None] * len(ELO_INDEX_COLS))
+            .assign(
+                home_team=lambda df: self._team_encoder.transform(df["home_team"]),
+                away_team=lambda df: self._team_encoder.transform(df["away_team"]),
+                home_prev_match_oppo_team=lambda df: self._team_encoder.transform(
+                    df["home_prev_match_oppo_team"].astype(str)
+                ),
+                away_prev_match_oppo_team=lambda df: self._team_encoder.transform(
+                    df["away_prev_match_oppo_team"].astype(str)
+                ),
             )
-            if ELO_INDEX_COLS != {*joined_data_frame.index.names}
-            else joined_data_frame.copy()
+            .sort_index(level=[YEAR_LVL, ROUND_NUMBER_LVL], ascending=True)
         )
 
-        if not data_frame.index.is_monotonic:
-            data_frame.sort_index(inplace=True)
-
-        self.team_encoder.fit(data_frame["home_team"])
-        time_sorted_data_frame = data_frame.sort_values(
-            ["year", "round_number"], ascending=True
+        self._elo_dictionary["prev_team_elo_ratings"] = np.full(
+            len(data_frame["home_team"].drop_duplicates()) + 1, BASE_RATING
         )
-
-        elo_matrix = (
-            time_sorted_data_frame.assign(
-                home_team=lambda df: self.team_encoder.transform(df["home_team"]),
-                away_team=lambda df: self.team_encoder.transform(df["away_team"]),
-            )
-            .eval("home_margin = home_score - away_score")
-            .loc[:, ["year", "home_team", "away_team", "home_margin"]]
-        ).to_numpy()
-
-        current_team_elo_ratings = np.full(
-            len(set(data_frame["home_team"])), self.base_rating
+        self._elo_dictionary["current_team_elo_ratings"] = np.full(
+            len(data_frame["home_team"].drop_duplicates()) + 1, BASE_RATING
         )
+        self._elo_dictionary["year"] = 0
+        self._elo_dictionary["round_number"] = 0
 
-        starting_elo_dictionary: EloDictionary = {
-            "home_away_elo_ratings": [],
-            "current_team_elo_ratings": current_team_elo_ratings,
-            "year": 0,
-        }
+        elo_matrix = (data_frame.loc[:, MATRIX_COLS]).to_numpy()
 
-        self._elo_ratings = self._calculate_elo_ratings(
-            elo_matrix, starting_elo_dictionary, time_sorted_data_frame.index
-        )
+        for match_row in elo_matrix:
+            self._update_current_elo_ratings(match_row)
 
         return self
 
     def predict(self, X: pd.DataFrame) -> np.ndarray:
         """Predict with each estimator, then average the predictions"""
 
-        max_year_with_ratings = self._elo_ratings.index.get_level_values(1).max()
-        max_round_with_ratings = (
-            self._elo_ratings.loc[(slice(None), max_year_with_ratings, slice(None))]
-            .index.get_level_values(2)
-            .max()
+        REQUIRED_COLS = set(ELO_INDEX_COLS) | {"away_team"}
+
+        _validate_required_columns(REQUIRED_COLS, X.columns)
+
+        assert X.index.is_monotonic, (
+            "Test data must be sorted by index before passing it to the model, ",
+            "because calculating Elo ratings requires multiple resorts, ",
+            "and we need to be able to make the final predictions match the sorting ",
+            "of the input data.",
         )
 
-        time_sorted_data_frame = X.groupby("home_team")[["year", "round_number"]].max()
-
-        elo_matrix = (
-            time_sorted_data_frame.assign(
-                home_team=lambda df: self.team_encoder.transform(df["home_team"]),
-                away_team=lambda df: self.team_encoder.transform(df["away_team"]),
+        data_frame = (
+            X.assign(
+                home_team=lambda df: self._team_encoder.transform(df["home_team"]),
+                away_team=lambda df: self._team_encoder.transform(df["away_team"]),
+                home_prev_match_oppo_team=lambda df: self._team_encoder.transform(
+                    df["home_prev_match_oppo_team"].astype(str)
+                ),
+                away_prev_match_oppo_team=lambda df: self._team_encoder.transform(
+                    df["away_prev_match_oppo_team"].astype(str)
+                ),
             )
-            .eval("home_margin = home_score - away_score")
-            .loc[:, ["year", "home_team", "away_team", "home_margin"]]
-        ).to_numpy()
-
-        current_team_elo_ratings = np.full(
-            len(set(data_frame["home_team"])), self.base_rating
+            .set_index(ELO_INDEX_COLS, drop=False)
+            .sort_index(level=[YEAR_LVL, ROUND_NUMBER_LVL], ascending=True)
         )
 
-        starting_elo_dictionary: EloDictionary = {
-            "home_away_elo_ratings": [],
-            "current_team_elo_ratings": current_team_elo_ratings,
-            "year": 0,
-        }
+        elo_matrix = (data_frame.loc[:, MATRIX_COLS]).to_numpy()
 
-        self._elo_ratings = self._calculate_elo_ratings(
-            elo_matrix, starting_elo_dictionary, time_sorted_data_frame.index
+        # TODO: Maintain final Elo ratings from fitting, so we can call predict
+        # multiple times without having to refit the model
+        elo_predictions = [
+            self._calculate_current_elo_predictions(match_row)
+            for match_row in elo_matrix
+        ]
+        # Need to zip predictions to group by home/away instead of match,
+        # then transpose to convert from rows to columns
+        home_away_columns = np.array(list(zip(*elo_predictions))).T
+
+        elo_data_frame = pd.DataFrame(
+            home_away_columns,
+            columns=["home_elo_prediction", "away_elo_prediction"],
+            index=data_frame.index,
+        ).sort_index()
+
+        match_data_frame = pd.concat(
+            [elo_data_frame, data_frame.sort_index().loc[:, ["away_team", "date"]]],
+            axis=1,
+        ).reset_index(drop=False)
+
+        # Have to convert to team-match rows to make shape consistent with other
+        # model predictions
+        return (
+            common.convert_match_rows_to_teammatch_rows(match_data_frame)
+            # Need to make sure sorting matches wider data set conventions
+            .sort_index()
+            .loc[:, "elo_prediction"]
+            .to_numpy()
         )
 
-        return np.average(np.array(predictions), axis=0, weights=self.weights)
+    def _calculate_current_elo_predictions(self, match_row: np.ndarray):
+        home_team = int(match_row[HOME_TEAM_IDX])
+        away_team = int(match_row[AWAY_TEAM_IDX])
 
-    # Basing Elo calculations on:
-    # http://www.matterofstats.com/mafl-stats-journal/2013/10/13/building-your-own-team-rating-system.html
-    def _elo_formula(
-        self,
-        prev_elo_rating: float,
-        prev_oppo_elo_rating: float,
-        margin: int,
-        at_home: bool,
-    ) -> float:
-        home_ground_advantage = (
-            self.home_ground_advantage if at_home else self.home_ground_advantage * -1
-        )
-        expected_outcome = 1 / (
-            1
-            + 10
-            ** (
-                (prev_oppo_elo_rating - prev_elo_rating - home_ground_advantage)
-                / self.s
-            )
-        )
-        actual_outcome = self.x + 0.5 - self.x ** (1 + (margin / M))
+        self._update_current_elo_ratings(match_row)
 
-        return prev_elo_rating + (self.k * (actual_outcome - expected_outcome))
+        home_elo_rating = self._elo_dictionary["current_team_elo_ratings"][home_team]
+        away_elo_rating = self._elo_dictionary["current_team_elo_ratings"][away_team]
+
+        home_elo_prediction = self._calculate_team_elo_prediction(
+            home_elo_rating, away_elo_rating, True
+        )
+        away_elo_prediction = self._calculate_team_elo_prediction(
+            away_elo_rating, home_elo_rating, False
+        )
+
+        return home_elo_prediction, away_elo_prediction
 
     # Assumes df sorted by year & round_number with ascending=True in order to calculate
     # correct Elo ratings
-    def _calculate_match_elo_rating(
-        self,
-        elo_ratings: EloDictionary,
-        # match_row = [year, home_team, away_team, home_margin]
-        match_row: np.ndarray,
-    ) -> EloDictionary:
-        match_year = match_row[0]
+    def _update_current_elo_ratings(self, match_row: np.ndarray) -> None:
+        home_team = int(match_row[HOME_TEAM_IDX])
+        away_team = int(match_row[AWAY_TEAM_IDX])
 
-        # It's typical for Elo models to do a small adjustment toward the baseline between
-        # seasons
-        if match_year != elo_ratings["year"]:
-            prematch_team_elo_ratings = (
-                elo_ratings["current_team_elo_ratings"] * self.season_carryover
-            ) + self.base_rating * (1 - self.season_carryover)
-        else:
-            prematch_team_elo_ratings = elo_ratings["current_team_elo_ratings"].copy()
+        self._update_prev_elo_ratings(match_row)
 
-        home_team = int(match_row[1])
-        away_team = int(match_row[2])
-        home_margin = match_row[3]
+        home_elo_rating = self._calculate_current_elo_rating(HOME_TEAM_IDX, match_row)
+        away_elo_rating = self._calculate_current_elo_rating(AWAY_TEAM_IDX, match_row)
 
-        prematch_home_elo_rating = prematch_team_elo_ratings[home_team]
-        prematch_away_elo_rating = prematch_team_elo_ratings[away_team]
+        self._elo_dictionary["current_team_elo_ratings"][home_team] = home_elo_rating
+        self._elo_dictionary["current_team_elo_ratings"][away_team] = away_elo_rating
 
-        home_elo_rating = self._elo_formula(
-            prematch_home_elo_rating, prematch_away_elo_rating, home_margin, True
+    def _update_prev_elo_ratings(self, match_row: np.ndarray):
+        match_year = match_row[YEAR_IDX]
+        match_round = match_row[ROUND_NUMBER_IDX]
+
+        self._validate_consecutive_rounds(match_year, match_round)
+
+        # Need to wait till new round to update prev_team_elo_ratings to avoid
+        # updating an Elo rating from the previous round before calculating
+        # a relevant team's Elo for the current round
+        if match_round != self._elo_dictionary["round_number"]:
+            self._elo_dictionary["prev_team_elo_ratings"] = np.copy(
+                self._elo_dictionary["current_team_elo_ratings"]
+            )
+
+            self._elo_dictionary["round_number"] = match_round
+
+        # It's typical for Elo models to do a small adjustment toward the baseline
+        # between seasons
+        if match_year != self._elo_dictionary["year"]:
+            self._elo_dictionary["prev_team_elo_ratings"] = (
+                self._elo_dictionary["prev_team_elo_ratings"] * self.season_carryover
+            ) + BASE_RATING * (1 - self.season_carryover)
+
+            self._elo_dictionary["year"] = match_year
+
+    def _calculate_current_elo_rating(self, team_idx: int, match_row: np.ndarray):
+        team = int(match_row[team_idx])
+        was_at_home = int(match_row[team_idx + PREV_AT_HOME_OFFSET])
+        prev_oppo_team = int(match_row[team_idx + PREV_OPPO_OFFSET])
+        prev_margin = match_row[team_idx + PREV_MARGIN_OFFSET]
+
+        # If a previous oppo team has the null team value, that means this is
+        # the given team's first match, so they start with the default Elo rating
+        if prev_oppo_team == self._null_team:
+            return self._elo_dictionary["prev_team_elo_ratings"][team]
+
+        prev_elo_rating = self._elo_dictionary["prev_team_elo_ratings"][team]
+        prev_oppo_elo_rating = self._elo_dictionary["prev_team_elo_ratings"][
+            prev_oppo_team
+        ]
+        prev_elo_prediction = self._calculate_team_elo_prediction(
+            prev_elo_rating, prev_oppo_elo_rating, was_at_home
         )
-        away_elo_rating = self._elo_formula(
-            prematch_away_elo_rating, prematch_home_elo_rating, home_margin * -1, False
+
+        return self._calculate_team_elo_rating(
+            prev_elo_rating, prev_elo_prediction, prev_margin
         )
 
-        postmatch_team_elo_ratings = prematch_team_elo_ratings.copy()
-        postmatch_team_elo_ratings[home_team] = home_elo_rating
-        postmatch_team_elo_ratings[away_team] = away_elo_rating
+    # Basing Elo calculations on:
+    # http://www.matterofstats.com/mafl-stats-journal/2013/10/13/building-your-own-team-rating-system.html
+    def _calculate_team_elo_prediction(
+        self, elo_rating: int, oppo_elo_rating: int, at_home: int
+    ) -> float:
+        home_ground_advantage = (
+            self.home_ground_advantage
+            if at_home == 1
+            else self.home_ground_advantage * -1
+        )
 
-        return {
-            "home_away_elo_ratings": elo_ratings["home_away_elo_ratings"]
-            + [(prematch_home_elo_rating, prematch_away_elo_rating)],
-            "current_team_elo_ratings": postmatch_team_elo_ratings,
-            "year": match_year,
-        }
+        return 1 / (
+            1 + 10 ** ((oppo_elo_rating - elo_rating - home_ground_advantage) / self.s)
+        )
 
-    def _calculate_elo_ratings(
-        self,
-        elo_matrix: np.ndarray,
-        elo_dictionary: EloDictionary,
-        elo_index: pd.MultiIndex,
-    ) -> pd.DataFrame:
-        """Add Elo rating of team prior to matches"""
+    def _calculate_team_elo_rating(
+        self, elo_rating: float, elo_prediction: float, margin: int
+    ) -> float:
+        actual_outcome = self.x + 0.5 - self.x ** (1 + (margin / M))
 
-        elo_columns = reduce(
-            self._calculate_match_elo_rating, elo_matrix, elo_dictionary
-        )["home_away_elo_ratings"]
+        return elo_rating + (self.k * (actual_outcome - elo_prediction))
 
-        return pd.DataFrame(
-            elo_columns,
-            columns=["home_elo_rating", "away_elo_rating"],
-            index=elo_index,
-        ).sort_index()
+    def _validate_consecutive_rounds(self, match_year: int, match_round: int):
+        is_start_of_data = (
+            self._elo_dictionary["year"] == 0
+            and self._elo_dictionary["round_number"] == 0
+        )
+        is_new_year = (
+            match_year - self._elo_dictionary["year"] == 1 and match_round == 1
+        )
+        is_same_round = match_round == self._elo_dictionary["round_number"]
+        is_next_round = match_round - self._elo_dictionary["round_number"] == 1
+
+        assert is_start_of_data or is_new_year or is_same_round or is_next_round, (
+            "For Elo calculations to be valid, we must update ratings for each round. "
+            f"The current year/round of {match_year}/{match_round} seems to skip "
+            f"the last-calculated year/round of {self._elo_dictionary['year']}/"
+            f"{self._elo_dictionary['round_number']}"
+        )

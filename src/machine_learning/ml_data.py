@@ -158,4 +158,14 @@ class MLData:
 
     @staticmethod
     def __y(data_frame: pd.DataFrame) -> pd.Series:
-        return (data_frame["score"] - data_frame["oppo_score"]).rename("margin")
+        TEAM_SCORE_SET = set(["score", "oppo_score"])
+        if TEAM_SCORE_SET & set(data_frame.columns) == TEAM_SCORE_SET:
+            return data_frame.eval("score - oppo_score").rename("margin")
+
+        HOME_AWAY_SCORE_SET = set(["home_score", "away_score"])
+        if HOME_AWAY_SCORE_SET & set(data_frame.columns) == HOME_AWAY_SCORE_SET:
+            return data_frame.eval("home_score - away_score").rename("home_margin")
+
+        raise ValueError(
+            "Didn't find a valid pair of score columns to calculate margins"
+        )
