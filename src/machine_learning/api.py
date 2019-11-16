@@ -1,13 +1,12 @@
-from typing import List, Optional, Dict, Tuple, Union, Any
-import os
+from typing import List, Optional, Dict, Tuple, Union, Any, Callable
 from datetime import date
 from functools import partial
 import itertools
 
 import pandas as pd
-import joblib
 from mypy_extensions import TypedDict
 import numpy as np
+from kedro.context import load_context, KedroContext
 
 from machine_learning.ml_data import MLData
 from machine_learning.ml_estimators import BaseMLEstimator
@@ -35,8 +34,6 @@ PredictionData = TypedDict(
         "predicted_margin": float,
     },
 )
-
-MlModel = TypedDict("MlModel", {"name": str, "filepath": str})
 
 DataConfig = TypedDict(
     "DataConfig",
@@ -90,6 +87,7 @@ def _train_model(ml_model: BaseMLEstimator, data: MLData) -> BaseMLEstimator:
 def _make_model_predictions(
     year: int,
     data: MLData,
+    context: KedroContext,
     ml_model: Dict[str, str],
     round_number: Optional[int] = None,
     verbose=1,
@@ -98,7 +96,7 @@ def _make_model_predictions(
     if verbose == 1:
         print(f"Making predictions with {ml_model['name']}")
 
-    loaded_model = joblib.load(os.path.join(BASE_DIR, ml_model["filepath"]))
+    loaded_model = context.catalog.load(ml_model["name"])
     data.train_years = (None, year - 1)
     data.test_years = (year, year)
 
@@ -143,6 +141,7 @@ def _make_model_predictions(
 
 def _make_predictions_by_year(
     data: MLData,
+    context: KedroContext,
     ml_model_names: Optional[List[str]],
     year: int,
     round_number: Optional[int] = None,
@@ -153,6 +152,7 @@ def _make_predictions_by_year(
         _make_model_predictions,
         year,
         data,
+        context,
         round_number=round_number,
         verbose=verbose,
         train=train,
@@ -165,6 +165,11 @@ def _make_predictions_by_year(
             ml_model for ml_model in ML_MODELS if ml_model["name"] in ml_model_names
         ]
 
+    assert any(ml_models), (
+        "Couldn't find any ML models, check that at least one "
+        f"{ml_model_names} is in ML_MODELS."
+    )
+
     return [partial_make_model_predictions(ml_model) for ml_model in ml_models]
 
 
@@ -175,12 +180,21 @@ def make_predictions(
     ml_model_names: Optional[List[str]] = None,
     verbose=1,
     train=False,
+    context_func: Callable = load_context,
 ) -> ApiResponse:
     data.round_number = round_number
+
+    context = context_func(
+        BASE_DIR,
+        start_date=f"{year_range[0]}-01-01",
+        end_date=f"{year_range[1]}-12-31",
+        round_number=round_number,
+    )
 
     partial_make_predictions_by_year = partial(
         _make_predictions_by_year,
         data,
+        context,
         ml_model_names,
         round_number=round_number,
         verbose=verbose,

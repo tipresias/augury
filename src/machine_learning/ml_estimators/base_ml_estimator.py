@@ -1,7 +1,6 @@
 """Base ML model and data classes"""
 
 import os
-import sys
 from typing import Optional, Union, Type
 from sklearn.pipeline import Pipeline
 from sklearn.utils.metaestimators import _BaseComposition
@@ -64,8 +63,6 @@ class BaseMLEstimator(_BaseComposition, RegressorMixin):
 
         return self.pipeline.predict(X)
 
-    def _default_directory(self) -> str:
-        module_path = self.__module__
-        module_filepath = sys.modules[module_path].__file__
-
-        return os.path.abspath(os.path.join(BASE_DIR, os.path.dirname(module_filepath)))
+    @staticmethod
+    def _default_directory() -> str:
+        return os.path.abspath(os.path.join(BASE_DIR, "data/06_models"))

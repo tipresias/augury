@@ -1,10 +1,17 @@
 from unittest import TestCase
+import os
+
 from sklearn.linear_model import Ridge, Lasso
 import pandas as pd
 import numpy as np
 from faker import Faker
 
-from machine_learning.ml_estimators.sklearn import AveragingRegressor, CorrelationSelector
+from machine_learning.ml_estimators.sklearn import (
+    AveragingRegressor,
+    CorrelationSelector,
+    EloRegressor,
+)
+from machine_learning.settings import BASE_DIR
 
 
 FAKE = Faker()
@@ -81,3 +88,35 @@ class TestCorrelationSelector(TestCase):
 
             for col in cols_to_keep:
                 self.assertIn(col, transformed_data_frame.columns)
+
+
+class TestEloRegressor(TestCase):
+    def setUp(self):
+        self.data_frame = (
+            pd.read_json(os.path.join(BASE_DIR, "src/tests/fixtures/elo_data.json"))
+            .set_index(["home_team", "year", "round_number"], drop=False)
+            .rename_axis([None, None, None])
+            .sort_index()
+        )
+
+        self.X = self.data_frame
+        self.regressor = EloRegressor()
+
+    def test_predict(self):
+        X_train = self.X.query("year == 2014")
+        X_test = self.X.query("year == 2015")
+        # We don't use y when fitting the Elo model, so it can be just filler
+        y = np.zeros(len(X_train))
+
+        self.regressor.fit(X_train, y)
+        predictions = self.regressor.predict(X_test)
+
+        self.assertIsInstance(predictions, np.ndarray)
+
+        with self.subTest("when there's a gap between match rounds"):
+            invalid_X_test = X_test.query("round_number > 5")
+            # Need to refit, because predict updates the state of the Elo ratings
+            self.regressor.fit(X_train, y)
+
+            with self.assertRaises(AssertionError):
+                self.regressor.predict(invalid_X_test)

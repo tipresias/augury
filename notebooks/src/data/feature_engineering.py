@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 WIN_POINTS = 4
-# Constants for ELO calculations
+# Constants for Elo calculations
 BASE_RATING = 1000
 K = 35.6
 X = 0.49
@@ -146,7 +146,7 @@ def ladder_position(data_frame):
     return ladder_position_col
 
 
-# Basing ELO calculations on:
+# Basing Elo calculations on:
 # http://www.matterofstats.com/mafl-stats-journal/2013/10/13/building-your-own-team-rating-system.html
 def _elo_formula(prev_elo_rating, prev_oppo_elo_rating, margin, at_home):
     hga = HGA if at_home else HGA * -1
@@ -184,14 +184,14 @@ def _calculate_prev_elo_ratings(prev_match, prev_oppo_match, cum_elo_ratings, ye
 
     if isinstance(prev_elo_rating, pd.Series):
         raise TypeError(
-            f"ELO series returned a subsection of itself at index {prev_match.name} "
+            f"Elo series returned a subsection of itself at index {prev_match.name} "
             "when a single value is expected. Check the data frame for duplicate "
             "index values."
         )
 
     if isinstance(prev_oppo_elo_rating, pd.Series):
         raise TypeError(
-            f"ELO series returned a subsection of itself at index {prev_oppo_match.name} "
+            f"Elo series returned a subsection of itself at index {prev_oppo_match.name} "
             "when a single value is expected. Check the data frame for duplicate "
             "index values."
         )

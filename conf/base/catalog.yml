@@ -18,11 +18,27 @@ remote_player_data:
   data_source: "machine_learning.data_import.player_data.fetch_player_data"
   date_range_type: past_rounds
 
-roster_data:
-  type: machine_learning.io.JSONRemoteDataSet
-  data_source: "machine_learning.data_import.player_data.fetch_roster_data"
-  date_range_type: round_number
-
 fake_match_data:
   type: JSONLocalDataSet
   filepath: src/tests/fixtures/afl_match.json
+  save_args:
+    indent: 2
+
+tipresias_2019_model:
+  type: PickleLocalDataSet
+  filepath: data/06_models/tipresias_2019.pkl
+  backend: joblib
+
+benchmark_estimator_model:
+  type: PickleLocalDataSet
+  filepath: data/06_models/benchmark_estimator.pkl
+  backend: joblib
+
+fake_data:
+  type: JSONLocalDataSet
+  filepath: src/tests/fixtures/fake_data.json
+
+fake_estimator_model:
+    type: PickleLocalDataSet
+    filepath: src/tests/fixtures/fake_estimator.pkl
+    backend: joblib

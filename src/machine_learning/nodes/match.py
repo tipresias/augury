@@ -3,6 +3,7 @@
 from typing import List, Tuple
 from functools import partial, reduce, update_wrapper
 import math
+import re
 
 import pandas as pd
 import numpy as np
@@ -57,7 +58,11 @@ SHARED_MATCH_FIXTURE_COLS = [
     "away_team",
 ]
 
-# Constants for ELO calculations
+MATCH_INDEX_COLS = ["year", "round_number"]
+
+OPPO_REGEX = re.compile("^oppo_")
+
+# Constants for Elo calculations
 BASE_RATING = 1000
 K = 35.6
 X = 0.49
@@ -229,7 +234,7 @@ def clean_fixture_data(fixture_data: pd.DataFrame) -> pd.DataFrame:
     return fixture_data_frame
 
 
-# Basing ELO calculations on:
+# Basing Elo calculations on:
 # http://www.matterofstats.com/mafl-stats-journal/2013/10/13/building-your-own-team-rating-system.html
 def _elo_formula(
     prev_elo_rating: float, prev_oppo_elo_rating: float, margin: int, at_home: bool
@@ -246,7 +251,7 @@ def _elo_formula(
 
 
 # Assumes df sorted by year & round_number with ascending=True in order to calculate
-# correct ELO ratings
+# correct Elo ratings
 def _calculate_match_elo_rating(
     elo_ratings: EloDictionary,
     # match_row = [year, home_team, away_team, home_margin]
@@ -254,7 +259,7 @@ def _calculate_match_elo_rating(
 ) -> EloDictionary:
     match_year = match_row[0]
 
-    # It's typical for ELO models to do a small adjustment toward the baseline between
+    # It's typical for Elo models to do a small adjustment toward the baseline between
     # seasons
     if match_year != elo_ratings["year"]:
         prematch_team_elo_ratings = (
@@ -290,7 +295,7 @@ def _calculate_match_elo_rating(
 
 
 def add_elo_rating(data_frame_arg: pd.DataFrame) -> pd.DataFrame:
-    """Add ELO rating of team prior to matches"""
+    """Add Elo rating of team prior to matches"""
 
     ELO_INDEX_COLS = {"home_team", "year", "round_number"}
     REQUIRED_COLS = ELO_INDEX_COLS | {"home_score", "away_score", "away_team", "date"}
@@ -593,3 +598,88 @@ def add_elo_pred_win(data_frame: pd.DataFrame) -> pd.DataFrame:
     predicted_results = is_favoured + (are_even * 0.5)
 
     return data_frame.assign(elo_pred_win=predicted_results)
+
+
+def _replace_col_names(at_home: bool):
+    team_label = "home" if at_home else "away"
+    oppo_label = "away" if at_home else "home"
+
+    return (
+        lambda col: col.replace("oppo_", f"{oppo_label}_", 1)
+        if re.match(OPPO_REGEX, col)
+        else f"{team_label}_{col}"
+    )
+
+
+def _match_data_frame(
+    data_frame: pd.DataFrame, match_cols: List[str] = [], at_home: bool = True
+) -> pd.DataFrame:
+    home_index = "team" if at_home else "oppo_team"
+    away_index = "oppo_team" if at_home else "team"
+    # We drop oppo stats cols, because we end up with both teams' stats per match
+    # when we join home and away teams. We keep 'oppo_team' and add the renamed column
+    # to the index for convenience
+    oppo_stats_cols = [
+        col
+        for col in data_frame.columns
+        if re.match(OPPO_REGEX, col) and col != "oppo_team"
+    ]
+
+    return (
+        data_frame.query(f"at_home == {int(at_home)}")
+        # We index match rows by home_team, year, round_number
+        .rename(columns={home_index: "home_team", away_index: "away_team"})
+        .drop(["at_home"] + oppo_stats_cols, axis=1)
+        # We add all match cols to the index, because they don't affect the upcoming
+        # concat, and it's easier than creating a third data frame for match cols
+        .set_index(["home_team", "away_team"] + MATCH_INDEX_COLS + match_cols)
+        .rename(columns=_replace_col_names(at_home))
+        .sort_index()
+    )
+
+
+def convert_teammatch_rows_to_match_rows(
+    teammatch_row_data_frame: pd.DataFrame,
+) -> pd.DataFrame:
+    """
+    Reshape data frame from one one team-match combination per row
+    (i.e. two rows per match), with team and oppo_team columns to one match per row,
+    with home_team and away_team columns.
+
+
+    Args:
+        teammatch_row_data_frame (pandas.DataFrame): Data frame to be transformed.
+
+    Returns:
+        pandas.DataFrame
+    """
+
+    MATCH_COLS = ["match_id", "date", "venue", "round_type"]
+    data_frame_match_cols = list(
+        set(teammatch_row_data_frame.columns) & set(MATCH_COLS)
+    )
+    REQUIRED_COLS: List[str] = ["team", "oppo_team"] + data_frame_match_cols
+
+    _validate_required_columns(REQUIRED_COLS, teammatch_row_data_frame.columns)
+
+    return (
+        pd.concat(
+            [
+                _match_data_frame(
+                    teammatch_row_data_frame,
+                    match_cols=data_frame_match_cols,
+                    at_home=True,
+                ),
+                _match_data_frame(
+                    teammatch_row_data_frame,
+                    match_cols=data_frame_match_cols,
+                    at_home=False,
+                ),
+            ],
+            axis=1,
+        )
+        .reset_index()
+        .set_index(["home_team"] + MATCH_INDEX_COLS, drop=False)
+        .rename_axis([None] * (len(MATCH_INDEX_COLS) + 1))
+        .sort_index()
+    )

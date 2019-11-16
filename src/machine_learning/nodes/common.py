@@ -189,7 +189,13 @@ def convert_match_rows_to_teammatch_rows(
         pandas.DataFrame
     """
 
-    REQUIRED_COLS: List[str] = ["home_team", "year", "round_number", "date"]
+    REQUIRED_COLS: List[str] = [
+        "home_team",
+        "away_team",
+        "year",
+        "round_number",
+        "date",
+    ]
 
     _validate_required_columns(REQUIRED_COLS, match_row_data_frame.columns)
 
@@ -345,6 +351,15 @@ def finalize_data(
     _validate_no_dodgy_zeros(final_data_frame)
 
     return final_data_frame
+
+
+def convert_to_json(data_frame: pd.DataFrame) -> List[Dict[str, Any]]:
+    datetime_cols = data_frame.select_dtypes(["datetime", "datetimetz"]).columns
+    # We convert datetime columns to string, because json can't stringify pandas
+    # timestamp objects
+    col_type_conversions = {col: str for col in datetime_cols}
+
+    return data_frame.astype(col_type_conversions).to_dict("records")
 
 
 def _sort_data_frame_columns_node(

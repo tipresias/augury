@@ -15,9 +15,7 @@ THIS_YEAR = date.today().year
 YEAR_RANGE = (2018, 2019)
 PREDICTION_ROUND = 1
 N_MATCHES = 5
-FAKE_ML_MODELS = [
-    {"name": "fake_estimator", "filepath": "src/tests/fixtures/fake_estimator.pkl"}
-]
+FAKE_ML_MODELS = [{"name": "fake_estimator_model"}]
 
 
 class TestApi(TestCase):
@@ -34,7 +32,7 @@ class TestApi(TestCase):
                 YEAR_RANGE,
                 PREDICTION_ROUND,
                 data=fake_data,
-                ml_model_names="fake_estimator",
+                ml_model_names="fake_estimator_model",
                 verbose=0,
             )
 
