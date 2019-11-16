@@ -114,9 +114,15 @@ class MLData:
         if self.update_data or not self.__data_context.catalog.exists(self.data_set):
             self.__data_context.run(pipeline_name=self.pipeline)
 
+        data_frame = pd.DataFrame(self.__data_context.catalog.load(self.data_set))
+
+        # When loading date columns directly from JSON, we need to convert them
+        # from string to datetime
+        if "date" in list(data_frame.columns) and data_frame["date"].dtype == "object":
+            data_frame.loc[:, "date"] = pd.to_datetime(data_frame["date"])
+
         return (
-            pd.DataFrame(self.__data_context.catalog.load(self.data_set))
-            .set_index(self.index_cols, drop=False)
+            data_frame.set_index(self.index_cols, drop=False)
             .rename_axis([None] * len(self.index_cols))
             .sort_index()
         )

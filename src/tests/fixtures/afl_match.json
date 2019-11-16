@@ -10,12 +10,13 @@
     "home_goals": 14,
     "home_points": 89,
     "home_team": "Carlton",
-    "margin": -43,
+    "home_margin": -43,
     "round": "R1",
     "round_number": 1,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 43
   },
   {
     "away_behinds": 10,
@@ -28,12 +29,13 @@
     "home_goals": 12,
     "home_points": 86,
     "home_team": "Collingwood",
-    "margin": -14,
+    "home_margin": -14,
     "round": "R1",
     "round_number": 1,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 14
   },
   {
     "away_behinds": 12,
@@ -46,12 +48,13 @@
     "home_goals": 13,
     "home_points": 90,
     "home_team": "St Kilda",
-    "margin": -30,
+    "home_margin": -30,
     "round": "R1",
     "round_number": 1,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 30
   },
   {
     "away_behinds": 8,
@@ -64,12 +67,13 @@
     "home_goals": 12,
     "home_points": 82,
     "home_team": "Sydney",
-    "margin": -28,
+    "home_margin": -28,
     "round": "R1",
     "round_number": 1,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "S.C.G."
+    "venue": "S.C.G.",
+    "away_margin": 28
   },
   {
     "away_behinds": 19,
@@ -82,12 +86,13 @@
     "home_goals": 17,
     "home_points": 116,
     "home_team": "Essendon",
-    "margin": 25,
+    "home_margin": 25,
     "round": "R1",
     "round_number": 1,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -25
   },
   {
     "away_behinds": 8,
@@ -100,12 +105,13 @@
     "home_goals": 14,
     "home_points": 96,
     "home_team": "Gold Coast",
-    "margin": -2,
+    "home_margin": -2,
     "round": "R1",
     "round_number": 1,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Carrara"
+    "venue": "Carrara",
+    "away_margin": 2
   },
   {
     "away_behinds": 10,
@@ -118,12 +124,13 @@
     "home_goals": 13,
     "home_points": 93,
     "home_team": "North Melbourne",
-    "margin": -43,
+    "home_margin": -43,
     "round": "R1",
     "round_number": 1,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 43
   },
   {
     "away_behinds": 7,
@@ -136,12 +143,13 @@
     "home_goals": 22,
     "home_points": 147,
     "home_team": "Adelaide",
-    "margin": 56,
+    "home_margin": 56,
     "round": "R1",
     "round_number": 1,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -56
   },
   {
     "away_behinds": 7,
@@ -154,12 +162,13 @@
     "home_goals": 10,
     "home_points": 73,
     "home_team": "Fremantle",
-    "margin": -42,
+    "home_margin": -42,
     "round": "R1",
     "round_number": 1,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Subiaco"
+    "venue": "Subiaco",
+    "away_margin": 42
   },
   {
     "away_behinds": 14,
@@ -172,12 +181,13 @@
     "home_goals": 14,
     "home_points": 99,
     "home_team": "Richmond",
-    "margin": 19,
+    "home_margin": 19,
     "round": "R2",
     "round_number": 2,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -19
   },
   {
     "away_behinds": 9,
@@ -190,12 +200,13 @@
     "home_goals": 16,
     "home_points": 110,
     "home_team": "Footscray",
-    "margin": 23,
+    "home_margin": 23,
     "round": "R2",
     "round_number": 2,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -23
   },
   {
     "away_behinds": 17,
@@ -208,12 +219,13 @@
     "home_goals": 13,
     "home_points": 89,
     "home_team": "Hawthorn",
-    "margin": -24,
+    "home_margin": -24,
     "round": "R2",
     "round_number": 2,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 24
   },
   {
     "away_behinds": 10,
@@ -226,12 +238,13 @@
     "home_goals": 24,
     "home_points": 160,
     "home_team": "GWS",
-    "margin": 102,
+    "home_margin": 102,
     "round": "R2",
     "round_number": 2,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Sydney Showground"
+    "venue": "Sydney Showground",
+    "away_margin": -102
   },
   {
     "away_behinds": 9,
@@ -244,12 +257,13 @@
     "home_goals": 12,
     "home_points": 84,
     "home_team": "Brisbane Lions",
-    "margin": -27,
+    "home_margin": -27,
     "round": "R2",
     "round_number": 2,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Gabba"
+    "venue": "Gabba",
+    "away_margin": 27
   },
   {
     "away_behinds": 19,
@@ -262,12 +276,13 @@
     "home_goals": 18,
     "home_points": 116,
     "home_team": "West Coast",
-    "margin": 19,
+    "home_margin": 19,
     "round": "R2",
     "round_number": 2,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Subiaco"
+    "venue": "Subiaco",
+    "away_margin": -19
   },
   {
     "away_behinds": 9,
@@ -280,12 +295,13 @@
     "home_goals": 17,
     "home_points": 112,
     "home_team": "Geelong",
-    "margin": 1,
+    "home_margin": 1,
     "round": "R2",
     "round_number": 2,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -1
   },
   {
     "away_behinds": 10,
@@ -298,12 +314,13 @@
     "home_goals": 13,
     "home_points": 86,
     "home_team": "Melbourne",
-    "margin": 22,
+    "home_margin": 22,
     "round": "R2",
     "round_number": 2,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -22
   },
   {
     "away_behinds": 8,
@@ -316,12 +333,13 @@
     "home_goals": 22,
     "home_points": 145,
     "home_team": "Port Adelaide",
-    "margin": 89,
+    "home_margin": 89,
     "round": "R2",
     "round_number": 2,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -89
   },
   {
     "away_behinds": 14,
@@ -334,12 +352,13 @@
     "home_goals": 11,
     "home_points": 79,
     "home_team": "Sydney",
-    "margin": -1,
+    "home_margin": -1,
     "round": "R3",
     "round_number": 3,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "S.C.G."
+    "venue": "S.C.G.",
+    "away_margin": 1
   },
   {
     "away_behinds": 19,
@@ -352,12 +371,13 @@
     "home_goals": 10,
     "home_points": 67,
     "home_team": "North Melbourne",
-    "margin": -42,
+    "home_margin": -42,
     "round": "R3",
     "round_number": 3,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Bellerive Oval"
+    "venue": "Bellerive Oval",
+    "away_margin": 42
   },
   {
     "away_behinds": 17,
@@ -370,12 +390,13 @@
     "home_goals": 11,
     "home_points": 76,
     "home_team": "Richmond",
-    "margin": 11,
+    "home_margin": 11,
     "round": "R3",
     "round_number": 3,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -11
   },
   {
     "away_behinds": 19,
@@ -388,12 +409,13 @@
     "home_goals": 20,
     "home_points": 126,
     "home_team": "Geelong",
-    "margin": 29,
+    "home_margin": 29,
     "round": "R3",
     "round_number": 3,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -29
   },
   {
     "away_behinds": 10,
@@ -406,12 +428,13 @@
     "home_goals": 12,
     "home_points": 83,
     "home_team": "Port Adelaide",
-    "margin": -17,
+    "home_margin": -17,
     "round": "R3",
     "round_number": 3,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": 17
   },
   {
     "away_behinds": 13,
@@ -424,12 +447,13 @@
     "home_goals": 13,
     "home_points": 89,
     "home_team": "Fremantle",
-    "margin": 16,
+    "home_margin": 16,
     "round": "R3",
     "round_number": 3,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Subiaco"
+    "venue": "Subiaco",
+    "away_margin": -16
   },
   {
     "away_behinds": 10,
@@ -442,12 +466,13 @@
     "home_goals": 14,
     "home_points": 107,
     "home_team": "St Kilda",
-    "margin": 31,
+    "home_margin": 31,
     "round": "R3",
     "round_number": 3,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -31
   },
   {
     "away_behinds": 6,
@@ -460,12 +485,13 @@
     "home_goals": 7,
     "home_points": 57,
     "home_team": "Carlton",
-    "margin": 15,
+    "home_margin": 15,
     "round": "R3",
     "round_number": 3,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -15
   },
   {
     "away_behinds": 11,
@@ -478,12 +504,13 @@
     "home_goals": 21,
     "home_points": 139,
     "home_team": "Gold Coast",
-    "margin": 86,
+    "home_margin": 86,
     "round": "R3",
     "round_number": 3,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Carrara"
+    "venue": "Carrara",
+    "away_margin": -86
   },
   {
     "away_behinds": 5,
@@ -496,12 +523,13 @@
     "home_goals": 13,
     "home_points": 91,
     "home_team": "West Coast",
-    "margin": 26,
+    "home_margin": 26,
     "round": "R4",
     "round_number": 4,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Subiaco"
+    "venue": "Subiaco",
+    "away_margin": -26
   },
   {
     "away_behinds": 17,
@@ -514,12 +542,13 @@
     "home_goals": 12,
     "home_points": 86,
     "home_team": "North Melbourne",
-    "margin": -3,
+    "home_margin": -3,
     "round": "R4",
     "round_number": 4,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 3
   },
   {
     "away_behinds": 10,
@@ -532,12 +561,13 @@
     "home_goals": 15,
     "home_points": 104,
     "home_team": "Melbourne",
-    "margin": -2,
+    "home_margin": -2,
     "round": "R4",
     "round_number": 4,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 2
   },
   {
     "away_behinds": 15,
@@ -550,12 +580,13 @@
     "home_goals": 16,
     "home_points": 112,
     "home_team": "GWS",
-    "margin": 31,
+    "home_margin": 31,
     "round": "R4",
     "round_number": 4,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Manuka Oval"
+    "venue": "Manuka Oval",
+    "away_margin": -31
   },
   {
     "away_behinds": 6,
@@ -568,12 +599,13 @@
     "home_goals": 12,
     "home_points": 82,
     "home_team": "Carlton",
-    "margin": -26,
+    "home_margin": -26,
     "round": "R4",
     "round_number": 4,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 26
   },
   {
     "away_behinds": 10,
@@ -586,12 +618,13 @@
     "home_goals": 24,
     "home_points": 153,
     "home_team": "Adelaide",
-    "margin": 65,
+    "home_margin": 65,
     "round": "R4",
     "round_number": 4,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -65
   },
   {
     "away_behinds": 15,
@@ -604,12 +637,13 @@
     "home_goals": 7,
     "home_points": 55,
     "home_team": "Collingwood",
-    "margin": -14,
+    "home_margin": -14,
     "round": "R4",
     "round_number": 4,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 14
   },
   {
     "away_behinds": 17,
@@ -622,12 +656,13 @@
     "home_goals": 10,
     "home_points": 67,
     "home_team": "Brisbane Lions",
-    "margin": -52,
+    "home_margin": -52,
     "round": "R4",
     "round_number": 4,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Gabba"
+    "venue": "Gabba",
+    "away_margin": 52
   },
   {
     "away_behinds": 14,
@@ -640,12 +675,13 @@
     "home_goals": 6,
     "home_points": 48,
     "home_team": "Hawthorn",
-    "margin": -86,
+    "home_margin": -86,
     "round": "R4",
     "round_number": 4,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 86
   },
   {
     "away_behinds": 11,
@@ -658,12 +694,13 @@
     "home_goals": 20,
     "home_points": 137,
     "home_team": "Port Adelaide",
-    "margin": 90,
+    "home_margin": 90,
     "round": "R5",
     "round_number": 5,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -90
   },
   {
     "away_behinds": 6,
@@ -676,12 +713,13 @@
     "home_goals": 17,
     "home_points": 122,
     "home_team": "Footscray",
-    "margin": 32,
+    "home_margin": 32,
     "round": "R5",
     "round_number": 5,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -32
   },
   {
     "away_behinds": 15,
@@ -694,12 +732,13 @@
     "home_goals": 13,
     "home_points": 86,
     "home_team": "Gold Coast",
-    "margin": -67,
+    "home_margin": -67,
     "round": "R5",
     "round_number": 5,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Carrara"
+    "venue": "Carrara",
+    "away_margin": 67
   },
   {
     "away_behinds": 15,
@@ -712,12 +751,13 @@
     "home_goals": 9,
     "home_points": 63,
     "home_team": "Sydney",
-    "margin": -42,
+    "home_margin": -42,
     "round": "R5",
     "round_number": 5,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "S.C.G."
+    "venue": "S.C.G.",
+    "away_margin": 42
   },
   {
     "away_behinds": 8,
@@ -730,12 +770,13 @@
     "home_goals": 9,
     "home_points": 67,
     "home_team": "Fremantle",
-    "margin": 5,
+    "home_margin": 5,
     "round": "R5",
     "round_number": 5,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Subiaco"
+    "venue": "Subiaco",
+    "away_margin": -5
   },
   {
     "away_behinds": 12,
@@ -748,12 +789,13 @@
     "home_goals": 13,
     "home_points": 88,
     "home_team": "St Kilda",
-    "margin": -38,
+    "home_margin": -38,
     "round": "R5",
     "round_number": 5,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 38
   },
   {
     "away_behinds": 9,
@@ -766,12 +808,13 @@
     "home_goals": 19,
     "home_points": 125,
     "home_team": "Hawthorn",
-    "margin": 50,
+    "home_margin": 50,
     "round": "R5",
     "round_number": 5,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -50
   },
   {
     "away_behinds": 9,
@@ -784,12 +827,13 @@
     "home_goals": 12,
     "home_points": 88,
     "home_team": "Richmond",
-    "margin": 13,
+    "home_margin": 13,
     "round": "R5",
     "round_number": 5,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -13
   },
   {
     "away_behinds": 16,
@@ -802,12 +846,13 @@
     "home_goals": 15,
     "home_points": 100,
     "home_team": "Essendon",
-    "margin": 18,
+    "home_margin": 18,
     "round": "R5",
     "round_number": 5,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -18
   },
   {
     "away_behinds": 19,
@@ -820,12 +865,13 @@
     "home_goals": 11,
     "home_points": 75,
     "home_team": "GWS",
-    "margin": 2,
+    "home_margin": 2,
     "round": "R6",
     "round_number": 6,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Manuka Oval"
+    "venue": "Manuka Oval",
+    "away_margin": -2
   },
   {
     "away_behinds": 16,
@@ -838,12 +884,13 @@
     "home_goals": 8,
     "home_points": 55,
     "home_team": "Hawthorn",
-    "margin": -75,
+    "home_margin": -75,
     "round": "R6",
     "round_number": 6,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "York Park"
+    "venue": "York Park",
+    "away_margin": 75
   },
   {
     "away_behinds": 12,
@@ -856,12 +903,13 @@
     "home_goals": 15,
     "home_points": 97,
     "home_team": "Carlton",
-    "margin": 19,
+    "home_margin": 19,
     "round": "R6",
     "round_number": 6,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -19
   },
   {
     "away_behinds": 18,
@@ -874,12 +922,13 @@
     "home_goals": 10,
     "home_points": 67,
     "home_team": "Brisbane Lions",
-    "margin": -83,
+    "home_margin": -83,
     "round": "R6",
     "round_number": 6,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Gabba"
+    "venue": "Gabba",
+    "away_margin": 83
   },
   {
     "away_behinds": 10,
@@ -892,12 +941,13 @@
     "home_goals": 16,
     "home_points": 107,
     "home_team": "North Melbourne",
-    "margin": 13,
+    "home_margin": 13,
     "round": "R6",
     "round_number": 6,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -13
   },
   {
     "away_behinds": 8,
@@ -910,12 +960,13 @@
     "home_goals": 16,
     "home_points": 103,
     "home_team": "West Coast",
-    "margin": 41,
+    "home_margin": 41,
     "round": "R6",
     "round_number": 6,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Subiaco"
+    "venue": "Subiaco",
+    "away_margin": -41
   },
   {
     "away_behinds": 10,
@@ -928,12 +979,13 @@
     "home_goals": 10,
     "home_points": 74,
     "home_team": "Essendon",
-    "margin": -38,
+    "home_margin": -38,
     "round": "R6",
     "round_number": 6,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 38
   },
   {
     "away_behinds": 17,
@@ -946,12 +998,13 @@
     "home_goals": 11,
     "home_points": 78,
     "home_team": "Geelong",
-    "margin": -29,
+    "home_margin": -29,
     "round": "R6",
     "round_number": 6,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 29
   },
   {
     "away_behinds": 4,
@@ -964,12 +1017,13 @@
     "home_goals": 21,
     "home_points": 140,
     "home_team": "Adelaide",
-    "margin": 76,
+    "home_margin": 76,
     "round": "R6",
     "round_number": 6,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -76
   },
   {
     "away_behinds": 13,
@@ -982,12 +1036,13 @@
     "home_goals": 16,
     "home_points": 108,
     "home_team": "St Kilda",
-    "margin": 23,
+    "home_margin": 23,
     "round": "R7",
     "round_number": 7,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -23
   },
   {
     "away_behinds": 8,
@@ -1000,12 +1055,13 @@
     "home_goals": 22,
     "home_points": 145,
     "home_team": "North Melbourne",
-    "margin": 59,
+    "home_margin": 59,
     "round": "R7",
     "round_number": 7,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Bellerive Oval"
+    "venue": "Bellerive Oval",
+    "away_margin": -59
   },
   {
     "away_behinds": 7,
@@ -1018,12 +1074,13 @@
     "home_goals": 8,
     "home_points": 56,
     "home_team": "Collingwood",
-    "margin": -23,
+    "home_margin": -23,
     "round": "R7",
     "round_number": 7,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 23
   },
   {
     "away_behinds": 7,
@@ -1036,12 +1093,13 @@
     "home_goals": 12,
     "home_points": 87,
     "home_team": "Port Adelaide",
-    "margin": -10,
+    "home_margin": -10,
     "round": "R7",
     "round_number": 7,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": 10
   },
   {
     "away_behinds": 9,
@@ -1054,12 +1112,13 @@
     "home_goals": 11,
     "home_points": 80,
     "home_team": "Footscray",
-    "margin": 5,
+    "home_margin": 5,
     "round": "R7",
     "round_number": 7,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -5
   },
   {
     "away_behinds": 9,
@@ -1072,12 +1131,13 @@
     "home_goals": 18,
     "home_points": 124,
     "home_team": "Gold Coast",
-    "margin": 25,
+    "home_margin": 25,
     "round": "R7",
     "round_number": 7,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Carrara"
+    "venue": "Carrara",
+    "away_margin": -25
   },
   {
     "away_behinds": 9,
@@ -1090,12 +1150,13 @@
     "home_goals": 20,
     "home_points": 135,
     "home_team": "Sydney",
-    "margin": 54,
+    "home_margin": 54,
     "round": "R7",
     "round_number": 7,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "S.C.G."
+    "venue": "S.C.G.",
+    "away_margin": -54
   },
   {
     "away_behinds": 10,
@@ -1108,12 +1169,13 @@
     "home_goals": 14,
     "home_points": 91,
     "home_team": "Melbourne",
-    "margin": -3,
+    "home_margin": -3,
     "round": "R7",
     "round_number": 7,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 3
   },
   {
     "away_behinds": 13,
@@ -1126,12 +1188,13 @@
     "home_goals": 17,
     "home_points": 116,
     "home_team": "Fremantle",
-    "margin": 37,
+    "home_margin": 37,
     "round": "R7",
     "round_number": 7,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Subiaco"
+    "venue": "Subiaco",
+    "away_margin": -37
   },
   {
     "away_behinds": 13,
@@ -1144,12 +1207,13 @@
     "home_goals": 9,
     "home_points": 69,
     "home_team": "West Coast",
-    "margin": 8,
+    "home_margin": 8,
     "round": "R8",
     "round_number": 8,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Subiaco"
+    "venue": "Subiaco",
+    "away_margin": -8
   },
   {
     "away_behinds": 9,
@@ -1162,12 +1226,13 @@
     "home_goals": 17,
     "home_points": 113,
     "home_team": "Hawthorn",
-    "margin": 38,
+    "home_margin": 38,
     "round": "R8",
     "round_number": 8,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "York Park"
+    "venue": "York Park",
+    "away_margin": -38
   },
   {
     "away_behinds": 6,
@@ -1180,12 +1245,13 @@
     "home_goals": 12,
     "home_points": 85,
     "home_team": "St Kilda",
-    "margin": 19,
+    "home_margin": 19,
     "round": "R8",
     "round_number": 8,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -19
   },
   {
     "away_behinds": 9,
@@ -1198,12 +1264,13 @@
     "home_goals": 15,
     "home_points": 102,
     "home_team": "GWS",
-    "margin": 3,
+    "home_margin": 3,
     "round": "R8",
     "round_number": 8,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Sydney Showground"
+    "venue": "Sydney Showground",
+    "away_margin": -3
   },
   {
     "away_behinds": 15,
@@ -1216,12 +1283,13 @@
     "home_goals": 17,
     "home_points": 110,
     "home_team": "Essendon",
-    "margin": 17,
+    "home_margin": 17,
     "round": "R8",
     "round_number": 8,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -17
   },
   {
     "away_behinds": 5,
@@ -1234,12 +1302,13 @@
     "home_goals": 9,
     "home_points": 66,
     "home_team": "Adelaide",
-    "margin": -41,
+    "home_margin": -41,
     "round": "R8",
     "round_number": 8,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": 41
   },
   {
     "away_behinds": 14,
@@ -1252,12 +1321,13 @@
     "home_goals": 4,
     "home_points": 38,
     "home_team": "Gold Coast",
-    "margin": -72,
+    "home_margin": -72,
     "round": "R8",
     "round_number": 8,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Jiangwan Stadium"
+    "venue": "Jiangwan Stadium",
+    "away_margin": 72
   },
   {
     "away_behinds": 12,
@@ -1270,12 +1340,13 @@
     "home_goals": 10,
     "home_points": 70,
     "home_team": "Richmond",
-    "margin": -2,
+    "home_margin": -2,
     "round": "R8",
     "round_number": 8,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 2
   },
   {
     "away_behinds": 12,
@@ -1288,12 +1359,13 @@
     "home_goals": 11,
     "home_points": 78,
     "home_team": "North Melbourne",
-    "margin": -42,
+    "home_margin": -42,
     "round": "R8",
     "round_number": 8,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 42
   },
   {
     "away_behinds": 9,
@@ -1306,12 +1378,13 @@
     "home_goals": 16,
     "home_points": 104,
     "home_team": "Geelong",
-    "margin": 23,
+    "home_margin": 23,
     "round": "R9",
     "round_number": 9,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Kardinia Park"
+    "venue": "Kardinia Park",
+    "away_margin": -23
   },
   {
     "away_behinds": 10,
@@ -1324,12 +1397,13 @@
     "home_goals": 10,
     "home_points": 68,
     "home_team": "St Kilda",
-    "margin": -50,
+    "home_margin": -50,
     "round": "R9",
     "round_number": 9,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 50
   },
   {
     "away_behinds": 15,
@@ -1342,12 +1416,13 @@
     "home_goals": 11,
     "home_points": 78,
     "home_team": "GWS",
-    "margin": 3,
+    "home_margin": 3,
     "round": "R9",
     "round_number": 9,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Sydney Showground"
+    "venue": "Sydney Showground",
+    "away_margin": -3
   },
   {
     "away_behinds": 14,
@@ -1360,12 +1435,13 @@
     "home_goals": 7,
     "home_points": 60,
     "home_team": "Brisbane Lions",
-    "margin": -80,
+    "home_margin": -80,
     "round": "R9",
     "round_number": 9,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Gabba"
+    "venue": "Gabba",
+    "away_margin": 80
   },
   {
     "away_behinds": 6,
@@ -1378,12 +1454,13 @@
     "home_goals": 13,
     "home_points": 90,
     "home_team": "Collingwood",
-    "margin": 18,
+    "home_margin": 18,
     "round": "R9",
     "round_number": 9,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -18
   },
   {
     "away_behinds": 16,
@@ -1396,12 +1473,13 @@
     "home_goals": 19,
     "home_points": 125,
     "home_team": "Essendon",
-    "margin": 61,
+    "home_margin": 61,
     "round": "R9",
     "round_number": 9,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -61
   },
   {
     "away_behinds": 14,
@@ -1414,12 +1492,13 @@
     "home_goals": 13,
     "home_points": 90,
     "home_team": "Melbourne",
-    "margin": -14,
+    "home_margin": -14,
     "round": "R9",
     "round_number": 9,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 14
   },
   {
     "away_behinds": 9,
@@ -1432,12 +1511,13 @@
     "home_goals": 13,
     "home_points": 86,
     "home_team": "Fremantle",
-    "margin": 35,
+    "home_margin": 35,
     "round": "R9",
     "round_number": 9,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Subiaco"
+    "venue": "Subiaco",
+    "away_margin": -35
   },
   {
     "away_behinds": 13,
@@ -1450,12 +1530,13 @@
     "home_goals": 11,
     "home_points": 81,
     "home_team": "Geelong",
-    "margin": 2,
+    "home_margin": 2,
     "round": "R10",
     "round_number": 10,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Kardinia Park"
+    "venue": "Kardinia Park",
+    "away_margin": -2
   },
   {
     "away_behinds": 9,
@@ -1468,12 +1549,13 @@
     "home_goals": 11,
     "home_points": 75,
     "home_team": "Sydney",
-    "margin": -6,
+    "home_margin": -6,
     "round": "R10",
     "round_number": 10,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "S.C.G."
+    "venue": "S.C.G.",
+    "away_margin": 6
   },
   {
     "away_behinds": 8,
@@ -1486,12 +1568,13 @@
     "home_goals": 13,
     "home_points": 90,
     "home_team": "Footscray",
-    "margin": 40,
+    "home_margin": 40,
     "round": "R10",
     "round_number": 10,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -40
   },
   {
     "away_behinds": 9,
@@ -1504,12 +1587,13 @@
     "home_goals": 18,
     "home_points": 122,
     "home_team": "Melbourne",
-    "margin": 35,
+    "home_margin": 35,
     "round": "R10",
     "round_number": 10,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Traeger Park"
+    "venue": "Traeger Park",
+    "away_margin": -35
   },
   {
     "away_behinds": 6,
@@ -1522,12 +1606,13 @@
     "home_goals": 11,
     "home_points": 81,
     "home_team": "Richmond",
-    "margin": 15,
+    "home_margin": 15,
     "round": "R10",
     "round_number": 10,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -15
   },
   {
     "away_behinds": 7,
@@ -1540,12 +1625,13 @@
     "home_goals": 20,
     "home_points": 143,
     "home_team": "Adelaide",
-    "margin": 100,
+    "home_margin": 100,
     "round": "R10",
     "round_number": 10,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -100
   },
   {
     "away_behinds": 6,
@@ -1558,12 +1644,13 @@
     "home_goals": 18,
     "home_points": 129,
     "home_team": "Collingwood",
-    "margin": 45,
+    "home_margin": 45,
     "round": "R10",
     "round_number": 10,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -45
   },
   {
     "away_behinds": 11,
@@ -1576,12 +1663,13 @@
     "home_goals": 15,
     "home_points": 96,
     "home_team": "Carlton",
-    "margin": -17,
+    "home_margin": -17,
     "round": "R10",
     "round_number": 10,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 17
   },
   {
     "away_behinds": 14,
@@ -1594,12 +1682,13 @@
     "home_goals": 14,
     "home_points": 90,
     "home_team": "West Coast",
-    "margin": -8,
+    "home_margin": -8,
     "round": "R10",
     "round_number": 10,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Subiaco"
+    "venue": "Subiaco",
+    "away_margin": 8
   },
   {
     "away_behinds": 5,
@@ -1612,12 +1701,13 @@
     "home_goals": 13,
     "home_points": 98,
     "home_team": "Port Adelaide",
-    "margin": 51,
+    "home_margin": 51,
     "round": "R11",
     "round_number": 11,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -51
   },
   {
     "away_behinds": 14,
@@ -1630,12 +1720,13 @@
     "home_goals": 13,
     "home_points": 96,
     "home_team": "Geelong",
-    "margin": 22,
+    "home_margin": 22,
     "round": "R11",
     "round_number": 11,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Kardinia Park"
+    "venue": "Kardinia Park",
+    "away_margin": -22
   },
   {
     "away_behinds": 11,
@@ -1648,12 +1739,13 @@
     "home_goals": 11,
     "home_points": 80,
     "home_team": "Gold Coast",
-    "margin": 3,
+    "home_margin": 3,
     "round": "R11",
     "round_number": 11,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Carrara"
+    "venue": "Carrara",
+    "away_margin": -3
   },
   {
     "away_behinds": 11,
@@ -1666,12 +1758,13 @@
     "home_goals": 18,
     "home_points": 117,
     "home_team": "GWS",
-    "margin": 16,
+    "home_margin": 16,
     "round": "R11",
     "round_number": 11,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Sydney Showground"
+    "venue": "Sydney Showground",
+    "away_margin": -16
   },
   {
     "away_behinds": 17,
@@ -1684,12 +1777,13 @@
     "home_goals": 9,
     "home_points": 66,
     "home_team": "North Melbourne",
-    "margin": -35,
+    "home_margin": -35,
     "round": "R11",
     "round_number": 11,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 35
   },
   {
     "away_behinds": 15,
@@ -1702,12 +1796,13 @@
     "home_goals": 12,
     "home_points": 85,
     "home_team": "Fremantle",
-    "margin": -20,
+    "home_margin": -20,
     "round": "R11",
     "round_number": 11,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Subiaco"
+    "venue": "Subiaco",
+    "away_margin": 20
   },
   {
     "away_behinds": 6,
@@ -1720,12 +1815,13 @@
     "home_goals": 12,
     "home_points": 88,
     "home_team": "Sydney",
-    "margin": 46,
+    "home_margin": 46,
     "round": "R12",
     "round_number": 12,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "S.C.G."
+    "venue": "S.C.G.",
+    "away_margin": -46
   },
   {
     "away_behinds": 12,
@@ -1738,12 +1834,13 @@
     "home_goals": 16,
     "home_points": 111,
     "home_team": "Adelaide",
-    "margin": 57,
+    "home_margin": 57,
     "round": "R12",
     "round_number": 12,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -57
   },
   {
     "away_behinds": 17,
@@ -1756,12 +1853,13 @@
     "home_goals": 12,
     "home_points": 79,
     "home_team": "Hawthorn",
-    "margin": -16,
+    "home_margin": -16,
     "round": "R12",
     "round_number": 12,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 16
   },
   {
     "away_behinds": 10,
@@ -1774,12 +1872,13 @@
     "home_goals": 18,
     "home_points": 121,
     "home_team": "Brisbane Lions",
-    "margin": 57,
+    "home_margin": 57,
     "round": "R12",
     "round_number": 12,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Gabba"
+    "venue": "Gabba",
+    "away_margin": -57
   },
   {
     "away_behinds": 13,
@@ -1792,12 +1891,13 @@
     "home_goals": 19,
     "home_points": 131,
     "home_team": "Essendon",
-    "margin": 70,
+    "home_margin": 70,
     "round": "R12",
     "round_number": 12,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -70
   },
   {
     "away_behinds": 16,
@@ -1810,12 +1910,13 @@
     "home_goals": 10,
     "home_points": 71,
     "home_team": "Carlton",
-    "margin": 1,
+    "home_margin": 1,
     "round": "R12",
     "round_number": 12,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -1
   },
   {
     "away_behinds": 10,
@@ -1828,12 +1929,13 @@
     "home_goals": 15,
     "home_points": 104,
     "home_team": "Melbourne",
-    "margin": 4,
+    "home_margin": 4,
     "round": "R12",
     "round_number": 12,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -4
   },
   {
     "away_behinds": 10,
@@ -1846,12 +1948,13 @@
     "home_goals": 11,
     "home_points": 83,
     "home_team": "West Coast",
-    "margin": 13,
+    "home_margin": 13,
     "round": "R13",
     "round_number": 13,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Subiaco"
+    "venue": "Subiaco",
+    "away_margin": -13
   },
   {
     "away_behinds": 17,
@@ -1864,12 +1967,13 @@
     "home_goals": 10,
     "home_points": 72,
     "home_team": "North Melbourne",
-    "margin": -17,
+    "home_margin": -17,
     "round": "R13",
     "round_number": 13,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 17
   },
   {
     "away_behinds": 8,
@@ -1882,12 +1986,13 @@
     "home_goals": 10,
     "home_points": 71,
     "home_team": "Richmond",
-    "margin": -9,
+    "home_margin": -9,
     "round": "R13",
     "round_number": 13,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 9
   },
   {
     "away_behinds": 9,
@@ -1900,12 +2005,13 @@
     "home_goals": 18,
     "home_points": 121,
     "home_team": "Port Adelaide",
-    "margin": 40,
+    "home_margin": 40,
     "round": "R13",
     "round_number": 13,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -40
   },
   {
     "away_behinds": 11,
@@ -1918,12 +2024,13 @@
     "home_goals": 11,
     "home_points": 73,
     "home_team": "Gold Coast",
-    "margin": -10,
+    "home_margin": -10,
     "round": "R13",
     "round_number": 13,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Carrara"
+    "venue": "Carrara",
+    "away_margin": 10
   },
   {
     "away_behinds": 11,
@@ -1936,12 +2043,13 @@
     "home_goals": 8,
     "home_points": 56,
     "home_team": "Footscray",
-    "margin": -57,
+    "home_margin": -57,
     "round": "R13",
     "round_number": 13,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 57
   },
   {
     "away_behinds": 12,
@@ -1954,12 +2062,13 @@
     "home_goals": 12,
     "home_points": 82,
     "home_team": "Adelaide",
-    "margin": -14,
+    "home_margin": -14,
     "round": "R14",
     "round_number": 14,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": 14
   },
   {
     "away_behinds": 13,
@@ -1972,12 +2081,13 @@
     "home_goals": 11,
     "home_points": 86,
     "home_team": "Sydney",
-    "margin": 1,
+    "home_margin": 1,
     "round": "R14",
     "round_number": 14,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "S.C.G."
+    "venue": "S.C.G.",
+    "away_margin": -1
   },
   {
     "away_behinds": 15,
@@ -1990,12 +2100,13 @@
     "home_goals": 9,
     "home_points": 62,
     "home_team": "Collingwood",
-    "margin": -31,
+    "home_margin": -31,
     "round": "R14",
     "round_number": 14,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 31
   },
   {
     "away_behinds": 14,
@@ -2008,12 +2119,13 @@
     "home_goals": 12,
     "home_points": 86,
     "home_team": "Brisbane Lions",
-    "margin": -60,
+    "home_margin": -60,
     "round": "R14",
     "round_number": 14,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Gabba"
+    "venue": "Gabba",
+    "away_margin": 60
   },
   {
     "away_behinds": 10,
@@ -2026,12 +2138,13 @@
     "home_goals": 15,
     "home_points": 107,
     "home_team": "Footscray",
-    "margin": 1,
+    "home_margin": 1,
     "round": "R14",
     "round_number": 14,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -1
   },
   {
     "away_behinds": 9,
@@ -2044,12 +2157,13 @@
     "home_goals": 14,
     "home_points": 96,
     "home_team": "West Coast",
-    "margin": -3,
+    "home_margin": -3,
     "round": "R14",
     "round_number": 14,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Subiaco"
+    "venue": "Subiaco",
+    "away_margin": 3
   },
   {
     "away_behinds": 6,
@@ -2062,12 +2176,13 @@
     "home_goals": 10,
     "home_points": 74,
     "home_team": "Geelong",
-    "margin": 2,
+    "home_margin": 2,
     "round": "R14",
     "round_number": 14,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Kardinia Park"
+    "venue": "Kardinia Park",
+    "away_margin": -2
   },
   {
     "away_behinds": 10,
@@ -2080,12 +2195,13 @@
     "home_goals": 11,
     "home_points": 84,
     "home_team": "Richmond",
-    "margin": 26,
+    "home_margin": 26,
     "round": "R14",
     "round_number": 14,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -26
   },
   {
     "away_behinds": 12,
@@ -2098,12 +2214,13 @@
     "home_goals": 14,
     "home_points": 103,
     "home_team": "St Kilda",
-    "margin": 31,
+    "home_margin": 31,
     "round": "R14",
     "round_number": 14,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -31
   },
   {
     "away_behinds": 19,
@@ -2116,12 +2233,13 @@
     "home_goals": 7,
     "home_points": 50,
     "home_team": "Melbourne",
-    "margin": -35,
+    "home_margin": -35,
     "round": "R15",
     "round_number": 15,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 35
   },
   {
     "away_behinds": 15,
@@ -2134,12 +2252,13 @@
     "home_goals": 11,
     "home_points": 80,
     "home_team": "Footscray",
-    "margin": -7,
+    "home_margin": -7,
     "round": "R15",
     "round_number": 15,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 7
   },
   {
     "away_behinds": 11,
@@ -2152,12 +2271,13 @@
     "home_goals": 12,
     "home_points": 77,
     "home_team": "Carlton",
-    "margin": -12,
+    "home_margin": -12,
     "round": "R15",
     "round_number": 15,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 12
   },
   {
     "away_behinds": 15,
@@ -2170,12 +2290,13 @@
     "home_goals": 18,
     "home_points": 118,
     "home_team": "Gold Coast",
-    "margin": 19,
+    "home_margin": 19,
     "round": "R15",
     "round_number": 15,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Carrara"
+    "venue": "Carrara",
+    "away_margin": -19
   },
   {
     "away_behinds": 8,
@@ -2188,12 +2309,13 @@
     "home_goals": 10,
     "home_points": 68,
     "home_team": "GWS",
-    "margin": 0,
+    "home_margin": 0,
     "round": "R15",
     "round_number": 15,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Sydney Showground"
+    "venue": "Sydney Showground",
+    "away_margin": 0
   },
   {
     "away_behinds": 10,
@@ -2206,12 +2328,13 @@
     "home_goals": 8,
     "home_points": 63,
     "home_team": "Port Adelaide",
-    "margin": -13,
+    "home_margin": -13,
     "round": "R15",
     "round_number": 15,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": 13
   },
   {
     "away_behinds": 12,
@@ -2224,12 +2347,13 @@
     "home_goals": 11,
     "home_points": 82,
     "home_team": "Essendon",
-    "margin": -8,
+    "home_margin": -8,
     "round": "R15",
     "round_number": 15,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 8
   },
   {
     "away_behinds": 10,
@@ -2242,12 +2366,13 @@
     "home_goals": 18,
     "home_points": 118,
     "home_team": "Hawthorn",
-    "margin": 24,
+    "home_margin": 24,
     "round": "R15",
     "round_number": 15,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -24
   },
   {
     "away_behinds": 17,
@@ -2260,12 +2385,13 @@
     "home_goals": 12,
     "home_points": 80,
     "home_team": "Fremantle",
-    "margin": -9,
+    "home_margin": -9,
     "round": "R15",
     "round_number": 15,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Subiaco"
+    "venue": "Subiaco",
+    "away_margin": 9
   },
   {
     "away_behinds": 15,
@@ -2278,12 +2404,13 @@
     "home_goals": 16,
     "home_points": 104,
     "home_team": "Adelaide",
-    "margin": 59,
+    "home_margin": 59,
     "round": "R16",
     "round_number": 16,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -59
   },
   {
     "away_behinds": 7,
@@ -2296,12 +2423,13 @@
     "home_goals": 14,
     "home_points": 97,
     "home_team": "Hawthorn",
-    "margin": 0,
+    "home_margin": 0,
     "round": "R16",
     "round_number": 16,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "York Park"
+    "venue": "York Park",
+    "away_margin": 0
   },
   {
     "away_behinds": 9,
@@ -2314,12 +2442,13 @@
     "home_goals": 12,
     "home_points": 80,
     "home_team": "Collingwood",
-    "margin": -37,
+    "home_margin": -37,
     "round": "R16",
     "round_number": 16,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 37
   },
   {
     "away_behinds": 9,
@@ -2332,12 +2461,13 @@
     "home_goals": 17,
     "home_points": 118,
     "home_team": "Sydney",
-    "margin": 67,
+    "home_margin": 67,
     "round": "R16",
     "round_number": 16,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "S.C.G."
+    "venue": "S.C.G.",
+    "away_margin": -67
   },
   {
     "away_behinds": 13,
@@ -2350,12 +2480,13 @@
     "home_goals": 11,
     "home_points": 78,
     "home_team": "Brisbane Lions",
-    "margin": -85,
+    "home_margin": -85,
     "round": "R16",
     "round_number": 16,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Gabba"
+    "venue": "Gabba",
+    "away_margin": 85
   },
   {
     "away_behinds": 11,
@@ -2368,12 +2499,13 @@
     "home_goals": 21,
     "home_points": 138,
     "home_team": "St Kilda",
-    "margin": 67,
+    "home_margin": 67,
     "round": "R16",
     "round_number": 16,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -67
   },
   {
     "away_behinds": 8,
@@ -2386,12 +2518,13 @@
     "home_goals": 12,
     "home_points": 82,
     "home_team": "North Melbourne",
-    "margin": -4,
+    "home_margin": -4,
     "round": "R16",
     "round_number": 16,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 4
   },
   {
     "away_behinds": 6,
@@ -2404,12 +2537,13 @@
     "home_goals": 12,
     "home_points": 82,
     "home_team": "Carlton",
-    "margin": -8,
+    "home_margin": -8,
     "round": "R16",
     "round_number": 16,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 8
   },
   {
     "away_behinds": 12,
@@ -2422,12 +2556,13 @@
     "home_goals": 13,
     "home_points": 88,
     "home_team": "West Coast",
-    "margin": -32,
+    "home_margin": -32,
     "round": "R16",
     "round_number": 16,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Subiaco"
+    "venue": "Subiaco",
+    "away_margin": 32
   },
   {
     "away_behinds": 16,
@@ -2440,12 +2575,13 @@
     "home_goals": 7,
     "home_points": 57,
     "home_team": "St Kilda",
-    "margin": -61,
+    "home_margin": -61,
     "round": "R17",
     "round_number": 17,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 61
   },
   {
     "away_behinds": 13,
@@ -2458,12 +2594,13 @@
     "home_goals": 13,
     "home_points": 88,
     "home_team": "Geelong",
-    "margin": 3,
+    "home_margin": 3,
     "round": "R17",
     "round_number": 17,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -3
   },
   {
     "away_behinds": 9,
@@ -2476,12 +2613,13 @@
     "home_goals": 19,
     "home_points": 127,
     "home_team": "Port Adelaide",
-    "margin": 70,
+    "home_margin": 70,
     "round": "R17",
     "round_number": 17,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -70
   },
   {
     "away_behinds": 13,
@@ -2494,12 +2632,13 @@
     "home_goals": 13,
     "home_points": 88,
     "home_team": "Gold Coast",
-    "margin": -15,
+    "home_margin": -15,
     "round": "R17",
     "round_number": 17,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Carrara"
+    "venue": "Carrara",
+    "away_margin": 15
   },
   {
     "away_behinds": 12,
@@ -2512,12 +2651,13 @@
     "home_goals": 12,
     "home_points": 83,
     "home_team": "GWS",
-    "margin": -13,
+    "home_margin": -13,
     "round": "R17",
     "round_number": 17,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Sydney Showground"
+    "venue": "Sydney Showground",
+    "away_margin": 13
   },
   {
     "away_behinds": 14,
@@ -2530,12 +2670,13 @@
     "home_goals": 10,
     "home_points": 70,
     "home_team": "Melbourne",
-    "margin": -46,
+    "home_margin": -46,
     "round": "R17",
     "round_number": 17,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Marrara Oval"
+    "venue": "Marrara Oval",
+    "away_margin": 46
   },
   {
     "away_behinds": 9,
@@ -2548,12 +2689,13 @@
     "home_goals": 16,
     "home_points": 112,
     "home_team": "Richmond",
-    "margin": 31,
+    "home_margin": 31,
     "round": "R17",
     "round_number": 17,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -31
   },
   {
     "away_behinds": 10,
@@ -2566,12 +2708,13 @@
     "home_goals": 9,
     "home_points": 62,
     "home_team": "Carlton",
-    "margin": -20,
+    "home_margin": -20,
     "round": "R17",
     "round_number": 17,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 20
   },
   {
     "away_behinds": 8,
@@ -2584,12 +2727,13 @@
     "home_goals": 5,
     "home_points": 44,
     "home_team": "Fremantle",
-    "margin": -30,
+    "home_margin": -30,
     "round": "R17",
     "round_number": 17,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Subiaco"
+    "venue": "Subiaco",
+    "away_margin": 30
   },
   {
     "away_behinds": 10,
@@ -2602,12 +2746,13 @@
     "home_goals": 13,
     "home_points": 91,
     "home_team": "Adelaide",
-    "margin": 21,
+    "home_margin": 21,
     "round": "R18",
     "round_number": 18,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -21
   },
   {
     "away_behinds": 9,
@@ -2620,12 +2765,13 @@
     "home_goals": 20,
     "home_points": 132,
     "home_team": "Essendon",
-    "margin": 27,
+    "home_margin": 27,
     "round": "R18",
     "round_number": 18,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -27
   },
   {
     "away_behinds": 11,
@@ -2638,12 +2784,13 @@
     "home_goals": 13,
     "home_points": 88,
     "home_team": "Melbourne",
-    "margin": 23,
+    "home_margin": 23,
     "round": "R18",
     "round_number": 18,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -23
   },
   {
     "away_behinds": 8,
@@ -2656,12 +2803,13 @@
     "home_goals": 16,
     "home_points": 110,
     "home_team": "Footscray",
-    "margin": 54,
+    "home_margin": 54,
     "round": "R18",
     "round_number": 18,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Cazaly's Stadium"
+    "venue": "Cazaly's Stadium",
+    "away_margin": -54
   },
   {
     "away_behinds": 5,
@@ -2674,12 +2822,13 @@
     "home_goals": 14,
     "home_points": 101,
     "home_team": "Sydney",
-    "margin": 42,
+    "home_margin": 42,
     "round": "R18",
     "round_number": 18,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "S.C.G."
+    "venue": "S.C.G.",
+    "away_margin": -42
   },
   {
     "away_behinds": 10,
@@ -2692,12 +2841,13 @@
     "home_goals": 7,
     "home_points": 48,
     "home_team": "Fremantle",
-    "margin": -52,
+    "home_margin": -52,
     "round": "R18",
     "round_number": 18,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Subiaco"
+    "venue": "Subiaco",
+    "away_margin": 52
   },
   {
     "away_behinds": 9,
@@ -2710,12 +2860,13 @@
     "home_goals": 9,
     "home_points": 64,
     "home_team": "Richmond",
-    "margin": 19,
+    "home_margin": 19,
     "round": "R18",
     "round_number": 18,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -19
   },
   {
     "away_behinds": 7,
@@ -2728,12 +2879,13 @@
     "home_goals": 13,
     "home_points": 93,
     "home_team": "Collingwood",
-    "margin": 8,
+    "home_margin": 8,
     "round": "R18",
     "round_number": 18,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -8
   },
   {
     "away_behinds": 16,
@@ -2746,12 +2898,13 @@
     "home_goals": 17,
     "home_points": 112,
     "home_team": "Brisbane Lions",
-    "margin": 30,
+    "home_margin": 30,
     "round": "R18",
     "round_number": 18,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Gabba"
+    "venue": "Gabba",
+    "away_margin": -30
   },
   {
     "away_behinds": 12,
@@ -2764,12 +2917,13 @@
     "home_goals": 10,
     "home_points": 72,
     "home_team": "Hawthorn",
-    "margin": 6,
+    "home_margin": 6,
     "round": "R19",
     "round_number": 19,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -6
   },
   {
     "away_behinds": 12,
@@ -2782,12 +2936,13 @@
     "home_goals": 11,
     "home_points": 76,
     "home_team": "North Melbourne",
-    "margin": 4,
+    "home_margin": 4,
     "round": "R19",
     "round_number": 19,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Bellerive Oval"
+    "venue": "Bellerive Oval",
+    "away_margin": -4
   },
   {
     "away_behinds": 8,
@@ -2800,12 +2955,13 @@
     "home_goals": 13,
     "home_points": 98,
     "home_team": "GWS",
-    "margin": 12,
+    "home_margin": 12,
     "round": "R19",
     "round_number": 19,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Sydney Showground"
+    "venue": "Sydney Showground",
+    "away_margin": -12
   },
   {
     "away_behinds": 13,
@@ -2818,12 +2974,13 @@
     "home_goals": 9,
     "home_points": 63,
     "home_team": "Port Adelaide",
-    "margin": 2,
+    "home_margin": 2,
     "round": "R19",
     "round_number": 19,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -2
   },
   {
     "away_behinds": 15,
@@ -2836,12 +2993,13 @@
     "home_goals": 8,
     "home_points": 58,
     "home_team": "Carlton",
-    "margin": -65,
+    "home_margin": -65,
     "round": "R19",
     "round_number": 19,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 65
   },
   {
     "away_behinds": 14,
@@ -2854,12 +3012,13 @@
     "home_goals": 10,
     "home_points": 65,
     "home_team": "Gold Coast",
-    "margin": -33,
+    "home_margin": -33,
     "round": "R19",
     "round_number": 19,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Carrara"
+    "venue": "Carrara",
+    "away_margin": 33
   },
   {
     "away_behinds": 19,
@@ -2872,12 +3031,13 @@
     "home_goals": 19,
     "home_points": 127,
     "home_team": "Footscray",
-    "margin": 30,
+    "home_margin": 30,
     "round": "R19",
     "round_number": 19,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -30
   },
   {
     "away_behinds": 7,
@@ -2890,12 +3050,13 @@
     "home_goals": 15,
     "home_points": 103,
     "home_team": "Collingwood",
-    "margin": 0,
+    "home_margin": 0,
     "round": "R19",
     "round_number": 19,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 0
   },
   {
     "away_behinds": 9,
@@ -2908,12 +3069,13 @@
     "home_goals": 17,
     "home_points": 113,
     "home_team": "West Coast",
-    "margin": 68,
+    "home_margin": 68,
     "round": "R19",
     "round_number": 19,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Subiaco"
+    "venue": "Subiaco",
+    "away_margin": -68
   },
   {
     "away_behinds": 11,
@@ -2926,12 +3088,13 @@
     "home_goals": 8,
     "home_points": 61,
     "home_team": "Geelong",
-    "margin": -46,
+    "home_margin": -46,
     "round": "R20",
     "round_number": 20,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Kardinia Park"
+    "venue": "Kardinia Park",
+    "away_margin": 46
   },
   {
     "away_behinds": 2,
@@ -2944,12 +3107,13 @@
     "home_goals": 14,
     "home_points": 97,
     "home_team": "GWS",
-    "margin": 35,
+    "home_margin": 35,
     "round": "R20",
     "round_number": 20,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Manuka Oval"
+    "venue": "Manuka Oval",
+    "away_margin": -35
   },
   {
     "away_behinds": 10,
@@ -2962,12 +3126,13 @@
     "home_goals": 11,
     "home_points": 84,
     "home_team": "Essendon",
-    "margin": 8,
+    "home_margin": 8,
     "round": "R20",
     "round_number": 20,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -8
   },
   {
     "away_behinds": 19,
@@ -2980,12 +3145,13 @@
     "home_goals": 13,
     "home_points": 89,
     "home_team": "Brisbane Lions",
-    "margin": -14,
+    "home_margin": -14,
     "round": "R20",
     "round_number": 20,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Gabba"
+    "venue": "Gabba",
+    "away_margin": 14
   },
   {
     "away_behinds": 15,
@@ -2998,12 +3164,13 @@
     "home_goals": 7,
     "home_points": 57,
     "home_team": "North Melbourne",
-    "margin": -54,
+    "home_margin": -54,
     "round": "R20",
     "round_number": 20,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 54
   },
   {
     "away_behinds": 7,
@@ -3016,12 +3183,13 @@
     "home_goals": 12,
     "home_points": 90,
     "home_team": "Fremantle",
-    "margin": 23,
+    "home_margin": 23,
     "round": "R20",
     "round_number": 20,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Subiaco"
+    "venue": "Subiaco",
+    "away_margin": -23
   },
   {
     "away_behinds": 11,
@@ -3034,12 +3202,13 @@
     "home_goals": 15,
     "home_points": 103,
     "home_team": "St Kilda",
-    "margin": 8,
+    "home_margin": 8,
     "round": "R20",
     "round_number": 20,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -8
   },
   {
     "away_behinds": 10,
@@ -3052,12 +3221,13 @@
     "home_goals": 13,
     "home_points": 93,
     "home_team": "Richmond",
-    "margin": 29,
+    "home_margin": 29,
     "round": "R20",
     "round_number": 20,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -29
   },
   {
     "away_behinds": 4,
@@ -3070,12 +3240,13 @@
     "home_goals": 18,
     "home_points": 130,
     "home_team": "Adelaide",
-    "margin": 84,
+    "home_margin": 84,
     "round": "R20",
     "round_number": 20,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -84
   },
   {
     "away_behinds": 9,
@@ -3088,12 +3259,13 @@
     "home_goals": 7,
     "home_points": 57,
     "home_team": "Footscray",
-    "margin": -48,
+    "home_margin": -48,
     "round": "R21",
     "round_number": 21,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 48
   },
   {
     "away_behinds": 9,
@@ -3106,12 +3278,13 @@
     "home_goals": 22,
     "home_points": 143,
     "home_team": "Sydney",
-    "margin": 104,
+    "home_margin": 104,
     "round": "R21",
     "round_number": 21,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "S.C.G."
+    "venue": "S.C.G.",
+    "away_margin": -104
   },
   {
     "away_behinds": 12,
@@ -3124,12 +3297,13 @@
     "home_goals": 11,
     "home_points": 80,
     "home_team": "Geelong",
-    "margin": 14,
+    "home_margin": 14,
     "round": "R21",
     "round_number": 21,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Kardinia Park"
+    "venue": "Kardinia Park",
+    "away_margin": -14
   },
   {
     "away_behinds": 12,
@@ -3142,12 +3316,13 @@
     "home_goals": 22,
     "home_points": 142,
     "home_team": "Brisbane Lions",
-    "margin": 58,
+    "home_margin": 58,
     "round": "R21",
     "round_number": 21,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Gabba"
+    "venue": "Gabba",
+    "away_margin": -58
   },
   {
     "away_behinds": 15,
@@ -3160,12 +3335,13 @@
     "home_goals": 12,
     "home_points": 80,
     "home_team": "Essendon",
-    "margin": -43,
+    "home_margin": -43,
     "round": "R21",
     "round_number": 21,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 43
   },
   {
     "away_behinds": 11,
@@ -3178,12 +3354,13 @@
     "home_goals": 15,
     "home_points": 100,
     "home_team": "West Coast",
-    "margin": 17,
+    "home_margin": 17,
     "round": "R21",
     "round_number": 21,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Subiaco"
+    "venue": "Subiaco",
+    "away_margin": -17
   },
   {
     "away_behinds": 12,
@@ -3196,12 +3373,13 @@
     "home_goals": 14,
     "home_points": 96,
     "home_team": "Melbourne",
-    "margin": 24,
+    "home_margin": 24,
     "round": "R21",
     "round_number": 21,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -24
   },
   {
     "away_behinds": 5,
@@ -3214,12 +3392,13 @@
     "home_goals": 18,
     "home_points": 116,
     "home_team": "Hawthorn",
-    "margin": 27,
+    "home_margin": 27,
     "round": "R21",
     "round_number": 21,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "York Park"
+    "venue": "York Park",
+    "away_margin": -27
   },
   {
     "away_behinds": 11,
@@ -3232,12 +3411,13 @@
     "home_goals": 14,
     "home_points": 98,
     "home_team": "Port Adelaide",
-    "margin": 27,
+    "home_margin": 27,
     "round": "R21",
     "round_number": 21,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -27
   },
   {
     "away_behinds": 5,
@@ -3250,12 +3430,13 @@
     "home_goals": 11,
     "home_points": 80,
     "home_team": "Adelaide",
-    "margin": -3,
+    "home_margin": -3,
     "round": "R22",
     "round_number": 22,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": 3
   },
   {
     "away_behinds": 12,
@@ -3268,12 +3449,13 @@
     "home_goals": 11,
     "home_points": 79,
     "home_team": "Footscray",
-    "margin": -17,
+    "home_margin": -17,
     "round": "R22",
     "round_number": 22,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Eureka Stadium"
+    "venue": "Eureka Stadium",
+    "away_margin": 17
   },
   {
     "away_behinds": 10,
@@ -3286,12 +3468,13 @@
     "home_goals": 9,
     "home_points": 59,
     "home_team": "Collingwood",
-    "margin": -11,
+    "home_margin": -11,
     "round": "R22",
     "round_number": 22,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 11
   },
   {
     "away_behinds": 6,
@@ -3304,12 +3487,13 @@
     "home_goals": 12,
     "home_points": 81,
     "home_team": "GWS",
-    "margin": 21,
+    "home_margin": 21,
     "round": "R22",
     "round_number": 22,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Sydney Showground"
+    "venue": "Sydney Showground",
+    "away_margin": -21
   },
   {
     "away_behinds": 10,
@@ -3322,12 +3506,13 @@
     "home_goals": 12,
     "home_points": 77,
     "home_team": "Carlton",
-    "margin": 7,
+    "home_margin": 7,
     "round": "R22",
     "round_number": 22,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -7
   },
   {
     "away_behinds": 18,
@@ -3340,12 +3525,13 @@
     "home_goals": 9,
     "home_points": 57,
     "home_team": "Gold Coast",
-    "margin": -33,
+    "home_margin": -33,
     "round": "R22",
     "round_number": 22,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Carrara"
+    "venue": "Carrara",
+    "away_margin": 33
   },
   {
     "away_behinds": 7,
@@ -3358,12 +3544,13 @@
     "home_goals": 16,
     "home_points": 104,
     "home_team": "Melbourne",
-    "margin": 13,
+    "home_margin": 13,
     "round": "R22",
     "round_number": 22,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -13
   },
   {
     "away_behinds": 6,
@@ -3376,12 +3563,13 @@
     "home_goals": 18,
     "home_points": 127,
     "home_team": "St Kilda",
-    "margin": 49,
+    "home_margin": 49,
     "round": "R22",
     "round_number": 22,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -49
   },
   {
     "away_behinds": 5,
@@ -3394,12 +3582,13 @@
     "home_goals": 7,
     "home_points": 51,
     "home_team": "Fremantle",
-    "margin": -104,
+    "home_margin": -104,
     "round": "R22",
     "round_number": 22,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Subiaco"
+    "venue": "Subiaco",
+    "away_margin": 104
   },
   {
     "away_behinds": 12,
@@ -3412,12 +3601,13 @@
     "home_goals": 15,
     "home_points": 99,
     "home_team": "Hawthorn",
-    "margin": 9,
+    "home_margin": 9,
     "round": "R23",
     "round_number": 23,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -9
   },
   {
     "away_behinds": 11,
@@ -3430,12 +3620,13 @@
     "home_goals": 14,
     "home_points": 99,
     "home_team": "Collingwood",
-    "margin": 16,
+    "home_margin": 16,
     "round": "R23",
     "round_number": 23,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -16
   },
   {
     "away_behinds": 16,
@@ -3448,12 +3639,13 @@
     "home_goals": 11,
     "home_points": 79,
     "home_team": "Brisbane Lions",
-    "margin": -51,
+    "home_margin": -51,
     "round": "R23",
     "round_number": 23,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Gabba"
+    "venue": "Gabba",
+    "away_margin": 51
   },
   {
     "away_behinds": 9,
@@ -3466,12 +3658,13 @@
     "home_goals": 21,
     "home_points": 138,
     "home_team": "Sydney",
-    "margin": 81,
+    "home_margin": 81,
     "round": "R23",
     "round_number": 23,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "S.C.G."
+    "venue": "S.C.G.",
+    "away_margin": -81
   },
   {
     "away_behinds": 11,
@@ -3484,12 +3677,13 @@
     "home_goals": 15,
     "home_points": 103,
     "home_team": "Geelong",
-    "margin": 44,
+    "home_margin": 44,
     "round": "R23",
     "round_number": 23,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Kardinia Park"
+    "venue": "Kardinia Park",
+    "away_margin": -44
   },
   {
     "away_behinds": 2,
@@ -3502,12 +3696,13 @@
     "home_goals": 20,
     "home_points": 135,
     "home_team": "Port Adelaide",
-    "margin": 115,
+    "home_margin": 115,
     "round": "R23",
     "round_number": 23,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -115
   },
   {
     "away_behinds": 8,
@@ -3520,12 +3715,13 @@
     "home_goals": 16,
     "home_points": 107,
     "home_team": "Essendon",
-    "margin": 15,
+    "home_margin": 15,
     "round": "R23",
     "round_number": 23,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -15
   },
   {
     "away_behinds": 9,
@@ -3538,12 +3734,13 @@
     "home_goals": 19,
     "home_points": 122,
     "home_team": "Richmond",
-    "margin": 41,
+    "home_margin": 41,
     "round": "R23",
     "round_number": 23,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -41
   },
   {
     "away_behinds": 11,
@@ -3556,12 +3753,13 @@
     "home_goals": 15,
     "home_points": 100,
     "home_team": "West Coast",
-    "margin": 29,
+    "home_margin": 29,
     "round": "R23",
     "round_number": 23,
     "round_type": "Regular",
     "season": 2017,
-    "venue": "Subiaco"
+    "venue": "Subiaco",
+    "away_margin": -29
   },
   {
     "away_behinds": 12,
@@ -3574,12 +3772,13 @@
     "home_goals": 12,
     "home_points": 84,
     "home_team": "Adelaide",
-    "margin": 36,
+    "home_margin": 36,
     "round": "QF",
     "round_number": 24,
     "round_type": "Finals",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -36
   },
   {
     "away_behinds": 10,
@@ -3592,12 +3791,13 @@
     "home_goals": 13,
     "home_points": 91,
     "home_team": "Richmond",
-    "margin": 51,
+    "home_margin": 51,
     "round": "QF",
     "round_number": 24,
     "round_type": "Finals",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -51
   },
   {
     "away_behinds": 8,
@@ -3610,12 +3810,13 @@
     "home_goals": 19,
     "home_points": 121,
     "home_team": "Sydney",
-    "margin": 65,
+    "home_margin": 65,
     "round": "EF",
     "round_number": 24,
     "round_type": "Finals",
     "season": 2017,
-    "venue": "S.C.G."
+    "venue": "S.C.G.",
+    "away_margin": -65
   },
   {
     "away_behinds": 16,
@@ -3628,12 +3829,13 @@
     "home_goals": 12,
     "home_points": 78,
     "home_team": "West Coast",
-    "margin": 2,
+    "home_margin": 2,
     "round": "EF",
     "round_number": 24,
     "round_type": "Finals",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -2
   },
   {
     "away_behinds": 9,
@@ -3646,12 +3848,13 @@
     "home_goals": 15,
     "home_points": 98,
     "home_team": "Geelong",
-    "margin": 59,
+    "home_margin": 59,
     "round": "SF",
     "round_number": 25,
     "round_type": "Finals",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -59
   },
   {
     "away_behinds": 4,
@@ -3664,12 +3867,13 @@
     "home_goals": 19,
     "home_points": 125,
     "home_team": "GWS",
-    "margin": 67,
+    "home_margin": 67,
     "round": "SF",
     "round_number": 25,
     "round_type": "Finals",
     "season": 2017,
-    "venue": "Sydney Showground"
+    "venue": "Sydney Showground",
+    "away_margin": -67
   },
   {
     "away_behinds": 15,
@@ -3682,12 +3886,13 @@
     "home_goals": 21,
     "home_points": 136,
     "home_team": "Adelaide",
-    "margin": 61,
+    "home_margin": 61,
     "round": "PF",
     "round_number": 26,
     "round_type": "Finals",
     "season": 2017,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -61
   },
   {
     "away_behinds": 13,
@@ -3700,12 +3905,13 @@
     "home_goals": 15,
     "home_points": 103,
     "home_team": "Richmond",
-    "margin": 36,
+    "home_margin": 36,
     "round": "PF",
     "round_number": 26,
     "round_type": "Finals",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -36
   },
   {
     "away_behinds": 12,
@@ -3718,12 +3924,13 @@
     "home_goals": 16,
     "home_points": 108,
     "home_team": "Richmond",
-    "margin": 48,
+    "home_margin": 48,
     "round": "GF",
     "round_number": 27,
     "round_type": "Finals",
     "season": 2017,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -48
   },
   {
     "away_behinds": 5,
@@ -3736,12 +3943,13 @@
     "home_goals": 17,
     "home_points": 121,
     "home_team": "Richmond",
-    "margin": 26,
+    "home_margin": 26,
     "round": "R1",
     "round_number": 1,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -26
   },
   {
     "away_behinds": 15,
@@ -3754,12 +3962,13 @@
     "home_goals": 14,
     "home_points": 99,
     "home_team": "Essendon",
-    "margin": 12,
+    "home_margin": 12,
     "round": "R1",
     "round_number": 1,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -12
   },
   {
     "away_behinds": 10,
@@ -3772,12 +3981,13 @@
     "home_goals": 16,
     "home_points": 107,
     "home_team": "St Kilda",
-    "margin": 25,
+    "home_margin": 25,
     "round": "R1",
     "round_number": 1,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -25
   },
   {
     "away_behinds": 6,
@@ -3790,12 +4000,13 @@
     "home_goals": 16,
     "home_points": 110,
     "home_team": "Port Adelaide",
-    "margin": 50,
+    "home_margin": 50,
     "round": "R1",
     "round_number": 1,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -50
   },
   {
     "away_behinds": 13,
@@ -3808,12 +4019,13 @@
     "home_goals": 15,
     "home_points": 101,
     "home_team": "Hawthorn",
-    "margin": 34,
+    "home_margin": 34,
     "round": "R1",
     "round_number": 1,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -34
   },
   {
     "away_behinds": 9,
@@ -3826,12 +4038,13 @@
     "home_goals": 7,
     "home_points": 55,
     "home_team": "Gold Coast",
-    "margin": 16,
+    "home_margin": 16,
     "round": "R1",
     "round_number": 1,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Cazaly's Stadium"
+    "venue": "Cazaly's Stadium",
+    "away_margin": -16
   },
   {
     "away_behinds": 9,
@@ -3844,12 +4057,13 @@
     "home_goals": 20,
     "home_points": 133,
     "home_team": "GWS",
-    "margin": 82,
+    "home_margin": 82,
     "round": "R1",
     "round_number": 1,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Manuka Oval"
+    "venue": "Manuka Oval",
+    "away_margin": -82
   },
   {
     "away_behinds": 13,
@@ -3862,12 +4076,13 @@
     "home_goals": 13,
     "home_points": 94,
     "home_team": "Melbourne",
-    "margin": -3,
+    "home_margin": -3,
     "round": "R1",
     "round_number": 1,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 3
   },
   {
     "away_behinds": 7,
@@ -3880,12 +4095,13 @@
     "home_goals": 13,
     "home_points": 86,
     "home_team": "West Coast",
-    "margin": -29,
+    "home_margin": -29,
     "round": "R1",
     "round_number": 1,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": 29
   },
   {
     "away_behinds": 10,
@@ -3898,12 +4114,13 @@
     "home_goals": 18,
     "home_points": 118,
     "home_team": "Adelaide",
-    "margin": 36,
+    "home_margin": 36,
     "round": "R2",
     "round_number": 2,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -36
   },
   {
     "away_behinds": 13,
@@ -3916,12 +4133,13 @@
     "home_goals": 13,
     "home_points": 95,
     "home_team": "North Melbourne",
-    "margin": 52,
+    "home_margin": 52,
     "round": "R2",
     "round_number": 2,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -52
   },
   {
     "away_behinds": 11,
@@ -3934,12 +4152,13 @@
     "home_goals": 9,
     "home_points": 67,
     "home_team": "Carlton",
-    "margin": -34,
+    "home_margin": -34,
     "round": "R2",
     "round_number": 2,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 34
   },
   {
     "away_behinds": 5,
@@ -3952,12 +4171,13 @@
     "home_goals": 12,
     "home_points": 79,
     "home_team": "Collingwood",
-    "margin": -16,
+    "home_margin": -16,
     "round": "R2",
     "round_number": 2,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 16
   },
   {
     "away_behinds": 16,
@@ -3970,12 +4190,13 @@
     "home_goals": 10,
     "home_points": 74,
     "home_team": "Brisbane Lions",
-    "margin": -26,
+    "home_margin": -26,
     "round": "R2",
     "round_number": 2,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Gabba"
+    "venue": "Gabba",
+    "away_margin": 26
   },
   {
     "away_behinds": 6,
@@ -3988,12 +4209,13 @@
     "home_goals": 16,
     "home_points": 106,
     "home_team": "Fremantle",
-    "margin": 16,
+    "home_margin": 16,
     "round": "R2",
     "round_number": 2,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": -16
   },
   {
     "away_behinds": 13,
@@ -4006,12 +4228,13 @@
     "home_goals": 9,
     "home_points": 70,
     "home_team": "Footscray",
-    "margin": -51,
+    "home_margin": -51,
     "round": "R2",
     "round_number": 2,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 51
   },
   {
     "away_behinds": 10,
@@ -4024,12 +4247,13 @@
     "home_goals": 10,
     "home_points": 71,
     "home_team": "Sydney",
-    "margin": -23,
+    "home_margin": -23,
     "round": "R2",
     "round_number": 2,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "S.C.G."
+    "venue": "S.C.G.",
+    "away_margin": 23
   },
   {
     "away_behinds": 16,
@@ -4042,12 +4266,13 @@
     "home_goals": 18,
     "home_points": 117,
     "home_team": "Geelong",
-    "margin": -1,
+    "home_margin": -1,
     "round": "R2",
     "round_number": 2,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 1
   },
   {
     "away_behinds": 4,
@@ -4060,12 +4285,13 @@
     "home_goals": 11,
     "home_points": 76,
     "home_team": "Carlton",
-    "margin": -24,
+    "home_margin": -24,
     "round": "R3",
     "round_number": 3,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 24
   },
   {
     "away_behinds": 8,
@@ -4078,12 +4304,13 @@
     "home_goals": 14,
     "home_points": 97,
     "home_team": "Port Adelaide",
-    "margin": 5,
+    "home_margin": 5,
     "round": "R3",
     "round_number": 3,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -5
   },
   {
     "away_behinds": 8,
@@ -4096,12 +4323,13 @@
     "home_goals": 18,
     "home_points": 123,
     "home_team": "Melbourne",
-    "margin": 37,
+    "home_margin": 37,
     "round": "R3",
     "round_number": 3,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -37
   },
   {
     "away_behinds": 18,
@@ -4114,12 +4342,13 @@
     "home_goals": 10,
     "home_points": 68,
     "home_team": "Gold Coast",
-    "margin": -28,
+    "home_margin": -28,
     "round": "R3",
     "round_number": 3,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": 28
   },
   {
     "away_behinds": 14,
@@ -4132,12 +4361,13 @@
     "home_goals": 7,
     "home_points": 55,
     "home_team": "St Kilda",
-    "margin": -49,
+    "home_margin": -49,
     "round": "R3",
     "round_number": 3,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 49
   },
   {
     "away_behinds": 15,
@@ -4150,12 +4380,13 @@
     "home_goals": 16,
     "home_points": 103,
     "home_team": "Sydney",
-    "margin": 16,
+    "home_margin": 16,
     "round": "R3",
     "round_number": 3,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "S.C.G."
+    "venue": "S.C.G.",
+    "away_margin": -16
   },
   {
     "away_behinds": 11,
@@ -4168,12 +4399,13 @@
     "home_goals": 15,
     "home_points": 102,
     "home_team": "Richmond",
-    "margin": 13,
+    "home_margin": 13,
     "round": "R3",
     "round_number": 3,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -13
   },
   {
     "away_behinds": 11,
@@ -4186,12 +4418,13 @@
     "home_goals": 14,
     "home_points": 104,
     "home_team": "Footscray",
-    "margin": 21,
+    "home_margin": 21,
     "round": "R3",
     "round_number": 3,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -21
   },
   {
     "away_behinds": 14,
@@ -4204,12 +4437,13 @@
     "home_goals": 14,
     "home_points": 95,
     "home_team": "West Coast",
-    "margin": 15,
+    "home_margin": 15,
     "round": "R3",
     "round_number": 3,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": -15
   },
   {
     "away_behinds": 10,
@@ -4222,12 +4456,13 @@
     "home_goals": 9,
     "home_points": 58,
     "home_team": "Adelaide",
-    "margin": -48,
+    "home_margin": -48,
     "round": "R4",
     "round_number": 4,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": 48
   },
   {
     "away_behinds": 9,
@@ -4240,12 +4475,13 @@
     "home_goals": 11,
     "home_points": 82,
     "home_team": "GWS",
-    "margin": 31,
+    "home_margin": 31,
     "round": "R4",
     "round_number": 4,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Manuka Oval"
+    "venue": "Manuka Oval",
+    "away_margin": -31
   },
   {
     "away_behinds": 5,
@@ -4258,12 +4494,13 @@
     "home_goals": 16,
     "home_points": 110,
     "home_team": "Richmond",
-    "margin": 93,
+    "home_margin": 93,
     "round": "R4",
     "round_number": 4,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -93
   },
   {
     "away_behinds": 8,
@@ -4276,12 +4513,13 @@
     "home_goals": 11,
     "home_points": 79,
     "home_team": "Footscray",
-    "margin": -7,
+    "home_margin": -7,
     "round": "R4",
     "round_number": 4,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 7
   },
   {
     "away_behinds": 6,
@@ -4294,12 +4532,13 @@
     "home_goals": 18,
     "home_points": 116,
     "home_team": "North Melbourne",
-    "margin": 86,
+    "home_margin": 86,
     "round": "R4",
     "round_number": 4,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Bellerive Oval"
+    "venue": "Bellerive Oval",
+    "away_margin": -86
   },
   {
     "away_behinds": 5,
@@ -4312,12 +4551,13 @@
     "home_goals": 21,
     "home_points": 139,
     "home_team": "West Coast",
-    "margin": 80,
+    "home_margin": 80,
     "round": "R4",
     "round_number": 4,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": -80
   },
   {
     "away_behinds": 12,
@@ -4330,12 +4570,13 @@
     "home_goals": 16,
     "home_points": 106,
     "home_team": "Essendon",
-    "margin": 22,
+    "home_margin": 22,
     "round": "R4",
     "round_number": 4,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -22
   },
   {
     "away_behinds": 12,
@@ -4348,12 +4589,13 @@
     "home_goals": 18,
     "home_points": 115,
     "home_team": "Hawthorn",
-    "margin": 67,
+    "home_margin": 67,
     "round": "R4",
     "round_number": 4,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -67
   },
   {
     "away_behinds": 14,
@@ -4366,12 +4608,13 @@
     "home_goals": 15,
     "home_points": 103,
     "home_team": "Geelong",
-    "margin": 47,
+    "home_margin": 47,
     "round": "R4",
     "round_number": 4,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Kardinia Park"
+    "venue": "Kardinia Park",
+    "away_margin": -47
   },
   {
     "away_behinds": 13,
@@ -4384,12 +4627,13 @@
     "home_goals": 10,
     "home_points": 75,
     "home_team": "Sydney",
-    "margin": -10,
+    "home_margin": -10,
     "round": "R5",
     "round_number": 5,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "S.C.G."
+    "venue": "S.C.G.",
+    "away_margin": 10
   },
   {
     "away_behinds": 19,
@@ -4402,12 +4646,13 @@
     "home_goals": 10,
     "home_points": 73,
     "home_team": "St Kilda",
-    "margin": 0,
+    "home_margin": 0,
     "round": "R5",
     "round_number": 5,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 0
   },
   {
     "away_behinds": 19,
@@ -4420,12 +4665,13 @@
     "home_goals": 10,
     "home_points": 69,
     "home_team": "Carlton",
-    "margin": -10,
+    "home_margin": -10,
     "round": "R5",
     "round_number": 5,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 10
   },
   {
     "away_behinds": 12,
@@ -4438,12 +4684,13 @@
     "home_goals": 7,
     "home_points": 50,
     "home_team": "Port Adelaide",
-    "margin": -34,
+    "home_margin": -34,
     "round": "R5",
     "round_number": 5,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": 34
   },
   {
     "away_behinds": 6,
@@ -4456,12 +4703,13 @@
     "home_goals": 16,
     "home_points": 108,
     "home_team": "Fremantle",
-    "margin": 54,
+    "home_margin": 54,
     "round": "R5",
     "round_number": 5,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": -54
   },
   {
     "away_behinds": 4,
@@ -4474,12 +4722,13 @@
     "home_goals": 14,
     "home_points": 98,
     "home_team": "North Melbourne",
-    "margin": 28,
+    "home_margin": 28,
     "round": "R5",
     "round_number": 5,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -28
   },
   {
     "away_behinds": 10,
@@ -4492,12 +4741,13 @@
     "home_goals": 10,
     "home_points": 71,
     "home_team": "Brisbane Lions",
-    "margin": -5,
+    "home_margin": -5,
     "round": "R5",
     "round_number": 5,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Gabba"
+    "venue": "Gabba",
+    "away_margin": 5
   },
   {
     "away_behinds": 12,
@@ -4510,12 +4760,13 @@
     "home_goals": 8,
     "home_points": 56,
     "home_team": "Melbourne",
-    "margin": -46,
+    "home_margin": -46,
     "round": "R5",
     "round_number": 5,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 46
   },
   {
     "away_behinds": 10,
@@ -4528,12 +4779,13 @@
     "home_goals": 14,
     "home_points": 101,
     "home_team": "Collingwood",
-    "margin": 49,
+    "home_margin": 49,
     "round": "R5",
     "round_number": 5,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -49
   },
   {
     "away_behinds": 11,
@@ -4546,12 +4798,13 @@
     "home_goals": 11,
     "home_points": 80,
     "home_team": "Footscray",
-    "margin": 21,
+    "home_margin": 21,
     "round": "R6",
     "round_number": 6,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -21
   },
   {
     "away_behinds": 14,
@@ -4564,12 +4817,13 @@
     "home_goals": 10,
     "home_points": 69,
     "home_team": "Geelong",
-    "margin": -17,
+    "home_margin": -17,
     "round": "R6",
     "round_number": 6,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Kardinia Park"
+    "venue": "Kardinia Park",
+    "away_margin": 17
   },
   {
     "away_behinds": 12,
@@ -4582,12 +4836,13 @@
     "home_goals": 10,
     "home_points": 69,
     "home_team": "North Melbourne",
-    "margin": -33,
+    "home_margin": -33,
     "round": "R6",
     "round_number": 6,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 33
   },
   {
     "away_behinds": 13,
@@ -4600,12 +4855,13 @@
     "home_goals": 10,
     "home_points": 77,
     "home_team": "GWS",
-    "margin": 34,
+    "home_margin": 34,
     "round": "R6",
     "round_number": 6,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Sydney Showground"
+    "venue": "Sydney Showground",
+    "away_margin": -34
   },
   {
     "away_behinds": 12,
@@ -4618,12 +4874,13 @@
     "home_goals": 13,
     "home_points": 89,
     "home_team": "Hawthorn",
-    "margin": 35,
+    "home_margin": 35,
     "round": "R6",
     "round_number": 6,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "York Park"
+    "venue": "York Park",
+    "away_margin": -35
   },
   {
     "away_behinds": 8,
@@ -4636,12 +4893,13 @@
     "home_goals": 16,
     "home_points": 110,
     "home_team": "Adelaide",
-    "margin": 48,
+    "home_margin": 48,
     "round": "R6",
     "round_number": 6,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -48
   },
   {
     "away_behinds": 12,
@@ -4654,12 +4912,13 @@
     "home_goals": 10,
     "home_points": 72,
     "home_team": "Essendon",
-    "margin": -36,
+    "home_margin": -36,
     "round": "R6",
     "round_number": 6,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 36
   },
   {
     "away_behinds": 17,
@@ -4672,12 +4931,13 @@
     "home_goals": 10,
     "home_points": 70,
     "home_team": "Collingwood",
-    "margin": -43,
+    "home_margin": -43,
     "round": "R6",
     "round_number": 6,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 43
   },
   {
     "away_behinds": 11,
@@ -4690,12 +4950,13 @@
     "home_goals": 12,
     "home_points": 81,
     "home_team": "Fremantle",
-    "margin": -8,
+    "home_margin": -8,
     "round": "R6",
     "round_number": 6,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": 8
   },
   {
     "away_behinds": 8,
@@ -4708,12 +4969,13 @@
     "home_goals": 14,
     "home_points": 93,
     "home_team": "Geelong",
-    "margin": 61,
+    "home_margin": 61,
     "round": "R7",
     "round_number": 7,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Kardinia Park"
+    "venue": "Kardinia Park",
+    "away_margin": -61
   },
   {
     "away_behinds": 12,
@@ -4726,12 +4988,13 @@
     "home_goals": 11,
     "home_points": 81,
     "home_team": "Footscray",
-    "margin": 9,
+    "home_margin": 9,
     "round": "R7",
     "round_number": 7,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Eureka Stadium"
+    "venue": "Eureka Stadium",
+    "away_margin": -9
   },
   {
     "away_behinds": 12,
@@ -4744,12 +5007,13 @@
     "home_goals": 10,
     "home_points": 67,
     "home_team": "Essendon",
-    "margin": -23,
+    "home_margin": -23,
     "round": "R7",
     "round_number": 7,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 23
   },
   {
     "away_behinds": 6,
@@ -4762,12 +5026,13 @@
     "home_goals": 16,
     "home_points": 102,
     "home_team": "West Coast",
-    "margin": 42,
+    "home_margin": 42,
     "round": "R7",
     "round_number": 7,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": -42
   },
   {
     "away_behinds": 14,
@@ -4780,12 +5045,13 @@
     "home_goals": 9,
     "home_points": 66,
     "home_team": "Sydney",
-    "margin": -2,
+    "home_margin": -2,
     "round": "R7",
     "round_number": 7,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "S.C.G."
+    "venue": "S.C.G.",
+    "away_margin": 2
   },
   {
     "away_behinds": 10,
@@ -4798,12 +5064,13 @@
     "home_goals": 19,
     "home_points": 125,
     "home_team": "Adelaide",
-    "margin": 55,
+    "home_margin": 55,
     "round": "R7",
     "round_number": 7,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -55
   },
   {
     "away_behinds": 9,
@@ -4816,12 +5083,13 @@
     "home_goals": 15,
     "home_points": 110,
     "home_team": "Richmond",
-    "margin": 77,
+    "home_margin": 77,
     "round": "R7",
     "round_number": 7,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -77
   },
   {
     "away_behinds": 10,
@@ -4834,12 +5102,13 @@
     "home_goals": 9,
     "home_points": 67,
     "home_team": "St Kilda",
-    "margin": -39,
+    "home_margin": -39,
     "round": "R7",
     "round_number": 7,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 39
   },
   {
     "away_behinds": 7,
@@ -4852,12 +5121,13 @@
     "home_goals": 18,
     "home_points": 114,
     "home_team": "Brisbane Lions",
-    "margin": -7,
+    "home_margin": -7,
     "round": "R7",
     "round_number": 7,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Gabba"
+    "venue": "Gabba",
+    "away_margin": 7
   },
   {
     "away_behinds": 7,
@@ -4870,12 +5140,13 @@
     "home_goals": 10,
     "home_points": 71,
     "home_team": "Hawthorn",
-    "margin": -8,
+    "home_margin": -8,
     "round": "R8",
     "round_number": 8,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 8
   },
   {
     "away_behinds": 14,
@@ -4888,12 +5159,13 @@
     "home_goals": 8,
     "home_points": 61,
     "home_team": "GWS",
-    "margin": -25,
+    "home_margin": -25,
     "round": "R8",
     "round_number": 8,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Sydney Showground"
+    "venue": "Sydney Showground",
+    "away_margin": 25
   },
   {
     "away_behinds": 18,
@@ -4906,12 +5178,13 @@
     "home_goals": 14,
     "home_points": 91,
     "home_team": "Carlton",
-    "margin": 13,
+    "home_margin": 13,
     "round": "R8",
     "round_number": 8,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -13
   },
   {
     "away_behinds": 20,
@@ -4924,12 +5197,13 @@
     "home_goals": 11,
     "home_points": 77,
     "home_team": "Gold Coast",
-    "margin": -69,
+    "home_margin": -69,
     "round": "R8",
     "round_number": 8,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Gabba"
+    "venue": "Gabba",
+    "away_margin": 69
   },
   {
     "away_behinds": 6,
@@ -4942,12 +5216,13 @@
     "home_goals": 14,
     "home_points": 95,
     "home_team": "Port Adelaide",
-    "margin": 5,
+    "home_margin": 5,
     "round": "R8",
     "round_number": 8,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -5
   },
   {
     "away_behinds": 9,
@@ -4960,12 +5235,13 @@
     "home_goals": 16,
     "home_points": 107,
     "home_team": "Footscray",
-    "margin": 14,
+    "home_margin": 14,
     "round": "R8",
     "round_number": 8,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -14
   },
   {
     "away_behinds": 11,
@@ -4978,12 +5254,13 @@
     "home_goals": 13,
     "home_points": 89,
     "home_team": "Fremantle",
-    "margin": 30,
+    "home_margin": 30,
     "round": "R8",
     "round_number": 8,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": -30
   },
   {
     "away_behinds": 10,
@@ -4996,12 +5273,13 @@
     "home_goals": 11,
     "home_points": 72,
     "home_team": "North Melbourne",
-    "margin": -10,
+    "home_margin": -10,
     "round": "R8",
     "round_number": 8,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 10
   },
   {
     "away_behinds": 12,
@@ -5014,12 +5292,13 @@
     "home_goals": 5,
     "home_points": 45,
     "home_team": "Collingwood",
-    "margin": -21,
+    "home_margin": -21,
     "round": "R8",
     "round_number": 8,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 21
   },
   {
     "away_behinds": 14,
@@ -5032,12 +5311,13 @@
     "home_goals": 9,
     "home_points": 63,
     "home_team": "Adelaide",
-    "margin": 37,
+    "home_margin": 37,
     "round": "R9",
     "round_number": 9,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -37
   },
   {
     "away_behinds": 16,
@@ -5050,12 +5330,13 @@
     "home_goals": 6,
     "home_points": 42,
     "home_team": "Gold Coast",
-    "margin": -40,
+    "home_margin": -40,
     "round": "R9",
     "round_number": 9,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Jiangwan Stadium"
+    "venue": "Jiangwan Stadium",
+    "away_margin": 40
   },
   {
     "away_behinds": 15,
@@ -5068,12 +5349,13 @@
     "home_goals": 17,
     "home_points": 112,
     "home_team": "North Melbourne",
-    "margin": 43,
+    "home_margin": 43,
     "round": "R9",
     "round_number": 9,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Bellerive Oval"
+    "venue": "Bellerive Oval",
+    "away_margin": -43
   },
   {
     "away_behinds": 8,
@@ -5086,12 +5368,13 @@
     "home_goals": 12,
     "home_points": 84,
     "home_team": "Essendon",
-    "margin": 34,
+    "home_margin": 34,
     "round": "R9",
     "round_number": 9,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -34
   },
   {
     "away_behinds": 10,
@@ -5104,12 +5387,13 @@
     "home_goals": 10,
     "home_points": 72,
     "home_team": "St Kilda",
-    "margin": -28,
+    "home_margin": -28,
     "round": "R9",
     "round_number": 9,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 28
   },
   {
     "away_behinds": 10,
@@ -5122,12 +5406,13 @@
     "home_goals": 17,
     "home_points": 111,
     "home_team": "Sydney",
-    "margin": 59,
+    "home_margin": 59,
     "round": "R9",
     "round_number": 9,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "S.C.G."
+    "venue": "S.C.G.",
+    "away_margin": -59
   },
   {
     "away_behinds": 9,
@@ -5140,12 +5425,13 @@
     "home_goals": 7,
     "home_points": 50,
     "home_team": "Carlton",
-    "margin": -109,
+    "home_margin": -109,
     "round": "R9",
     "round_number": 9,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 109
   },
   {
     "away_behinds": 7,
@@ -5158,12 +5444,13 @@
     "home_goals": 20,
     "home_points": 129,
     "home_team": "Brisbane Lions",
-    "margin": 56,
+    "home_margin": 56,
     "round": "R9",
     "round_number": 9,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Gabba"
+    "venue": "Gabba",
+    "away_margin": -56
   },
   {
     "away_behinds": 11,
@@ -5176,12 +5463,13 @@
     "home_goals": 20,
     "home_points": 130,
     "home_team": "West Coast",
-    "margin": 47,
+    "home_margin": 47,
     "round": "R9",
     "round_number": 9,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": -47
   },
   {
     "away_behinds": 7,
@@ -5194,12 +5482,13 @@
     "home_goals": 13,
     "home_points": 90,
     "home_team": "Collingwood",
-    "margin": 35,
+    "home_margin": 35,
     "round": "R10",
     "round_number": 10,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -35
   },
   {
     "away_behinds": 5,
@@ -5212,12 +5501,13 @@
     "home_goals": 15,
     "home_points": 105,
     "home_team": "Richmond",
-    "margin": 28,
+    "home_margin": 28,
     "round": "R10",
     "round_number": 10,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -28
   },
   {
     "away_behinds": 7,
@@ -5230,12 +5520,13 @@
     "home_goals": 6,
     "home_points": 49,
     "home_team": "Brisbane Lions",
-    "margin": -18,
+    "home_margin": -18,
     "round": "R10",
     "round_number": 10,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Gabba"
+    "venue": "Gabba",
+    "away_margin": 18
   },
   {
     "away_behinds": 15,
@@ -5248,12 +5539,13 @@
     "home_goals": 11,
     "home_points": 73,
     "home_team": "Geelong",
-    "margin": 28,
+    "home_margin": 28,
     "round": "R10",
     "round_number": 10,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Kardinia Park"
+    "venue": "Kardinia Park",
+    "away_margin": -28
   },
   {
     "away_behinds": 11,
@@ -5266,12 +5558,13 @@
     "home_goals": 8,
     "home_points": 60,
     "home_team": "GWS",
-    "margin": -35,
+    "home_margin": -35,
     "round": "R10",
     "round_number": 10,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Sydney Showground"
+    "venue": "Sydney Showground",
+    "away_margin": 35
   },
   {
     "away_behinds": 9,
@@ -5284,12 +5577,13 @@
     "home_goals": 9,
     "home_points": 60,
     "home_team": "Hawthorn",
-    "margin": -15,
+    "home_margin": -15,
     "round": "R10",
     "round_number": 10,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 15
   },
   {
     "away_behinds": 7,
@@ -5302,12 +5596,13 @@
     "home_goals": 23,
     "home_points": 146,
     "home_team": "Melbourne",
-    "margin": 91,
+    "home_margin": 91,
     "round": "R10",
     "round_number": 10,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Traeger Park"
+    "venue": "Traeger Park",
+    "away_margin": -91
   },
   {
     "away_behinds": 14,
@@ -5320,12 +5615,13 @@
     "home_goals": 8,
     "home_points": 58,
     "home_team": "Fremantle",
-    "margin": -28,
+    "home_margin": -28,
     "round": "R10",
     "round_number": 10,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": 28
   },
   {
     "away_behinds": 7,
@@ -5338,12 +5634,13 @@
     "home_goals": 13,
     "home_points": 91,
     "home_team": "Sydney",
-    "margin": 30,
+    "home_margin": 30,
     "round": "R11",
     "round_number": 11,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "S.C.G."
+    "venue": "S.C.G.",
+    "away_margin": -30
   },
   {
     "away_behinds": 10,
@@ -5356,12 +5653,13 @@
     "home_goals": 7,
     "home_points": 51,
     "home_team": "Footscray",
-    "margin": -49,
+    "home_margin": -49,
     "round": "R11",
     "round_number": 11,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 49
   },
   {
     "away_behinds": 7,
@@ -5374,12 +5672,13 @@
     "home_goals": 9,
     "home_points": 64,
     "home_team": "Hawthorn",
-    "margin": 3,
+    "home_margin": 3,
     "round": "R11",
     "round_number": 11,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "York Park"
+    "venue": "York Park",
+    "away_margin": -3
   },
   {
     "away_behinds": 19,
@@ -5392,12 +5691,13 @@
     "home_goals": 4,
     "home_points": 36,
     "home_team": "Gold Coast",
-    "margin": -85,
+    "home_margin": -85,
     "round": "R11",
     "round_number": 11,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Carrara"
+    "venue": "Carrara",
+    "away_margin": 85
   },
   {
     "away_behinds": 12,
@@ -5410,12 +5710,13 @@
     "home_goals": 6,
     "home_points": 43,
     "home_team": "Essendon",
-    "margin": -71,
+    "home_margin": -71,
     "round": "R11",
     "round_number": 11,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 71
   },
   {
     "away_behinds": 4,
@@ -5428,12 +5729,13 @@
     "home_goals": 16,
     "home_points": 101,
     "home_team": "West Coast",
-    "margin": 13,
+    "home_margin": 13,
     "round": "R11",
     "round_number": 11,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": -13
   },
   {
     "away_behinds": 15,
@@ -5446,12 +5748,13 @@
     "home_goals": 21,
     "home_points": 141,
     "home_team": "North Melbourne",
-    "margin": 54,
+    "home_margin": 54,
     "round": "R11",
     "round_number": 11,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -54
   },
   {
     "away_behinds": 5,
@@ -5464,12 +5767,13 @@
     "home_goals": 21,
     "home_points": 138,
     "home_team": "Collingwood",
-    "margin": 61,
+    "home_margin": 61,
     "round": "R11",
     "round_number": 11,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -61
   },
   {
     "away_behinds": 13,
@@ -5482,12 +5786,13 @@
     "home_goals": 11,
     "home_points": 81,
     "home_team": "Adelaide",
-    "margin": -16,
+    "home_margin": -16,
     "round": "R11",
     "round_number": 11,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": 16
   },
   {
     "away_behinds": 10,
@@ -5500,12 +5805,13 @@
     "home_goals": 10,
     "home_points": 72,
     "home_team": "Port Adelaide",
-    "margin": 14,
+    "home_margin": 14,
     "round": "R12",
     "round_number": 12,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -14
   },
   {
     "away_behinds": 11,
@@ -5518,12 +5824,13 @@
     "home_goals": 14,
     "home_points": 96,
     "home_team": "Geelong",
-    "margin": 37,
+    "home_margin": 37,
     "round": "R12",
     "round_number": 12,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Kardinia Park"
+    "venue": "Kardinia Park",
+    "away_margin": -37
   },
   {
     "away_behinds": 2,
@@ -5536,12 +5843,13 @@
     "home_goals": 20,
     "home_points": 134,
     "home_team": "GWS",
-    "margin": 108,
+    "home_margin": 108,
     "round": "R12",
     "round_number": 12,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Sydney Showground"
+    "venue": "Sydney Showground",
+    "away_margin": -108
   },
   {
     "away_behinds": 12,
@@ -5554,12 +5862,13 @@
     "home_goals": 7,
     "home_points": 55,
     "home_team": "St Kilda",
-    "margin": -71,
+    "home_margin": -71,
     "round": "R12",
     "round_number": 12,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 71
   },
   {
     "away_behinds": 12,
@@ -5572,12 +5881,13 @@
     "home_goals": 8,
     "home_points": 62,
     "home_team": "Brisbane Lions",
-    "margin": -22,
+    "home_margin": -22,
     "round": "R12",
     "round_number": 12,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Gabba"
+    "venue": "Gabba",
+    "away_margin": 22
   },
   {
     "away_behinds": 14,
@@ -5590,12 +5900,13 @@
     "home_goals": 10,
     "home_points": 71,
     "home_team": "Fremantle",
-    "margin": 3,
+    "home_margin": 3,
     "round": "R12",
     "round_number": 12,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": -3
   },
   {
     "away_behinds": 13,
@@ -5608,12 +5919,13 @@
     "home_goals": 14,
     "home_points": 91,
     "home_team": "Melbourne",
-    "margin": -42,
+    "home_margin": -42,
     "round": "R12",
     "round_number": 12,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 42
   },
   {
     "away_behinds": 9,
@@ -5626,12 +5938,13 @@
     "home_goals": 20,
     "home_points": 132,
     "home_team": "Port Adelaide",
-    "margin": 57,
+    "home_margin": 57,
     "round": "R13",
     "round_number": 13,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -57
   },
   {
     "away_behinds": 15,
@@ -5644,12 +5957,13 @@
     "home_goals": 10,
     "home_points": 72,
     "home_team": "Sydney",
-    "margin": 15,
+    "home_margin": 15,
     "round": "R13",
     "round_number": 13,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "S.C.G."
+    "venue": "S.C.G.",
+    "away_margin": -15
   },
   {
     "away_behinds": 13,
@@ -5662,12 +5976,13 @@
     "home_goals": 6,
     "home_points": 46,
     "home_team": "Carlton",
-    "margin": -57,
+    "home_margin": -57,
     "round": "R13",
     "round_number": 13,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 57
   },
   {
     "away_behinds": 14,
@@ -5680,12 +5995,13 @@
     "home_goals": 11,
     "home_points": 78,
     "home_team": "Gold Coast",
-    "margin": -2,
+    "home_margin": -2,
     "round": "R13",
     "round_number": 13,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Carrara"
+    "venue": "Carrara",
+    "away_margin": 2
   },
   {
     "away_behinds": 8,
@@ -5698,12 +6014,13 @@
     "home_goals": 12,
     "home_points": 88,
     "home_team": "Hawthorn",
-    "margin": 56,
+    "home_margin": 56,
     "round": "R13",
     "round_number": 13,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -56
   },
   {
     "away_behinds": 11,
@@ -5716,12 +6033,13 @@
     "home_goals": 9,
     "home_points": 65,
     "home_team": "Geelong",
-    "margin": -18,
+    "home_margin": -18,
     "round": "R13",
     "round_number": 13,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 18
   },
   {
     "away_behinds": 8,
@@ -5734,12 +6052,13 @@
     "home_goals": 6,
     "home_points": 52,
     "home_team": "West Coast",
-    "margin": -28,
+    "home_margin": -28,
     "round": "R14",
     "round_number": 14,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": 28
   },
   {
     "away_behinds": 11,
@@ -5752,12 +6071,13 @@
     "home_goals": 11,
     "home_points": 75,
     "home_team": "Port Adelaide",
-    "margin": 10,
+    "home_margin": 10,
     "round": "R14",
     "round_number": 14,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -10
   },
   {
     "away_behinds": 13,
@@ -5770,12 +6090,13 @@
     "home_goals": 13,
     "home_points": 96,
     "home_team": "Hawthorn",
-    "margin": 53,
+    "home_margin": 53,
     "round": "R14",
     "round_number": 14,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "York Park"
+    "venue": "York Park",
+    "away_margin": -53
   },
   {
     "away_behinds": 13,
@@ -5788,12 +6109,13 @@
     "home_goals": 12,
     "home_points": 82,
     "home_team": "Brisbane Lions",
-    "margin": -27,
+    "home_margin": -27,
     "round": "R14",
     "round_number": 14,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Gabba"
+    "venue": "Gabba",
+    "away_margin": 27
   },
   {
     "away_behinds": 5,
@@ -5806,12 +6128,13 @@
     "home_goals": 11,
     "home_points": 75,
     "home_team": "Footscray",
-    "margin": -2,
+    "home_margin": -2,
     "round": "R14",
     "round_number": 14,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 2
   },
   {
     "away_behinds": 5,
@@ -5824,12 +6147,13 @@
     "home_goals": 11,
     "home_points": 79,
     "home_team": "Collingwood",
-    "margin": 20,
+    "home_margin": 20,
     "round": "R14",
     "round_number": 14,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -20
   },
   {
     "away_behinds": 1,
@@ -5842,12 +6166,13 @@
     "home_goals": 14,
     "home_points": 93,
     "home_team": "Richmond",
-    "margin": 26,
+    "home_margin": 26,
     "round": "R15",
     "round_number": 15,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -26
   },
   {
     "away_behinds": 11,
@@ -5860,12 +6185,13 @@
     "home_goals": 16,
     "home_points": 103,
     "home_team": "Footscray",
-    "margin": 2,
+    "home_margin": 2,
     "round": "R15",
     "round_number": 15,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -2
   },
   {
     "away_behinds": 12,
@@ -5878,12 +6204,13 @@
     "home_goals": 10,
     "home_points": 69,
     "home_team": "Carlton",
-    "margin": -21,
+    "home_margin": -21,
     "round": "R15",
     "round_number": 15,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 21
   },
   {
     "away_behinds": 6,
@@ -5896,12 +6223,13 @@
     "home_goals": 12,
     "home_points": 88,
     "home_team": "Adelaide",
-    "margin": 10,
+    "home_margin": 10,
     "round": "R15",
     "round_number": 15,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -10
   },
   {
     "away_behinds": 15,
@@ -5914,12 +6242,13 @@
     "home_goals": 8,
     "home_points": 60,
     "home_team": "Gold Coast",
-    "margin": -39,
+    "home_margin": -39,
     "round": "R15",
     "round_number": 15,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Carrara"
+    "venue": "Carrara",
+    "away_margin": 39
   },
   {
     "away_behinds": 6,
@@ -5932,12 +6261,13 @@
     "home_goals": 13,
     "home_points": 95,
     "home_team": "GWS",
-    "margin": 11,
+    "home_margin": 11,
     "round": "R15",
     "round_number": 15,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Sydney Showground"
+    "venue": "Sydney Showground",
+    "away_margin": -11
   },
   {
     "away_behinds": 11,
@@ -5950,12 +6280,13 @@
     "home_goals": 18,
     "home_points": 117,
     "home_team": "Melbourne",
-    "margin": -2,
+    "home_margin": -2,
     "round": "R15",
     "round_number": 15,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 2
   },
   {
     "away_behinds": 12,
@@ -5968,12 +6299,13 @@
     "home_goals": 19,
     "home_points": 125,
     "home_team": "Essendon",
-    "margin": 17,
+    "home_margin": 17,
     "round": "R15",
     "round_number": 15,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -17
   },
   {
     "away_behinds": 11,
@@ -5986,12 +6318,13 @@
     "home_goals": 9,
     "home_points": 64,
     "home_team": "Fremantle",
-    "margin": -55,
+    "home_margin": -55,
     "round": "R15",
     "round_number": 15,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": 55
   },
   {
     "away_behinds": 23,
@@ -6004,12 +6337,13 @@
     "home_goals": 9,
     "home_points": 59,
     "home_team": "Sydney",
-    "margin": -12,
+    "home_margin": -12,
     "round": "R16",
     "round_number": 16,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "S.C.G."
+    "venue": "S.C.G.",
+    "away_margin": 12
   },
   {
     "away_behinds": 8,
@@ -6022,12 +6356,13 @@
     "home_goals": 15,
     "home_points": 103,
     "home_team": "Richmond",
-    "margin": 47,
+    "home_margin": 47,
     "round": "R16",
     "round_number": 16,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -47
   },
   {
     "away_behinds": 13,
@@ -6040,12 +6375,13 @@
     "home_goals": 18,
     "home_points": 120,
     "home_team": "Brisbane Lions",
-    "margin": 65,
+    "home_margin": 65,
     "round": "R16",
     "round_number": 16,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Gabba"
+    "venue": "Gabba",
+    "away_margin": -65
   },
   {
     "away_behinds": 8,
@@ -6058,12 +6394,13 @@
     "home_goals": 12,
     "home_points": 86,
     "home_team": "Port Adelaide",
-    "margin": 36,
+    "home_margin": 36,
     "round": "R16",
     "round_number": 16,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -36
   },
   {
     "away_behinds": 8,
@@ -6076,12 +6413,13 @@
     "home_goals": 9,
     "home_points": 59,
     "home_team": "Footscray",
-    "margin": -63,
+    "home_margin": -63,
     "round": "R16",
     "round_number": 16,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 63
   },
   {
     "away_behinds": 6,
@@ -6094,12 +6432,13 @@
     "home_goals": 13,
     "home_points": 102,
     "home_team": "Melbourne",
-    "margin": 54,
+    "home_margin": 54,
     "round": "R16",
     "round_number": 16,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Marrara Oval"
+    "venue": "Marrara Oval",
+    "away_margin": -54
   },
   {
     "away_behinds": 10,
@@ -6112,12 +6451,13 @@
     "home_goals": 14,
     "home_points": 95,
     "home_team": "North Melbourne",
-    "margin": 37,
+    "home_margin": 37,
     "round": "R16",
     "round_number": 16,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -37
   },
   {
     "away_behinds": 6,
@@ -6130,12 +6470,13 @@
     "home_goals": 9,
     "home_points": 62,
     "home_team": "Essendon",
-    "margin": -16,
+    "home_margin": -16,
     "round": "R16",
     "round_number": 16,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 16
   },
   {
     "away_behinds": 15,
@@ -6148,12 +6489,13 @@
     "home_goals": 13,
     "home_points": 86,
     "home_team": "West Coast",
-    "margin": 11,
+    "home_margin": 11,
     "round": "R16",
     "round_number": 16,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": -11
   },
   {
     "away_behinds": 13,
@@ -6166,12 +6508,13 @@
     "home_goals": 16,
     "home_points": 112,
     "home_team": "Adelaide",
-    "margin": 15,
+    "home_margin": 15,
     "round": "R17",
     "round_number": 17,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -15
   },
   {
     "away_behinds": 10,
@@ -6184,12 +6527,13 @@
     "home_goals": 16,
     "home_points": 116,
     "home_team": "St Kilda",
-    "margin": 64,
+    "home_margin": 64,
     "round": "R17",
     "round_number": 17,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -64
   },
   {
     "away_behinds": 8,
@@ -6202,12 +6546,13 @@
     "home_goals": 9,
     "home_points": 65,
     "home_team": "Hawthorn",
-    "margin": -33,
+    "home_margin": -33,
     "round": "R17",
     "round_number": 17,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "York Park"
+    "venue": "York Park",
+    "away_margin": 33
   },
   {
     "away_behinds": 9,
@@ -6220,12 +6565,13 @@
     "home_goals": 18,
     "home_points": 119,
     "home_team": "Melbourne",
-    "margin": 50,
+    "home_margin": 50,
     "round": "R17",
     "round_number": 17,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -50
   },
   {
     "away_behinds": 17,
@@ -6238,12 +6584,13 @@
     "home_goals": 6,
     "home_points": 51,
     "home_team": "Gold Coast",
-    "margin": -44,
+    "home_margin": -44,
     "round": "R17",
     "round_number": 17,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Carrara"
+    "venue": "Carrara",
+    "away_margin": 44
   },
   {
     "away_behinds": 17,
@@ -6256,12 +6603,13 @@
     "home_goals": 11,
     "home_points": 79,
     "home_team": "GWS",
-    "margin": 2,
+    "home_margin": 2,
     "round": "R17",
     "round_number": 17,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Sydney Showground"
+    "venue": "Sydney Showground",
+    "away_margin": -2
   },
   {
     "away_behinds": 12,
@@ -6274,12 +6622,13 @@
     "home_goals": 9,
     "home_points": 67,
     "home_team": "Collingwood",
-    "margin": -35,
+    "home_margin": -35,
     "round": "R17",
     "round_number": 17,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 35
   },
   {
     "away_behinds": 8,
@@ -6292,12 +6641,13 @@
     "home_goals": 15,
     "home_points": 98,
     "home_team": "North Melbourne",
-    "margin": -6,
+    "home_margin": -6,
     "round": "R17",
     "round_number": 17,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 6
   },
   {
     "away_behinds": 8,
@@ -6310,12 +6660,13 @@
     "home_goals": 8,
     "home_points": 59,
     "home_team": "Fremantle",
-    "margin": 9,
+    "home_margin": 9,
     "round": "R17",
     "round_number": 17,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": -9
   },
   {
     "away_behinds": 15,
@@ -6328,12 +6679,13 @@
     "home_goals": 8,
     "home_points": 57,
     "home_team": "St Kilda",
-    "margin": -54,
+    "home_margin": -54,
     "round": "R18",
     "round_number": 18,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 54
   },
   {
     "away_behinds": 10,
@@ -6346,12 +6698,13 @@
     "home_goals": 20,
     "home_points": 130,
     "home_team": "Collingwood",
-    "margin": 66,
+    "home_margin": 66,
     "round": "R18",
     "round_number": 18,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -66
   },
   {
     "away_behinds": 16,
@@ -6364,12 +6717,13 @@
     "home_goals": 8,
     "home_points": 64,
     "home_team": "Sydney",
-    "margin": -24,
+    "home_margin": -24,
     "round": "R18",
     "round_number": 18,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "S.C.G."
+    "venue": "S.C.G.",
+    "away_margin": 24
   },
   {
     "away_behinds": 4,
@@ -6382,12 +6736,13 @@
     "home_goals": 13,
     "home_points": 99,
     "home_team": "Essendon",
-    "margin": 29,
+    "home_margin": 29,
     "round": "R18",
     "round_number": 18,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -29
   },
   {
     "away_behinds": 15,
@@ -6400,12 +6755,13 @@
     "home_goals": 13,
     "home_points": 88,
     "home_team": "Brisbane Lions",
-    "margin": -5,
+    "home_margin": -5,
     "round": "R18",
     "round_number": 18,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Gabba"
+    "venue": "Gabba",
+    "away_margin": 5
   },
   {
     "away_behinds": 14,
@@ -6418,12 +6774,13 @@
     "home_goals": 16,
     "home_points": 100,
     "home_team": "Geelong",
-    "margin": 2,
+    "home_margin": 2,
     "round": "R18",
     "round_number": 18,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Kardinia Park"
+    "venue": "Kardinia Park",
+    "away_margin": -2
   },
   {
     "away_behinds": 16,
@@ -6436,12 +6793,13 @@
     "home_goals": 7,
     "home_points": 52,
     "home_team": "Carlton",
-    "margin": -72,
+    "home_margin": -72,
     "round": "R18",
     "round_number": 18,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 72
   },
   {
     "away_behinds": 10,
@@ -6454,12 +6812,13 @@
     "home_goals": 14,
     "home_points": 100,
     "home_team": "West Coast",
-    "margin": 54,
+    "home_margin": 54,
     "round": "R18",
     "round_number": 18,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": -54
   },
   {
     "away_behinds": 14,
@@ -6472,12 +6831,13 @@
     "home_goals": 8,
     "home_points": 58,
     "home_team": "Port Adelaide",
-    "margin": -22,
+    "home_margin": -22,
     "round": "R18",
     "round_number": 18,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": 22
   },
   {
     "away_behinds": 6,
@@ -6490,12 +6850,13 @@
     "home_goals": 15,
     "home_points": 109,
     "home_team": "Essendon",
-    "margin": 43,
+    "home_margin": 43,
     "round": "R19",
     "round_number": 19,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -43
   },
   {
     "away_behinds": 5,
@@ -6508,12 +6869,13 @@
     "home_goals": 16,
     "home_points": 105,
     "home_team": "Richmond",
-    "margin": 28,
+    "home_margin": 28,
     "round": "R19",
     "round_number": 19,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -28
   },
   {
     "away_behinds": 12,
@@ -6526,12 +6888,13 @@
     "home_goals": 18,
     "home_points": 120,
     "home_team": "Geelong",
-    "margin": 42,
+    "home_margin": 42,
     "round": "R19",
     "round_number": 19,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Kardinia Park"
+    "venue": "Kardinia Park",
+    "away_margin": -42
   },
   {
     "away_behinds": 13,
@@ -6544,12 +6907,13 @@
     "home_goals": 13,
     "home_points": 86,
     "home_team": "GWS",
-    "margin": 25,
+    "home_margin": 25,
     "round": "R19",
     "round_number": 19,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Sydney Showground"
+    "venue": "Sydney Showground",
+    "away_margin": -25
   },
   {
     "away_behinds": 7,
@@ -6562,12 +6926,13 @@
     "home_goals": 5,
     "home_points": 44,
     "home_team": "Gold Coast",
-    "margin": -35,
+    "home_margin": -35,
     "round": "R19",
     "round_number": 19,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Carrara"
+    "venue": "Carrara",
+    "away_margin": 35
   },
   {
     "away_behinds": 12,
@@ -6580,12 +6945,13 @@
     "home_goals": 10,
     "home_points": 77,
     "home_team": "Adelaide",
-    "margin": -13,
+    "home_margin": -13,
     "round": "R19",
     "round_number": 19,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": 13
   },
   {
     "away_behinds": 5,
@@ -6598,12 +6964,13 @@
     "home_goals": 12,
     "home_points": 81,
     "home_team": "North Melbourne",
-    "margin": 40,
+    "home_margin": 40,
     "round": "R19",
     "round_number": 19,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Bellerive Oval"
+    "venue": "Bellerive Oval",
+    "away_margin": -40
   },
   {
     "away_behinds": 12,
@@ -6616,12 +6983,13 @@
     "home_goals": 5,
     "home_points": 34,
     "home_team": "Footscray",
-    "margin": -44,
+    "home_margin": -44,
     "round": "R19",
     "round_number": 19,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Eureka Stadium"
+    "venue": "Eureka Stadium",
+    "away_margin": 44
   },
   {
     "away_behinds": 10,
@@ -6634,12 +7002,13 @@
     "home_goals": 7,
     "home_points": 53,
     "home_team": "Fremantle",
-    "margin": -59,
+    "home_margin": -59,
     "round": "R19",
     "round_number": 19,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": 59
   },
   {
     "away_behinds": 10,
@@ -6652,12 +7021,13 @@
     "home_goals": 12,
     "home_points": 85,
     "home_team": "Richmond",
-    "margin": 3,
+    "home_margin": 3,
     "round": "R20",
     "round_number": 20,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -3
   },
   {
     "away_behinds": 7,
@@ -6670,12 +7040,13 @@
     "home_goals": 16,
     "home_points": 107,
     "home_team": "Hawthorn",
-    "margin": 4,
+    "home_margin": 4,
     "round": "R20",
     "round_number": 20,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -4
   },
   {
     "away_behinds": 11,
@@ -6688,12 +7059,13 @@
     "home_goals": 16,
     "home_points": 104,
     "home_team": "Brisbane Lions",
-    "margin": -3,
+    "home_margin": -3,
     "round": "R20",
     "round_number": 20,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Gabba"
+    "venue": "Gabba",
+    "away_margin": 3
   },
   {
     "away_behinds": 9,
@@ -6706,12 +7078,13 @@
     "home_goals": 13,
     "home_points": 96,
     "home_team": "Adelaide",
-    "margin": 3,
+    "home_margin": 3,
     "round": "R20",
     "round_number": 20,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -3
   },
   {
     "away_behinds": 11,
@@ -6724,12 +7097,13 @@
     "home_goals": 11,
     "home_points": 73,
     "home_team": "Sydney",
-    "margin": 2,
+    "home_margin": 2,
     "round": "R20",
     "round_number": 20,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "S.C.G."
+    "venue": "S.C.G.",
+    "away_margin": -2
   },
   {
     "away_behinds": 13,
@@ -6742,12 +7116,13 @@
     "home_goals": 9,
     "home_points": 68,
     "home_team": "St Kilda",
-    "margin": -35,
+    "home_margin": -35,
     "round": "R20",
     "round_number": 20,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 35
   },
   {
     "away_behinds": 13,
@@ -6760,12 +7135,13 @@
     "home_goals": 7,
     "home_points": 46,
     "home_team": "Carlton",
-    "margin": -105,
+    "home_margin": -105,
     "round": "R20",
     "round_number": 20,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 105
   },
   {
     "away_behinds": 5,
@@ -6778,12 +7154,13 @@
     "home_goals": 21,
     "home_points": 143,
     "home_team": "Melbourne",
-    "margin": 96,
+    "home_margin": 96,
     "round": "R20",
     "round_number": 20,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -96
   },
   {
     "away_behinds": 6,
@@ -6796,12 +7173,13 @@
     "home_goals": 21,
     "home_points": 142,
     "home_team": "West Coast",
-    "margin": 58,
+    "home_margin": 58,
     "round": "R20",
     "round_number": 20,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": -58
   },
   {
     "away_behinds": 13,
@@ -6814,12 +7192,13 @@
     "home_goals": 18,
     "home_points": 122,
     "home_team": "Essendon",
-    "margin": 43,
+    "home_margin": 43,
     "round": "R21",
     "round_number": 21,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -43
   },
   {
     "away_behinds": 12,
@@ -6832,12 +7211,13 @@
     "home_goals": 10,
     "home_points": 71,
     "home_team": "Hawthorn",
-    "margin": 11,
+    "home_margin": 11,
     "round": "R21",
     "round_number": 21,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -11
   },
   {
     "away_behinds": 11,
@@ -6850,12 +7230,13 @@
     "home_goals": 7,
     "home_points": 51,
     "home_team": "Gold Coast",
-    "margin": -74,
+    "home_margin": -74,
     "round": "R21",
     "round_number": 21,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Carrara"
+    "venue": "Carrara",
+    "away_margin": 74
   },
   {
     "away_behinds": 8,
@@ -6868,12 +7249,13 @@
     "home_goals": 9,
     "home_points": 58,
     "home_team": "Port Adelaide",
-    "margin": -4,
+    "home_margin": -4,
     "round": "R21",
     "round_number": 21,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": 4
   },
   {
     "away_behinds": 14,
@@ -6886,12 +7268,13 @@
     "home_goals": 15,
     "home_points": 106,
     "home_team": "GWS",
-    "margin": 14,
+    "home_margin": 14,
     "round": "R21",
     "round_number": 21,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Manuka Oval"
+    "venue": "Manuka Oval",
+    "away_margin": -14
   },
   {
     "away_behinds": 7,
@@ -6904,12 +7287,13 @@
     "home_goals": 14,
     "home_points": 104,
     "home_team": "Collingwood",
-    "margin": 31,
+    "home_margin": 31,
     "round": "R21",
     "round_number": 21,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": -31
   },
   {
     "away_behinds": 14,
@@ -6922,12 +7306,13 @@
     "home_goals": 12,
     "home_points": 85,
     "home_team": "North Melbourne",
-    "margin": -7,
+    "home_margin": -7,
     "round": "R21",
     "round_number": 21,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 7
   },
   {
     "away_behinds": 9,
@@ -6940,12 +7325,13 @@
     "home_goals": 10,
     "home_points": 78,
     "home_team": "Melbourne",
-    "margin": -9,
+    "home_margin": -9,
     "round": "R21",
     "round_number": 21,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": 9
   },
   {
     "away_behinds": 12,
@@ -6958,12 +7344,13 @@
     "home_goals": 15,
     "home_points": 101,
     "home_team": "Fremantle",
-    "margin": 29,
+    "home_margin": 29,
     "round": "R21",
     "round_number": 21,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": -29
   },
   {
     "away_behinds": 7,
@@ -6976,12 +7363,13 @@
     "home_goals": 12,
     "home_points": 81,
     "home_team": "Richmond",
-    "margin": 8,
+    "home_margin": 8,
     "round": "R22",
     "round_number": 22,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -8
   },
   {
     "away_behinds": 4,
@@ -6994,12 +7382,13 @@
     "home_goals": 17,
     "home_points": 115,
     "home_team": "Collingwood",
-    "margin": 51,
+    "home_margin": 51,
     "round": "R22",
     "round_number": 22,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -51
   },
   {
     "away_behinds": 7,
@@ -7012,12 +7401,13 @@
     "home_goals": 24,
     "home_points": 158,
     "home_team": "Geelong",
-    "margin": 133,
+    "home_margin": 133,
     "round": "R22",
     "round_number": 22,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Kardinia Park"
+    "venue": "Kardinia Park",
+    "away_margin": -133
   },
   {
     "away_behinds": 14,
@@ -7030,12 +7420,13 @@
     "home_goals": 8,
     "home_points": 60,
     "home_team": "GWS",
-    "margin": -20,
+    "home_margin": -20,
     "round": "R22",
     "round_number": 22,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Sydney Showground"
+    "venue": "Sydney Showground",
+    "away_margin": 20
   },
   {
     "away_behinds": 8,
@@ -7048,12 +7439,13 @@
     "home_goals": 11,
     "home_points": 76,
     "home_team": "St Kilda",
-    "margin": -4,
+    "home_margin": -4,
     "round": "R22",
     "round_number": 22,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 4
   },
   {
     "away_behinds": 18,
@@ -7066,12 +7458,13 @@
     "home_goals": 11,
     "home_points": 74,
     "home_team": "Gold Coast",
-    "margin": -4,
+    "home_margin": -4,
     "round": "R22",
     "round_number": 22,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Carrara"
+    "venue": "Carrara",
+    "away_margin": 4
   },
   {
     "away_behinds": 6,
@@ -7084,12 +7477,13 @@
     "home_goals": 7,
     "home_points": 49,
     "home_team": "Carlton",
-    "margin": -17,
+    "home_margin": -17,
     "round": "R22",
     "round_number": 22,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 17
   },
   {
     "away_behinds": 12,
@@ -7102,12 +7496,13 @@
     "home_goals": 14,
     "home_points": 91,
     "home_team": "West Coast",
-    "margin": -17,
+    "home_margin": -17,
     "round": "R22",
     "round_number": 22,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": 17
   },
   {
     "away_behinds": 11,
@@ -7120,12 +7515,13 @@
     "home_goals": 12,
     "home_points": 86,
     "home_team": "Adelaide",
-    "margin": 9,
+    "home_margin": 9,
     "round": "R22",
     "round_number": 22,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": -9
   },
   {
     "away_behinds": 9,
@@ -7138,12 +7534,13 @@
     "home_goals": 13,
     "home_points": 89,
     "home_team": "Port Adelaide",
-    "margin": -22,
+    "home_margin": -22,
     "round": "R23",
     "round_number": 23,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Adelaide Oval"
+    "venue": "Adelaide Oval",
+    "away_margin": 22
   },
   {
     "away_behinds": 10,
@@ -7156,12 +7553,13 @@
     "home_goals": 22,
     "home_points": 142,
     "home_team": "Geelong",
-    "margin": 102,
+    "home_margin": 102,
     "round": "R23",
     "round_number": 23,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Kardinia Park"
+    "venue": "Kardinia Park",
+    "away_margin": -102
   },
   {
     "away_behinds": 11,
@@ -7174,12 +7572,13 @@
     "home_goals": 15,
     "home_points": 98,
     "home_team": "Richmond",
-    "margin": 3,
+    "home_margin": 3,
     "round": "R23",
     "round_number": 23,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -3
   },
   {
     "away_behinds": 10,
@@ -7192,12 +7591,13 @@
     "home_goals": 9,
     "home_points": 67,
     "home_team": "Fremantle",
-    "margin": -9,
+    "home_margin": -9,
     "round": "R23",
     "round_number": 23,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": 9
   },
   {
     "away_behinds": 9,
@@ -7210,12 +7610,13 @@
     "home_goals": 8,
     "home_points": 61,
     "home_team": "Carlton",
-    "margin": -104,
+    "home_margin": -104,
     "round": "R23",
     "round_number": 23,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 104
   },
   {
     "away_behinds": 11,
@@ -7228,12 +7629,13 @@
     "home_goals": 10,
     "home_points": 74,
     "home_team": "Sydney",
-    "margin": -9,
+    "home_margin": -9,
     "round": "R23",
     "round_number": 23,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "S.C.G."
+    "venue": "S.C.G.",
+    "away_margin": 9
   },
   {
     "away_behinds": 14,
@@ -7246,12 +7648,13 @@
     "home_goals": 11,
     "home_points": 72,
     "home_team": "Brisbane Lions",
-    "margin": -26,
+    "home_margin": -26,
     "round": "R23",
     "round_number": 23,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Gabba"
+    "venue": "Gabba",
+    "away_margin": 26
   },
   {
     "away_behinds": 9,
@@ -7264,12 +7667,13 @@
     "home_goals": 15,
     "home_points": 102,
     "home_team": "Melbourne",
-    "margin": 45,
+    "home_margin": 45,
     "round": "R23",
     "round_number": 23,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -45
   },
   {
     "away_behinds": 15,
@@ -7282,12 +7686,13 @@
     "home_goals": 14,
     "home_points": 94,
     "home_team": "St Kilda",
-    "margin": -23,
+    "home_margin": -23,
     "round": "R23",
     "round_number": 23,
     "round_type": "Regular",
     "season": 2018,
-    "venue": "Docklands"
+    "venue": "Docklands",
+    "away_margin": 23
   },
   {
     "away_behinds": 10,
@@ -7300,12 +7705,13 @@
     "home_goals": 13,
     "home_points": 95,
     "home_team": "Richmond",
-    "margin": 31,
+    "home_margin": 31,
     "round": "QF",
     "round_number": 24,
     "round_type": "Finals",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -31
   },
   {
     "away_behinds": 10,
@@ -7318,12 +7724,13 @@
     "home_goals": 10,
     "home_points": 75,
     "home_team": "Melbourne",
-    "margin": 29,
+    "home_margin": 29,
     "round": "EF",
     "round_number": 24,
     "round_type": "Finals",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -29
   },
   {
     "away_behinds": 6,
@@ -7336,12 +7743,13 @@
     "home_goals": 10,
     "home_points": 79,
     "home_team": "GWS",
-    "margin": 49,
+    "home_margin": 49,
     "round": "EF",
     "round_number": 24,
     "round_type": "Finals",
     "season": 2018,
-    "venue": "S.C.G."
+    "venue": "S.C.G.",
+    "away_margin": -49
   },
   {
     "away_behinds": 10,
@@ -7354,12 +7762,13 @@
     "home_goals": 12,
     "home_points": 86,
     "home_team": "West Coast",
-    "margin": 16,
+    "home_margin": 16,
     "round": "QF",
     "round_number": 24,
     "round_type": "Finals",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": -16
   },
   {
     "away_behinds": 11,
@@ -7372,12 +7781,13 @@
     "home_goals": 16,
     "home_points": 104,
     "home_team": "Melbourne",
-    "margin": 33,
+    "home_margin": 33,
     "round": "SF",
     "round_number": 25,
     "round_type": "Finals",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -33
   },
   {
     "away_behinds": 5,
@@ -7390,12 +7800,13 @@
     "home_goals": 9,
     "home_points": 69,
     "home_team": "Collingwood",
-    "margin": 10,
+    "home_margin": 10,
     "round": "SF",
     "round_number": 25,
     "round_type": "Finals",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -10
   },
   {
     "away_behinds": 10,
@@ -7408,12 +7819,13 @@
     "home_goals": 15,
     "home_points": 97,
     "home_team": "Collingwood",
-    "margin": 39,
+    "home_margin": 39,
     "round": "PF",
     "round_number": 26,
     "round_type": "Finals",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -39
   },
   {
     "away_behinds": 13,
@@ -7426,12 +7838,13 @@
     "home_goals": 18,
     "home_points": 121,
     "home_team": "West Coast",
-    "margin": 66,
+    "home_margin": 66,
     "round": "PF",
     "round_number": 26,
     "round_type": "Finals",
     "season": 2018,
-    "venue": "Perth Stadium"
+    "venue": "Perth Stadium",
+    "away_margin": -66
   },
   {
     "away_behinds": 8,
@@ -7444,11 +7857,12 @@
     "home_goals": 11,
     "home_points": 79,
     "home_team": "West Coast",
-    "margin": 5,
+    "home_margin": 5,
     "round": "GF",
     "round_number": 27,
     "round_type": "Finals",
     "season": 2018,
-    "venue": "M.C.G."
+    "venue": "M.C.G.",
+    "away_margin": -5
   }
 ]

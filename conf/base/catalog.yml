@@ -21,6 +21,8 @@ remote_player_data:
 fake_match_data:
   type: JSONLocalDataSet
   filepath: src/tests/fixtures/afl_match.json
+  save_args:
+    indent: 2
 
 tipresias_2019_model:
   type: PickleLocalDataSet
@@ -31,6 +33,10 @@ benchmark_estimator_model:
   type: PickleLocalDataSet
   filepath: data/06_models/benchmark_estimator.pkl
   backend: joblib
+
+fake_data:
+  type: JSONLocalDataSet
+  filepath: src/tests/fixtures/fake_data.json
 
 fake_estimator_model:
     type: PickleLocalDataSet

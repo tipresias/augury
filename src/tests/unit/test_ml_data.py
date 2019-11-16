@@ -27,7 +27,9 @@ class TestMLData(TestCase):
     """Tests for MLData class"""
 
     def setUp(self):
-        self.data = MLData(pipeline="fake", train_years=(None, 2016))
+        self.data = MLData(
+            pipeline="fake", data_set="fake_data", train_years=(None, 2016)
+        )
 
     def test_train_data(self):
         X_train, y_train = self.data.train_data()
