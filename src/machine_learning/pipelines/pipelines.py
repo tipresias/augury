@@ -2,7 +2,6 @@ from typing import Dict
 
 from kedro.pipeline import Pipeline
 
-from machine_learning.nodes import feature_calculation
 from tests.fixtures.fake_pipeline import create_fake_pipeline
 from machine_learning.nodes import feature_calculation
 from .player_pipeline import create_player_pipeline
