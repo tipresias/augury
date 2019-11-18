@@ -11,7 +11,7 @@ from sklearn.ensemble import BaggingRegressor
 from xgboost import XGBRegressor
 
 from machine_learning.settings import TEAM_NAMES, ROUND_TYPES, VENUES, CATEGORY_COLS
-from machine_learning.ml_estimators.sklearn import CorrelationSelector
+from machine_learning.ml_estimators.sklearn import CorrelationSelector, ColumnDropper
 from machine_learning.types import R
 from .. import BaseMLEstimator
 
@@ -33,6 +33,7 @@ BEST_PARAMS = {
     "correlationselector__threshold": 0.030411689885916048,
 }
 PIPELINE = make_pipeline(
+    ColumnDropper(cols_to_drop=["prev_match_oppo_team", "prev_match_at_home"]),
     CorrelationSelector(cols_to_keep=CATEGORY_COLS),
     ColumnTransformer(
         [

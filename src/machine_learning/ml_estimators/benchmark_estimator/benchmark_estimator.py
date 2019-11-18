@@ -16,9 +16,11 @@ from machine_learning.settings import (
     SEED,
     CATEGORY_COLS,
 )
+from machine_learning.ml_estimators.sklearn import ColumnDropper
 from .. import BaseMLEstimator
 
 PIPELINE = make_pipeline(
+    ColumnDropper(cols_to_drop=["prev_match_oppo_team", "prev_match_at_home"]),
     ColumnTransformer(
         [
             (
