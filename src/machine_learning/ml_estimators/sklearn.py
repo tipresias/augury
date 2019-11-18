@@ -1,6 +1,7 @@
 """Classes based on existing Scikit-learn functionality with slight modifications"""
 
 from typing import Sequence, Type, List, Union, Optional, Any, Tuple
+import re
 
 import pandas as pd
 import numpy as np
@@ -23,6 +24,11 @@ EloDictionary = TypedDict(
         "round_number": int,
     },
 )
+
+
+MATCH_INDEX_COLS = ["year", "round_number"]
+MATCH_COLS = ["match_id", "date", "venue", "round_type"]
+OPPO_REGEX = re.compile("^oppo_")
 
 ELO_INDEX_COLS = ["home_team", "year", "round_number"]
 NULL_TEAM_NAME = "0"
@@ -412,3 +418,105 @@ class EloRegressor(BaseEstimator, RegressorMixin):
             f"the last-calculated year/round of {self._elo_dictionary['year']}/"
             f"{self._elo_dictionary['round_number']}"
         )
+
+
+class TeammatchToMatchConverter(BaseEstimator, TransformerMixin):
+    """
+    Transformer for converting data frames from having one team-match combination per
+    row to one match per row.
+
+    Parameters:
+        match_cols (list of strings,
+            default=["match_id", "date", "venue", "round_type"]):
+            List of match columns that are team neutral (e.g. round_number, venue).
+            These won't be renamed with 'home_' or 'away_' prefixes.
+    """
+
+    def __init__(self, match_cols=MATCH_COLS):
+        self.match_cols = match_cols
+
+    def fit(self, _X, _y):
+        return self
+
+    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        self._validate_required_columns(X)
+
+        return (
+            pd.concat(
+                [
+                    self._match_data_frame(X, at_home=True),
+                    self._match_data_frame(X, at_home=False),
+                ],
+                axis=1,
+            )
+            .reset_index()
+            .set_index(["home_team"] + MATCH_INDEX_COLS, drop=False)
+            .rename_axis([None] * (len(MATCH_INDEX_COLS) + 1))
+            .sort_index()
+        )
+
+    def _validate_required_columns(self, data_frame: pd.DataFrame):
+        required_cols: List[str] = ["team", "oppo_team"] + self._data_frame_match_cols(
+            data_frame
+        )
+
+        _validate_required_columns(required_cols, data_frame.columns)
+
+    def _data_frame_match_cols(self, data_frame: pd.DataFrame) -> List[str]:
+        return list(set(data_frame.columns) & set(self.match_cols))
+
+    def _match_data_frame(
+        self, data_frame: pd.DataFrame, at_home: bool = True
+    ) -> pd.DataFrame:
+        home_index = "team" if at_home else "oppo_team"
+        away_index = "oppo_team" if at_home else "team"
+        # We drop oppo stats cols, because we end up with both teams' stats per match
+        # when we join home and away teams. We keep 'oppo_team' and add the renamed column
+        # to the index for convenience
+        oppo_stats_cols = [
+            col
+            for col in data_frame.columns
+            if re.match(OPPO_REGEX, col) and col != "oppo_team"
+        ]
+
+        return (
+            data_frame.query(f"at_home == {int(at_home)}")
+            # We index match rows by home_team, year, round_number
+            .rename(columns={home_index: "home_team", away_index: "away_team"})
+            .drop(["at_home"] + oppo_stats_cols, axis=1)
+            # We add all match cols to the index, because they don't affect the upcoming
+            # concat, and it's easier than creating a third data frame for match cols
+            .set_index(
+                ["home_team", "away_team"]
+                + MATCH_INDEX_COLS
+                + self._data_frame_match_cols(data_frame)
+            )
+            .rename(columns=self._replace_col_names(at_home))
+            .sort_index()
+        )
+
+    @staticmethod
+    def _replace_col_names(at_home: bool):
+        team_label = "home" if at_home else "away"
+        oppo_label = "away" if at_home else "home"
+
+        return (
+            lambda col: col.replace("oppo_", f"{oppo_label}_", 1)
+            if re.match(OPPO_REGEX, col)
+            else f"{team_label}_{col}"
+        )
+
+
+class ColumnDropper(BaseEstimator, TransformerMixin):
+    """
+    Transformer that drops named columns from data frames.
+    """
+
+    def __init__(self, cols_to_drop: List[str] = []):
+        self.cols_to_drop = cols_to_drop
+
+    def fit(self, _X, _y):
+        return self
+
+    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        return X.drop(self.cols_to_drop, axis=1)

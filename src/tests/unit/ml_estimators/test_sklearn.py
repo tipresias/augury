@@ -6,10 +6,13 @@ import pandas as pd
 import numpy as np
 from faker import Faker
 
+from tests.fixtures.data_factories import fake_cleaned_match_data
 from machine_learning.ml_estimators.sklearn import (
     AveragingRegressor,
     CorrelationSelector,
     EloRegressor,
+    TeammatchToMatchConverter,
+    ColumnDropper,
 )
 from machine_learning.settings import BASE_DIR
 
@@ -120,3 +123,34 @@ class TestEloRegressor(TestCase):
 
             with self.assertRaises(AssertionError):
                 self.regressor.predict(invalid_X_test)
+
+
+class TestTeammatchToMatchConverter(TestCase):
+    def setUp(self):
+        self.data = fake_cleaned_match_data(ROW_COUNT, (2017, 2018))
+        self.data.loc[:, "at_home"] = [row % 2 for row in range(len(self.data))]
+        self.match_cols = ["date", "year", "round_number"]
+        self.transformer = TeammatchToMatchConverter(match_cols=self.match_cols)
+
+    def test_transform(self):
+        self.transformer.fit(self.data, None)
+        transformed_data = self.transformer.transform(self.data)
+
+        self.assertEqual(len(self.data), len(transformed_data) * 2)
+        self.assertIn("home_team", transformed_data.columns)
+        self.assertIn("away_team", transformed_data.columns)
+        self.assertNotIn("oppo_team", transformed_data.columns)
+
+
+class TestColumnDropper(TestCase):
+    def setUp(self):
+        self.data = fake_cleaned_match_data(ROW_COUNT, (2017, 2018))
+        self.cols_to_drop = ["team", "oppo_score"]
+        self.transformer = ColumnDropper(cols_to_drop=self.cols_to_drop)
+
+    def test_transform(self):
+        self.transformer.fit(self.data, None)
+        transformed_data = self.transformer.transform(self.data)
+
+        for column in self.cols_to_drop:
+            self.assertNotIn(column, transformed_data.columns)
