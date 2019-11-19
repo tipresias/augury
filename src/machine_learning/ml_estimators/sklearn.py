@@ -2,6 +2,7 @@
 
 from typing import Sequence, Type, List, Union, Optional, Any, Tuple
 import re
+import copy
 
 import pandas as pd
 import numpy as np
@@ -187,12 +188,14 @@ class EloRegressor(BaseEstimator, RegressorMixin):
         self.season_carryover = season_carryover
         self._null_team = 0
         self._team_encoder = LabelEncoder()
-        self._elo_dictionary: EloDictionary = {
-            "prev_team_elo_ratings": np.array([]),
-            "current_team_elo_ratings": np.array([]),
+        self._running_elo_ratings = {
+            "previous_elo": np.array([]),
+            "current_elo": np.array([]),
             "year": 0,
             "round_number": 0,
         }
+        self._fitted_elo_ratings = copy.deepcopy(self._running_elo_ratings)
+        self._first_fitted_year = 0
 
     def fit(self, X: pd.DataFrame, _y: pd.Series) -> Type[R]:
         """Fit estimators to data"""
@@ -221,19 +224,15 @@ class EloRegressor(BaseEstimator, RegressorMixin):
             .sort_index(level=[YEAR_LVL, ROUND_NUMBER_LVL], ascending=True)
         )
 
-        self._elo_dictionary["prev_team_elo_ratings"] = np.full(
-            len(data_frame["home_team"].drop_duplicates()) + 1, BASE_RATING
-        )
-        self._elo_dictionary["current_team_elo_ratings"] = np.full(
-            len(data_frame["home_team"].drop_duplicates()) + 1, BASE_RATING
-        )
-        self._elo_dictionary["year"] = 0
-        self._elo_dictionary["round_number"] = 0
+        self._reset_elo_state(data_frame)
 
         elo_matrix = (data_frame.loc[:, MATRIX_COLS]).to_numpy()
 
         for match_row in elo_matrix:
             self._update_current_elo_ratings(match_row)
+
+        self._fitted_elo_ratings = copy.deepcopy(self._running_elo_ratings)
+        self._first_fitted_year = data_frame["year"].min()
 
         return self
 
@@ -268,8 +267,11 @@ class EloRegressor(BaseEstimator, RegressorMixin):
 
         elo_matrix = (data_frame.loc[:, MATRIX_COLS]).to_numpy()
 
-        # TODO: Maintain final Elo ratings from fitting, so we can call predict
-        # multiple times without having to refit the model
+        if data_frame["year"].min() == self._first_fitted_year:
+            self._reset_elo_state(data_frame)
+        else:
+            self._running_elo_ratings = copy.deepcopy(self._fitted_elo_ratings)
+
         elo_predictions = [
             self._calculate_current_elo_predictions(match_row)
             for match_row in elo_matrix
@@ -305,8 +307,8 @@ class EloRegressor(BaseEstimator, RegressorMixin):
 
         self._update_current_elo_ratings(match_row)
 
-        home_elo_rating = self._elo_dictionary["current_team_elo_ratings"][home_team]
-        away_elo_rating = self._elo_dictionary["current_team_elo_ratings"][away_team]
+        home_elo_rating = self._running_elo_ratings["current_elo"][home_team]
+        away_elo_rating = self._running_elo_ratings["current_elo"][away_team]
 
         home_elo_prediction = self._calculate_team_elo_prediction(
             home_elo_rating, away_elo_rating, True
@@ -328,8 +330,8 @@ class EloRegressor(BaseEstimator, RegressorMixin):
         home_elo_rating = self._calculate_current_elo_rating(HOME_TEAM_IDX, match_row)
         away_elo_rating = self._calculate_current_elo_rating(AWAY_TEAM_IDX, match_row)
 
-        self._elo_dictionary["current_team_elo_ratings"][home_team] = home_elo_rating
-        self._elo_dictionary["current_team_elo_ratings"][away_team] = away_elo_rating
+        self._running_elo_ratings["current_elo"][home_team] = home_elo_rating
+        self._running_elo_ratings["current_elo"][away_team] = away_elo_rating
 
     def _update_prev_elo_ratings(self, match_row: np.ndarray):
         match_year = match_row[YEAR_IDX]
@@ -340,21 +342,21 @@ class EloRegressor(BaseEstimator, RegressorMixin):
         # Need to wait till new round to update prev_team_elo_ratings to avoid
         # updating an Elo rating from the previous round before calculating
         # a relevant team's Elo for the current round
-        if match_round != self._elo_dictionary["round_number"]:
-            self._elo_dictionary["prev_team_elo_ratings"] = np.copy(
-                self._elo_dictionary["current_team_elo_ratings"]
+        if match_round != self._running_elo_ratings["round_number"]:
+            self._running_elo_ratings["previous_elo"] = np.copy(
+                self._running_elo_ratings["current_elo"]
             )
 
-            self._elo_dictionary["round_number"] = match_round
+            self._running_elo_ratings["round_number"] = match_round
 
         # It's typical for Elo models to do a small adjustment toward the baseline
         # between seasons
-        if match_year != self._elo_dictionary["year"]:
-            self._elo_dictionary["prev_team_elo_ratings"] = (
-                self._elo_dictionary["prev_team_elo_ratings"] * self.season_carryover
+        if match_year != self._running_elo_ratings["year"]:
+            self._running_elo_ratings["previous_elo"] = (
+                self._running_elo_ratings["previous_elo"] * self.season_carryover
             ) + BASE_RATING * (1 - self.season_carryover)
 
-            self._elo_dictionary["year"] = match_year
+            self._running_elo_ratings["year"] = match_year
 
     def _calculate_current_elo_rating(self, team_idx: int, match_row: np.ndarray):
         team = int(match_row[team_idx])
@@ -365,12 +367,10 @@ class EloRegressor(BaseEstimator, RegressorMixin):
         # If a previous oppo team has the null team value, that means this is
         # the given team's first match, so they start with the default Elo rating
         if prev_oppo_team == self._null_team:
-            return self._elo_dictionary["prev_team_elo_ratings"][team]
+            return self._running_elo_ratings["previous_elo"][team]
 
-        prev_elo_rating = self._elo_dictionary["prev_team_elo_ratings"][team]
-        prev_oppo_elo_rating = self._elo_dictionary["prev_team_elo_ratings"][
-            prev_oppo_team
-        ]
+        prev_elo_rating = self._running_elo_ratings["previous_elo"][team]
+        prev_oppo_elo_rating = self._running_elo_ratings["previous_elo"][prev_oppo_team]
         prev_elo_prediction = self._calculate_team_elo_prediction(
             prev_elo_rating, prev_oppo_elo_rating, was_at_home
         )
@@ -401,22 +401,32 @@ class EloRegressor(BaseEstimator, RegressorMixin):
 
         return elo_rating + (self.k * (actual_outcome - elo_prediction))
 
+    def _reset_elo_state(self, data_frame: pd.DataFrame):
+        self._running_elo_ratings["previous_elo"] = np.full(
+            len(data_frame["home_team"].drop_duplicates()) + 1, BASE_RATING
+        )
+        self._running_elo_ratings["current_elo"] = np.full(
+            len(data_frame["home_team"].drop_duplicates()) + 1, BASE_RATING
+        )
+        self._running_elo_ratings["year"] = 0
+        self._running_elo_ratings["round_number"] = 0
+
     def _validate_consecutive_rounds(self, match_year: int, match_round: int):
         is_start_of_data = (
-            self._elo_dictionary["year"] == 0
-            and self._elo_dictionary["round_number"] == 0
+            self._running_elo_ratings["year"] == 0
+            and self._running_elo_ratings["round_number"] == 0
         )
         is_new_year = (
-            match_year - self._elo_dictionary["year"] == 1 and match_round == 1
+            match_year - self._running_elo_ratings["year"] == 1 and match_round == 1
         )
-        is_same_round = match_round == self._elo_dictionary["round_number"]
-        is_next_round = match_round - self._elo_dictionary["round_number"] == 1
+        is_same_round = match_round == self._running_elo_ratings["round_number"]
+        is_next_round = match_round - self._running_elo_ratings["round_number"] == 1
 
         assert is_start_of_data or is_new_year or is_same_round or is_next_round, (
             "For Elo calculations to be valid, we must update ratings for each round. "
             f"The current year/round of {match_year}/{match_round} seems to skip "
-            f"the last-calculated year/round of {self._elo_dictionary['year']}/"
-            f"{self._elo_dictionary['round_number']}"
+            f"the last-calculated year/round of {self._running_elo_ratings['year']}/"
+            f"{self._running_elo_ratings['round_number']}"
         )
 
 
@@ -456,14 +466,18 @@ class TeammatchToMatchConverter(BaseEstimator, TransformerMixin):
         )
 
     def _validate_required_columns(self, data_frame: pd.DataFrame):
-        required_cols: List[str] = ["team", "oppo_team"] + self._data_frame_match_cols(
-            data_frame
-        )
+        required_cols: List[str] = [
+            "team",
+            "oppo_team",
+            "at_home",
+        ] + self._data_frame_match_cols(data_frame)
 
         _validate_required_columns(required_cols, data_frame.columns)
 
     def _data_frame_match_cols(self, data_frame: pd.DataFrame) -> List[str]:
-        return list(set(data_frame.columns) & set(self.match_cols))
+        return list(
+            set(data_frame.columns) & set(self.match_cols) & set(MATCH_INDEX_COLS)
+        )
 
     def _match_data_frame(
         self, data_frame: pd.DataFrame, at_home: bool = True
@@ -487,9 +501,7 @@ class TeammatchToMatchConverter(BaseEstimator, TransformerMixin):
             # We add all match cols to the index, because they don't affect the upcoming
             # concat, and it's easier than creating a third data frame for match cols
             .set_index(
-                ["home_team", "away_team"]
-                + MATCH_INDEX_COLS
-                + self._data_frame_match_cols(data_frame)
+                ["home_team", "away_team"] + self._data_frame_match_cols(data_frame)
             )
             .rename(columns=self._replace_col_names(at_home))
             .sort_index()
