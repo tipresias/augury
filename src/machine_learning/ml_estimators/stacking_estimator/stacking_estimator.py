@@ -82,7 +82,7 @@ class StackingEstimator(BaseMLEstimator):
     """
 
     def __init__(
-        self, pipeline: Pipeline = PIPELINE, name: Optional[str] = None
+        self, pipeline: Pipeline = PIPELINE, name: Optional[str] = "stacking_estimator"
     ) -> None:
         super().__init__(pipeline=pipeline, name=name)
 

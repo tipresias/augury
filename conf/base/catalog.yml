@@ -34,6 +34,11 @@ benchmark_estimator_model:
   filepath: data/06_models/benchmark_estimator.pkl
   backend: joblib
 
+stacking_estimator:
+  type: PickleLocalDataSet
+  filepath: data/06_models/stacking_estimator.pkl
+  backend: joblib
+
 fake_data:
   type: JSONLocalDataSet
   filepath: src/tests/fixtures/fake_data.json
