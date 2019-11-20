@@ -107,6 +107,8 @@ def create_match_pipeline(
                         "margin",
                         "team_goals",
                         "team_behinds",
+                        "oppo_team",
+                        "at_home",
                     ]
                 ),
                 "match_data_e",

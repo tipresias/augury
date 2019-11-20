@@ -37,7 +37,9 @@ def create_full_pipeline(
                 "data_a",
             ),
             node(
-                common.sort_data_frame_columns(category_cols=CATEGORY_COLS),
+                common.sort_data_frame_columns(
+                    category_cols=CATEGORY_COLS + ["prev_match_oppo_team"]
+                ),
                 "data_a",
                 "data_b",
             ),

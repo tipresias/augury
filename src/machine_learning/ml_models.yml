@@ -3,3 +3,5 @@ models:
     trained_to: 2018
   - name: benchmark_estimator_model
     trained_to: 2018
+  - name: stacking_estimator
+    trained_to: 2016
