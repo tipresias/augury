@@ -63,13 +63,13 @@ ML_PIPELINE = make_pipeline(
         ],
         remainder=StandardScaler(),
     ),
-    XGBRegressor(objective="reg:squarederror", seed=SEED),
+    XGBRegressor(objective="reg:squarederror", random_state=SEED),
 )
 
 ELO_PIPELINE = make_pipeline(TeammatchToMatchConverter(), EloRegressor())
 
 META_REGRESSOR = make_pipeline(
-    StandardScaler(), XGBRegressor(objective="reg:squarederror", seed=SEED)
+    StandardScaler(), XGBRegressor(objective="reg:squarederror", random_state=SEED)
 )
 
 PIPELINE = make_pipeline(
