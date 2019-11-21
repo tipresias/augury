@@ -476,7 +476,7 @@ class TeammatchToMatchConverter(BaseEstimator, TransformerMixin):
 
     def _data_frame_match_cols(self, data_frame: pd.DataFrame) -> List[str]:
         return list(
-            set(data_frame.columns) & set(self.match_cols) & set(MATCH_INDEX_COLS)
+            set(data_frame.columns) & (set(self.match_cols) | set(MATCH_INDEX_COLS))
         )
 
     def _match_data_frame(
