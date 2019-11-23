@@ -1,4 +1,7 @@
-"""Classes based on existing Scikit-learn functionality with slight modifications"""
+"""
+Classes based on existing Scikit-learn classes or functionality with slight
+modifications
+"""
 
 from typing import Sequence, Type, List, Union, Optional, Any, Tuple
 import re
