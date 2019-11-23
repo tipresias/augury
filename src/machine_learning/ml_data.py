@@ -152,11 +152,7 @@ class MLData:
         features = data_frame.drop(label_cols, axis=1)
 
         numeric_features = features.select_dtypes("number").astype(float)
-        categorical_features = features.select_dtypes(
-            # Excluding datetime for now, as it's useful for data processing, but isn't
-            # a feature in the models
-            exclude=["number", "datetimetz", "datetime"]
-        )
+        categorical_features = features.select_dtypes(exclude=["number"])
 
         # Sorting columns with categorical features first to allow for positional indexing
         # for some data transformations further down the pipeline

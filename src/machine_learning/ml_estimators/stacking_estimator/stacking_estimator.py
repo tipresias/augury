@@ -47,7 +47,7 @@ ENCODED_CATEGORY_COLS = {
 }
 
 ML_PIPELINE = make_pipeline(
-    ColumnDropper(cols_to_drop=["prev_match_oppo_team", "prev_match_at_home"]),
+    ColumnDropper(cols_to_drop=ELO_MODEL_COLS),
     CorrelationSelector(cols_to_keep=CATEGORY_COLS),
     ColumnTransformer(
         [
