@@ -1,17 +1,14 @@
 from unittest import TestCase
-from unittest.mock import Mock
-import os
 
-import pandas as pd
 import numpy as np
 from faker import Faker
 from kedro.context import load_context
 from xgboost import XGBRegressor
 
+from tests.fixtures.data_factories import fake_cleaned_match_data
 from machine_learning.settings import BASE_DIR
 from machine_learning.ml_estimators import StackingEstimator
 from machine_learning.ml_estimators.sklearn import EloRegressor
-from tests.fixtures.data_factories import fake_cleaned_match_data
 
 
 FAKE = Faker()
