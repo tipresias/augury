@@ -5,6 +5,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 
 from machine_learning.ml_estimators import BaseMLEstimator
+from machine_learning.ml_estimators.sklearn import ColumnDropper
 from machine_learning.ml_data import MLData
 from machine_learning.settings import (
     TEAM_NAMES,
@@ -20,6 +21,7 @@ YEAR_IN_DAYS = 365
 
 CATEGORY_COLS = ["team", "oppo_team", "venue", "round_type"]
 PIPELINE = make_pipeline(
+    ColumnDropper(cols_to_drop=["date"]),
     ColumnTransformer(
         [
             (
@@ -89,4 +91,4 @@ def pickle_fake_estimator():
     data = FakeEstimatorData()
 
     estimator.fit(*data.train_data())
-    estimator.dump()
+    estimator.dump(filepath="src/tests/fixtures/fake_estimator.pkl")
