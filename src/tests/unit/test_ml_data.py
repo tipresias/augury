@@ -1,5 +1,4 @@
 import os
-import warnings
 from unittest import TestCase
 
 import pandas as pd
@@ -16,11 +15,6 @@ MATCH_COUNT_PER_YEAR = 10
 YEAR_RANGE = (2016, 2017)
 # Need to multiply by two, because we add team & oppo_team row per match
 ROW_COUNT = MATCH_COUNT_PER_YEAR * len(range(*YEAR_RANGE)) * 2
-
-# MLData does a .loc call with all the column names, resulting in a
-# warning about passing missing column names to .loc when we run tests, so
-# we're ignoring the warnings rather than adding all the columns
-warnings.simplefilter("ignore", FutureWarning)
 
 
 class TestMLData(TestCase):

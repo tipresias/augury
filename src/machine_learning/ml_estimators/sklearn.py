@@ -1,4 +1,7 @@
-"""Classes based on existing Scikit-learn functionality with slight modifications"""
+"""
+Classes based on existing Scikit-learn classes or functionality with slight
+modifications
+"""
 
 from typing import Sequence, Type, List, Union, Optional, Any, Tuple
 import re
@@ -444,6 +447,7 @@ class TeammatchToMatchConverter(BaseEstimator, TransformerMixin):
 
     def __init__(self, match_cols=MATCH_COLS):
         self.match_cols = match_cols
+        self._match_cols = list(set(match_cols + MATCH_INDEX_COLS))
 
     def fit(self, _X, _y):
         return self
@@ -466,18 +470,9 @@ class TeammatchToMatchConverter(BaseEstimator, TransformerMixin):
         )
 
     def _validate_required_columns(self, data_frame: pd.DataFrame):
-        required_cols: List[str] = [
-            "team",
-            "oppo_team",
-            "at_home",
-        ] + self._data_frame_match_cols(data_frame)
+        required_cols: List[str] = ["team", "oppo_team", "at_home"] + self._match_cols
 
         _validate_required_columns(required_cols, data_frame.columns)
-
-    def _data_frame_match_cols(self, data_frame: pd.DataFrame) -> List[str]:
-        return list(
-            set(data_frame.columns) & set(self.match_cols) & set(MATCH_INDEX_COLS)
-        )
 
     def _match_data_frame(
         self, data_frame: pd.DataFrame, at_home: bool = True
@@ -500,9 +495,7 @@ class TeammatchToMatchConverter(BaseEstimator, TransformerMixin):
             .drop(["at_home"] + oppo_stats_cols, axis=1)
             # We add all match cols to the index, because they don't affect the upcoming
             # concat, and it's easier than creating a third data frame for match cols
-            .set_index(
-                ["home_team", "away_team"] + self._data_frame_match_cols(data_frame)
-            )
+            .set_index(["home_team", "away_team"] + self._match_cols)
             .rename(columns=self._replace_col_names(at_home))
             .sort_index()
         )

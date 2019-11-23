@@ -49,7 +49,7 @@ PIPELINE = make_pipeline(
         ],
         remainder=StandardScaler(),
     ),
-    BaggingRegressor(base_estimator=XGBRegressor(seed=SEED)),
+    BaggingRegressor(base_estimator=XGBRegressor(random_state=SEED)),
 ).set_params(**BEST_PARAMS)
 
 

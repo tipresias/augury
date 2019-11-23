@@ -13,6 +13,7 @@ from machine_learning.ml_estimators.sklearn import (
     EloRegressor,
     TeammatchToMatchConverter,
     ColumnDropper,
+    MATCH_INDEX_COLS,
 )
 from machine_learning.settings import BASE_DIR
 
@@ -140,6 +141,19 @@ class TestTeammatchToMatchConverter(TestCase):
         self.assertIn("home_team", transformed_data.columns)
         self.assertIn("away_team", transformed_data.columns)
         self.assertNotIn("oppo_team", transformed_data.columns)
+
+        with self.subTest("when a match_col is missing"):
+            invalid_data = self.data.drop("date", axis=1)
+
+            with self.assertRaisesRegex(AssertionError, r"required columns"):
+                self.transformer.transform(invalid_data)
+
+        with self.subTest("when a match-index column is missing"):
+            for match_col in MATCH_INDEX_COLS:
+                invalid_data = self.data.drop(match_col, axis=1)
+
+                with self.assertRaisesRegex(AssertionError, r"required columns"):
+                    self.transformer.transform(invalid_data)
 
 
 class TestColumnDropper(TestCase):

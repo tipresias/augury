@@ -365,14 +365,22 @@ def convert_to_json(data_frame: pd.DataFrame) -> List[Dict[str, Any]]:
 def _sort_data_frame_columns_node(
     category_cols: List[str], data_frame: pd.DataFrame
 ) -> pd.DataFrame:
-    numeric_data_frame = data_frame.select_dtypes(include="number").fillna(0)
-
     if category_cols is None:
+        numeric_data_frame = data_frame.select_dtypes(
+            include=["number", "datetimetz", "datetime"]
+        ).fillna(0)
         category_data_frame = data_frame.drop(numeric_data_frame.columns, axis=1)
     else:
         category_data_frame = data_frame[category_cols]
+        numeric_data_frame = data_frame.drop(category_data_frame.columns, axis=1)
 
-    return pd.concat([category_data_frame, numeric_data_frame], axis=1)
+    sorted_data_frame = pd.concat([category_data_frame, numeric_data_frame], axis=1)
+
+    assert set(data_frame.columns) == set(
+        sorted_data_frame.columns
+    ), "Sorting data frames should not add or subtract columns."
+
+    return sorted_data_frame
 
 
 # TODO: This is for sorting columns in preparation for the ML pipeline.

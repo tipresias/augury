@@ -1,12 +1,9 @@
 """Class for model trained on all AFL data and its associated data class"""
 
-import warnings
-
 import numpy as np
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.pipeline import make_pipeline, Pipeline
-from sklearn.exceptions import DataConversionWarning
 from xgboost import XGBRegressor
 
 from machine_learning.settings import (
@@ -18,6 +15,9 @@ from machine_learning.settings import (
 )
 from machine_learning.ml_estimators.sklearn import ColumnDropper
 from .. import BaseMLEstimator
+
+
+np.random.seed(SEED)
 
 PIPELINE = make_pipeline(
     ColumnDropper(cols_to_drop=["prev_match_oppo_team", "prev_match_at_home"]),
@@ -37,13 +37,6 @@ PIPELINE = make_pipeline(
     ),
     XGBRegressor(objective="reg:squarederror"),
 )
-
-# Using ColumnTransformer to run OneHotEncoder & StandardScaler causes this warning
-# when using BaggingRegressor, because BR converts the DataFrame to a numpy array,
-# which results in all rows having type 'object', because they include strings and floats
-warnings.simplefilter("ignore", DataConversionWarning)
-
-np.random.seed(SEED)
 
 
 class BenchmarkEstimator(BaseMLEstimator):
