@@ -2,28 +2,29 @@
 
 from typing import Optional, Union, Type, Callable
 
-from baikal import make_step, Input, Model
+from baikal import Input, Model
 from baikal.steps import Stack
 from baikal.steps.merge import Concatenate
 import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from mlxtend.feature_selection import ColumnSelector
-from xgboost import XGBRegressor
 
+from machine_learning.steps import (
+    StandardScalerStep,
+    OneHotEncoderStep,
+    ColumnSelectorStep,
+    XGBRegressorStep,
+    CorrelationSelectorStep,
+    ColumnDropperStep,
+    TeammatchToMatchConverterStep,
+    EloRegressorStep,
+)
 from machine_learning.settings import (
     TEAM_NAMES,
     ROUND_TYPES,
     VENUES,
     CATEGORY_COLS,
     SEED,
-)
-from machine_learning.ml_estimators.sklearn import (
-    CorrelationSelector,
-    ColumnDropper,
-    TeammatchToMatchConverter,
-    EloRegressor,
 )
 from machine_learning.types import R
 from .. import BaseMLEstimator
@@ -52,37 +53,35 @@ def _build_pipeline():
     X = Input("X")
     yt = Input("yt")
 
-    z_ml = make_step(ColumnDropper)(
-        cols_to_drop=ELO_MODEL_COLS, name="columndropper_elo"
-    )(X)
-    z_ml = make_step(CorrelationSelector)(
+    z_ml = ColumnDropperStep(cols_to_drop=ELO_MODEL_COLS, name="columndropper_elo")(X)
+    z_ml = CorrelationSelectorStep(
         cols_to_keep=CATEGORY_COLS, name="correlationselector"
     )(z_ml, yt)
 
-    z_cat = make_step(ColumnSelector)(cols=CATEGORY_COLS, name="columnselector")(z_ml)
-    z_cat = make_step(OneHotEncoder)(
+    z_cat = ColumnSelectorStep(cols=CATEGORY_COLS, name="columnselector")(z_ml)
+    z_cat = OneHotEncoderStep(
         categories=[TEAM_NAMES, TEAM_NAMES, ROUND_TYPES, VENUES],
         sparse=False,
         handle_unknown="ignore",
         name="onehotencoder",
     )(z_cat)
 
-    z_num = make_step(ColumnDropper)(
-        cols_to_drop=CATEGORY_COLS, name="columndropper_cat"
-    )(z_ml)
-    z_num = make_step(StandardScaler)(name="standardscaler_sub")(z_num)
+    z_num = ColumnDropperStep(cols_to_drop=CATEGORY_COLS, name="columndropper_cat")(
+        z_ml
+    )
+    z_num = StandardScalerStep(name="standardscaler_sub")(z_num)
 
     ml_features = Concatenate(name="concatenate")([z_cat, z_num])
-    y1 = make_step(XGBRegressor)(
+    y1 = XGBRegressorStep(
         objective="reg:squarederror", random_state=SEED, name="xgbregressor_sub"
     )(ml_features, yt)
 
-    z_elo = make_step(TeammatchToMatchConverter)(name="teammatchtomatchconverter")(X)
-    y2 = make_step(EloRegressor)(name="eloregressor")(z_elo, yt)
+    z_elo = TeammatchToMatchConverterStep(name="teammatchtomatchconverter")(X)
+    y2 = EloRegressorStep(name="eloregressor")(z_elo)
 
     ensemble_features = Stack(name="stack")([y1, y2])
-    z = make_step(StandardScaler)(name="standardscaler_meta")(ensemble_features)
-    y = make_step(XGBRegressor)(
+    z = StandardScalerStep(name="standardscaler_meta")(ensemble_features)
+    y = XGBRegressorStep(
         objective="reg:squarederror", random_state=SEED, name="xgbregressor_meta"
     )(z, yt)
 
@@ -100,7 +99,7 @@ class StackingEstimator(BaseMLEstimator):
         pipeline: Callable[[], Model] = _build_pipeline,
         name: Optional[str] = "stacking_estimator",
     ) -> None:
-        super().__init__(pipeline=pipeline(), name=name)
+        super().__init__(pipeline(), name=name)
         self._pipeline_func = _build_pipeline
 
     def fit(
