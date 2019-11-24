@@ -63,10 +63,10 @@ class TestCorrelationSelector(TestCase):
 
         self.X = self.data_frame.drop("margin", axis=1)
         self.y = self.data_frame["margin"]
-        self.selector = CorrelationSelector(labels=self.y)
+        self.selector = CorrelationSelector()
 
     def test_transform(self):
-        transformed_data_frame = self.selector.fit_transform(self.X)
+        transformed_data_frame = self.selector.fit_transform(self.X, self.y)
 
         self.assertIsInstance(transformed_data_frame, pd.DataFrame)
         self.assertEqual(len(transformed_data_frame.columns), len(self.X.columns))
@@ -78,7 +78,7 @@ class TestCorrelationSelector(TestCase):
             threshold = label_correlations.iloc[round(len(label_correlations) * 0.5)]
 
             self.selector.threshold = threshold
-            transformed_data_frame = self.selector.fit_transform(self.X)
+            transformed_data_frame = self.selector.fit_transform(self.X, self.y)
 
             self.assertLess(len(transformed_data_frame.columns), len(self.X.columns))
 
@@ -88,10 +88,14 @@ class TestCorrelationSelector(TestCase):
             ][:2]
 
             self.selector.cols_to_keep = cols_to_keep
-            transformed_data_frame = self.selector.fit_transform(self.X)
+            transformed_data_frame = self.selector.fit_transform(self.X, self.y)
 
             for col in cols_to_keep:
                 self.assertIn(col, transformed_data_frame.columns)
+
+        with self.subTest("empty labels argument"):
+            with self.assertRaisesRegex(AssertionError, r"Need labels argument"):
+                self.selector.fit_transform(self.X, pd.Series())
 
 
 class TestEloRegressor(TestCase):
