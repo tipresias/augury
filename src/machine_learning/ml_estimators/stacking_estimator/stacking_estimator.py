@@ -1,14 +1,15 @@
 """Class for model trained on all AFL data and its associated data class"""
 
-from typing import Optional, Union, Type, List
+from typing import Optional, Union, Type, Callable
 
-from mlxtend.regressor import StackingRegressor
+from baikal import make_step, Input, Model
+from baikal.steps import Stack
+from baikal.steps.merge import Concatenate
 import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator
-from sklearn.pipeline import make_pipeline, Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.compose import ColumnTransformer
+from mlxtend.feature_selection import ColumnSelector
 from xgboost import XGBRegressor
 
 from machine_learning.settings import (
@@ -46,37 +47,46 @@ ENCODED_CATEGORY_COLS = {
     "venue": VENUES,
 }
 
-ML_PIPELINE = make_pipeline(
-    ColumnDropper(cols_to_drop=ELO_MODEL_COLS),
-    CorrelationSelector(cols_to_keep=CATEGORY_COLS),
-    ColumnTransformer(
-        [
-            (
-                "onehotencoder",
-                OneHotEncoder(
-                    categories=[TEAM_NAMES, TEAM_NAMES, ROUND_TYPES, VENUES],
-                    sparse=False,
-                    handle_unknown="ignore",
-                ),
-                CATEGORY_COLS,
-            )
-        ],
-        remainder=StandardScaler(),
-    ),
-    XGBRegressor(objective="reg:squarederror", random_state=SEED),
-)
 
-ELO_PIPELINE = make_pipeline(TeammatchToMatchConverter(), EloRegressor())
+def _build_pipeline():
+    X = Input("X")
+    yt = Input("yt")
 
-META_REGRESSOR = make_pipeline(
-    StandardScaler(), XGBRegressor(objective="reg:squarederror", random_state=SEED)
-)
+    z_ml = make_step(ColumnDropper)(
+        cols_to_drop=ELO_MODEL_COLS, name="columndropper_elo"
+    )(X)
+    z_ml = make_step(CorrelationSelector)(
+        cols_to_keep=CATEGORY_COLS, name="correlationselector"
+    )(z_ml, yt)
 
-PIPELINE = make_pipeline(
-    StackingRegressor(
-        regressors=[ML_PIPELINE, ELO_PIPELINE], meta_regressor=META_REGRESSOR
-    )
-)
+    z_cat = make_step(ColumnSelector)(cols=CATEGORY_COLS, name="columnselector")(z_ml)
+    z_cat = make_step(OneHotEncoder)(
+        categories=[TEAM_NAMES, TEAM_NAMES, ROUND_TYPES, VENUES],
+        sparse=False,
+        handle_unknown="ignore",
+        name="onehotencoder",
+    )(z_cat)
+
+    z_num = make_step(ColumnDropper)(
+        cols_to_drop=CATEGORY_COLS, name="columndropper_cat"
+    )(z_ml)
+    z_num = make_step(StandardScaler)(name="standardscaler_sub")(z_num)
+
+    ml_features = Concatenate(name="concatenate")([z_cat, z_num])
+    y1 = make_step(XGBRegressor)(
+        objective="reg:squarederror", random_state=SEED, name="xgbregressor_sub"
+    )(ml_features, yt)
+
+    z_elo = make_step(TeammatchToMatchConverter)(name="teammatchtomatchconverter")(X)
+    y2 = make_step(EloRegressor)(name="eloregressor")(z_elo, yt)
+
+    ensemble_features = Stack(name="stack")([y1, y2])
+    z = make_step(StandardScaler)(name="standardscaler_meta")(ensemble_features)
+    y = make_step(XGBRegressor)(
+        objective="reg:squarederror", random_state=SEED, name="xgbregressor_meta"
+    )(z, yt)
+
+    return Model(X, y, yt)
 
 
 class StackingEstimator(BaseMLEstimator):
@@ -86,150 +96,42 @@ class StackingEstimator(BaseMLEstimator):
     """
 
     def __init__(
-        self, pipeline: Pipeline = PIPELINE, name: Optional[str] = "stacking_estimator"
+        self,
+        pipeline: Callable[[], Model] = _build_pipeline,
+        name: Optional[str] = "stacking_estimator",
     ) -> None:
-        super().__init__(pipeline=pipeline, name=name)
+        super().__init__(pipeline=pipeline(), name=name)
+        self._pipeline_func = _build_pipeline
 
     def fit(
         self, X: Union[pd.DataFrame, np.ndarray], y: Union[pd.Series, np.ndarray]
     ) -> Type[R]:
         """Fit estimator to the data"""
 
-        assert (
-            self.pipeline is not None
-        ), "pipeline must be a scikit learn estimator but is None"
-
         assert X.index.is_monotonic, (
             "X must be sorted by index values. Otherwise, we risk mismatching rows "
             "being passed from lower estimators to the meta estimator."
         )
 
-        pipeline_params = self.pipeline.get_params().keys()
-
-        if (
-            "stackingregressor__pipeline-1__correlationselector__labels"
-            in pipeline_params
-        ):
-            self.pipeline.set_params(
-                **{"stackingregressor__pipeline-1__correlationselector__labels": y}
-            )
-
         return super().fit(X, y)
 
     def transform(
-        self, X: Union[pd.DataFrame, np.ndarray], regressor: str = "meta"
+        self, X: Union[pd.DataFrame, np.ndarray], step_name: str
     ) -> pd.DataFrame:
         """
-        Transform data using the given pipeline's transformers
+        Transform data up to the given step in the pipeline.
 
         Args:
             X (array-like): Data input for the model
-            regressor (str, int): Either the string 'meta' to generate transformed
-                data inputs for the meta-regressor. Or the index for a
-                first-level regressor pipeline to generate the transformed data input
-                for that regressor.
+            step_name (str, int): The name of the step which will generate
+                the final output.
         """
 
-        assert (
-            self.pipeline is not None
-        ), "pipeline must be a scikit learn estimator but is None"
+        # Some internal naming convention causes baikal to append '/0'
+        # to the step names defined at instantiation.
+        return self.pipeline.predict(X, output_names=f"{step_name}/0")
 
-        if regressor == "meta":
-            return self._transform_meta_features(X)
+    def get_step(self, step_name: str) -> BaseEstimator:
+        """Get a step object from the pipeline by name."""
 
-        sub_pipeline = self._get_sub_pipeline(regressor)
-
-        assert (
-            sub_pipeline is not None
-        ), f"Could not find first-level pipeline with regressor named {regressor}."
-
-        return self._transform_sub_features(X, sub_pipeline)
-
-    def get_internal_regressor(
-        self, regressor_name: str = "meta"
-    ) -> Optional[BaseEstimator]:
-        """Get an internal regressor from the StackingRegressor ensemble"""
-
-        if regressor_name == "meta":
-            return self._meta_pipeline[-1]
-
-        sub_pipeline = self._get_sub_pipeline(regressor_name)
-
-        if sub_pipeline is None:
-            return None
-
-        return sub_pipeline[-1]
-
-    @property
-    def _meta_pipeline(self) -> Pipeline:
-        assert (
-            self.pipeline is not None
-        ), "pipeline must be a scikit learn estimator but is None"
-
-        return self.pipeline[-1].meta_regr_
-
-    def _get_sub_pipeline(self, regressor_name: str) -> Optional[Pipeline]:
-        assert (
-            self.pipeline is not None
-        ), "pipeline must be a scikit learn estimator but is None"
-
-        for regr in self._sub_pipelines:
-            if regressor_name in regr.get_params():
-                return regr
-
-        return None
-
-    @property
-    def _sub_pipelines(self) -> List[Pipeline]:
-        assert (
-            self.pipeline is not None
-        ), "pipeline must be a scikit learn estimator but is None"
-
-        return self.pipeline[-1].regr_
-
-    def _transform_meta_features(self, X):
-        # This assumes that the main pipeline doesn't have any relevant transformers
-        sub_predictions = np.array([pl.predict(X) for pl in self._sub_pipelines]).T
-        # This assumes that the meta regressor is a pipeline with
-        # at least one transformer
-        transformer_pipeline = self._meta_pipeline[:-1]
-
-        # This assumes that all first-level regressors are pipelines
-        feature_names = [regr.steps[-1][NAME_IDX] for regr in self._sub_pipelines]
-
-        return pd.DataFrame(
-            transformer_pipeline.transform(sub_predictions), columns=feature_names
-        )
-
-    @staticmethod
-    def _transform_sub_features(X, sub_pipeline):
-        if "correlationselector" in sub_pipeline.get_params():
-            # Need to run data through the trained column selector
-            # to get the columns actually used by the model
-            numeric_columns = (
-                sub_pipeline["correlationselector"]
-                .transform(X)
-                .drop(CATEGORY_COLS, axis=1)
-                .columns
-            )
-        else:
-            numeric_columns = X.drop(CATEGORY_COLS, axis=1).columns
-
-        if "columntransformer__onehotencoder" in sub_pipeline.get_params():
-            # This assumes that none of the category columns are dropped
-            # (they are currently excluded from the ColumnSelector above)
-            category_columns = [
-                col_val
-                for col in CATEGORY_COLS
-                for col_val in ENCODED_CATEGORY_COLS[col]
-            ]
-        else:
-            category_columns = CATEGORY_COLS
-
-        feature_names = category_columns + list(numeric_columns)
-
-        # This assumes that all first-level regressors are pipelines with
-        # at least one transformer
-        transformer_pipeline = sub_pipeline[:-1]
-
-        return pd.DataFrame(transformer_pipeline.transform(X), columns=feature_names)
+        return self.pipeline.get_step(step_name)

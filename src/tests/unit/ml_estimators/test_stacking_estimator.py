@@ -3,21 +3,16 @@ from unittest import TestCase
 import numpy as np
 from faker import Faker
 from kedro.context import load_context
+from sklearn.preprocessing import StandardScaler
 from xgboost import XGBRegressor
 
 from tests.fixtures.data_factories import fake_cleaned_match_data
 from machine_learning.settings import BASE_DIR
 from machine_learning.ml_estimators import StackingEstimator
-from machine_learning.ml_estimators.sklearn import EloRegressor
 
 
 FAKE = Faker()
 N_MATCHES_PER_YEAR = 10
-INTERNAL_REGRESSORS = [
-    ("meta", XGBRegressor),
-    ("xgbregressor", XGBRegressor),
-    ("eloregressor", EloRegressor),
-]
 
 
 class TestStackingEstimator(TestCase):
@@ -40,11 +35,13 @@ class TestStackingEstimator(TestCase):
     def test_pickle_file_compatibility(self):
         self.assertIsInstance(self.loaded_model, StackingEstimator)
 
-    def test_get_internal_regressor(self):
-        for reg_label, reg_class in INTERNAL_REGRESSORS:
-            with self.subTest(regressor_name=reg_label):
-                regressor = self.loaded_model.get_internal_regressor(
-                    regressor_name=reg_label
-                )
+    def test_get_step(self):
+        with self.subTest(regressor_name="xgbregressor_sub"):
+            regressor = self.loaded_model.get_step("xgbregressor_sub")
 
-                self.assertIsInstance(regressor, reg_class)
+            self.assertIsInstance(regressor, XGBRegressor)
+
+        with self.subTest(regressor_name="standardscaler_meta"):
+            regressor = self.loaded_model.get_step("standardscaler_meta")
+
+            self.assertIsInstance(regressor, StandardScaler)
