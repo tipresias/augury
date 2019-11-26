@@ -4,6 +4,7 @@ from kedro.pipeline import Pipeline
 
 from tests.fixtures.fake_pipeline import create_fake_pipeline
 from machine_learning.nodes import feature_calculation
+from machine_learning.settings import CATEGORY_COLS
 from .player_pipeline import create_player_pipeline
 from .betting_pipeline import create_betting_pipeline
 from .match_pipeline import create_match_pipeline, create_legacy_match_pipeline
@@ -39,6 +40,7 @@ def create_pipelines(start_date, end_date, **_kwargs) -> Dict[str, Pipeline]:
             match_pipeline_func=create_legacy_match_pipeline,
             feature_calcs=LEGACY_FEATURE_CALCS,
             final_data_set="legacy_model_data",
+            category_cols=CATEGORY_COLS,
         ),
         "fake": create_fake_pipeline(),
     }

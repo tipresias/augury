@@ -120,15 +120,17 @@ class TestCommon(TestCase, ColumnAssertionMixin):
 
     def test_convert_match_rows_to_teammatch_rows(self):
         # DataFrame w/ minimum valid columns
-        valid_data_frame = fake_cleaned_match_data(
-            N_MATCHES_PER_SEASON, YEAR_RANGE, oppo_rows=False
-        ).rename(
-            columns={
-                "team": "home_team",
-                "oppo_team": "away_team",
-                "score": "home_score",
-                "oppo_score": "away_score",
-            }
+        valid_data_frame = (
+            fake_cleaned_match_data(N_MATCHES_PER_SEASON, YEAR_RANGE, oppo_rows=False)
+            .rename(
+                columns={
+                    "team": "home_team",
+                    "oppo_team": "away_team",
+                    "score": "home_score",
+                    "oppo_score": "away_score",
+                }
+            )
+            .assign(match_id=lambda df: np.arange(len(df)))
         )
 
         invalid_data_frame = valid_data_frame.drop("year", axis=1)
@@ -139,14 +141,16 @@ class TestCommon(TestCase, ColumnAssertionMixin):
             )
 
             self.assertIsInstance(transformed_df, pd.DataFrame)
-            # TeamDataStacker stacks home & away teams, so the new DF should have twice as many rows
+            # TeamDataStacker stacks home & away teams, so the new DF should have
+            # twice as many rows
             self.assertEqual(len(valid_data_frame) * 2, len(transformed_df))
             # 'home_'/'away_' columns become regular columns or 'oppo_' columns,
-            # non-team-specific columns are unchanged, and we add 'at_home'
-            self.assertEqual(
-                len(valid_data_frame.columns) + 1, len(transformed_df.columns)
-            )
+            # match_id is dropped, but otherwise non-team-specific columns
+            # are unchanged, and we add 'at_home' (we drop & add a column,
+            # so they should be equal)
+            self.assertEqual(len(valid_data_frame.columns), len(transformed_df.columns))
             self.assertIn("at_home", transformed_df.columns)
+            self.assertNotIn("match_id", transformed_df.columns)
             # Half the teams should be marked as 'at_home'
             self.assertEqual(transformed_df["at_home"].sum(), len(transformed_df) / 2)
 

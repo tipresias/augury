@@ -33,6 +33,7 @@ class MLData:
         round_number: Optional[int] = None,
         update_data: bool = False,
         index_cols=INDEX_COLS,
+        **pipeline_kwargs,
     ) -> None:
         self.pipeline = pipeline
         self.data_set = data_set
@@ -45,6 +46,7 @@ class MLData:
         self.index_cols = index_cols
         self._data = None
         self._data_context = None
+        self.pipeline_kwargs = pipeline_kwargs
 
     @property
     def data(self) -> pd.DataFrame:
@@ -112,7 +114,7 @@ class MLData:
 
     def __load_data(self):
         if self.update_data or not self.__data_context.catalog.exists(self.data_set):
-            self.__data_context.run(pipeline_name=self.pipeline)
+            self.__data_context.run(pipeline_name=self.pipeline, **self.pipeline_kwargs)
 
         data_frame = pd.DataFrame(self.__data_context.catalog.load(self.data_set))
 
