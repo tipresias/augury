@@ -7,7 +7,7 @@ import numpy as np
 from faker import Faker
 
 from tests.fixtures.data_factories import fake_cleaned_match_data
-from machine_learning.ml_estimators.sklearn import (
+from machine_learning.sklearn import (
     AveragingRegressor,
     CorrelationSelector,
     EloRegressor,

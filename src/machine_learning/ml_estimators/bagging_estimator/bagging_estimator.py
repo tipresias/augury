@@ -11,7 +11,7 @@ from sklearn.ensemble import BaggingRegressor
 from xgboost import XGBRegressor
 
 from machine_learning.settings import TEAM_NAMES, ROUND_TYPES, VENUES, CATEGORY_COLS
-from machine_learning.ml_estimators.sklearn import CorrelationSelector, ColumnDropper
+from machine_learning.sklearn import CorrelationSelector, ColumnDropper
 from machine_learning.types import R
 from .. import BaseMLEstimator
 

@@ -7,7 +7,7 @@ import joblib
 from faker import Faker
 
 from machine_learning.ml_estimators import BaggingEstimator
-from machine_learning.ml_estimators.sklearn import AveragingRegressor
+from machine_learning.sklearn import AveragingRegressor
 
 
 FAKE = Faker()

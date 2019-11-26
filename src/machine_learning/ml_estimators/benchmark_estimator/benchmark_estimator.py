@@ -13,7 +13,7 @@ from machine_learning.settings import (
     SEED,
     CATEGORY_COLS,
 )
-from machine_learning.ml_estimators.sklearn import ColumnDropper
+from machine_learning.sklearn import ColumnDropper
 from .. import BaseMLEstimator
 
 
