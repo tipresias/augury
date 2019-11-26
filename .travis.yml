@@ -21,7 +21,7 @@ jobs:
         - docker-compose -f docker-compose.ci.yml run data_science kedro test --no-cov src/tests/unit/ src/tests/test_run.py
       name: "Linting & Unit Tests"
     - script:
-        - docker-compose -f docker-compose.ci.yml run data_science kedro test --no-cov src/tests/integration
+        - docker-compose -f docker-compose.ci.yml run data_science kedro test --no-cov -n auto src/tests/integration
       name: "Integration Tests"
 before_deploy:
   - echo "$DOCKER_PASSWORD" | docker login -u cfranklin11 --password-stdin

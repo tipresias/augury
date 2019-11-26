@@ -5,6 +5,7 @@
 
 bottle
 responses>=0.10.6,<0.11
+pytest-xdist
 
 # Data packages
 scipy
