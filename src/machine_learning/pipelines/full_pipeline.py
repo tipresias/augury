@@ -42,7 +42,7 @@ def create_full_pipeline(
                 "data_a",
                 "data_b",
             ),
-            node(common.finalize_data, "data_b", "data_c"),
+            node(common.finalize_data, "data_b", "data_c", name="final_model_data"),
             node(common.convert_to_json, "data_c", final_data_set),
         ]
     )
