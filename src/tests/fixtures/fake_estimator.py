@@ -4,7 +4,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 
-from machine_learning.ml_estimators import BaseMLEstimator
+from machine_learning.ml_estimators.base_ml_estimator import BaseMLEstimator
 from machine_learning.sklearn import ColumnDropper
 from machine_learning.ml_data import MLData
 from machine_learning.settings import (

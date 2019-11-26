@@ -13,7 +13,7 @@ from xgboost import XGBRegressor
 from machine_learning.settings import TEAM_NAMES, ROUND_TYPES, VENUES, CATEGORY_COLS
 from machine_learning.sklearn import CorrelationSelector, ColumnDropper
 from machine_learning.types import R
-from .. import BaseMLEstimator
+from .base_ml_estimator import BaseMLEstimator
 
 SEED = 42
 np.random.seed(SEED)

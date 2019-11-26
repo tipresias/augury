@@ -9,7 +9,7 @@ import numpy as np
 from kedro.context import load_context, KedroContext
 
 from machine_learning.ml_data import MLData
-from machine_learning.ml_estimators import BaseMLEstimator
+from machine_learning.ml_estimators.base_ml_estimator import BaseMLEstimator
 from machine_learning.data_import import match_data
 from machine_learning.nodes import match
 from machine_learning.settings import (

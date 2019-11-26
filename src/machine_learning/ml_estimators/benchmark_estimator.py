@@ -14,7 +14,7 @@ from machine_learning.settings import (
     CATEGORY_COLS,
 )
 from machine_learning.sklearn import ColumnDropper
-from .. import BaseMLEstimator
+from .base_ml_estimator import BaseMLEstimator
 
 
 np.random.seed(SEED)

@@ -27,7 +27,7 @@ from machine_learning.settings import (
     SEED,
 )
 from machine_learning.types import R
-from .. import BaseMLEstimator
+from .base_ml_estimator import BaseMLEstimator
 
 np.random.seed(SEED)
 
