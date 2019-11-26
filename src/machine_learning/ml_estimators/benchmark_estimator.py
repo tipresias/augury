@@ -15,12 +15,13 @@ from machine_learning.settings import (
 )
 from machine_learning.sklearn import ColumnDropper
 from .base_ml_estimator import BaseMLEstimator
+from .stacking_estimator import ELO_MODEL_COLS
 
 
 np.random.seed(SEED)
 
 PIPELINE = make_pipeline(
-    ColumnDropper(cols_to_drop=["prev_match_oppo_team", "prev_match_at_home"]),
+    ColumnDropper(cols_to_drop=ELO_MODEL_COLS),
     ColumnTransformer(
         [
             (

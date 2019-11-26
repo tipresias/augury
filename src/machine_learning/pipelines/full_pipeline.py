@@ -20,6 +20,7 @@ def create_full_pipeline(
     match_pipeline_func=create_match_pipeline,
     feature_calcs=DEFAULT_FEATURE_CALCS,
     final_data_set="model_data",
+    category_cols=CATEGORY_COLS + ["prev_match_oppo_team"],
 ):
     return Pipeline(
         [
@@ -37,9 +38,7 @@ def create_full_pipeline(
                 "data_a",
             ),
             node(
-                common.sort_data_frame_columns(
-                    category_cols=CATEGORY_COLS + ["prev_match_oppo_team"]
-                ),
+                common.sort_data_frame_columns(category_cols=category_cols),
                 "data_a",
                 "data_b",
             ),

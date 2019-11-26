@@ -14,6 +14,7 @@ from machine_learning.settings import TEAM_NAMES, ROUND_TYPES, VENUES, CATEGORY_
 from machine_learning.sklearn import CorrelationSelector, ColumnDropper
 from machine_learning.types import R
 from .base_ml_estimator import BaseMLEstimator
+from .stacking_estimator import ELO_MODEL_COLS
 
 SEED = 42
 np.random.seed(SEED)
@@ -33,7 +34,7 @@ BEST_PARAMS = {
     "correlationselector__threshold": 0.030411689885916048,
 }
 PIPELINE = make_pipeline(
-    ColumnDropper(cols_to_drop=["prev_match_oppo_team", "prev_match_at_home"]),
+    ColumnDropper(cols_to_drop=ELO_MODEL_COLS),
     CorrelationSelector(cols_to_keep=CATEGORY_COLS),
     ColumnTransformer(
         [

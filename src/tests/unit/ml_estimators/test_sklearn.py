@@ -94,6 +94,8 @@ class TestCorrelationSelector(TestCase):
                 self.assertIn(col, transformed_data_frame.columns)
 
         with self.subTest("empty labels argument"):
+            self.selector = CorrelationSelector()
+
             with self.assertRaisesRegex(AssertionError, r"Need labels argument"):
                 self.selector.fit_transform(self.X, pd.Series())
 

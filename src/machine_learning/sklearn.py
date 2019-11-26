@@ -138,8 +138,9 @@ class CorrelationSelector(BaseEstimator, TransformerMixin):
     def transform(self, X: pd.DataFrame, _y=None) -> pd.DataFrame:
         return X[self._above_threshold_columns]
 
-    def fit(self, X: pd.DataFrame, y: pd.Series) -> Type[T]:
-        self._labels = y
+    def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> Type[T]:
+        if not any(self._labels):
+            self._labels = y
 
         assert any(
             self._labels
