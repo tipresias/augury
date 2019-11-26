@@ -214,6 +214,7 @@ def convert_match_rows_to_teammatch_rows(
         # played some sort of round-robin tournament for finals, but I'm
         # not too worried about the loss of that data.
         .drop_duplicates(subset=INDEX_COLS, keep="last")
+        .drop('match_id', axis=1, errors='ignore')
         .sort_index()
     )
 

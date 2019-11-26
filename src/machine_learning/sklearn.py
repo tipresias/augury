@@ -31,7 +31,7 @@ EloDictionary = TypedDict(
 
 
 MATCH_INDEX_COLS = ["year", "round_number"]
-MATCH_COLS = ["match_id", "date", "venue", "round_type"]
+MATCH_COLS = ["date", "venue", "round_type"]
 OPPO_REGEX = re.compile("^oppo_")
 
 ELO_INDEX_COLS = ["home_team", "year", "round_number"]
@@ -438,7 +438,7 @@ class TeammatchToMatchConverter(BaseEstimator, TransformerMixin):
 
     Parameters:
         match_cols (list of strings,
-            default=["match_id", "date", "venue", "round_type"]):
+            default=["date", "venue", "round_type"]):
             List of match columns that are team neutral (e.g. round_number, venue).
             These won't be renamed with 'home_' or 'away_' prefixes.
     """
@@ -522,4 +522,4 @@ class ColumnDropper(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
-        return X.drop(self.cols_to_drop, axis=1)
+        return X.drop(self.cols_to_drop, axis=1, errors='ignore')
