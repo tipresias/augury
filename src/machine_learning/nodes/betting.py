@@ -25,7 +25,7 @@ def clean_data(betting_data: pd.DataFrame) -> pd.DataFrame:
         pandas.DataFrame
     """
     clean_betting_data = (
-        betting_data.rename(columns={"season": "year"})
+        betting_data.rename(columns={"season": "year", "round": "round_number"})
         .pipe(
             _filter_out_dodgy_data(
                 duplicate_subset=["year", "round_number", "home_team", "away_team"]
@@ -48,7 +48,6 @@ def clean_data(betting_data: pd.DataFrame) -> pd.DataFrame:
             away_team=_translate_team_column("away_team"),
             date=_parse_dates,
         )
-        .drop("round", axis=1)
     )
 
     _validate_unique_team_index_columns(clean_betting_data)
