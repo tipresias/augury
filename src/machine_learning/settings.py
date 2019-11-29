@@ -1,9 +1,10 @@
-from typing import Dict, Union
+from typing import Dict, Union, List
 import os
 from datetime import date
 import pytz
 
 import yaml
+from mypy_extensions import TypedDict
 
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
@@ -24,9 +25,14 @@ N_SEASONS_FOR_PREDICTION = 10
 # and we want to limit memory usage and speed up data processing for tipping
 PREDICTION_DATA_START_DATE = f"{date.today().year - N_SEASONS_FOR_PREDICTION}-01-01"
 
+MLModelDict = TypedDict(
+    "MLModelDict", {"name": str, "data_set": str, "trained_to": int}
+)
 with open(os.path.join(BASE_DIR, "src/machine_learning/ml_models.yml"), "r") as file:
-    ML_MODELS = yaml.safe_load(file).get("models", [])
+    ML_MODELS: List[MLModelDict] = yaml.safe_load(file).get("models", [])
 
+# TODO: Create an SQLite DB to store and handle logic for these hard-coded entities
+# (i.e. there could be Team, City, Venue models with associations & model logic)
 TEAM_TRANSLATIONS = {
     "Tigers": "Richmond",
     "Blues": "Carlton",
