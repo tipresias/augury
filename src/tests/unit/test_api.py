@@ -15,7 +15,7 @@ THIS_YEAR = date.today().year
 YEAR_RANGE = (2018, 2019)
 PREDICTION_ROUND = 1
 N_MATCHES = 5
-FAKE_ML_MODELS = [{"name": "fake_estimator_model"}]
+FAKE_ML_MODELS = [{"name": "fake_estimator_model", "data_set": "fake_data"}]
 
 
 class TestApi(TestCase):

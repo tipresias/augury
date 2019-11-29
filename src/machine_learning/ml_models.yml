@@ -1,7 +1,10 @@
 models:
   - name: tipresias_2019_model
+    data_set: legacy_model_data
     trained_to: 2018
   - name: benchmark_estimator_model
+    data_set: legacy_model_data
     trained_to: 2018
   - name: stacking_estimator
+    data_set: model_data
     trained_to: 2016

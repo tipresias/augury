@@ -36,7 +36,7 @@ class MLData:
         **pipeline_kwargs,
     ) -> None:
         self.pipeline = pipeline
-        self.data_set = data_set
+        self._data_set = data_set
         self._train_years = train_years
         self._test_years = test_years
         self.start_date = start_date
@@ -74,7 +74,7 @@ class MLData:
 
         return X_train, y_train
 
-    def test_data(self, test_round=None) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def test_data(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """Filter data by year to produce test data"""
 
         if len(self.data.index.names) != 3:
@@ -85,7 +85,7 @@ class MLData:
             )
 
         data_test = self.data.loc[
-            (slice(None), slice(*self.test_years), slice(test_round, test_round)), :
+            (slice(None), slice(*self.test_years), slice(None)), :
         ]
         X_test = self.__X(data_test)
         y_test = self.__y(data_test)
@@ -111,6 +111,19 @@ class MLData:
     @test_years.setter
     def test_years(self, years: YearPair) -> None:
         self._test_years = years
+
+    @property
+    def data_set(self) -> str:
+        """Name of the associated kedro data set"""
+
+        return self._data_set
+
+    @data_set.setter
+    def data_set(self, name: str) -> None:
+        if self._data_set != name:
+            self._data = None
+
+        self._data_set = name
 
     def __load_data(self):
         if self.update_data or not self.__data_context.catalog.exists(self.data_set):
