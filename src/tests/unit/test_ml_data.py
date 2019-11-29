@@ -1,5 +1,6 @@
 import os
 from unittest import TestCase
+from unittest.mock import MagicMock
 
 import pandas as pd
 from faker import Faker
@@ -74,6 +75,21 @@ class TestMLData(TestCase):
         X_test, _ = self.data.test_data()
 
         self.assertCountEqual(list(X_train.columns), list(X_test.columns))
+
+    def test_data(self):
+        self.data._load_data = MagicMock(  # pylint: disable=protected-access
+            return_value="dataz"
+        )
+
+        self.assertEqual(self.data._data, None)  # pylint: disable=protected-access
+        self.assertEqual(self.data.data, "dataz")
+
+    def test_data_set(self):
+        data_set_name = "even_faker_data"
+        self.data.data_set = data_set_name
+
+        self.assertIsNone(self.data._data)  # pylint: disable=protected-access
+        self.assertEqual(self.data.data_set, data_set_name)
 
     @staticmethod
     def __set_valid_index(data_frame):

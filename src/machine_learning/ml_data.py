@@ -51,7 +51,7 @@ class MLData:
     @property
     def data(self) -> pd.DataFrame:
         if self._data is None:
-            self._data = self.__load_data()
+            self._data = self._load_data()
 
         return self._data
 
@@ -125,7 +125,7 @@ class MLData:
 
         self._data_set = name
 
-    def __load_data(self):
+    def _load_data(self):
         if self.update_data or not self.__data_context.catalog.exists(self.data_set):
             self.__data_context.run(pipeline_name=self.pipeline, **self.pipeline_kwargs)
 
