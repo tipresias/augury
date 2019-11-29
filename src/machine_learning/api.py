@@ -97,28 +97,27 @@ def _make_model_predictions(
         print(f"Making predictions with {ml_model['name']}")
 
     loaded_model = context.catalog.load(ml_model["name"])
+    data.data_set = ml_model["data_set"]
     data.train_years = (None, year - 1)
     data.test_years = (year, year)
 
     trained_model = _train_model(loaded_model, data) if train else loaded_model
 
-    X_test, _ = data.test_data(test_round=round_number)
+    X_test, _ = data.test_data()
 
     assert X_test.any().any(), (
-        "X_test doesn't have any rows, likely due to some data for the upcoming round "
-        "not being available yet."
+        "X_test doesn't have any rows, likely due to no data being available for "
+        f"{year}."
     )
 
     y_pred = trained_model.predict(X_test)
-
     data_row_slice = (slice(None), year, slice(round_number, round_number))
 
     model_predictions = (
-        data.data.loc[data_row_slice, :]
-        .assign(predicted_margin=y_pred, ml_model=ml_model["name"])
+        X_test.assign(predicted_margin=y_pred, ml_model=ml_model["name"])
         .set_index("ml_model", append=True, drop=False)
         .loc[
-            :,
+            data_row_slice,
             [
                 "team",
                 "year",
