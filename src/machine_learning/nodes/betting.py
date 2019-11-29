@@ -6,6 +6,7 @@ import pandas as pd
 
 from .base import (
     _parse_dates,
+    _translate_team_column,
     _validate_required_columns,
     _validate_unique_team_index_columns,
     _filter_out_dodgy_data,
@@ -42,7 +43,11 @@ def clean_data(betting_data: pd.DataFrame) -> pd.DataFrame:
             ],
             axis=1,
         )
-        .assign(date=_parse_dates)
+        .assign(
+            home_team=_translate_team_column("home_team"),
+            away_team=_translate_team_column("away_team"),
+            date=_parse_dates,
+        )
     )
 
     _validate_unique_team_index_columns(clean_betting_data)
