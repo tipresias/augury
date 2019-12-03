@@ -8,7 +8,7 @@ joblib
 # Data packages
 numpy
 pandas>=0.23.0,<0.26.0
-scikit-learn==0.21.3
+scikit-learn==0.22
 xgboost==0.90
 mlxtend==0.17.0
 baikal==0.2.0
