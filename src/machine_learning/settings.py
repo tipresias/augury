@@ -84,6 +84,7 @@ FOOTYWIRE_VENUE_TRANSLATIONS = {
     # Correct spelling is 'Traeger', but footywire.com is spelling it 'Traegar' in its
     # fixtures, so including both in case they eventually fix the misspelling
     "TIO Traegar Park": "Traeger Park",
+    "GIANTS Stadium": "Sydney Showground",
 }
 
 CITIES: Dict[str, Dict[str, Union[str, float]]] = {
