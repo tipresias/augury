@@ -23,11 +23,11 @@ class TestMLData(TestCase):
 
     def setUp(self):
         self.data = MLData(
-            pipeline="fake", data_set="fake_data", train_years=(None, 2016)
+            pipeline="fake", data_set="fake_data", train_year_range=(2017,)
         )
 
     def test_train_data(self):
-        X_train, y_train = self.data.train_data()
+        X_train, y_train = self.data.train_data
 
         self.assertIsInstance(X_train, pd.DataFrame)
         self.assertIsInstance(y_train, pd.Series)
@@ -48,7 +48,7 @@ class TestMLData(TestCase):
         )
 
     def test_test_data(self):
-        X_test, y_test = self.data.test_data()
+        X_test, y_test = self.data.test_data
 
         self.assertIsInstance(X_test, pd.DataFrame)
         self.assertIsInstance(y_test, pd.Series)
@@ -71,8 +71,8 @@ class TestMLData(TestCase):
     def test_train_test_data_compatibility(self):
         self.maxDiff = None
 
-        X_train, _ = self.data.train_data()
-        X_test, _ = self.data.test_data()
+        X_train, _ = self.data.train_data
+        X_test, _ = self.data.test_data
 
         self.assertCountEqual(list(X_train.columns), list(X_test.columns))
 

@@ -21,8 +21,8 @@ class TestMLData(TestCase):
             # We don't use any data set, but this makes sure we don't overwrite
             # one that actually matters
             data_set="fake_data",
-            train_years=(2014, 2014),
-            test_years=(2015, 2015),
+            train_year_range=(2014, 2015),
+            test_year_range=(2015, 2016),
             start_date="2014-01-01",
             end_date="2015-12-31",
             update_data=True,
@@ -44,8 +44,8 @@ class TestMLData(TestCase):
             # We don't use any data set, but this makes sure we don't overwrite
             # one that actually matters
             data_set="fake_data",
-            train_years=(2014, 2014),
-            test_years=(2015, 2015),
+            train_year_range=(2014, 2015),
+            test_year_range=(2015, 2016),
             start_date="2014-01-01",
             end_date="2015-12-31",
             update_data=True,

@@ -73,7 +73,7 @@ class Predictor:
         self._data.data_set = ml_model["data_set"]
 
         trained_model = self._train_model(loaded_model) if train else loaded_model
-        X_test, _ = self._data.test_data()
+        X_test, _ = self._data.test_data
 
         assert X_test.any().any(), (
             "X_test doesn't have any rows, likely due to no data being available for "
@@ -112,13 +112,13 @@ class Predictor:
         return model_predictions
 
     def _train_model(self, ml_model: BaseMLEstimator) -> BaseMLEstimator:
-        X_train, y_train = self._data.train_data()
+        X_train, y_train = self._data.train_data
 
         # On the off chance that we try to run predictions for years that have
         # no relevant prediction data
         assert not X_train.empty and not y_train.empty, (
             "Some required data was missing for training for year range "
-            f"{self._data.train_years}.\n"
+            f"{self._data.train_year_range}.\n"
             f"{'X_train is empty' if X_train.empty else ''}"
             f"{'and ' if X_train.empty and y_train.empty else ''}"
             f"{'y_train is empty' if y_train.empty else ''}"

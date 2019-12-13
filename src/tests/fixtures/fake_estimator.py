@@ -7,11 +7,7 @@ from sklearn.preprocessing import OneHotEncoder
 from machine_learning.ml_estimators.base_ml_estimator import BaseMLEstimator
 from machine_learning.sklearn import ColumnDropper
 from machine_learning.ml_data import MLData
-from machine_learning.settings import (
-    TEAM_NAMES,
-    VENUES,
-    ROUND_TYPES,
-)
+from machine_learning.settings import TEAM_NAMES, VENUES, ROUND_TYPES
 
 
 # We just using this to set fake data to correct year, so no need to get into
@@ -54,8 +50,8 @@ class FakeEstimatorData(MLData):
         super().__init__(
             pipeline=pipeline,
             data_set=data_set,
-            train_years=(None, max_year - 1),
-            test_years=(max_year, max_year),
+            train_year_range=(max_year,),
+            test_year_range=(max_year, max_year + 1),
             **kwargs,
         )
 
@@ -90,5 +86,5 @@ def pickle_fake_estimator():
     estimator = FakeEstimator()
     data = FakeEstimatorData()
 
-    estimator.fit(*data.train_data())
+    estimator.fit(*data.train_data)
     estimator.dump(filepath="src/tests/fixtures/fake_estimator.pkl")

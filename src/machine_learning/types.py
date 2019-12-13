@@ -1,6 +1,6 @@
 """Module for custom static data types"""
 
-from typing import Callable, Tuple, Optional, TypeVar, Dict, Any, List, Sequence, Union
+from typing import Callable, Tuple, TypeVar, Dict, Any, List, Sequence, Union
 from datetime import datetime
 
 from mypy_extensions import TypedDict
@@ -8,7 +8,7 @@ import pandas as pd
 from sklearn.base import BaseEstimator, RegressorMixin, TransformerMixin
 
 DataFrameTransformer = Callable[[Union[pd.DataFrame, List[pd.DataFrame]]], pd.DataFrame]
-YearPair = Tuple[Optional[int], Optional[int]]
+YearRange = Union[Tuple[int], Tuple[int, int]]
 DataReadersParam = Dict[str, Tuple[Callable, Dict[str, Any]]]
 
 DataFrameCalculator = Callable[[pd.DataFrame], pd.Series]
