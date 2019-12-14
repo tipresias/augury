@@ -1,22 +1,23 @@
 """Helper functions for working with MLFlow, particularly the tracking module"""
 
-from typing import Union, List
+from typing import Union, List, Tuple
 import re
 
 from sklearn.base import BaseEstimator
 from sklearn.model_selection import cross_validate
 from sklearn.metrics import get_scorer
 from baikal import Model
-from kedro.context import load_context
 import mlflow
 import numpy as np
 
 from machine_learning.ml_data import MLData
 from machine_learning.sklearn import year_cv_split, match_accuracy_scorer
 from machine_learning.ml_estimators.base_ml_estimator import BaseMLEstimator
-from machine_learning.settings import ML_MODELS, BASE_DIR, CV_YEAR_RANGE
+from machine_learning.settings import CV_YEAR_RANGE, SEED
 from machine_learning.types import YearRange
 
+
+np.random.seed(SEED)
 
 GenericModel = Union[BaseEstimator, BaseMLEstimator, Model]
 
@@ -26,15 +27,15 @@ STATIC_TRANSFORMERS = [
     "columndropper",
     "teammatchtomatchconverter",
     "columntransformer",
+    "standardscaler",
 ]
 # cols_to_drop isn't technically static, but is calculated by the transformer
 # rather than as a manually-defined argument
 STATIC_COL_PARAMS = ["cols_to_keep", "match_cols", "cols_to_drop", "pipeline__steps"]
-STATIC_PARAMS = ["verbosity", "verbose"]
+STATIC_PARAMS = ["verbosity", "verbose", "missing$", "n_jobs", "random_state"]
 IRRELEVANT_PARAMS = STATIC_TRANSFORMERS + STATIC_COL_PARAMS + STATIC_PARAMS
 IRRELEVANT_PARAM_REGEX = re.compile("|".join(IRRELEVANT_PARAMS))
 BASE_PARAM_VALUE_TYPES = (str, int, float, list)
-
 
 CV_LABELS = {
     "test_neg_mean_absolute_error": "mean_absolute_error",
@@ -93,26 +94,15 @@ def _track_model(
                 cv_scores[score_name], metric_name, is_negative=("neg" in score_name)
             )
 
-        mlflow.set_tags({"model": loaded_model.name, "cv_years": cv_year_range})
+        mlflow.set_tags({"model": loaded_model.name, "cv": cv_year_range})
 
 
 def start_run(
     experiment_name: str,
-    ml_model_names: List[str],
-    ml_data=MLData,
+    ml_models: List[Tuple[GenericModel, MLData]],
     cv_year_range=CV_YEAR_RANGE,
-    **data_kwargs
 ):
-    kedro_context = load_context(BASE_DIR)
-
-    ml_models = [
-        ml_model for ml_model in ML_MODELS if ml_model["name"] in ml_model_names
-    ]
-    model_data = ml_data(**data_kwargs)
-
     mlflow.set_experiment(experiment_name)
 
-    for ml_model in ml_models:
-        loaded_model = kedro_context.catalog.load(ml_model["name"])
-        model_data.data_set = ml_model["data_set"]
-        _track_model(loaded_model, model_data, cv_year_range=cv_year_range)
+    for ml_model, model_data in ml_models:
+        _track_model(ml_model, model_data, cv_year_range=cv_year_range)

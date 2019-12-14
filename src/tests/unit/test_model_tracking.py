@@ -4,7 +4,7 @@ import re
 
 from kedro.context import load_context
 
-from tests.fixtures.fake_estimator import FakeEstimatorData
+from tests.fixtures.fake_estimator import FakeEstimatorData, FakeEstimator
 from machine_learning.model_tracking import (
     present_model_params,
     IRRELEVANT_PARAM_REGEX,
@@ -38,24 +38,26 @@ class TestModelTracking(TestCase):
             all([isinstance(value, BASE_PARAM_VALUE_TYPES) for value in param_values])
         )
 
-    @patch("machine_learning.model_tracking.ML_MODELS", FAKE_ML_MODELS)
     @patch("machine_learning.model_tracking.mlflow")
     def test_start_run(self, mock_mlflow):
+        max_of_year_range = VALIDATION_YEAR_RANGE[1]
+
+        model = FakeEstimator()
+        model_data = FakeEstimatorData(
+            train_year_range=(max_of_year_range - 2, max_of_year_range),
+            max_year=(VALIDATION_YEAR_RANGE[1] - 1),
+        )
+
         mock_mlflow.set_experiment = MagicMock()
         mock_mlflow.start_run = MagicMock()
         mock_mlflow.log_params = MagicMock()
         mock_mlflow.log_metric = MagicMock()
         mock_mlflow.set_tags = MagicMock()
 
-        max_of_year_range = VALIDATION_YEAR_RANGE[1]
-
         start_run(
             "fake_experiment",
-            [self.model_name],
-            ml_data=FakeEstimatorData,
+            [(model, model_data)],
             cv_year_range=(max_of_year_range - 1, max_of_year_range),
-            train_year_range=(max_of_year_range - 2, max_of_year_range),
-            max_year=(VALIDATION_YEAR_RANGE[1] - 1),
         )
 
         mock_mlflow.set_experiment.assert_called_once()
