@@ -135,4 +135,10 @@ class StackingEstimator(BaseMLEstimator):
     def get_step(self, step_name: str) -> BaseEstimator:
         """Get a step object from the pipeline by name."""
 
-        return self.pipeline.get_step(step_name)
+        model = (
+            self.pipeline.model
+            if isinstance(self.pipeline, SKLearnWrapper)
+            else self.pipeline
+        )
+
+        return model.get_step(step_name)

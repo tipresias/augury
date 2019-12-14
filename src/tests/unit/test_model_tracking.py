@@ -67,6 +67,6 @@ class TestModelTracking(TestCase):
         mock_mlflow.set_tags.assert_called_with(
             {
                 "model": "fake_estimator",
-                "cv_years": (max_of_year_range - 1, max_of_year_range),
+                "cv": (max_of_year_range - 1, max_of_year_range),
             }
         )
