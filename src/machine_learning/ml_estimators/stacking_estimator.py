@@ -5,6 +5,7 @@ from typing import Optional, Union, Type, Callable
 from baikal import Input, Model
 from baikal.steps import Stack
 from baikal.steps.merge import Concatenate
+from baikal.sklearn import SKLearnWrapper
 import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator
@@ -96,11 +97,12 @@ class StackingEstimator(BaseMLEstimator):
 
     def __init__(
         self,
-        pipeline: Callable[[], Model] = _build_pipeline,
+        # Need to use SKLearnWrapper for this to work with Scikit-learn
+        # cross-validation
+        pipeline: Callable[[], Model] = SKLearnWrapper(_build_pipeline),
         name: Optional[str] = "stacking_estimator",
     ) -> None:
-        super().__init__(pipeline(), name=name)
-        self._pipeline_func = _build_pipeline
+        super().__init__(pipeline, name=name)
 
     def fit(
         self, X: Union[pd.DataFrame, np.ndarray], y: Union[pd.Series, np.ndarray]
