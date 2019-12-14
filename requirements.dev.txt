@@ -5,16 +5,18 @@
 
 bottle
 responses>=0.10.6,<0.11
-pytest-xdist
 
 # Data packages
 scipy
 dask[complete]>=2.3
+mlflow==1.4.0
 
 # Kedro packages
 ipython>=7.0.0, <8.0
 jupyter>=1.0.0, <2.0
 jupyterlab==1.2.4
+jupyter_nbextensions_configurator==0.4.1
+jupyter_contrib_nbextensions==0.5.1
 nbstripout==0.3.6
 pytest>=3.4, <6.0
 pytest-cov>=2.5, <3.0
@@ -39,3 +41,4 @@ faker
 freezegun
 factory_boy
 betamax
+pytest-xdist

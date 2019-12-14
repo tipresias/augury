@@ -146,7 +146,9 @@ class CorrelationSelector(BaseEstimator, TransformerMixin):
             self._labels
         ), "Need labels argument for calculating feature correlations."
 
-        data_frame = pd.concat([X, self._labels], axis=1).drop(self.cols_to_keep, axis=1)
+        data_frame = pd.concat([X, self._labels], axis=1).drop(
+            self.cols_to_keep, axis=1
+        )
         label_correlations = data_frame.corr().fillna(0)[self._labels.name].abs()
 
         if self.threshold is None:
@@ -523,4 +525,56 @@ class ColumnDropper(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
-        return X.drop(self.cols_to_drop, axis=1, errors='ignore')
+        return X.drop(self.cols_to_drop, axis=1, errors="ignore")
+
+
+def _calculate_team_margin(team_margin, oppo_margin):
+    # We want True to be 1 and False to be -1
+    team_margin_multiplier = ((team_margin > oppo_margin).astype(int) * 2) - 1
+
+    return (
+        pd.Series(
+            ((team_margin.abs() + oppo_margin.abs()) / 2) * team_margin_multiplier
+        )
+        .reindex(team_margin.index)
+        .sort_index()
+    )
+
+
+def match_accuracy_scorer(estimator, X, y):
+    """Scikit-learn scorer function for calculating tipping accuracy of an estimator"""
+
+    y_pred = estimator.predict(X)
+
+    team_match_data_frame = X.assign(y_true=y, y_pred=y_pred)
+    home_match_data_frame = team_match_data_frame.query("at_home == 1").sort_index()
+    away_match_data_frame = (
+        team_match_data_frame.query("at_home == 0")
+        .set_index(["oppo_team", "year", "round_number"])
+        .rename_axis([None, None, None])
+        .sort_index()
+    )
+
+    home_margin = _calculate_team_margin(
+        home_match_data_frame["y_true"], away_match_data_frame["y_true"]
+    )
+    home_pred_margin = _calculate_team_margin(
+        home_match_data_frame["y_pred"], away_match_data_frame["y_pred"]
+    )
+
+    return (
+        # Any zero margin (i.e. a draw) is counted as correct per usual tipping rules.
+        # Predicted margins should never be zero, but since we don't want to encourage
+        # any wayward models, we'll count a predicted margin of zero as incorrect
+        ((home_margin >= 0) & (home_pred_margin > 0))
+        | ((home_margin <= 0) & (home_pred_margin < 0))
+    ).mean()
+
+
+def year_cv_split(X, year_range):
+    """Split data by year for cross-validation for time-series data"""
+
+    return [
+        ((X["year"] < year).to_numpy(), (X["year"] == year).to_numpy())
+        for year in range(*year_range)
+    ]

@@ -24,12 +24,16 @@ fake_match_data:
   save_args:
     indent: 2
 
-tipresias_2019_model:
+fake_data:
+  type: JSONLocalDataSet
+  filepath: src/tests/fixtures/fake_data.json
+
+tipresias_2019:
   type: PickleLocalDataSet
   filepath: data/06_models/tipresias_2019.pkl
   backend: joblib
 
-benchmark_estimator_model:
+benchmark_estimator:
   type: PickleLocalDataSet
   filepath: data/06_models/benchmark_estimator.pkl
   backend: joblib
@@ -39,11 +43,7 @@ stacking_estimator:
   filepath: data/06_models/stacking_estimator.pkl
   backend: joblib
 
-fake_data:
-  type: JSONLocalDataSet
-  filepath: src/tests/fixtures/fake_data.json
-
-fake_estimator_model:
+fake_estimator:
     type: PickleLocalDataSet
     filepath: src/tests/fixtures/fake_estimator.pkl
     backend: joblib

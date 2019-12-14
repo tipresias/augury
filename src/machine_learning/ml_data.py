@@ -6,8 +6,13 @@ from datetime import date
 import pandas as pd
 from kedro.context import load_context
 
-from machine_learning.types import YearPair
-from machine_learning.settings import BASE_DIR, INDEX_COLS
+from machine_learning.types import YearRange
+from machine_learning.settings import (
+    BASE_DIR,
+    INDEX_COLS,
+    TRAIN_YEAR_RANGE,
+    VALIDATION_YEAR_RANGE,
+)
 
 
 END_OF_YEAR = f"{date.today().year}-12-31"
@@ -26,8 +31,8 @@ class MLData:
         self,
         pipeline: str = "full",
         data_set: str = "model_data",
-        train_years: YearPair = (None, 2015),
-        test_years: YearPair = (2016, 2016),
+        train_year_range: YearRange = TRAIN_YEAR_RANGE,
+        test_year_range: YearRange = VALIDATION_YEAR_RANGE,
         start_date: str = "1897-01-01",
         end_date: str = str(date.today()),
         round_number: Optional[int] = None,
@@ -37,8 +42,8 @@ class MLData:
     ) -> None:
         self.pipeline = pipeline
         self._data_set = data_set
-        self._train_years = train_years
-        self._test_years = test_years
+        self._train_year_range = train_year_range
+        self._test_year_range = test_year_range
         self.start_date = start_date
         self.end_date = end_date
         self.round_number = round_number
@@ -51,10 +56,11 @@ class MLData:
     @property
     def data(self) -> pd.DataFrame:
         if self._data is None:
-            self._data = self.__load_data()
+            self._data = self._load_data()
 
         return self._data
 
+    @property
     def train_data(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """Filter data by year to produce training data"""
 
@@ -66,7 +72,7 @@ class MLData:
             )
 
         data_train = self.data.loc[
-            (slice(None), slice(*self.train_years), slice(None)), :
+            (slice(None), range(*self.train_year_range), slice(None)), :
         ]
 
         X_train = self.__X(data_train)
@@ -74,6 +80,7 @@ class MLData:
 
         return X_train, y_train
 
+    @property
     def test_data(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """Filter data by year to produce test data"""
 
@@ -85,7 +92,7 @@ class MLData:
             )
 
         data_test = self.data.loc[
-            (slice(None), slice(*self.test_years), slice(None)), :
+            (slice(None), range(*self.test_year_range), slice(None)), :
         ]
         X_test = self.__X(data_test)
         y_test = self.__y(data_test)
@@ -93,24 +100,24 @@ class MLData:
         return X_test, y_test
 
     @property
-    def train_years(self) -> YearPair:
+    def train_year_range(self) -> YearRange:
         """Range of years for slicing training data"""
 
-        return self._train_years
+        return self._train_year_range
 
-    @train_years.setter
-    def train_years(self, years: YearPair) -> None:
-        self._train_years = years
+    @train_year_range.setter
+    def train_year_range(self, years: YearRange) -> None:
+        self._train_year_range = years
 
     @property
-    def test_years(self) -> YearPair:
+    def test_year_range(self) -> YearRange:
         """Range of years for slicing test data"""
 
-        return self._test_years
+        return self._test_year_range
 
-    @test_years.setter
-    def test_years(self, years: YearPair) -> None:
-        self._test_years = years
+    @test_year_range.setter
+    def test_year_range(self, years: YearRange) -> None:
+        self._test_year_range = years
 
     @property
     def data_set(self) -> str:
@@ -125,7 +132,7 @@ class MLData:
 
         self._data_set = name
 
-    def __load_data(self):
+    def _load_data(self):
         if self.update_data or not self.__data_context.catalog.exists(self.data_set):
             self.__data_context.run(pipeline_name=self.pipeline, **self.pipeline_kwargs)
 

@@ -11,6 +11,7 @@ from machine_learning.settings import (
     TEAM_NAMES,
     VENUES,
     ROUND_TYPES,
+    VALIDATION_YEAR_RANGE,
 )
 
 
@@ -50,14 +51,23 @@ class FakeEstimator(BaseMLEstimator):
 class FakeEstimatorData(MLData):
     """Process data for FakeEstimator"""
 
-    def __init__(self, pipeline="fake", data_set="fake_data", max_year=2019, **kwargs):
-        super().__init__(
-            pipeline=pipeline,
-            data_set=data_set,
-            train_years=(None, max_year - 1),
-            test_years=(max_year, max_year),
+    def __init__(
+        self,
+        pipeline="fake",
+        data_set="fake_data",
+        max_year=(VALIDATION_YEAR_RANGE[0] - 1),
+        **kwargs
+    ):
+        data_kwargs = {
+            **{
+                "pipeline": pipeline,
+                "data_set": data_set,
+                "train_year_range": (max_year,),
+                "test_year_range": (max_year, max_year + 1),
+            },
             **kwargs,
-        )
+        }
+        super().__init__(**data_kwargs,)
 
         self.max_year = max_year
 
@@ -90,5 +100,5 @@ def pickle_fake_estimator():
     estimator = FakeEstimator()
     data = FakeEstimatorData()
 
-    estimator.fit(*data.train_data())
+    estimator.fit(*data.train_data)
     estimator.dump(filepath="src/tests/fixtures/fake_estimator.pkl")

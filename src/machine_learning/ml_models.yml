@@ -1,8 +1,12 @@
+# TODO: I really should move this to an SQLite DB, and handle
+# related functionality with an SQLAlchemy model or something
+# Given how we load data in Predictor, it's best to order these by data_set
+# to avoid unnecessary reloading of data sets
 models:
-  - name: tipresias_2019_model
+  - name: tipresias_2019
     data_set: legacy_model_data
     trained_to: 2018
-  - name: benchmark_estimator_model
+  - name: benchmark_estimator
     data_set: legacy_model_data
     trained_to: 2018
   - name: stacking_estimator

@@ -2,10 +2,7 @@ from unittest import TestCase
 from unittest.mock import Mock, patch
 from datetime import date
 
-from freezegun import freeze_time
-
 from tests.fixtures.data_factories import fake_fixture_data, fake_raw_match_results_data
-from tests.fixtures.fake_estimator import FakeEstimatorData
 from machine_learning.data_import import match_data
 from machine_learning import api
 from machine_learning import settings
@@ -13,52 +10,29 @@ from machine_learning import settings
 
 THIS_YEAR = date.today().year
 YEAR_RANGE = (2018, 2019)
-PREDICTION_ROUND = 1
 N_MATCHES = 5
-FAKE_ML_MODELS = [{"name": "fake_estimator_model", "data_set": "fake_data"}]
 
 
 class TestApi(TestCase):
-    @patch("machine_learning.api.ML_MODELS", FAKE_ML_MODELS)
-    def test_make_predictions(self):
-        max_year = YEAR_RANGE[1] - 1
-        fake_data = FakeEstimatorData(max_year=max_year)
-        prediction_matches = fake_data.data.query(
-            "year == @max_year & round_number == @PREDICTION_ROUND"
+    # It doesn't matter what data Predictor returns since this method doesn't check
+    @patch("machine_learning.api.Predictor.make_predictions")
+    def test_make_predictions(self, mock_make_predictions):
+        mock_make_predictions.return_value = fake_fixture_data(N_MATCHES, YEAR_RANGE)
+        response = api.make_predictions(YEAR_RANGE, ml_model_names=["fake_model"])
+
+        data = response["data"]
+
+        self.assertIsInstance(data, list)
+        self.assertIsInstance(data[0], dict)
+        self.assertGreater(len(data[0].keys()), 0)
+        mock_make_predictions.assert_called_with(
+            ml_model_names=["fake_model"], train=False
         )
 
-        with freeze_time(f"{max_year}-06-15"):
-            response = api.make_predictions(
-                YEAR_RANGE,
-                PREDICTION_ROUND,
-                data=fake_data,
-                ml_model_names="fake_estimator_model",
-                verbose=0,
-            )
-
-        predictions = response["data"]
-
-        self.assertEqual(len(predictions), len(prediction_matches))
-
-        first_prediction = predictions[0]
-
-        self.assertEqual(
-            set(first_prediction.keys()),
-            set(
-                [
-                    "team",
-                    "year",
-                    "round_number",
-                    "at_home",
-                    "oppo_team",
-                    "ml_model",
-                    "predicted_margin",
-                ]
-            ),
-        )
-
-        prediction_years = list({pred["year"] for pred in predictions})
-        self.assertEqual(prediction_years, [YEAR_RANGE[0]])
+        with self.subTest(ml_model_names=None):
+            mock_make_predictions.reset_mock()
+            api.make_predictions(YEAR_RANGE, ml_model_names=None)
+            mock_make_predictions.assert_called_with(train=False)
 
     def test_fetch_fixture_data(self):
         PROCESSED_FIXTURE_FIELDS = [

@@ -20,6 +20,9 @@ RUN npm install
 COPY requirements.txt requirements.dev.txt /app/
 RUN pip3 install --upgrade pip -r requirements.dev.txt
 
+RUN jupyter contrib nbextension install --user \
+  && jupyter nbextensions_configurator enable --user
+
 # Add the rest of the code
 COPY . /app
 

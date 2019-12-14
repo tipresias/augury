@@ -5,8 +5,10 @@ from sklearn.linear_model import Ridge, Lasso
 import pandas as pd
 import numpy as np
 from faker import Faker
+from kedro.context import load_context
 
 from tests.fixtures.data_factories import fake_cleaned_match_data
+from tests.fixtures.fake_estimator import FakeEstimatorData
 from machine_learning.sklearn import (
     AveragingRegressor,
     CorrelationSelector,
@@ -14,6 +16,8 @@ from machine_learning.sklearn import (
     TeammatchToMatchConverter,
     ColumnDropper,
     MATCH_INDEX_COLS,
+    match_accuracy_scorer,
+    year_cv_split,
 )
 from machine_learning.settings import BASE_DIR
 
@@ -174,3 +178,35 @@ class TestColumnDropper(TestCase):
 
         for column in self.cols_to_drop:
             self.assertNotIn(column, transformed_data.columns)
+
+
+class TestSklearn(TestCase):
+    def setUp(self):
+        self.data = FakeEstimatorData()
+
+    def test_match_accuracy_scorer(self):
+        estimator = load_context(BASE_DIR).catalog.load("fake_estimator")
+        X_test, y_test = self.data.test_data
+
+        match_acc = match_accuracy_scorer(estimator, X_test, y_test)
+
+        self.assertIsInstance(match_acc, float)
+        self.assertGreater(match_acc, 0)
+
+    def test_year_cv_split(self):
+        max_train_year = max(self.data.train_year_range)
+        n_splits = 5
+        year_range = (max_train_year - n_splits, max_train_year)
+        X_train, _ = self.data.train_data
+
+        cv_splits = year_cv_split(X_train, year_range)
+
+        self.assertIsInstance(cv_splits, list)
+        self.assertEqual(len(cv_splits), n_splits)
+
+        for split in cv_splits:
+            self.assertIsInstance(split, tuple)
+            self.assertEqual(len(split), 2)
+
+            train, test = split
+            self.assertFalse(train[test].any())

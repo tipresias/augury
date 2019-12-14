@@ -1,5 +1,6 @@
 import os
 from unittest import TestCase
+from unittest.mock import MagicMock
 
 import pandas as pd
 from faker import Faker
@@ -22,11 +23,11 @@ class TestMLData(TestCase):
 
     def setUp(self):
         self.data = MLData(
-            pipeline="fake", data_set="fake_data", train_years=(None, 2016)
+            pipeline="fake", data_set="fake_data", train_year_range=(2017,)
         )
 
     def test_train_data(self):
-        X_train, y_train = self.data.train_data()
+        X_train, y_train = self.data.train_data
 
         self.assertIsInstance(X_train, pd.DataFrame)
         self.assertIsInstance(y_train, pd.Series)
@@ -47,7 +48,7 @@ class TestMLData(TestCase):
         )
 
     def test_test_data(self):
-        X_test, y_test = self.data.test_data()
+        X_test, y_test = self.data.test_data
 
         self.assertIsInstance(X_test, pd.DataFrame)
         self.assertIsInstance(y_test, pd.Series)
@@ -70,10 +71,25 @@ class TestMLData(TestCase):
     def test_train_test_data_compatibility(self):
         self.maxDiff = None
 
-        X_train, _ = self.data.train_data()
-        X_test, _ = self.data.test_data()
+        X_train, _ = self.data.train_data
+        X_test, _ = self.data.test_data
 
         self.assertCountEqual(list(X_train.columns), list(X_test.columns))
+
+    def test_data(self):
+        self.data._load_data = MagicMock(  # pylint: disable=protected-access
+            return_value="dataz"
+        )
+
+        self.assertEqual(self.data._data, None)  # pylint: disable=protected-access
+        self.assertEqual(self.data.data, "dataz")
+
+    def test_data_set(self):
+        data_set_name = "even_faker_data"
+        self.data.data_set = data_set_name
+
+        self.assertIsNone(self.data._data)  # pylint: disable=protected-access
+        self.assertEqual(self.data.data_set, data_set_name)
 
     @staticmethod
     def __set_valid_index(data_frame):
