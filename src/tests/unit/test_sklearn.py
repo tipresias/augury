@@ -185,7 +185,7 @@ class TestSklearn(TestCase):
         self.data = FakeEstimatorData()
 
     def test_match_accuracy_scorer(self):
-        estimator = load_context(BASE_DIR).catalog.load("fake_estimator_model")
+        estimator = load_context(BASE_DIR).catalog.load("fake_estimator")
         X_test, y_test = self.data.test_data
 
         match_acc = match_accuracy_scorer(estimator, X_test, y_test)

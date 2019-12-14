@@ -11,15 +11,15 @@ from machine_learning.model_tracking import (
     BASE_PARAM_VALUE_TYPES,
     start_run,
 )
-from machine_learning.settings import BASE_DIR, CV_YEAR_RANGE, VALIDATION_YEAR_RANGE
+from machine_learning.settings import BASE_DIR, VALIDATION_YEAR_RANGE
 
 
-FAKE_ML_MODELS = [{"name": "fake_estimator_model", "data_set": "fake_data"}]
+FAKE_ML_MODELS = [{"name": "fake_estimator", "data_set": "fake_data"}]
 
 
 class TestModelTracking(TestCase):
     def setUp(self):
-        self.model_name = "fake_estimator_model"
+        self.model_name = "fake_estimator"
 
     def test_present_model_params(self):
         estimator = load_context(BASE_DIR).catalog.load(self.model_name)
