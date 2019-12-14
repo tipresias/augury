@@ -1,4 +1,4 @@
 artifact_location: file:///app/mlruns/1
 experiment_id: '1'
 lifecycle_stage: active
-name: initial_stacking_model
+name: baseline
