@@ -28,7 +28,11 @@ class TestModelTracking(TestCase):
         self.assertIsInstance(trackable_params, dict)
 
         param_keys = trackable_params.keys()
-        self.assertTrue(all(["pipeline" in key for key in param_keys]))
+
+        self.assertTrue(any([key == "model" for key in param_keys]))
+        self.assertTrue(
+            all([re.search(r"pipeline|^model$", key) for key in param_keys])
+        )
         self.assertFalse(
             any([re.search(IRRELEVANT_PARAM_REGEX, key) for key in param_keys])
         )
@@ -48,21 +52,20 @@ class TestModelTracking(TestCase):
             max_year=(VALIDATION_YEAR_RANGE[1] - 1),
         )
 
-        mock_mlflow.set_experiment = MagicMock()
         mock_mlflow.start_run = MagicMock()
         mock_mlflow.log_params = MagicMock()
+        mock_mlflow.log_param = MagicMock()
         mock_mlflow.log_metric = MagicMock()
         mock_mlflow.set_tags = MagicMock()
 
         start_run(
-            "fake_experiment",
-            [(model, model_data)],
+            [(model, model_data, "fake_run")],
             cv_year_range=(max_of_year_range - 1, max_of_year_range),
         )
 
-        mock_mlflow.set_experiment.assert_called_once()
         mock_mlflow.start_run.assert_called_once()
         mock_mlflow.log_params.assert_called_once()
+        mock_mlflow.log_param.assert_called_once()
         mock_mlflow.log_metric.assert_called()
         mock_mlflow.set_tags.assert_called_with(
             {

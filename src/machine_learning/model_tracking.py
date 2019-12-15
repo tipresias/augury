@@ -61,7 +61,10 @@ def present_model_params(model: GenericModel):
     """
     Filter model parameters, so MLFlow only tracks the ones relevant to param tuning
     """
-    return {k: v for k, v in model.get_params().items() if _is_relevant_param(k, v)}
+    return {
+        "model": model.name,
+        **{k: v for k, v in model.get_params().items() if _is_relevant_param(k, v)},
+    }
 
 
 def _track_metric(scores: np.ndarray, metric_name: str, is_negative=False):
@@ -71,12 +74,16 @@ def _track_metric(scores: np.ndarray, metric_name: str, is_negative=False):
 
 
 def _track_model(
-    loaded_model: GenericModel, model_data: MLData, cv_year_range: YearRange
+    loaded_model: GenericModel,
+    model_data: MLData,
+    run_label: str,
+    cv_year_range: YearRange,
 ):
     X_train, _ = model_data.train_data
 
     with mlflow.start_run():
         mlflow.log_params(present_model_params(loaded_model))
+        mlflow.log_param("label", run_label)
 
         cv_scores = cross_validate(
             loaded_model,
@@ -98,11 +105,7 @@ def _track_model(
 
 
 def start_run(
-    experiment_name: str,
-    ml_models: List[Tuple[GenericModel, MLData]],
-    cv_year_range=CV_YEAR_RANGE,
+    ml_models: List[Tuple[GenericModel, MLData, str]], cv_year_range=CV_YEAR_RANGE,
 ):
-    mlflow.set_experiment(experiment_name)
-
-    for ml_model, model_data in ml_models:
-        _track_model(ml_model, model_data, cv_year_range=cv_year_range)
+    for ml_model, model_data, run_label in ml_models:
+        _track_model(ml_model, model_data, run_label, cv_year_range=cv_year_range)
