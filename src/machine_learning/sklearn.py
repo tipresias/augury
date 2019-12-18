@@ -6,6 +6,7 @@ modifications
 from typing import Sequence, Type, List, Union, Optional, Any, Tuple
 import re
 import copy
+import math
 
 import pandas as pd
 import numpy as np
@@ -129,7 +130,7 @@ class CorrelationSelector(BaseEstimator, TransformerMixin):
     """
 
     def __init__(
-        self, cols_to_keep: List[str] = [], threshold: Optional[float] = None,
+        self, cols_to_keep: List[str] = [], threshold: Optional[float] = None
     ) -> None:
         self.threshold = threshold
         self._labels = pd.Series()
@@ -571,6 +572,61 @@ def match_accuracy_scorer(estimator, X, y):
         ((home_margin >= 0) & (home_pred_margin > 0))
         | ((home_margin <= 0) & (home_pred_margin < 0))
     ).mean()
+
+
+LOG_BASE = 2
+MIN_VAL = 1 * 10 ** -10
+
+
+def _calculate_bits(row):
+    if row["home_pred"] > row["away_pred"]:
+        predicted_win_proba = row["home_pred"]
+        predicted_home_win = True
+    else:
+        predicted_win_proba = row["away_pred"]
+        predicted_home_win = False
+
+    correct = (predicted_home_win and row["home_win"]) or (
+        not predicted_home_win and not row["home_win"]
+    )
+
+    if row["draw"]:
+        return 1 + (
+            0.5
+            * math.log(
+                max(predicted_win_proba * (1 - predicted_win_proba), MIN_VAL), LOG_BASE
+            )
+        )
+
+    if correct:
+        return 1 + math.log(max(row["home_pred"], MIN_VAL), LOG_BASE)
+
+    return 1 + math.log(max(1 - predicted_win_proba, MIN_VAL), LOG_BASE)
+
+
+def bits_scorer(estimator, X, y):
+    y_pred = estimator.predict(X)
+
+    team_match_data_frame = X.assign(y_true=y.to_numpy(), y_pred=y_pred)
+    home_match_data_frame = team_match_data_frame.query("at_home == 1").sort_index()
+    away_match_data_frame = (
+        team_match_data_frame.query("at_home == 0")
+        .set_index(["oppo_team", "year", "round_number"])
+        .rename_axis([None, None, None])
+        .sort_index()
+    )
+
+    bits_data_frame = pd.DataFrame(
+        {
+            "home_win": home_match_data_frame["y_true"]
+            > away_match_data_frame["y_true"],
+            "draw": home_match_data_frame["y_true"] == away_match_data_frame["y_true"],
+            "home_pred": home_match_data_frame["y_pred"],
+            "away_pred": away_match_data_frame["y_pred"],
+        }
+    )
+
+    return bits_data_frame.apply(_calculate_bits, axis=1).sum()
 
 
 def year_cv_split(X, year_range):
