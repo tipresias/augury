@@ -1,6 +1,6 @@
 """Helper functions for working with MLFlow, particularly the tracking module"""
 
-from typing import Union, List, Tuple
+from typing import Union, List, Tuple, Optional, Dict, Callable
 import re
 
 from sklearn.base import BaseEstimator
@@ -40,6 +40,7 @@ BASE_PARAM_VALUE_TYPES = (str, int, float, list)
 CV_LABELS = {
     "test_neg_mean_absolute_error": "mean_absolute_error",
     "test_match_accuracy": "match_accuracy",
+    "test_bits": "bits",
     "fit_time": "fit_time",
     "score_time": "score_time",
 }
@@ -78,8 +79,11 @@ def _track_model(
     model_data: MLData,
     run_label: str,
     cv_year_range: YearRange,
+    scoring: Dict[str, Callable],
 ):
+    model_data.train_year_range = (max(cv_year_range),)
     X_train, _ = model_data.train_data
+    cv_scoring = {**{"match_accuracy": match_accuracy_scorer}, **scoring}
 
     with mlflow.start_run():
         mlflow.log_params(present_model_params(loaded_model))
@@ -89,23 +93,37 @@ def _track_model(
             loaded_model,
             *model_data.train_data,
             cv=year_cv_split(X_train, cv_year_range),
-            scoring={
-                "neg_mean_absolute_error": get_scorer("neg_mean_absolute_error"),
-                "match_accuracy": match_accuracy_scorer,
-            },
-            n_jobs=-1
+            scoring=cv_scoring,
+            # n_jobs=-1
         )
 
         for score_name, metric_name in CV_LABELS.items():
-            _track_metric(
-                cv_scores[score_name], metric_name, is_negative=("neg" in score_name)
-            )
+            if score_name in cv_scores.keys():
+                _track_metric(
+                    cv_scores[score_name],
+                    metric_name,
+                    is_negative=("neg" in score_name),
+                )
 
         mlflow.set_tags({"model": loaded_model.name, "cv": cv_year_range})
 
 
 def start_run(
-    ml_models: List[Tuple[GenericModel, MLData, str]], cv_year_range=CV_YEAR_RANGE,
+    ml_models: List[Tuple[GenericModel, MLData, str]],
+    cv_year_range=CV_YEAR_RANGE,
+    experiment: Optional[str] = None,
+    scoring: Dict[str, Callable] = {
+        "neg_mean_absolute_error": get_scorer("neg_mean_absolute_error")
+    },
 ):
+    if experiment is not None:
+        mlflow.set_experiment(experiment)
+
     for ml_model, model_data, run_label in ml_models:
-        _track_model(ml_model, model_data, run_label, cv_year_range=cv_year_range)
+        _track_model(
+            ml_model,
+            model_data,
+            run_label,
+            cv_year_range=cv_year_range,
+            scoring=scoring,
+        )

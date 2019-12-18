@@ -17,6 +17,7 @@ np.random.seed(SEED)
 
 END_OF_YEAR = f"{date.today().year}-12-31"
 DEFAULT_ML_MODELS = [ml_model["name"] for ml_model in ML_MODELS]
+PREDICTION_TYPES = ["margin", "confidence"]
 
 
 class Predictor:
@@ -41,6 +42,8 @@ class Predictor:
     def make_predictions(
         self, ml_model_names: List[str] = DEFAULT_ML_MODELS, train=False
     ) -> pd.DataFrame:
+        """Predict margins or confidence percentages for matches"""
+
         ml_models = [
             ml_model for ml_model in ML_MODELS if ml_model["name"] in ml_model_names
         ]
@@ -88,7 +91,11 @@ class Predictor:
         )
 
         model_predictions = (
-            X_test.assign(predicted_margin=y_pred, ml_model=ml_model["name"])
+            X_test.assign(
+                predicted_margin=y_pred,
+                ml_model=ml_model["name"],
+                prediction_type=ml_model["prediction_type"],
+            )
             .set_index("ml_model", append=True, drop=False)
             .loc[
                 data_row_slice,
@@ -100,6 +107,7 @@ class Predictor:
                     "at_home",
                     "ml_model",
                     "predicted_margin",
+                    "prediction_type",
                 ],
             ]
         )

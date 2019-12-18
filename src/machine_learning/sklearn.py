@@ -6,6 +6,7 @@ modifications
 from typing import Sequence, Type, List, Union, Optional, Any, Tuple
 import re
 import copy
+import math
 
 import pandas as pd
 import numpy as np
@@ -17,6 +18,7 @@ from mypy_extensions import TypedDict
 from machine_learning.types import R, T
 from machine_learning.nodes.base import _validate_required_columns
 from machine_learning.nodes import common
+from machine_learning.settings import TEAM_NAMES
 
 
 EloDictionary = TypedDict(
@@ -128,7 +130,7 @@ class CorrelationSelector(BaseEstimator, TransformerMixin):
     """
 
     def __init__(
-        self, cols_to_keep: List[str] = [], threshold: Optional[float] = None,
+        self, cols_to_keep: List[str] = [], threshold: Optional[float] = None
     ) -> None:
         self.threshold = threshold
         self._labels = pd.Series()
@@ -190,8 +192,6 @@ class EloRegressor(BaseEstimator, RegressorMixin):
         self.home_ground_advantage = home_ground_advantage
         self.s = s
         self.season_carryover = season_carryover
-        self._null_team = 0
-        self._team_encoder = LabelEncoder()
         self._running_elo_ratings = {
             "previous_elo": np.array([]),
             "current_elo": np.array([]),
@@ -201,16 +201,19 @@ class EloRegressor(BaseEstimator, RegressorMixin):
         self._fitted_elo_ratings = copy.deepcopy(self._running_elo_ratings)
         self._first_fitted_year = 0
 
+        self._team_encoder = LabelEncoder()
+        # Have to fit encoder on all team names to not make it dependent
+        # on the teams in the train set being a superset of those in the test set.
+        # Have to add '0' to team names to account for filling in prev_match_oppo_team
+        # for a new team's first match
+        self._team_encoder.fit(np.append(np.array(TEAM_NAMES), NULL_TEAM_NAME))
+        self._null_team = self._team_encoder.transform([NULL_TEAM_NAME])[0]
+
     def fit(self, X: pd.DataFrame, _y: pd.Series = None) -> Type[R]:
         """Fit estimators to data"""
 
         REQUIRED_COLS = set(ELO_INDEX_COLS) | set(MATRIX_COLS)
         _validate_required_columns(REQUIRED_COLS, X.columns)
-
-        # Have to add '0' to team names to account for filling in prev_match_oppo_team
-        # for a new team's first match
-        self._team_encoder.fit(np.append(X["home_team"].to_numpy(), NULL_TEAM_NAME))
-        self._null_team = self._team_encoder.transform([NULL_TEAM_NAME])[0]
 
         data_frame: pd.DataFrame = (
             X.set_index(ELO_INDEX_COLS, drop=False)
@@ -228,7 +231,7 @@ class EloRegressor(BaseEstimator, RegressorMixin):
             .sort_index(level=[YEAR_LVL, ROUND_NUMBER_LVL], ascending=True)
         )
 
-        self._reset_elo_state(data_frame)
+        self._reset_elo_state()
 
         elo_matrix = (data_frame.loc[:, MATRIX_COLS]).to_numpy()
 
@@ -272,7 +275,7 @@ class EloRegressor(BaseEstimator, RegressorMixin):
         elo_matrix = (data_frame.loc[:, MATRIX_COLS]).to_numpy()
 
         if data_frame["year"].min() == self._first_fitted_year:
-            self._reset_elo_state(data_frame)
+            self._reset_elo_state()
         else:
             self._running_elo_ratings = copy.deepcopy(self._fitted_elo_ratings)
 
@@ -405,12 +408,12 @@ class EloRegressor(BaseEstimator, RegressorMixin):
 
         return elo_rating + (self.k * (actual_outcome - elo_prediction))
 
-    def _reset_elo_state(self, data_frame: pd.DataFrame):
+    def _reset_elo_state(self):
         self._running_elo_ratings["previous_elo"] = np.full(
-            len(data_frame["home_team"].drop_duplicates()) + 1, BASE_RATING
+            len(TEAM_NAMES) + 1, BASE_RATING
         )
         self._running_elo_ratings["current_elo"] = np.full(
-            len(data_frame["home_team"].drop_duplicates()) + 1, BASE_RATING
+            len(TEAM_NAMES) + 1, BASE_RATING
         )
         self._running_elo_ratings["year"] = 0
         self._running_elo_ratings["round_number"] = 0
@@ -569,6 +572,61 @@ def match_accuracy_scorer(estimator, X, y):
         ((home_margin >= 0) & (home_pred_margin > 0))
         | ((home_margin <= 0) & (home_pred_margin < 0))
     ).mean()
+
+
+LOG_BASE = 2
+MIN_VAL = 1 * 10 ** -10
+
+
+def _calculate_bits(row):
+    if row["home_pred"] > row["away_pred"]:
+        predicted_win_proba = row["home_pred"]
+        predicted_home_win = True
+    else:
+        predicted_win_proba = row["away_pred"]
+        predicted_home_win = False
+
+    correct = (predicted_home_win and row["home_win"]) or (
+        not predicted_home_win and not row["home_win"]
+    )
+
+    if row["draw"]:
+        return 1 + (
+            0.5
+            * math.log(
+                max(predicted_win_proba * (1 - predicted_win_proba), MIN_VAL), LOG_BASE
+            )
+        )
+
+    if correct:
+        return 1 + math.log(max(row["home_pred"], MIN_VAL), LOG_BASE)
+
+    return 1 + math.log(max(1 - predicted_win_proba, MIN_VAL), LOG_BASE)
+
+
+def bits_scorer(estimator, X, y):
+    y_pred = estimator.predict(X)
+
+    team_match_data_frame = X.assign(y_true=y.to_numpy(), y_pred=y_pred)
+    home_match_data_frame = team_match_data_frame.query("at_home == 1").sort_index()
+    away_match_data_frame = (
+        team_match_data_frame.query("at_home == 0")
+        .set_index(["oppo_team", "year", "round_number"])
+        .rename_axis([None, None, None])
+        .sort_index()
+    )
+
+    bits_data_frame = pd.DataFrame(
+        {
+            "home_win": home_match_data_frame["y_true"]
+            > away_match_data_frame["y_true"],
+            "draw": home_match_data_frame["y_true"] == away_match_data_frame["y_true"],
+            "home_pred": home_match_data_frame["y_pred"],
+            "away_pred": away_match_data_frame["y_pred"],
+        }
+    )
+
+    return bits_data_frame.apply(_calculate_bits, axis=1).sum()
 
 
 def year_cv_split(X, year_range):
