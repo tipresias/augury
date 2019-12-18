@@ -8,7 +8,9 @@ from machine_learning.predictions import Predictor
 
 YEAR_RANGE = (2018, 2019)
 PREDICTION_ROUND = 1
-FAKE_ML_MODELS = [{"name": "fake_estimator", "data_set": "fake_data"}]
+FAKE_ML_MODELS = [
+    {"name": "fake_estimator", "data_set": "fake_data", "prediction_type": "margin"}
+]
 
 
 class TestPredictor(TestCase):
@@ -43,6 +45,7 @@ class TestPredictor(TestCase):
                     "oppo_team",
                     "ml_model",
                     "predicted_margin",
+                    "prediction_type",
                 ]
             ),
         )

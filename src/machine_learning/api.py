@@ -64,13 +64,15 @@ def make_predictions(
     if ml_model_names is not None:
         prediction_kwargs["ml_model_names"] = ml_model_names
 
-    predictions = Predictor(
+    predictor = Predictor(
         year_range,
         round_number=round_number,
         verbose=1,
         start_date=PREDICTION_DATA_START_DATE,
         end_date=END_OF_YEAR,
-    ).make_predictions(**prediction_kwargs)
+    )
+
+    predictions = predictor.make_predictions(**prediction_kwargs)
 
     return _api_response(predictions)
 

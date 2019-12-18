@@ -26,7 +26,8 @@ N_SEASONS_FOR_PREDICTION = 10
 PREDICTION_DATA_START_DATE = f"{date.today().year - N_SEASONS_FOR_PREDICTION}-01-01"
 
 MLModelDict = TypedDict(
-    "MLModelDict", {"name": str, "data_set": str, "trained_to": int}
+    "MLModelDict",
+    {"name": str, "data_set": str, "trained_to": int, "prediction_type": str},
 )
 with open(os.path.join(BASE_DIR, "src/machine_learning/ml_models.yml"), "r") as file:
     ML_MODELS: List[MLModelDict] = yaml.safe_load(file).get("models", [])
