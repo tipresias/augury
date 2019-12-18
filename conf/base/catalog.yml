@@ -43,6 +43,11 @@ stacking_estimator:
   filepath: data/06_models/stacking_estimator.pkl
   backend: joblib
 
+confidence_estimator:
+  type: PickleLocalDataSet
+  filepath: data/06_models/confidence_estimator.pkl
+  backend: joblib
+
 fake_estimator:
     type: PickleLocalDataSet
     filepath: src/tests/fixtures/fake_estimator.pkl
