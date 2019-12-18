@@ -17,6 +17,7 @@ from mypy_extensions import TypedDict
 from machine_learning.types import R, T
 from machine_learning.nodes.base import _validate_required_columns
 from machine_learning.nodes import common
+from machine_learning.settings import TEAM_NAMES
 
 
 EloDictionary = TypedDict(
@@ -190,8 +191,6 @@ class EloRegressor(BaseEstimator, RegressorMixin):
         self.home_ground_advantage = home_ground_advantage
         self.s = s
         self.season_carryover = season_carryover
-        self._null_team = 0
-        self._team_encoder = LabelEncoder()
         self._running_elo_ratings = {
             "previous_elo": np.array([]),
             "current_elo": np.array([]),
@@ -201,16 +200,19 @@ class EloRegressor(BaseEstimator, RegressorMixin):
         self._fitted_elo_ratings = copy.deepcopy(self._running_elo_ratings)
         self._first_fitted_year = 0
 
+        self._team_encoder = LabelEncoder()
+        # Have to fit encoder on all team names to not make it dependent
+        # on the teams in the train set being a superset of those in the test set.
+        # Have to add '0' to team names to account for filling in prev_match_oppo_team
+        # for a new team's first match
+        self._team_encoder.fit(np.append(np.array(TEAM_NAMES), NULL_TEAM_NAME))
+        self._null_team = self._team_encoder.transform([NULL_TEAM_NAME])[0]
+
     def fit(self, X: pd.DataFrame, _y: pd.Series = None) -> Type[R]:
         """Fit estimators to data"""
 
         REQUIRED_COLS = set(ELO_INDEX_COLS) | set(MATRIX_COLS)
         _validate_required_columns(REQUIRED_COLS, X.columns)
-
-        # Have to add '0' to team names to account for filling in prev_match_oppo_team
-        # for a new team's first match
-        self._team_encoder.fit(np.append(X["home_team"].to_numpy(), NULL_TEAM_NAME))
-        self._null_team = self._team_encoder.transform([NULL_TEAM_NAME])[0]
 
         data_frame: pd.DataFrame = (
             X.set_index(ELO_INDEX_COLS, drop=False)
@@ -228,7 +230,7 @@ class EloRegressor(BaseEstimator, RegressorMixin):
             .sort_index(level=[YEAR_LVL, ROUND_NUMBER_LVL], ascending=True)
         )
 
-        self._reset_elo_state(data_frame)
+        self._reset_elo_state()
 
         elo_matrix = (data_frame.loc[:, MATRIX_COLS]).to_numpy()
 
@@ -272,7 +274,7 @@ class EloRegressor(BaseEstimator, RegressorMixin):
         elo_matrix = (data_frame.loc[:, MATRIX_COLS]).to_numpy()
 
         if data_frame["year"].min() == self._first_fitted_year:
-            self._reset_elo_state(data_frame)
+            self._reset_elo_state()
         else:
             self._running_elo_ratings = copy.deepcopy(self._fitted_elo_ratings)
 
@@ -405,12 +407,12 @@ class EloRegressor(BaseEstimator, RegressorMixin):
 
         return elo_rating + (self.k * (actual_outcome - elo_prediction))
 
-    def _reset_elo_state(self, data_frame: pd.DataFrame):
+    def _reset_elo_state(self):
         self._running_elo_ratings["previous_elo"] = np.full(
-            len(data_frame["home_team"].drop_duplicates()) + 1, BASE_RATING
+            len(TEAM_NAMES) + 1, BASE_RATING
         )
         self._running_elo_ratings["current_elo"] = np.full(
-            len(data_frame["home_team"].drop_duplicates()) + 1, BASE_RATING
+            len(TEAM_NAMES) + 1, BASE_RATING
         )
         self._running_elo_ratings["year"] = 0
         self._running_elo_ratings["round_number"] = 0
