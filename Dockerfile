@@ -21,7 +21,7 @@ COPY package.json package-lock.json ./
 RUN npm install
 
 # Install Python dependencies
-COPY requirements.txt requirements.dev.txt /app/
+COPY requirements.txt requirements.dev.txt ./
 RUN pip3 install -r requirements.dev.txt \
   && jupyter contrib nbextension install --user \
   && jupyter nbextensions_configurator enable --user
