@@ -8,8 +8,8 @@ import numpy as np
 import pytz
 
 from tests.fixtures.data_factories import fake_cleaned_player_data
-from machine_learning.nodes import player
-from machine_learning.settings import INDEX_COLS, BASE_DIR
+from augury.nodes import player
+from augury.settings import INDEX_COLS, BASE_DIR
 from .node_test_mixins import ColumnAssertionMixin
 
 

@@ -6,7 +6,7 @@ import pytz
 import pandas as pd
 from mypy_extensions import TypedDict
 
-from machine_learning.settings import TEAM_TRANSLATIONS, INDEX_COLS, VENUE_TIMEZONES
+from augury.settings import TEAM_TRANSLATIONS, INDEX_COLS, VENUE_TIMEZONES
 
 
 ReplaceKwargs = TypedDict("ReplaceKwargs", {"hour": int, "minute": int})

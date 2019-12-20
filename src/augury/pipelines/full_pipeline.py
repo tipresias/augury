@@ -2,8 +2,8 @@
 
 from kedro.pipeline import Pipeline, node
 
-from machine_learning.settings import CATEGORY_COLS
-from machine_learning.nodes import common, feature_calculation
+from augury.settings import CATEGORY_COLS
+from augury.nodes import common, feature_calculation
 from .player_pipeline import create_player_pipeline
 from .betting_pipeline import create_betting_pipeline
 from .match_pipeline import create_match_pipeline

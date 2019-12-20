@@ -4,8 +4,8 @@ from unittest.mock import patch, mock_open
 import json
 
 from tests.fixtures.data_factories import fake_footywire_betting_data
-from machine_learning.settings import RAW_DATA_DIR
-from machine_learning.data_import.betting_data import save_betting_data
+from augury.settings import RAW_DATA_DIR
+from augury.data_import.betting_data import save_betting_data
 
 
 START_DATE = "2012-01-01"
@@ -13,7 +13,7 @@ START_YEAR = int(START_DATE[:4])
 END_DATE = "2013-12-31"
 END_YEAR = int(END_DATE[:4]) + 1
 N_MATCHES_PER_YEAR = 2
-BETTING_DATA_MODULE_PATH = "machine_learning.data_import.betting_data"
+BETTING_DATA_MODULE_PATH = "augury.data_import.betting_data"
 BETTING_DATA_PATH = os.path.join(
     RAW_DATA_DIR, f"betting-data_{START_DATE}_{END_DATE}.json"
 )

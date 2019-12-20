@@ -1,6 +1,6 @@
 from kedro.pipeline import Pipeline, node
 
-from machine_learning.nodes import common, betting, feature_calculation
+from augury.nodes import common, betting, feature_calculation
 
 
 def create_betting_pipeline(start_date: str, end_date: str, **_kwargs):

@@ -5,13 +5,13 @@ import re
 from kedro.context import load_context
 
 from tests.fixtures.fake_estimator import FakeEstimatorData, FakeEstimator
-from machine_learning.model_tracking import (
+from augury.model_tracking import (
     present_model_params,
     IRRELEVANT_PARAM_REGEX,
     BASE_PARAM_VALUE_TYPES,
     start_run,
 )
-from machine_learning.settings import BASE_DIR, VALIDATION_YEAR_RANGE
+from augury.settings import BASE_DIR, VALIDATION_YEAR_RANGE
 
 
 FAKE_ML_MODELS = [{"name": "fake_estimator", "data_set": "fake_data"}]
@@ -42,7 +42,7 @@ class TestModelTracking(TestCase):
             all([isinstance(value, BASE_PARAM_VALUE_TYPES) for value in param_values])
         )
 
-    @patch("machine_learning.model_tracking.mlflow")
+    @patch("augury.model_tracking.mlflow")
     def test_start_run(self, mock_mlflow):
         max_of_year_range = VALIDATION_YEAR_RANGE[1]
 

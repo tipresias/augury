@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from kedro.pipeline import Pipeline
 
-from machine_learning.pipelines.match_pipeline import (
+from augury.pipelines.match_pipeline import (
     create_match_pipeline,
     create_legacy_match_pipeline,
 )

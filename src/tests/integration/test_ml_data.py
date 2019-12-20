@@ -1,7 +1,7 @@
 from unittest import TestCase, skipIf
 import os
 import pandas as pd
-from machine_learning.ml_data import MLData
+from augury.ml_data import MLData
 
 
 class TestMLData(TestCase):

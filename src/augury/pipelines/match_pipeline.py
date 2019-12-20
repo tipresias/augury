@@ -1,6 +1,6 @@
 from kedro.pipeline import Pipeline, node
 
-from machine_learning.nodes import common, match, feature_calculation
+from augury.nodes import common, match, feature_calculation
 
 
 MATCH_OPPO_COLS = [

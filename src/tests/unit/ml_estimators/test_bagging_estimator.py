@@ -6,8 +6,8 @@ from sklearn.pipeline import make_pipeline
 import joblib
 from faker import Faker
 
-from machine_learning.ml_estimators import BaggingEstimator
-from machine_learning.sklearn import AveragingRegressor
+from augury.ml_estimators import BaggingEstimator
+from augury.sklearn import AveragingRegressor
 
 
 FAKE = Faker()

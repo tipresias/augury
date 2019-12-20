@@ -10,8 +10,8 @@ from sklearn.pipeline import make_pipeline
 import joblib
 from faker import Faker
 
-from machine_learning.settings import BASE_DIR
-from machine_learning.ml_estimators import BenchmarkEstimator
+from augury.settings import BASE_DIR
+from augury.ml_estimators import BenchmarkEstimator
 
 
 FAKE = Faker()

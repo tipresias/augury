@@ -8,8 +8,8 @@ from functools import partial
 import os
 import json
 
-from machine_learning.data_import.base_data import fetch_afl_data
-from machine_learning.settings import RAW_DATA_DIR, PREDICTION_DATA_START_DATE
+from augury.data_import.base_data import fetch_afl_data
+from augury.settings import RAW_DATA_DIR, PREDICTION_DATA_START_DATE
 
 
 # Player stats go back to 1897, but before 1965, there are only goals & behinds, which

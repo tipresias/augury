@@ -10,7 +10,7 @@ import numpy as np
 from sklearn.preprocessing import LabelEncoder
 from mypy_extensions import TypedDict
 
-from machine_learning.settings import (
+from augury.settings import (
     FOOTYWIRE_VENUE_TRANSLATIONS,
     CITIES,
     VENUE_CITIES,

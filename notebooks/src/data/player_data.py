@@ -1,6 +1,6 @@
 import pandas as pd
 from notebooks.src.data.fitzroy_data import fitzroy
-from machine_learning.data_import import FitzroyDataImporter
+from augury.data_import import FitzroyDataImporter
 
 STATS_COLS = [
     "player_id",

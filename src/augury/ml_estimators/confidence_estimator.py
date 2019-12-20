@@ -2,7 +2,7 @@
 
 from sklearn.pipeline import make_pipeline, Pipeline
 
-from machine_learning.sklearn import EloRegressor, TeammatchToMatchConverter
+from augury.sklearn import EloRegressor, TeammatchToMatchConverter
 from .base_ml_estimator import BaseMLEstimator
 
 PIPELINE = make_pipeline(TeammatchToMatchConverter(), EloRegressor())

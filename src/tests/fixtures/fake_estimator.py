@@ -4,10 +4,10 @@ from sklearn.pipeline import make_pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 
-from machine_learning.ml_estimators.base_ml_estimator import BaseMLEstimator
-from machine_learning.sklearn import ColumnDropper
-from machine_learning.ml_data import MLData
-from machine_learning.settings import (
+from augury.ml_estimators.base_ml_estimator import BaseMLEstimator
+from augury.sklearn import ColumnDropper
+from augury.ml_data import MLData
+from augury.settings import (
     TEAM_NAMES,
     VENUES,
     ROUND_TYPES,

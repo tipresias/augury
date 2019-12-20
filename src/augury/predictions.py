@@ -8,9 +8,9 @@ import pandas as pd
 import numpy as np
 from kedro.context import load_context
 
-from machine_learning.ml_data import MLData
-from machine_learning.ml_estimators.base_ml_estimator import BaseMLEstimator
-from machine_learning.settings import SEED, ML_MODELS, BASE_DIR
+from augury.ml_data import MLData
+from augury.ml_estimators.base_ml_estimator import BaseMLEstimator
+from augury.settings import SEED, ML_MODELS, BASE_DIR
 
 np.random.seed(SEED)
 

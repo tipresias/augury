@@ -10,11 +10,11 @@ from baikal import Model
 import mlflow
 import numpy as np
 
-from machine_learning.ml_data import MLData
-from machine_learning.sklearn import year_cv_split, match_accuracy_scorer
-from machine_learning.ml_estimators.base_ml_estimator import BaseMLEstimator
-from machine_learning.settings import CV_YEAR_RANGE, SEED
-from machine_learning.types import YearRange
+from augury.ml_data import MLData
+from augury.sklearn import year_cv_split, match_accuracy_scorer
+from augury.ml_estimators.base_ml_estimator import BaseMLEstimator
+from augury.settings import CV_YEAR_RANGE, SEED
+from augury.types import YearRange
 
 
 np.random.seed(SEED)

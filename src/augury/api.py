@@ -4,10 +4,10 @@ from datetime import date
 import pandas as pd
 from mypy_extensions import TypedDict
 
-from machine_learning.data_import import match_data
-from machine_learning.nodes import match
-from machine_learning.predictions import Predictor
-from machine_learning.settings import ML_MODELS, PREDICTION_DATA_START_DATE
+from augury.data_import import match_data
+from augury.nodes import match
+from augury.predictions import Predictor
+from augury.settings import ML_MODELS, PREDICTION_DATA_START_DATE
 
 
 PredictionData = TypedDict(

@@ -2,12 +2,12 @@ from unittest import TestCase
 
 from kedro.context import load_context
 
-from machine_learning.ml_estimators.base_ml_estimator import BaseMLEstimator
-from machine_learning.settings import ML_MODELS, BASE_DIR
+from augury.ml_estimators.base_ml_estimator import BaseMLEstimator
+from augury.settings import ML_MODELS, BASE_DIR
 
 PICKLE_FILEPATHS = [
-    "src/machine_learning/ml_estimators/bagging_estimator/tipresias_2019.pkl",
-    "src/machine_learning/ml_estimators/benchmark_estimator/benchmark_estimator.pkl",
+    "src/augury/ml_estimators/bagging_estimator/tipresias_2019.pkl",
+    "src/augury/ml_estimators/benchmark_estimator/benchmark_estimator.pkl",
 ]
 
 

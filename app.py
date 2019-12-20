@@ -10,7 +10,7 @@ SRC_PATH = os.path.join(BASE_DIR, "src")
 if SRC_PATH not in sys.path:
     sys.path.append(SRC_PATH)
 
-from machine_learning import api
+from augury import api
 
 
 TRUE = "true"

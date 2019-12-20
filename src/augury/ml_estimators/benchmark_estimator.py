@@ -6,14 +6,14 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.pipeline import make_pipeline, Pipeline
 from xgboost import XGBRegressor
 
-from machine_learning.settings import (
+from augury.settings import (
     TEAM_NAMES,
     ROUND_TYPES,
     VENUES,
     SEED,
     CATEGORY_COLS,
 )
-from machine_learning.sklearn import ColumnDropper
+from augury.sklearn import ColumnDropper
 from .base_ml_estimator import BaseMLEstimator
 from .stacking_estimator import ELO_MODEL_COLS
 

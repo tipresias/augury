@@ -10,9 +10,9 @@ from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import BaggingRegressor
 from xgboost import XGBRegressor
 
-from machine_learning.settings import TEAM_NAMES, ROUND_TYPES, VENUES, CATEGORY_COLS
-from machine_learning.sklearn import CorrelationSelector, ColumnDropper
-from machine_learning.types import R
+from augury.settings import TEAM_NAMES, ROUND_TYPES, VENUES, CATEGORY_COLS
+from augury.sklearn import CorrelationSelector, ColumnDropper
+from augury.types import R
 from .base_ml_estimator import BaseMLEstimator
 from .stacking_estimator import ELO_MODEL_COLS
 

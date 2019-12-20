@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from kedro.pipeline import Pipeline
 
-from machine_learning.pipelines.betting_pipeline import create_betting_pipeline
+from augury.pipelines.betting_pipeline import create_betting_pipeline
 
 
 class TestBettingPipeline(TestCase):

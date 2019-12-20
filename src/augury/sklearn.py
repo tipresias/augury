@@ -15,10 +15,10 @@ from sklearn.utils.metaestimators import _BaseComposition
 from sklearn.preprocessing import LabelEncoder
 from mypy_extensions import TypedDict
 
-from machine_learning.types import R, T
-from machine_learning.nodes.base import _validate_required_columns
-from machine_learning.nodes import common
-from machine_learning.settings import TEAM_NAMES
+from augury.types import R, T
+from augury.nodes.base import _validate_required_columns
+from augury.nodes import common
+from augury.settings import TEAM_NAMES
 
 
 EloDictionary = TypedDict(

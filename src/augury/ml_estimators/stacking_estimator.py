@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator
 
-from machine_learning.steps import (
+from augury.steps import (
     StandardScalerStep,
     OneHotEncoderStep,
     ColumnSelectorStep,
@@ -20,14 +20,14 @@ from machine_learning.steps import (
     TeammatchToMatchConverterStep,
     EloRegressorStep,
 )
-from machine_learning.settings import (
+from augury.settings import (
     TEAM_NAMES,
     ROUND_TYPES,
     VENUES,
     CATEGORY_COLS,
     SEED,
 )
-from machine_learning.types import R
+from augury.types import R
 from .base_ml_estimator import BaseMLEstimator
 
 np.random.seed(SEED)

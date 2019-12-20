@@ -3,7 +3,7 @@ from faker import Faker
 import pandas as pd
 
 from tests.fixtures.data_factories import fake_cleaned_match_data
-from machine_learning.nodes import feature_calculation
+from augury.nodes import feature_calculation
 
 
 FAKE = Faker()

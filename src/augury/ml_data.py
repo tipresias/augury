@@ -6,8 +6,8 @@ from datetime import date
 import pandas as pd
 from kedro.context import load_context
 
-from machine_learning.types import YearRange
-from machine_learning.settings import (
+from augury.types import YearRange
+from augury.settings import (
     BASE_DIR,
     INDEX_COLS,
     TRAIN_YEAR_RANGE,

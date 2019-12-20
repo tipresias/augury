@@ -8,7 +8,7 @@ from tests.fixtures.data_factories import (
     fake_footywire_betting_data,
     fake_cleaned_match_data,
 )
-from machine_learning.nodes import betting
+from augury.nodes import betting
 from .node_test_mixins import ColumnAssertionMixin
 
 

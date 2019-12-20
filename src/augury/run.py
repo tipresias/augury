@@ -10,8 +10,8 @@ from kedro.runner import AbstractRunner
 from kedro.pipeline import Pipeline
 from kedro.io import DataCatalog
 
-from machine_learning.pipelines import create_pipelines, create_full_pipeline
-from machine_learning.io import JSONRemoteDataSet
+from augury.pipelines import create_pipelines, create_full_pipeline
+from augury.io import JSONRemoteDataSet
 
 
 class ProjectContext(KedroContext):
@@ -52,7 +52,7 @@ class ProjectContext(KedroContext):
         catalog.add(
             "roster_data",
             JSONRemoteDataSet(
-                data_source="machine_learning.data_import.player_data.fetch_roster_data",
+                data_source="augury.data_import.player_data.fetch_roster_data",
                 date_range_type="round_number",
                 load_kwargs={"round_number": self.round_number},
             ),

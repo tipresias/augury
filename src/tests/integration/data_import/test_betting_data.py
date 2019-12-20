@@ -6,8 +6,8 @@ from datetime import date, timedelta
 from betamax import Betamax
 from requests import Session
 
-from machine_learning.data_import.betting_data import fetch_betting_data
-from machine_learning.settings import CASSETTE_LIBRARY_DIR
+from augury.data_import.betting_data import fetch_betting_data
+from augury.settings import CASSETTE_LIBRARY_DIR
 
 SEPT = 9
 MAR = 3
@@ -16,7 +16,7 @@ THIRTY_FIRST = 31
 AFL_DATA_SERVICE = os.getenv("AFL_DATA_SERVICE", default="")
 GCR_TOKEN = os.getenv("GCR_TOKEN", default="")
 ENV_VARS = os.environ.copy()
-DATA_IMPORT_PATH = "machine_learning.data_import"
+DATA_IMPORT_PATH = "augury.data_import"
 
 with Betamax.configure() as config:
     config.cassette_library_dir = CASSETTE_LIBRARY_DIR

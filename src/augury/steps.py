@@ -8,7 +8,7 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from mlxtend.feature_selection import ColumnSelector
 from xgboost import XGBRegressor
 
-from machine_learning.sklearn import (
+from augury.sklearn import (
     CorrelationSelector,
     ColumnDropper,
     TeammatchToMatchConverter,

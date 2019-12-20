@@ -5,8 +5,8 @@ from datetime import date
 import os
 import json
 
-from machine_learning.data_import.base_data import fetch_afl_data
-from machine_learning.settings import RAW_DATA_DIR, PREDICTION_DATA_START_DATE
+from augury.data_import.base_data import fetch_afl_data
+from augury.settings import RAW_DATA_DIR, PREDICTION_DATA_START_DATE
 
 FIRST_YEAR_OF_MATCH_DATA = 1897
 END_OF_YEAR = f"{date.today().year}-12-31"

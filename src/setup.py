@@ -28,7 +28,7 @@
 
 from setuptools import find_packages, setup
 
-entry_point = "machine_learning = machine_learning.run:main"
+entry_point = "augury = augury.run:main"
 
 # get the dependencies and installs
 with open("requirements.txt", "r", encoding="utf-8") as f:

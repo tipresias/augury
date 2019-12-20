@@ -3,8 +3,8 @@ from typing import Dict
 from kedro.pipeline import Pipeline
 
 from tests.fixtures.fake_pipeline import create_fake_pipeline
-from machine_learning.nodes import feature_calculation
-from machine_learning.settings import CATEGORY_COLS
+from augury.nodes import feature_calculation
+from augury.settings import CATEGORY_COLS
 from .player_pipeline import create_player_pipeline
 from .betting_pipeline import create_betting_pipeline
 from .match_pipeline import create_match_pipeline, create_legacy_match_pipeline

@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 import pandas as pd
 from faker import Faker
 
-from machine_learning.ml_data import MLData
+from augury.ml_data import MLData
 
 
 RAW_DATA_DIR = os.path.abspath(

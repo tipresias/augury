@@ -1,6 +1,6 @@
 from kedro.pipeline import Pipeline, node
 
-from machine_learning.nodes import common, player, feature_calculation
+from augury.nodes import common, player, feature_calculation
 
 
 PLAYER_MATCH_STATS_COLS = [

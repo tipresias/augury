@@ -10,8 +10,8 @@ import pandas as pd
 import numpy as np
 from baikal import Model
 
-from machine_learning.settings import BASE_DIR
-from machine_learning.types import R
+from augury.settings import BASE_DIR
+from augury.types import R
 
 
 class BaseMLEstimator(_BaseComposition, RegressorMixin):

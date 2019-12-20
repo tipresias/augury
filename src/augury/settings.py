@@ -29,7 +29,7 @@ MLModelDict = TypedDict(
     "MLModelDict",
     {"name": str, "data_set": str, "trained_to": int, "prediction_type": str},
 )
-with open(os.path.join(BASE_DIR, "src/machine_learning/ml_models.yml"), "r") as file:
+with open(os.path.join(BASE_DIR, "src/augury/ml_models.yml"), "r") as file:
     ML_MODELS: List[MLModelDict] = yaml.safe_load(file).get("models", [])
 
 # TODO: Create an SQLite DB to store and handle logic for these hard-coded entities

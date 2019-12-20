@@ -4,8 +4,8 @@ from unittest.mock import patch, mock_open
 import json
 
 from tests.fixtures.data_factories import fake_cleaned_player_data
-from machine_learning.settings import RAW_DATA_DIR
-from machine_learning.data_import.player_data import save_player_data
+from augury.settings import RAW_DATA_DIR
+from augury.data_import.player_data import save_player_data
 
 
 START_DATE = "2012-01-01"
@@ -14,7 +14,7 @@ END_DATE = "2013-12-31"
 END_YEAR = int(END_DATE[:4]) + 1
 N_MATCHES_PER_YEAR = 2
 N_PLAYERS_PER_TEAM = 5
-PLAYER_DATA_MODULE_PATH = "machine_learning.data_import.player_data"
+PLAYER_DATA_MODULE_PATH = "augury.data_import.player_data"
 PLAYER_DATA_PATH = os.path.join(
     RAW_DATA_DIR, f"player-data_{START_DATE}_{END_DATE}.json"
 )

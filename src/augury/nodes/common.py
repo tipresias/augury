@@ -8,7 +8,7 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 
-from machine_learning.settings import MELBOURNE_TIMEZONE, INDEX_COLS
+from augury.settings import MELBOURNE_TIMEZONE, INDEX_COLS
 from .base import _validate_required_columns, _validate_no_dodgy_zeros
 
 
