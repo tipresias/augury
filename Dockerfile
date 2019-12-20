@@ -11,7 +11,8 @@ RUN apt-get --no-install-recommends update \
   # g++ is a dependency of gcc, so must come before
   && apt-get -y --no-install-recommends install g++ gcc curl \
   && curl -sL https://deb.nodesource.com/setup_12.x | bash - \
-  && apt-get --no-install-recommends install -y nodejs
+  && apt-get --no-install-recommends install -y nodejs \
+  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
