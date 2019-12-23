@@ -6,11 +6,11 @@ models:
   - name: tipresias_2019
     prediction_type: margin
     data_set: legacy_model_data
-    trained_to: 2018
+    trained_to: 2016
   - name: benchmark_estimator
     prediction_type: margin
     data_set: legacy_model_data
-    trained_to: 2018
+    trained_to: 2016
   - name: stacking_estimator
     prediction_type: margin
     data_set: model_data
