@@ -2,7 +2,7 @@
 # Specifying the sha is to guarantee that CI will not try to rebuild from the
 # source image (i.e. python:3.6), which apparently CIs are bad at avoiding on
 # their own
-FROM python:3.6@sha256:00110125bd9c23f200cfd2cfa82e68b8ab2006e1358f7a048e005794aa51568f
+FROM python:3.8.1@sha256:f0dfa61edecce35f941770264302621b1d8e25600c09dbd218798e7949083a32
 
 # Install curl & node
 RUN apt-get -y install curl \
