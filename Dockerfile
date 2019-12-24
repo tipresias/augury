@@ -4,7 +4,7 @@
 # their own.
 # Using slim-buster instead of alpine based on this GH comment:
 # https://github.com/docker-library/python/issues/381#issuecomment-464258800
-FROM python:3.7.5-slim-buster@sha256:59af1bb7fb92ff97c9a23abae23f6beda13a95dbfd8100c7a2f71d150c0dc6e5
+FROM python:3.8.1-slim-buster@sha256:dc9c4de1bb38720f70af28e8071f324052725ba122878fbac784be9b03f41590
 
 # Install linux packages & node
 RUN apt-get --no-install-recommends update \
