@@ -9,7 +9,7 @@ responses>=0.10.6,<0.11
 # Data packages
 scipy
 dask[complete]>=2.3
-mlflow==1.4.0
+mlflow==1.5.0
 
 # Kedro packages
 ipython>=7.0.0, <8.0
