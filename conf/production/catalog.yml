@@ -1,14 +1,14 @@
 betting_data:
-  type: machine_learning.io.JSONGCStorageDataSet
+  type: augury.io.JSONGCStorageDataSet
   filepath: betting-data_2010-01-01_2018-12-31.json
   bucket_name: afl_data
 
 match_data:
-  type: machine_learning.io.JSONGCStorageDataSet
+  type: augury.io.JSONGCStorageDataSet
   filepath: match-data_2009-01-01_2018-12-31.json
   bucket_name: afl_data
 
 player_data:
-  type: machine_learning.io.JSONGCStorageDataSet
+  type: augury.io.JSONGCStorageDataSet
   filepath: player-data_2009-01-01_2018-12-31.json
   bucket_name: afl_data

@@ -2,8 +2,8 @@ from unittest import TestCase
 
 from kedro.context import load_context
 
-from machine_learning.settings import BASE_DIR
-from machine_learning.ml_estimators import ConfidenceEstimator
+from augury.settings import BASE_DIR
+from augury.ml_estimators import ConfidenceEstimator
 
 
 class TestConfidenceEstimator(TestCase):

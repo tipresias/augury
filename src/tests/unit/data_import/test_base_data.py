@@ -2,7 +2,7 @@ from unittest import TestCase
 
 import responses
 
-from machine_learning.data_import.base_data import (
+from augury.data_import.base_data import (
     fetch_afl_data,
     LOCAL_AFL_DATA_SERVICE,
 )

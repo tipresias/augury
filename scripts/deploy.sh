@@ -10,4 +10,4 @@ docker run \
   -e GCR_TOKEN=${GCR_TOKEN} \
   -v ${HOME}/.gcloud:/app/.gcloud \
   cfranklin11/tipresias_data_science:latest \
-  sls deploy
+  npx sls deploy

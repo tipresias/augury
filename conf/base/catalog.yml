@@ -1,21 +1,21 @@
 remote_betting_data:
-  type: machine_learning.io.JSONRemoteDataSet
-  data_source: "machine_learning.data_import.betting_data.fetch_betting_data"
+  type: augury.io.JSONRemoteDataSet
+  data_source: "augury.data_import.betting_data.fetch_betting_data"
   date_range_type: whole_season
 
 remote_match_data:
-  type: machine_learning.io.JSONRemoteDataSet
-  data_source: "machine_learning.data_import.match_data.fetch_match_data"
+  type: augury.io.JSONRemoteDataSet
+  data_source: "augury.data_import.match_data.fetch_match_data"
   date_range_type: past_rounds
 
 fixture_data:
-  type: machine_learning.io.JSONRemoteDataSet
-  data_source: "machine_learning.data_import.match_data.fetch_fixture_data"
+  type: augury.io.JSONRemoteDataSet
+  data_source: "augury.data_import.match_data.fetch_fixture_data"
   date_range_type: future_rounds
 
 remote_player_data:
-  type: machine_learning.io.JSONRemoteDataSet
-  data_source: "machine_learning.data_import.player_data.fetch_player_data"
+  type: augury.io.JSONRemoteDataSet
+  data_source: "augury.data_import.player_data.fetch_player_data"
   date_range_type: past_rounds
 
 fake_match_data:

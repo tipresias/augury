@@ -1,0 +1,21 @@
+# TODO: I really should move this to an SQLite DB, and handle
+# related functionality with an SQLAlchemy model or something
+# Given how we load data in Predictor, it's best to order these by data_set
+# to avoid unnecessary reloading of data sets
+models:
+  - name: tipresias_2019
+    prediction_type: margin
+    data_set: legacy_model_data
+    trained_to: 2016
+  - name: benchmark_estimator
+    prediction_type: margin
+    data_set: legacy_model_data
+    trained_to: 2016
+  - name: stacking_estimator
+    prediction_type: margin
+    data_set: model_data
+    trained_to: 2016
+  - name: confidence_estimator
+    prediction_type: margin
+    data_set: model_data
+    trained_to: 2016

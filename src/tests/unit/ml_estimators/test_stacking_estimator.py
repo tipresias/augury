@@ -7,8 +7,8 @@ from sklearn.preprocessing import StandardScaler
 from xgboost import XGBRegressor
 
 from tests.fixtures.data_factories import fake_cleaned_match_data
-from machine_learning.settings import BASE_DIR
-from machine_learning.ml_estimators import StackingEstimator
+from augury.settings import BASE_DIR
+from augury.ml_estimators import StackingEstimator
 
 
 FAKE = Faker()

@@ -1,6 +1,6 @@
 from kedro.pipeline import Pipeline, node
 
-from machine_learning.nodes import common, match
+from augury.nodes import common, match
 
 
 def create_fake_pipeline(*_args, **_kwargs):

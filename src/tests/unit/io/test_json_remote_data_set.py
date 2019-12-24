@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
-from machine_learning.io.json_remote_data_set import JSONRemoteDataSet, DATE_RANGE_TYPE
+from augury.io.json_remote_data_set import JSONRemoteDataSet, DATE_RANGE_TYPE
 
 
 class TestJSONRemoteDataSet(TestCase):
@@ -19,7 +19,7 @@ class TestJSONRemoteDataSet(TestCase):
 
         with self.subTest("with string path to data_source function"):
             data_source_path = (
-                "machine_learning.data_import.betting_data.fetch_betting_data"
+                "augury.data_import.betting_data.fetch_betting_data"
             )
 
             with patch(data_source_path):

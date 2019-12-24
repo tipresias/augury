@@ -255,7 +255,7 @@ def build_docs(open_docs):
             "--module-first",
             "-o",
             "docs/source",
-            "src/machine_learning",
+            "src/augury",
         ]
     )
     call(["sphinx-build", "-M", "html", "docs/source", "docs/build", "-a"])

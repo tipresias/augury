@@ -26,7 +26,7 @@ package:
     - ./**
   include:
     - conf/**
-    - src/machine_learning/**
+    - src/augury/**
     - src/setup.py
     - main.py
     - package-lock.json

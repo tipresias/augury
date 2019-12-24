@@ -44,6 +44,8 @@ docs/_build/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+.ipython
+notebooks
 
 # pyenv
 .python-version
@@ -84,6 +86,11 @@ README.md
 deploy_rsa.enc
 .travis.yml
 .vscode
+.serverless
+
+# Tracking/Log stuff
+mlruns
+log
 
 
 ##########################
@@ -100,8 +107,5 @@ logs/**
 references/**
 results/**
 
-# except their sub-folders
-!data/**/
-!logs/**/
-!references/**/
-!results/**/
+# Keep saved models, because dynamic data sources can create inconsistency
+!data/06_models/**

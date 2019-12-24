@@ -9,7 +9,7 @@ from kedro.context import load_context
 
 from tests.fixtures.data_factories import fake_cleaned_match_data
 from tests.fixtures.fake_estimator import FakeEstimatorData
-from machine_learning.sklearn import (
+from augury.sklearn import (
     AveragingRegressor,
     CorrelationSelector,
     EloRegressor,
@@ -19,7 +19,7 @@ from machine_learning.sklearn import (
     match_accuracy_scorer,
     year_cv_split,
 )
-from machine_learning.settings import BASE_DIR
+from augury.settings import BASE_DIR
 
 
 FAKE = Faker()

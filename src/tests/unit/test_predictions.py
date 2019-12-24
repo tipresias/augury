@@ -4,7 +4,7 @@ from unittest.mock import patch
 from freezegun import freeze_time
 
 from tests.fixtures.fake_estimator import FakeEstimatorData
-from machine_learning.predictions import Predictor
+from augury.predictions import Predictor
 
 YEAR_RANGE = (2018, 2019)
 PREDICTION_ROUND = 1
@@ -25,7 +25,7 @@ class TestPredictor(TestCase):
 
         self.predictor._data = fake_data  # pylint: disable=protected-access
 
-    @patch("machine_learning.predictions.ML_MODELS", FAKE_ML_MODELS)
+    @patch("augury.predictions.ML_MODELS", FAKE_ML_MODELS)
     def test_make_predictions(self):
         with freeze_time(f"{self.max_year}-06-15"):
             model_predictions = self.predictor.make_predictions(

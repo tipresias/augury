@@ -51,7 +51,7 @@ from typing import Dict
 from kedro.cli.utils import find_stylesheets
 from recommonmark.transform import AutoStructify
 
-from machine_learning import __version__ as release
+from augury import __version__ as release
 
 # -- Project information -----------------------------------------------------
 

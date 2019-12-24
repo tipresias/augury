@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from kedro.pipeline import Pipeline
 
-from machine_learning.pipelines.full_pipeline import create_full_pipeline
+from augury.pipelines.full_pipeline import create_full_pipeline
 
 
 class TestFullPipeline(TestCase):

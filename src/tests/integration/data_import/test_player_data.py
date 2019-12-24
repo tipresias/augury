@@ -6,11 +6,11 @@ from datetime import date, timedelta
 from betamax import Betamax
 from requests import Session
 
-from machine_learning.data_import.player_data import (
+from augury.data_import.player_data import (
     fetch_player_data,
     fetch_roster_data,
 )
-from machine_learning.settings import CASSETTE_LIBRARY_DIR
+from augury.settings import CASSETTE_LIBRARY_DIR
 
 SEPT = 9
 MAR = 3
@@ -19,7 +19,7 @@ THIRTY_FIRST = 31
 AFL_DATA_SERVICE = os.getenv("AFL_DATA_SERVICE", default="")
 GCR_TOKEN = os.getenv("GCR_TOKEN", default="")
 ENV_VARS = os.environ.copy()
-DATA_IMPORT_PATH = "machine_learning.data_import"
+DATA_IMPORT_PATH = "augury.data_import"
 ARBITRARY_PLAYED_ROUND_NUMBER = 5
 ROSTER_COLS = set(
     [

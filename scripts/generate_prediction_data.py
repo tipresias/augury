@@ -10,10 +10,10 @@ BASE_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "../")
 if BASE_DIR not in sys.path:
     sys.path.append(BASE_DIR)
 
-from machine_learning import api
-from machine_learning.ml_data import MLData
-from machine_learning.data_import import match_data
-from machine_learning.settings import INDEX_COLS, SEED
+from augury import api
+from augury.ml_data import MLData
+from augury.data_import import match_data
+from augury.settings import INDEX_COLS, SEED
 
 np.random.seed(SEED)
 

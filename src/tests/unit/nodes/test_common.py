@@ -10,8 +10,8 @@ from tests.fixtures.data_factories import (
     fake_footywire_betting_data,
     fake_cleaned_match_data,
 )
-from machine_learning.nodes import common
-from machine_learning.settings import MELBOURNE_TIMEZONE, INDEX_COLS
+from augury.nodes import common
+from augury.settings import MELBOURNE_TIMEZONE, INDEX_COLS
 from .node_test_mixins import ColumnAssertionMixin
 
 START_DATE = "2013-01-01"

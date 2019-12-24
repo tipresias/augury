@@ -1,14 +1,14 @@
 import sys
 import math
 
-from machine_learning.settings import BASE_DIR
+from augury.settings import BASE_DIR
 
 if BASE_DIR not in sys.path:
     sys.path.append(BASE_DIR)
 
-from machine_learning.data_import import FitzroyDataImporter
-from machine_learning.data_processors import TeamDataStacker, FeatureBuilder
-from machine_learning.data_processors.feature_functions import (
+from augury.data_import import FitzroyDataImporter
+from augury.data_processors import TeamDataStacker, FeatureBuilder
+from augury.data_processors.feature_functions import (
     add_shifted_team_features,
     add_result,
     add_cum_percent,
@@ -16,7 +16,7 @@ from machine_learning.data_processors.feature_functions import (
     add_ladder_position,
     add_win_streak,
 )
-from machine_learning.data_processors.feature_calculation import (
+from augury.data_processors.feature_calculation import (
     feature_calculator,
     calculate_rolling_rate,
 )

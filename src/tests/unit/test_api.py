@@ -3,9 +3,9 @@ from unittest.mock import Mock, patch
 from datetime import date
 
 from tests.fixtures.data_factories import fake_fixture_data, fake_raw_match_results_data
-from machine_learning.data_import import match_data
-from machine_learning import api
-from machine_learning import settings
+from augury.data_import import match_data
+from augury import api
+from augury import settings
 
 
 THIS_YEAR = date.today().year
@@ -15,7 +15,7 @@ N_MATCHES = 5
 
 class TestApi(TestCase):
     # It doesn't matter what data Predictor returns since this method doesn't check
-    @patch("machine_learning.api.Predictor.make_predictions")
+    @patch("augury.api.Predictor.make_predictions")
     def test_make_predictions(self, mock_make_predictions):
         mock_make_predictions.return_value = fake_fixture_data(N_MATCHES, YEAR_RANGE)
         response = api.make_predictions(YEAR_RANGE, ml_model_names=["fake_model"])

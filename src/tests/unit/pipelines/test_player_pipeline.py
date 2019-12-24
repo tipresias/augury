@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from kedro.pipeline import Pipeline
 
-from machine_learning.pipelines.player_pipeline import create_player_pipeline
+from augury.pipelines.player_pipeline import create_player_pipeline
 
 
 class TestPlayerPipeline(TestCase):

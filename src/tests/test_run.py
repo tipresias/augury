@@ -39,7 +39,7 @@ from pathlib import Path
 
 import pytest
 
-from machine_learning.run import ProjectContext
+from augury.run import ProjectContext
 
 
 @pytest.fixture
