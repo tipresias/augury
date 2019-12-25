@@ -6,7 +6,6 @@ from functools import partial, update_wrapper
 import pandas as pd
 
 from augury.settings import TEAM_TRANSLATIONS, AVG_SEASON_LENGTH, INDEX_COLS
-from augury.nodes import match
 from .base import (
     _parse_dates,
     _filter_out_dodgy_data,
@@ -114,9 +113,9 @@ def clean_player_data(
         # Sometimes the time part of date differs between data sources,
         # so we merge player and match data on date without time.
         # This must happen before making datetimes timezone-aware
-        match_data.assign(merge_date=lambda df: pd.to_datetime(df["date"]).dt.date)
-        .pipe(match.clean_match_data)
-        .loc[:, ["merge_date", "venue", "round_number", "match_id"]]
+        match_data.assign(merge_date=lambda df: pd.to_datetime(df["date"]).dt.date).loc[
+            :, ["merge_date", "venue", "round_number", "match_id"]
+        ]
     )
 
     return (
@@ -217,7 +216,7 @@ def _team_data_frame(data_frame: pd.DataFrame, team_type: str) -> pd.DataFrame:
 
 
 def convert_player_match_rows_to_player_teammatch_rows(
-    data_frame: pd.DataFrame
+    data_frame: pd.DataFrame,
 ) -> pd.DataFrame:
     """Stack home & away player data, and add 'oppo_' team columns.
 
@@ -408,7 +407,7 @@ def _aggregate_player_stats_by_team_match_node(
 
 
 def aggregate_player_stats_by_team_match(
-    aggregations: List[str]
+    aggregations: List[str],
 ) -> Callable[[pd.DataFrame], pd.DataFrame]:
     """Perform aggregations to turn player-match data into team-match data."""
 
