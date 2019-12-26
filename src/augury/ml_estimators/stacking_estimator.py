@@ -1,6 +1,6 @@
 """Class for model trained on all AFL data and its associated data class"""
 
-from typing import Optional, Union, Type, Callable
+from typing import Optional, Union, Type
 
 from baikal import Input, Model
 from baikal.steps import Stack
@@ -50,11 +50,15 @@ ENCODED_CATEGORY_COLS = {
 }
 
 
-def _build_pipeline():
-    X = Input("X")
+def _build_pipeline(sub_model=None):
     yt = Input("yt")
+    X = Input("X")
 
-    z_ml = ColumnDropperStep(cols_to_drop=ELO_MODEL_COLS, name="columndropper_elo")(X)
+    X_trans = X if sub_model is None else sub_model(X)
+
+    z_ml = ColumnDropperStep(cols_to_drop=ELO_MODEL_COLS, name="columndropper_elo")(
+        X_trans
+    )
     z_ml = CorrelationSelectorStep(
         cols_to_keep=CATEGORY_COLS, name="correlationselector"
     )(z_ml, yt)
@@ -77,7 +81,7 @@ def _build_pipeline():
         objective="reg:squarederror", random_state=SEED, name="xgbregressor_sub"
     )(ml_features, yt)
 
-    z_elo = TeammatchToMatchConverterStep(name="teammatchtomatchconverter")(X)
+    z_elo = TeammatchToMatchConverterStep(name="teammatchtomatchconverter")(X_trans)
     y2 = EloRegressorStep(name="eloregressor")(z_elo)
 
     ensemble_features = Stack(name="stack")([y1, y2])
@@ -99,7 +103,7 @@ class StackingEstimator(BaseMLEstimator):
         self,
         # Need to use SKLearnWrapper for this to work with Scikit-learn
         # cross-validation
-        pipeline: Callable[[], Model] = SKLearnWrapper(_build_pipeline),
+        pipeline: Union[Model, SKLearnWrapper] = SKLearnWrapper(_build_pipeline),
         name: Optional[str] = "stacking_estimator",
     ) -> None:
         super().__init__(pipeline, name=name)
@@ -130,15 +134,16 @@ class StackingEstimator(BaseMLEstimator):
 
         # Some internal naming convention causes baikal to append '/0'
         # to the step names defined at instantiation.
-        return self.pipeline.predict(X, output_names=f"{step_name}/0")
+        return self._model.predict(X, output_names=f"{step_name}/0")
 
     def get_step(self, step_name: str) -> BaseEstimator:
         """Get a step object from the pipeline by name."""
 
-        model = (
-            self.pipeline.model
-            if isinstance(self.pipeline, SKLearnWrapper)
-            else self.pipeline
-        )
+        return self._model.get_step(step_name)
 
-        return model.get_step(step_name)
+    @property
+    def _model(self) -> Model:
+        if isinstance(self.pipeline, SKLearnWrapper):
+            return self.pipeline.model
+
+        return self.pipeline

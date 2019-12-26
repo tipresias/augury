@@ -1,6 +1,6 @@
 """Helper functions for working with MLFlow, particularly the tracking module"""
 
-from typing import Union, List, Tuple, Optional, Dict, Callable
+from typing import Union, List, Tuple, Optional, Dict, Callable, Any
 import re
 
 from sklearn.base import BaseEstimator
@@ -32,8 +32,19 @@ STATIC_TRANSFORMERS = [
 # cols_to_drop isn't technically static, but is calculated by the transformer
 # rather than as a manually-defined argument
 STATIC_COL_PARAMS = ["cols_to_keep", "match_cols", "cols_to_drop", "pipeline__steps"]
-STATIC_PARAMS = ["verbosity", "verbose", "missing$", "n_jobs", "random_state"]
-IRRELEVANT_PARAMS = STATIC_TRANSFORMERS + STATIC_COL_PARAMS + STATIC_PARAMS
+STATIC_PARAMS = [
+    "verbosity",
+    "verbose",
+    "missing$",
+    "n_jobs",
+    "random_state",
+    "missing_values",
+    "copy",
+    "add_indicator",
+]
+# We'll use 'nonce' in names of transformers that only exist for running
+# a particular experiment in order to avoid polluting param lists
+IRRELEVANT_PARAMS = STATIC_TRANSFORMERS + STATIC_COL_PARAMS + STATIC_PARAMS + ["nonce"]
 IRRELEVANT_PARAM_REGEX = re.compile("|".join(IRRELEVANT_PARAMS))
 BASE_PARAM_VALUE_TYPES = (str, int, float, list)
 
@@ -80,7 +91,9 @@ def _track_model(
     run_label: str,
     cv_year_range: YearRange,
     scoring: Dict[str, Callable],
-):
+    n_jobs=None,
+    **run_tags,
+) -> Dict[str, Any]:
     model_data.train_year_range = (max(cv_year_range),)
     X_train, _ = model_data.train_data
     cv_scoring = {**{"match_accuracy": match_accuracy_scorer}, **scoring}
@@ -94,7 +107,8 @@ def _track_model(
             *model_data.train_data,
             cv=year_cv_split(X_train, cv_year_range),
             scoring=cv_scoring,
-            # n_jobs=-1
+            n_jobs=n_jobs,
+            verbose=2,
         )
 
         for score_name, metric_name in CV_LABELS.items():
@@ -105,7 +119,9 @@ def _track_model(
                     is_negative=("neg" in score_name),
                 )
 
-        mlflow.set_tags({"model": loaded_model.name, "cv": cv_year_range})
+        mlflow.set_tags({"model": loaded_model.name, "cv": cv_year_range, **run_tags})
+
+    return {"model": loaded_model.name, **cv_scores}
 
 
 def start_run(
@@ -115,15 +131,21 @@ def start_run(
     scoring: Dict[str, Callable] = {
         "neg_mean_absolute_error": get_scorer("neg_mean_absolute_error")
     },
-):
+    n_jobs=None,
+    **run_tags,
+) -> List[Dict[str, Any]]:
     if experiment is not None:
         mlflow.set_experiment(experiment)
 
-    for ml_model, model_data, run_label in ml_models:
+    return [
         _track_model(
             ml_model,
             model_data,
             run_label,
             cv_year_range=cv_year_range,
             scoring=scoring,
+            n_jobs=n_jobs,
+            **run_tags,
         )
+        for ml_model, model_data, run_label in ml_models
+    ]

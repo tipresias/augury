@@ -41,7 +41,7 @@ def create_betting_pipeline(start_date: str, end_date: str, **_kwargs):
                         )
                     ]
                 ),
-                ["betting_data_a"],
+                "betting_data_a",
                 "betting_data_b",
             ),
             node(
@@ -51,9 +51,15 @@ def create_betting_pipeline(start_date: str, end_date: str, **_kwargs):
                         "rolling_betting_pred_win_rate",
                     ]
                 ),
-                ["betting_data_b"],
+                "betting_data_b",
                 "betting_data_c",
             ),
-            node(common.finalize_data, ["betting_data_c"], "final_betting_data"),
+            node(
+                common.finalize_data,
+                "betting_data_c",
+                "prefinal_betting_data",
+                name="prefinal_betting_data",
+            ),
+            node(common.convert_to_json, "prefinal_betting_data", "final_betting_data"),
         ]
     )

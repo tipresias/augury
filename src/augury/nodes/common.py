@@ -1,6 +1,6 @@
 """Pipeline nodes for transforming data"""
 
-from typing import Sequence, List, Dict, Any, cast, Callable, Optional
+from typing import Sequence, List, Dict, Any, cast, Callable, Optional, Union
 from functools import reduce, partial, update_wrapper
 import re
 from datetime import datetime
@@ -16,8 +16,8 @@ DATE_STRING_REGEX = re.compile(r"\d{4}\-\d{2}\-\d{2}")
 
 
 def convert_to_data_frame(
-    *data: Sequence[List[Dict[str, Any]]]
-) -> Sequence[pd.DataFrame]:
+    *data: List[Dict[str, Any]]
+) -> Union[List[pd.DataFrame], pd.DataFrame]:
     """
     Converts JSON data in the form of a list of dictionaries into a data frame
 
@@ -28,10 +28,9 @@ def convert_to_data_frame(
         Sequence of pandas.DataFrame
     """
 
-    if len(data) == 1:
-        return pd.DataFrame(data[0])
+    data_frames = [pd.DataFrame(datum) for datum in data]
 
-    return [pd.DataFrame(datum) for datum in data]
+    return data_frames if len(data_frames) > 1 else data_frames[0]
 
 
 def _combine_data_horizontally(*data_frames: Sequence[pd.DataFrame]):
@@ -86,7 +85,7 @@ def _combine_data_vertically(*data_frames: Sequence[pd.DataFrame]):
     return combined_data_frame
 
 
-def combine_data(axis: int) -> pd.DataFrame:
+def combine_data(axis: int = 0) -> pd.DataFrame:
     """
     Concatenate data frames from multiple sources into one data frame
 
@@ -98,13 +97,12 @@ def combine_data(axis: int) -> pd.DataFrame:
         Concatenated data frame.
     """
 
+    assert axis in [0, 1], f"Expected axis to be 0 or 1, but recieved {axis}"
+
     if axis == 0:
         return _combine_data_vertically
 
-    if axis == 1:
-        return _combine_data_horizontally
-
-    raise ValueError(f"Expected axis to be 0 or 1, but recieved {axis}")
+    return _combine_data_horizontally
 
 
 def _filter_by_date(
@@ -214,7 +212,7 @@ def convert_match_rows_to_teammatch_rows(
         # played some sort of round-robin tournament for finals, but I'm
         # not too worried about the loss of that data.
         .drop_duplicates(subset=INDEX_COLS, keep="last")
-        .drop('match_id', axis=1, errors='ignore')
+        .drop("match_id", axis=1, errors="ignore")
         .sort_index()
     )
 
@@ -394,3 +392,16 @@ def sort_data_frame_columns(
         partial(_sort_data_frame_columns_node, category_cols),
         _sort_data_frame_columns_node,
     )
+
+
+def clean_full_data(*data_frames: pd.DataFrame) -> pd.DataFrame:
+    """Cleans up data frames created from 'final_<pipeline>_data' JSON files"""
+
+    # Need to convert dates from string to datetime for later
+    # calculations/comparisons
+    return [
+        data_frame.assign(date=pd.to_datetime(data_frame["date"])).set_index(
+            INDEX_COLS, drop=False
+        )
+        for data_frame in data_frames
+    ]

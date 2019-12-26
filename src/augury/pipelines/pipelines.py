@@ -7,7 +7,11 @@ from augury.nodes import feature_calculation
 from augury.settings import CATEGORY_COLS
 from .player_pipeline import create_player_pipeline
 from .betting_pipeline import create_betting_pipeline
-from .match_pipeline import create_match_pipeline, create_legacy_match_pipeline
+from .match_pipeline import (
+    create_match_pipeline,
+    create_legacy_match_pipeline,
+    create_past_match_pipeline,
+)
 from .full_pipeline import create_full_pipeline
 
 
@@ -32,11 +36,14 @@ def create_pipelines(start_date, end_date, **_kwargs) -> Dict[str, Pipeline]:
         "__default__": Pipeline([]),
         "betting": create_betting_pipeline(start_date, end_date),
         "match": create_match_pipeline(start_date, end_date),
-        "player": create_player_pipeline(start_date, end_date),
+        "player": create_player_pipeline(
+            start_date, end_date, past_match_pipeline=create_past_match_pipeline()
+        ),
         "full": create_full_pipeline(start_date, end_date),
         "legacy": create_full_pipeline(
             start_date,
             end_date,
+            match_data_set="final_legacy_match_data",
             match_pipeline_func=create_legacy_match_pipeline,
             feature_calcs=LEGACY_FEATURE_CALCS,
             final_data_set="legacy_model_data",

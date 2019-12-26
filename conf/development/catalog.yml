@@ -16,6 +16,30 @@ player_data:
   save_args:
     indent: 2
 
+final_betting_data:
+  type: JSONLocalDataSet
+  filepath: /app/data/02_intermediate/betting-data_2010-01-01_2018-12-31.json
+  save_args:
+    indent: 2
+
+final_match_data:
+  type: JSONLocalDataSet
+  filepath: /app/data/02_intermediate/match-data_1897-01-01_2018-12-31.json
+  save_args:
+    indent: 2
+
+final_legacy_match_data:
+  type: JSONLocalDataSet
+  filepath: /app/data/02_intermediate/legacy-match-data_1897-01-01_2018-12-31.json
+  save_args:
+    indent: 2
+
+final_player_data:
+  type: JSONLocalDataSet
+  filepath: /app/data/02_intermediate/player-data_1965-01-01_2018-12-31.json
+  save_args:
+    indent: 2
+
 legacy_model_data:
   type: JSONLocalDataSet
   filepath: /app/data/05_model_input/legacy-model-data_1897-01-01_2019-12-31.json
