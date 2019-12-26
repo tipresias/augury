@@ -9,6 +9,7 @@ import joblib
 import pandas as pd
 import numpy as np
 from baikal import Model
+from baikal.sklearn import SKLearnWrapper
 
 from augury.settings import BASE_DIR
 from augury.types import R
@@ -18,7 +19,9 @@ class BaseMLEstimator(_BaseComposition, RegressorMixin):
     """Base ML model class"""
 
     def __init__(
-        self, pipeline: Union[Pipeline, Model], name: Optional[str] = None
+        self,
+        pipeline: Union[Pipeline, Model, SKLearnWrapper],
+        name: Optional[str] = None,
     ) -> None:
         super().__init__()
 

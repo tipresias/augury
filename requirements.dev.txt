@@ -26,6 +26,7 @@ wheel==0.33.6
 # Data vis packages
 seaborn
 matplotlib
+pydot
 
 # Model analysis packages
 eli5
