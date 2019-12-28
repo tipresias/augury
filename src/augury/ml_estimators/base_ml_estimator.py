@@ -20,13 +20,13 @@ class BaseMLEstimator(_BaseComposition, RegressorMixin):
 
     def __init__(
         self,
-        pipeline: Union[Pipeline, Model, SKLearnWrapper],
+        # pipeline: Union[Pipeline, Model, SKLearnWrapper],
         name: Optional[str] = None,
     ) -> None:
         super().__init__()
 
         self._name = name
-        self.pipeline = pipeline
+        # self.pipeline = pipeline
 
     @property
     def name(self) -> str:
