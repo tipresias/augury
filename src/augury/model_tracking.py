@@ -56,6 +56,8 @@ CV_LABELS = {
     "score_time": "score_time",
 }
 
+DOUBLE_UNDERSCORE = "__"
+
 
 def score_model(
     model,
@@ -79,6 +81,15 @@ def score_model(
     )
 
 
+def _is_experimental_param(key):
+    """
+    This is to record any params added as part of an experiment,
+    so we don't have to add them by hand each time.
+    """
+
+    return "pipeline" not in key and key != "name" and DOUBLE_UNDERSCORE not in key
+
+
 def _is_relevant_type(value):
     if not isinstance(value, BASE_PARAM_VALUE_TYPES):
         return False
@@ -95,7 +106,7 @@ def _is_relevant_param(key, value):
     return (
         # 'pipeline' means we're keeping underlying model params rather than params
         # from the wrapping class.
-        ("pipeline" in key or key == "cv")
+        ("pipeline" in key or _is_experimental_param(key))
         and not re.search(IRRELEVANT_PARAM_REGEX, key)
         # We check the value type to avoid logging higher-level params like the model class instance
         # or top-level pipeline object

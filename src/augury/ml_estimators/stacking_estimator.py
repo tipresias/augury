@@ -40,6 +40,7 @@ ELO_MODEL_COLS = [
     "oppo_prev_match_at_home",
     "date",
 ]
+DEFAULT_MIN_YEAR = 1965
 
 
 def _build_pipeline(sub_model=None):
@@ -97,7 +98,9 @@ class StackingEstimator(BaseMLEstimator):
         # cross-validation
         pipeline: Union[Model, SKLearnWrapper] = SKLearnWrapper(_build_pipeline),
         name: Optional[str] = "stacking_estimator",
+        min_year=DEFAULT_MIN_YEAR,
     ) -> None:
+        self.min_year = min_year
         super().__init__(pipeline, name=name)
 
     def fit(self, X: pd.DataFrame, y: Union[pd.Series, np.ndarray]) -> Type[R]:
@@ -108,11 +111,12 @@ class StackingEstimator(BaseMLEstimator):
             "being passed from lower estimators to the meta estimator."
         )
 
-        return super().fit(X, y)
+        return super().fit(self._filter_X(X), self._filter_y(y),)
 
-    def transform(
-        self, X: Union[pd.DataFrame, np.ndarray], step_name: str
-    ) -> pd.DataFrame:
+    def predict(self, X):
+        return super().predict(self._filter_X(X))
+
+    def transform(self, X: pd.DataFrame, step_name: str,) -> pd.DataFrame:
         """
         Transform data up to the given step in the pipeline.
 
@@ -124,7 +128,7 @@ class StackingEstimator(BaseMLEstimator):
 
         # Some internal naming convention causes baikal to append '/0'
         # to the step names defined at instantiation.
-        return self._model.predict(X, output_names=f"{step_name}/0")
+        return self._model.predict(self._filter_X(X), output_names=f"{step_name}/0")
 
     def get_step(self, step_name: str) -> BaseEstimator:
         """Get a step object from the pipeline by name."""
@@ -137,3 +141,9 @@ class StackingEstimator(BaseMLEstimator):
             return self.pipeline.model
 
         return self.pipeline
+
+    def _filter_X(self, X: pd.DataFrame) -> pd.DataFrame:  # pylint: disable=no-self-use
+        return X.query("year >= @self.min_year")
+
+    def _filter_y(self, y: pd.Series) -> pd.Series:
+        return y.loc[(slice(None), slice(self.min_year, None), slice(None))]
