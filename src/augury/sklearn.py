@@ -70,6 +70,9 @@ PREV_MARGIN_OFFSET = 3
 YEAR_LVL = 1
 ROUND_NUMBER_LVL = 2
 
+LOG_BASE = 2
+MIN_VAL = 1 * 10 ** -10
+
 
 class AveragingRegressor(_BaseComposition, RegressorMixin):
     """Scikit-Learn-style ensemble regressor for averaging regressors' predictions"""
@@ -130,10 +133,13 @@ class CorrelationSelector(BaseEstimator, TransformerMixin):
     """
 
     def __init__(
-        self, cols_to_keep: List[str] = [], threshold: Optional[float] = None
+        self,
+        cols_to_keep: List[str] = [],
+        threshold: Optional[float] = None,
+        labels=pd.Series(),
     ) -> None:
         self.threshold = threshold
-        self._labels = pd.Series()
+        self.labels = labels
         self._cols_to_keep = cols_to_keep
         self._above_threshold_columns = cols_to_keep
 
@@ -141,17 +147,15 @@ class CorrelationSelector(BaseEstimator, TransformerMixin):
         return X[self._above_threshold_columns]
 
     def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> Type[T]:
-        if not any(self._labels):
-            self._labels = y
+        if not any(self.labels) and y is not None:
+            self.labels = y
 
         assert any(
-            self._labels
+            self.labels
         ), "Need labels argument for calculating feature correlations."
 
-        data_frame = pd.concat([X, self._labels], axis=1).drop(
-            self.cols_to_keep, axis=1
-        )
-        label_correlations = data_frame.corr().fillna(0)[self._labels.name].abs()
+        data_frame = pd.concat([X, self.labels], axis=1).drop(self.cols_to_keep, axis=1)
+        label_correlations = data_frame.corr().fillna(0)[self.labels.name].abs()
 
         if self.threshold is None:
             correlated_columns = data_frame.columns
@@ -524,7 +528,7 @@ class ColumnDropper(BaseEstimator, TransformerMixin):
     def __init__(self, cols_to_drop: List[str] = []):
         self.cols_to_drop = cols_to_drop
 
-    def fit(self, _X, _y=None):
+    def fit(self, _X, y=None):  # pylint: disable=unused-argument
         return self
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
@@ -572,10 +576,6 @@ def match_accuracy_scorer(estimator, X, y):
         ((home_margin >= 0) & (home_pred_margin > 0))
         | ((home_margin <= 0) & (home_pred_margin < 0))
     ).mean()
-
-
-LOG_BASE = 2
-MIN_VAL = 1 * 10 ** -10
 
 
 def _calculate_bits(row):
@@ -630,7 +630,10 @@ def bits_scorer(estimator, X, y):
 
 
 def year_cv_split(X, year_range):
-    """Split data by year for cross-validation for time-series data"""
+    """
+    Split data by year for cross-validation for time-series data. Makes each year
+    in the year_range a test set per split.
+    """
 
     return [
         ((X["year"] < year).to_numpy(), (X["year"] == year).to_numpy())

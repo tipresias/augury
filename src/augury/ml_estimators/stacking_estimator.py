@@ -33,7 +33,6 @@ from .base_ml_estimator import BaseMLEstimator
 np.random.seed(SEED)
 
 
-NAME_IDX = 0
 ELO_MODEL_COLS = [
     "prev_match_oppo_team",
     "oppo_prev_match_oppo_team",
@@ -41,13 +40,6 @@ ELO_MODEL_COLS = [
     "oppo_prev_match_at_home",
     "date",
 ]
-
-ENCODED_CATEGORY_COLS = {
-    "team": TEAM_NAMES,
-    "oppo_team": ["oppo_" + team_name for team_name in TEAM_NAMES],
-    "round_type": ROUND_TYPES,
-    "venue": VENUES,
-}
 
 
 def _build_pipeline(sub_model=None):
@@ -82,7 +74,7 @@ def _build_pipeline(sub_model=None):
     )(ml_features, yt)
 
     z_elo = TeammatchToMatchConverterStep(name="teammatchtomatchconverter")(X_trans)
-    y2 = EloRegressorStep(name="eloregressor")(z_elo)
+    y2 = EloRegressorStep(name="eloregressor")(z_elo, yt)
 
     ensemble_features = Stack(name="stack")([y1, y2])
     z = StandardScalerStep(name="standardscaler_meta")(ensemble_features)
@@ -108,9 +100,7 @@ class StackingEstimator(BaseMLEstimator):
     ) -> None:
         super().__init__(pipeline, name=name)
 
-    def fit(
-        self, X: Union[pd.DataFrame, np.ndarray], y: Union[pd.Series, np.ndarray]
-    ) -> Type[R]:
+    def fit(self, X: pd.DataFrame, y: Union[pd.Series, np.ndarray]) -> Type[R]:
         """Fit estimator to the data"""
 
         assert X.index.is_monotonic, (

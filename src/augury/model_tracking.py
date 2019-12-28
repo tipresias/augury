@@ -57,15 +57,49 @@ CV_LABELS = {
 }
 
 
+def score_model(
+    model,
+    data,
+    cv_year_range=CV_YEAR_RANGE,
+    scoring={"neg_mean_absolute_error": get_scorer("neg_mean_absolute_error")},
+    n_jobs=None,
+):
+    cv_scoring = {**{"match_accuracy": match_accuracy_scorer}, **scoring}
+
+    data.train_year_range = (max(cv_year_range),)
+    X_train, _ = data.train_data
+
+    return cross_validate(
+        model,
+        *data.train_data,
+        cv=year_cv_split(X_train, cv_year_range),
+        scoring=cv_scoring,
+        n_jobs=n_jobs,
+        verbose=2,
+    )
+
+
+def _is_relevant_type(value):
+    if not isinstance(value, BASE_PARAM_VALUE_TYPES):
+        return False
+
+    if isinstance(value, list) and any(
+        [not isinstance(element, BASE_PARAM_VALUE_TYPES) for element in value]
+    ):
+        return False
+
+    return True
+
+
 def _is_relevant_param(key, value):
     return (
         # 'pipeline' means we're keeping underlying model params rather than params
         # from the wrapping class.
-        "pipeline" in key
+        ("pipeline" in key or key == "cv")
         and not re.search(IRRELEVANT_PARAM_REGEX, key)
         # We check the value type to avoid logging higher-level params like the model class instance
         # or top-level pipeline object
-        and isinstance(value, BASE_PARAM_VALUE_TYPES)
+        and _is_relevant_type(value)
     )
 
 
@@ -73,8 +107,14 @@ def present_model_params(model: GenericModel):
     """
     Filter model parameters, so MLFlow only tracks the ones relevant to param tuning
     """
+
+    try:
+        model_name = model.name
+    except AttributeError:
+        model_name = model.model.name
+
     return {
-        "model": model.name,
+        "model": model_name,
         **{k: v for k, v in model.get_params().items() if _is_relevant_param(k, v)},
     }
 
@@ -94,21 +134,17 @@ def _track_model(
     n_jobs=None,
     **run_tags,
 ) -> Dict[str, Any]:
-    model_data.train_year_range = (max(cv_year_range),)
-    X_train, _ = model_data.train_data
-    cv_scoring = {**{"match_accuracy": match_accuracy_scorer}, **scoring}
 
     with mlflow.start_run():
         mlflow.log_params(present_model_params(loaded_model))
         mlflow.log_param("label", run_label)
 
-        cv_scores = cross_validate(
+        cv_scores = score_model(
             loaded_model,
-            *model_data.train_data,
-            cv=year_cv_split(X_train, cv_year_range),
-            scoring=cv_scoring,
+            model_data,
+            cv_year_range=cv_year_range,
+            scoring=scoring,
             n_jobs=n_jobs,
-            verbose=2,
         )
 
         for score_name, metric_name in CV_LABELS.items():
@@ -134,6 +170,11 @@ def start_run(
     n_jobs=None,
     **run_tags,
 ) -> List[Dict[str, Any]]:
+    """
+    Perform cros-validation of models, recording params and metrics
+    with mlflow's tracking module.
+    """
+
     if experiment is not None:
         mlflow.set_experiment(experiment)
 
