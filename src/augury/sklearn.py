@@ -18,7 +18,7 @@ from mypy_extensions import TypedDict
 from augury.types import R, T
 from augury.nodes.base import _validate_required_columns
 from augury.nodes import common
-from augury.settings import TEAM_NAMES, INDEX_COLS
+from augury.settings import TEAM_NAMES
 
 
 EloDictionary = TypedDict(
@@ -639,37 +639,3 @@ def year_cv_split(X, year_range):
         ((X["year"] < year).to_numpy(), (X["year"] == year).to_numpy())
         for year in range(*year_range)
     ]
-
-
-def year_chunk_cv_split(X, cv=5):
-    """
-    Split data by year into a number of equal chunks per cv, with any remainder
-    being added to the end.
-    """
-
-    years = np.array(X["year"].drop_duplicates().sort_values().to_numpy())
-    years_per_chunk = math.floor(len(years) / cv)
-    splits = []
-
-    for n_chunk in range(cv):
-        # Need to test on train set for first chunk, because testing the first chunk
-        # by training on later chunks results in leakage for time-series data,
-        # and this seems like the least-terrible way to handle it.
-        train_year_limit = years[(max(n_chunk - 1, 0) + 1) * years_per_chunk]
-
-        test_year_lower_limit = 0 if n_chunk == 0 else train_year_limit
-        test_year_upper_limit = (
-            np.inf if n_chunk == (cv - 1) else years[(n_chunk + 1) * years_per_chunk]
-        )
-
-        splits.append(
-            (
-                (X["year"] < train_year_limit).to_numpy(),
-                (
-                    (X["year"] >= test_year_lower_limit)
-                    & (X["year"] < test_year_upper_limit)
-                ).to_numpy(),
-            )
-        )
-
-    return splits

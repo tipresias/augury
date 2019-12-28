@@ -27,7 +27,6 @@ from augury.settings import (
     CATEGORY_COLS,
     SEED,
 )
-from augury.sklearn import year_chunk_cv_split
 from augury.types import R
 from .base_ml_estimator import BaseMLEstimator
 
@@ -75,7 +74,7 @@ def _build_pipeline(sub_model=None):
     )(ml_features, yt)
 
     z_elo = TeammatchToMatchConverterStep(name="teammatchtomatchconverter")(X_trans)
-    y2 = EloRegressorStep(name="eloregressor")(z_elo)
+    y2 = EloRegressorStep(name="eloregressor")(z_elo, yt)
 
     ensemble_features = Stack(name="stack")([y1, y2])
     z = StandardScalerStep(name="standardscaler_meta")(ensemble_features)
@@ -96,17 +95,10 @@ class StackingEstimator(BaseMLEstimator):
         self,
         # Need to use SKLearnWrapper for this to work with Scikit-learn
         # cross-validation
-        # pipeline: Union[Model, SKLearnWrapper] = PIPELINE,
-        sub_pipelines=[],
-        meta_pipeline=None,
-        cv=5,
+        pipeline: Union[Model, SKLearnWrapper] = SKLearnWrapper(_build_pipeline),
         name: Optional[str] = "stacking_estimator",
     ) -> None:
-        super().__init__(name=name)
-        self._name = name
-        self.sub_pipelines = sub_pipelines
-        self.meta_pipeline = meta_pipeline
-        self.cv = cv
+        super().__init__(pipeline, name=name)
 
     def fit(self, X: pd.DataFrame, y: Union[pd.Series, np.ndarray]) -> Type[R]:
         """Fit estimator to the data"""
@@ -116,33 +108,7 @@ class StackingEstimator(BaseMLEstimator):
             "being passed from lower estimators to the meta estimator."
         )
 
-        sub_preds = []
-
-        for pipeline in self.sub_pipelines:
-            split_preds = []
-
-            for train, test in year_chunk_cv_split(X, cv=self.cv):
-                X_train, y_train = X[train], y[train]
-                X_test = X[test]
-
-                pipeline.fit(X_train, y_train)
-                split_preds.append(pipeline.predict(X_test))
-
-            sub_preds.append(np.concatenate(split_preds))
-            pipeline.fit(X, y)
-
-        self.meta_pipeline.fit(np.array(sub_preds).transpose(), y)
-
-        # return super().fit(X, y)
-        return self
-
-    def predict(self, X):
-        sub_preds = []
-
-        for pipeline in self.sub_pipelines:
-            sub_preds.append(pipeline.predict(X))
-
-        return self.meta_pipeline.predict(np.array(sub_preds).transpose())
+        return super().fit(X, y)
 
     def transform(
         self, X: Union[pd.DataFrame, np.ndarray], step_name: str
