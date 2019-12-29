@@ -3,7 +3,7 @@ end_time: 1576396814724
 entry_point_name: ''
 experiment_id: '0'
 lifecycle_stage: active
-name: ''
+name: 'baseline_stacking_estimator'
 run_id: db1f296d7c414b0bab51f0bb7bc1603f
 run_uuid: db1f296d7c414b0bab51f0bb7bc1603f
 source_name: ''

@@ -1,0 +1,1 @@
+The DAG-based pipeline structure was proving too brittle and difficult to integrate with other libraries in the Scikit-learn ecosystem, so I changed back to Scikit-learn pipelines. This experiment is just to make sure the performance doesn't change for any weird reason.

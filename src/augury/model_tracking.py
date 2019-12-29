@@ -1,6 +1,6 @@
 """Helper functions for working with MLFlow, particularly the tracking module"""
 
-from typing import Union, List, Tuple, Optional, Dict, Callable, Any
+from typing import Union, List, Tuple, Dict, Callable, Any
 import re
 
 from sklearn.base import BaseEstimator
@@ -145,11 +145,11 @@ def _track_metric(scores: np.ndarray, metric_name: str, is_negative=False):
 def _track_model(
     loaded_model: GenericModel,
     model_data: MLData,
-    run_label: str,
+    run_info: Dict[str, Any],
     cv_year_range: YearRange,
     scoring: Dict[str, Callable],
     n_jobs=None,
-    **run_tags,
+    **tags,
 ) -> Dict[str, Any]:
     cv_scores = score_model(
         loaded_model,
@@ -159,9 +159,16 @@ def _track_model(
         n_jobs=n_jobs,
     )
 
-    with mlflow.start_run():
-        mlflow.log_params(present_model_params(loaded_model))
-        mlflow.log_param("label", run_label)
+    run_tags = run_info.get("tags") or {}
+    run_params = run_info.get("params") or {}
+
+    run_experiment = run_tags.get("experiment")
+    run_value = run_params.get("experiment_value")
+    separator = "" if run_experiment is None or run_value is None else "_"
+    run_name = (run_experiment or "") + separator + (run_value or "")
+
+    with mlflow.start_run(run_name=run_name):
+        mlflow.log_params({**present_model_params(loaded_model), **run_params})
 
         for score_name, metric_name in CV_LABELS.items():
             if score_name in cv_scores.keys():
@@ -171,19 +178,21 @@ def _track_model(
                     is_negative=("neg" in score_name),
                 )
 
-        mlflow.set_tags({"model": loaded_model.name, "cv": cv_year_range, **run_tags})
+        mlflow.set_tags(
+            {"model": loaded_model.name, "cv": cv_year_range, **tags, **run_tags}
+        )
 
     return {"model": loaded_model.name, **cv_scores}
 
 
 def start_run(
-    ml_models: List[Tuple[GenericModel, MLData, str]],
+    ml_models: List[Tuple[GenericModel, MLData, Dict[str, Any]]],
     cv_year_range=CV_YEAR_RANGE,
-    experiment: Optional[str] = None,
     scoring: Dict[str, Callable] = {
         "neg_mean_absolute_error": get_scorer("neg_mean_absolute_error")
     },
     n_jobs=None,
+    experiment=None,
     **run_tags,
 ) -> List[Dict[str, Any]]:
     """
@@ -198,11 +207,11 @@ def start_run(
         _track_model(
             ml_model,
             model_data,
-            run_label,
+            run_info,
             cv_year_range=cv_year_range,
             scoring=scoring,
             n_jobs=n_jobs,
             **run_tags,
         )
-        for ml_model, model_data, run_label in ml_models
+        for ml_model, model_data, run_info in ml_models
     ]
