@@ -151,18 +151,17 @@ def _track_model(
     n_jobs=None,
     **run_tags,
 ) -> Dict[str, Any]:
+    cv_scores = score_model(
+        loaded_model,
+        model_data,
+        cv_year_range=cv_year_range,
+        scoring=scoring,
+        n_jobs=n_jobs,
+    )
 
     with mlflow.start_run():
         mlflow.log_params(present_model_params(loaded_model))
         mlflow.log_param("label", run_label)
-
-        cv_scores = score_model(
-            loaded_model,
-            model_data,
-            cv_year_range=cv_year_range,
-            scoring=scoring,
-            n_jobs=n_jobs,
-        )
 
         for score_name, metric_name in CV_LABELS.items():
             if score_name in cv_scores.keys():
