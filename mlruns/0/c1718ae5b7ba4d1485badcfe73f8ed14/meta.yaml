@@ -1,0 +1,15 @@
+artifact_uri: file:///app/mlruns/0/c1718ae5b7ba4d1485badcfe73f8ed14/artifacts
+end_time: 1577610990928
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: 'algorithm_selection_base_lasso_meta_xgbregressor'
+run_id: c1718ae5b7ba4d1485badcfe73f8ed14
+run_uuid: c1718ae5b7ba4d1485badcfe73f8ed14
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1577610979654
+status: 3
+tags: []
+user_id: root

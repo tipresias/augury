@@ -1,0 +1,15 @@
+artifact_uri: file:///app/mlruns/0/b21b0ec6ae3647f099ba917932dd1041/artifacts
+end_time: 1577611009304
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: 'algorithm_selection_base_orthogonalmatchingpursuit_meta_xgbregressor'
+run_id: b21b0ec6ae3647f099ba917932dd1041
+run_uuid: b21b0ec6ae3647f099ba917932dd1041
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1577611000803
+status: 3
+tags: []
+user_id: root
