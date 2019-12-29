@@ -86,8 +86,9 @@ class StackingEstimator(BaseMLEstimator):
         name: Optional[str] = "stacking_estimator",
         min_year=DEFAULT_MIN_YEAR,
     ) -> None:
-        self.min_year = min_year
         super().__init__(pipeline, name=name)
+
+        self.min_year = min_year
 
     def fit(self, X: pd.DataFrame, y: Union[pd.Series, np.ndarray]) -> Type[R]:
         """Fit estimator to the data"""
