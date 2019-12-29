@@ -51,9 +51,6 @@ results/**
 # Keep legacy datasets that can't be regenerated easily
 !data/00_legacy/**
 
-# Keep saved models, because dynamic data sources can create inconsistency
-!data/06_models/**
-
 
 ##########################
 # Common files
