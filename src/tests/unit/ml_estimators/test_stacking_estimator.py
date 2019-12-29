@@ -3,8 +3,6 @@ from unittest import TestCase
 import numpy as np
 from faker import Faker
 from kedro.context import load_context
-from sklearn.preprocessing import StandardScaler
-from xgboost import XGBRegressor
 
 from tests.fixtures.data_factories import fake_cleaned_match_data
 from augury.settings import BASE_DIR
@@ -34,14 +32,3 @@ class TestStackingEstimator(TestCase):
 
     def test_pickle_file_compatibility(self):
         self.assertIsInstance(self.loaded_model, StackingEstimator)
-
-    def test_get_step(self):
-        with self.subTest(regressor_name="xgbregressor_sub"):
-            regressor = self.loaded_model.get_step("xgbregressor_sub")
-
-            self.assertIsInstance(regressor, XGBRegressor)
-
-        with self.subTest(regressor_name="standardscaler_meta"):
-            regressor = self.loaded_model.get_step("standardscaler_meta")
-
-            self.assertIsInstance(regressor, StandardScaler)

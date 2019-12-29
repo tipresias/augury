@@ -2,23 +2,21 @@
 
 from typing import Optional, Union, Type
 
-from baikal import Input, Model
-from baikal.steps import Stack
-from baikal.steps.merge import Concatenate
-from baikal.sklearn import SKLearnWrapper
 import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator
+from sklearn.pipeline import Pipeline, make_pipeline
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from mlxtend.regressor import StackingRegressor
+from xgboost import XGBRegressor
 
-from augury.steps import (
-    StandardScalerStep,
-    OneHotEncoderStep,
-    ColumnSelectorStep,
-    XGBRegressorStep,
-    CorrelationSelectorStep,
-    ColumnDropperStep,
-    TeammatchToMatchConverterStep,
-    EloRegressorStep,
+from augury.sklearn import (
+    CorrelationSelector,
+    ColumnDropper,
+    TeammatchToMatchConverter,
+    EloRegressor,
+    DataFrameConverter,
 )
 from augury.settings import (
     TEAM_NAMES,
@@ -42,48 +40,38 @@ ELO_MODEL_COLS = [
 ]
 DEFAULT_MIN_YEAR = 1965
 
+ML_PIPELINE = make_pipeline(
+    DataFrameConverter(),
+    ColumnDropper(cols_to_drop=ELO_MODEL_COLS),
+    CorrelationSelector(cols_to_keep=CATEGORY_COLS),
+    ColumnTransformer(
+        [
+            (
+                "onehotencoder",
+                OneHotEncoder(
+                    categories=[TEAM_NAMES, TEAM_NAMES, ROUND_TYPES, VENUES],
+                    sparse=False,
+                    handle_unknown="ignore",
+                ),
+                CATEGORY_COLS,
+            )
+        ],
+        remainder=StandardScaler(),
+    ),
+    XGBRegressor(objective="reg:squarederror", random_state=SEED),
+)
 
-def _build_pipeline(sub_model=None):
-    yt = Input("yt")
-    X = Input("X")
+ELO_PIPELINE = make_pipeline(
+    DataFrameConverter(), TeammatchToMatchConverter(), EloRegressor()
+)
 
-    X_trans = X if sub_model is None else sub_model(X)
+META_PIPELINE = make_pipeline(
+    StandardScaler(), XGBRegressor(objective="reg:squarederror", random_state=SEED),
+)
 
-    z_ml = ColumnDropperStep(cols_to_drop=ELO_MODEL_COLS, name="columndropper_elo")(
-        X_trans
-    )
-    z_ml = CorrelationSelectorStep(
-        cols_to_keep=CATEGORY_COLS, name="correlationselector"
-    )(z_ml, yt)
-
-    z_cat = ColumnSelectorStep(cols=CATEGORY_COLS, name="columnselector")(z_ml)
-    z_cat = OneHotEncoderStep(
-        categories=[TEAM_NAMES, TEAM_NAMES, ROUND_TYPES, VENUES],
-        sparse=False,
-        handle_unknown="ignore",
-        name="onehotencoder",
-    )(z_cat)
-
-    z_num = ColumnDropperStep(cols_to_drop=CATEGORY_COLS, name="columndropper_cat")(
-        z_ml
-    )
-    z_num = StandardScalerStep(name="standardscaler_sub")(z_num)
-
-    ml_features = Concatenate(name="concatenate")([z_cat, z_num])
-    y1 = XGBRegressorStep(
-        objective="reg:squarederror", random_state=SEED, name="xgbregressor_sub"
-    )(ml_features, yt)
-
-    z_elo = TeammatchToMatchConverterStep(name="teammatchtomatchconverter")(X_trans)
-    y2 = EloRegressorStep(name="eloregressor")(z_elo, yt)
-
-    ensemble_features = Stack(name="stack")([y1, y2])
-    z = StandardScalerStep(name="standardscaler_meta")(ensemble_features)
-    y = XGBRegressorStep(
-        objective="reg:squarederror", random_state=SEED, name="xgbregressor_meta"
-    )(z, yt)
-
-    return Model(X, y, yt)
+PIPELINE = StackingRegressor(
+    regressors=[ML_PIPELINE, ELO_PIPELINE], meta_regressor=META_PIPELINE
+)
 
 
 class StackingEstimator(BaseMLEstimator):
@@ -94,9 +82,7 @@ class StackingEstimator(BaseMLEstimator):
 
     def __init__(
         self,
-        # Need to use SKLearnWrapper for this to work with Scikit-learn
-        # cross-validation
-        pipeline: Union[Model, SKLearnWrapper] = SKLearnWrapper(_build_pipeline),
+        pipeline: Union[Pipeline, BaseEstimator] = PIPELINE,
         name: Optional[str] = "stacking_estimator",
         min_year=DEFAULT_MIN_YEAR,
     ) -> None:
@@ -106,44 +92,49 @@ class StackingEstimator(BaseMLEstimator):
     def fit(self, X: pd.DataFrame, y: Union[pd.Series, np.ndarray]) -> Type[R]:
         """Fit estimator to the data"""
 
-        assert X.index.is_monotonic, (
+        X_filtered, y_filtered = (
+            self._filter_by_min_year(X),
+            self._filter_by_min_year(y),
+        )
+
+        assert X_filtered.index.is_monotonic, (
             "X must be sorted by index values. Otherwise, we risk mismatching rows "
             "being passed from lower estimators to the meta estimator."
         )
 
-        return super().fit(self._filter_X(X), self._filter_y(y),)
+        self.pipeline.set_params(
+            **{
+                "pipeline-1__dataframeconverter__columns": X_filtered.columns,
+                "pipeline-1__dataframeconverter__index": X_filtered.index,
+                "pipeline-2__dataframeconverter__columns": X_filtered.columns,
+                "pipeline-2__dataframeconverter__index": X_filtered.index,
+                "pipeline-1__correlationselector__labels": y_filtered,
+            }
+        )
+
+        return super().fit(X_filtered, y_filtered)
 
     def predict(self, X):
-        return super().predict(self._filter_X(X))
+        X_filtered = self._filter_by_min_year(X)
 
-    def transform(self, X: pd.DataFrame, step_name: str,) -> pd.DataFrame:
-        """
-        Transform data up to the given step in the pipeline.
+        # On fit, StackingRegressor reassigns the defined regressors to regr_,
+        # which it uses internally to fit/predict. Calling set_params doesn't update
+        # the regr_ attribute, which means without this little hack,
+        # we would be predicting with outdated params.
+        for regr in self.pipeline.regr_:
+            regr.set_params(
+                **{
+                    "dataframeconverter__columns": X_filtered.columns,
+                    "dataframeconverter__index": X_filtered.index,
+                }
+            )
 
-        Args:
-            X (array-like): Data input for the model
-            step_name (str, int): The name of the step which will generate
-                the final output.
-        """
+        return super().predict(X_filtered)
 
-        # Some internal naming convention causes baikal to append '/0'
-        # to the step names defined at instantiation.
-        return self._model.predict(self._filter_X(X), output_names=f"{step_name}/0")
+    def _filter_by_min_year(
+        self, data: Union[pd.DataFrame, pd.Series]
+    ) -> Union[pd.DataFrame, pd.Series]:
+        if isinstance(data, pd.Series):
+            return data.loc[(slice(None), slice(self.min_year, None), slice(None))]
 
-    def get_step(self, step_name: str) -> BaseEstimator:
-        """Get a step object from the pipeline by name."""
-
-        return self._model.get_step(step_name)
-
-    @property
-    def _model(self) -> Model:
-        if isinstance(self.pipeline, SKLearnWrapper):
-            return self.pipeline.model
-
-        return self.pipeline
-
-    def _filter_X(self, X: pd.DataFrame) -> pd.DataFrame:  # pylint: disable=no-self-use
-        return X.query("year >= @self.min_year")
-
-    def _filter_y(self, y: pd.Series) -> pd.Series:
-        return y.loc[(slice(None), slice(self.min_year, None), slice(None))]
+        return data.query("year >= @self.min_year")
