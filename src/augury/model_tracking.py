@@ -6,7 +6,7 @@ import re
 from sklearn.base import BaseEstimator
 from sklearn.model_selection import cross_validate
 from sklearn.metrics import get_scorer
-from baikal import Model
+from sklearn.pipeline import Pipeline
 import mlflow
 import numpy as np
 
@@ -19,7 +19,7 @@ from augury.types import YearRange
 
 np.random.seed(SEED)
 
-GenericModel = Union[BaseEstimator, BaseMLEstimator, Model]
+GenericModel = Union[BaseEstimator, BaseMLEstimator, Pipeline]
 
 STATIC_TRANSFORMERS = [
     "onehotencoder",
@@ -28,10 +28,11 @@ STATIC_TRANSFORMERS = [
     "teammatchtomatchconverter",
     "columntransformer",
     "standardscaler",
+    "dataframeconverter",
 ]
 # cols_to_drop isn't technically static, but is calculated by the transformer
 # rather than as a manually-defined argument
-STATIC_COL_PARAMS = ["cols_to_keep", "match_cols", "cols_to_drop", "pipeline__steps"]
+STATIC_COL_PARAMS = ["cols_to_keep", "match_cols", "cols_to_drop", "__steps$"]
 STATIC_PARAMS = [
     "verbosity",
     "verbose",
@@ -41,6 +42,9 @@ STATIC_PARAMS = [
     "missing_values",
     "copy",
     "add_indicator",
+    "__memory$",
+    "refit",
+    "store_train_meta_features",
 ]
 # We'll use 'nonce' in names of transformers that only exist for running
 # a particular experiment in order to avoid polluting param lists
@@ -87,6 +91,8 @@ def _is_experimental_param(key):
     so we don't have to add them by hand each time.
     """
 
+    # Double underscores indicate params of pipeline steps or something similar,
+    # and we only want params from the wrapper class
     return "pipeline" not in key and key != "name" and DOUBLE_UNDERSCORE not in key
 
 
@@ -106,7 +112,7 @@ def _is_relevant_param(key, value):
     return (
         # 'pipeline' means we're keeping underlying model params rather than params
         # from the wrapping class.
-        ("pipeline" in key or _is_experimental_param(key))
+        ("pipeline" in key or "^meta_" in key or _is_experimental_param(key))
         and not re.search(IRRELEVANT_PARAM_REGEX, key)
         # We check the value type to avoid logging higher-level params like the model class instance
         # or top-level pipeline object
