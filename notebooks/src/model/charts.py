@@ -57,34 +57,15 @@ def graph_tf_model_history(history):
 
 
 def graph_cv_model_performance(performance_data_frame):
-    # MAE scores
-    mae_scores = performance_data_frame.sort_values(
-        ["score_type", "error"], ascending=[True, True]
-    )
-
-    plt.figure(figsize=(15, 7))
-    sns.barplot(x="model", y="error", hue="score_type", data=mae_scores)
-    plt.ylim(bottom=20)
-    plt.title(
-        "Model mean absolute error for cross-validation & test sets\n", fontsize=18
-    )
-    plt.ylabel("MAE", fontsize=14)
-    plt.xlabel("", fontsize=14)
-    plt.yticks(fontsize=12)
-    plt.xticks(fontsize=12, rotation=90)
-    plt.legend(fontsize=14)
-
-    plt.show()
-
     # Accuracy scores
-    acc_scores = performance_data_frame.sort_values(
-        ["score_type", "accuracy"], ascending=[True, False]
-    )
-
     plt.figure(figsize=(15, 7))
-    sns.barplot(x="model", y="accuracy", hue="score_type", data=acc_scores)
+    sns.barplot(
+        x="model",
+        y="match_accuracy",
+        data=performance_data_frame.sort_values("match_accuracy", ascending=False),
+    )
     plt.ylim(bottom=0.55)
-    plt.title("Model accuracy for cross-validation & test sets\n", fontsize=18)
+    plt.title("Model accuracy for cross-validation\n", fontsize=18)
     plt.ylabel("Accuracy", fontsize=14)
     plt.xlabel("", fontsize=14)
     plt.yticks(fontsize=12)
@@ -93,17 +74,19 @@ def graph_cv_model_performance(performance_data_frame):
 
     plt.show()
 
-    # Std scores
-    std_scores = mae_scores[mae_scores["score_type"] == "cv"].sort_values(
-        "std_error", ascending=True
-    )
-
+    # MAE scores
     plt.figure(figsize=(15, 7))
-    sns.barplot(x="model", y="std_error", data=std_scores)
-    plt.title("Standard deviation for model mean absolute error\n", fontsize=18)
-    plt.ylabel("Std", fontsize=14)
+    sns.barplot(
+        x="model",
+        y="mae",
+        data=performance_data_frame.sort_values("mae", ascending=True),
+    )
+    plt.ylim(bottom=20)
+    plt.title("Model mean absolute error for cross-validation\n", fontsize=18)
+    plt.ylabel("MAE", fontsize=14)
     plt.xlabel("", fontsize=14)
     plt.yticks(fontsize=12)
     plt.xticks(fontsize=12, rotation=90)
+    plt.legend(fontsize=14)
 
     plt.show()
