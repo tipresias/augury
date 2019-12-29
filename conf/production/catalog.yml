@@ -1,14 +1,41 @@
+# Raw data
 betting_data:
   type: augury.io.JSONGCStorageDataSet
   filepath: betting-data_2010-01-01_2018-12-31.json
   bucket_name: afl_data
-
 match_data:
   type: augury.io.JSONGCStorageDataSet
   filepath: match-data_2009-01-01_2018-12-31.json
   bucket_name: afl_data
-
 player_data:
   type: augury.io.JSONGCStorageDataSet
   filepath: player-data_2009-01-01_2018-12-31.json
+  bucket_name: afl_data
+
+# Final data
+legacy_model_data:
+  type: augury.io.JSONGCStorageDataSet
+  filepath: legacy-model-data_1897-01-01_2019-12-31.json
+  bucket_name: afl_data
+model_data:
+  type: augury.io.JSONGCStorageDataSet
+  filepath: model-data_1897-01-01_2019-12-31.json
+  bucket_name: afl_data
+
+# Models
+tipresias_2019:
+  type: augury.io.PickleGCStorageDataSet
+  filepath: tipresias_2019.pkl
+  bucket_name: afl_data
+benchmark_estimator:
+  type: augury.io.PickleGCStorageDataSet
+  filepath: benchmark_estimator.pkl
+  bucket_name: afl_data
+stacking_estimator:
+  type: augury.io.PickleGCStorageDataSet
+  filepath: stacking_estimator.pkl
+  bucket_name: afl_data
+confidence_estimator:
+  type: augury.io.PickleGCStorageDataSet
+  filepath: confidence_estimator.pkl
   bucket_name: afl_data

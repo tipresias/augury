@@ -1,54 +1,31 @@
+# Remote data
 remote_betting_data:
   type: augury.io.JSONRemoteDataSet
   data_source: "augury.data_import.betting_data.fetch_betting_data"
   date_range_type: whole_season
-
 remote_match_data:
   type: augury.io.JSONRemoteDataSet
   data_source: "augury.data_import.match_data.fetch_match_data"
   date_range_type: past_rounds
-
 fixture_data:
   type: augury.io.JSONRemoteDataSet
   data_source: "augury.data_import.match_data.fetch_fixture_data"
   date_range_type: future_rounds
-
 remote_player_data:
   type: augury.io.JSONRemoteDataSet
   data_source: "augury.data_import.player_data.fetch_player_data"
   date_range_type: past_rounds
 
+# Test data
 fake_match_data:
   type: JSONLocalDataSet
   filepath: src/tests/fixtures/afl_match.json
   save_args:
     indent: 2
-
 fake_data:
   type: JSONLocalDataSet
   filepath: src/tests/fixtures/fake_data.json
-
-tipresias_2019:
-  type: PickleLocalDataSet
-  filepath: data/06_models/tipresias_2019.pkl
-  backend: joblib
-
-benchmark_estimator:
-  type: PickleLocalDataSet
-  filepath: data/06_models/benchmark_estimator.pkl
-  backend: joblib
-
-stacking_estimator:
-  type: PickleLocalDataSet
-  filepath: data/06_models/stacking_estimator.pkl
-  backend: joblib
-
-confidence_estimator:
-  type: PickleLocalDataSet
-  filepath: data/06_models/confidence_estimator.pkl
-  backend: joblib
-
 fake_estimator:
-    type: PickleLocalDataSet
-    filepath: src/tests/fixtures/fake_estimator.pkl
-    backend: joblib
+  type: PickleLocalDataSet
+  filepath: src/tests/fixtures/fake_estimator.pkl
+  backend: joblib

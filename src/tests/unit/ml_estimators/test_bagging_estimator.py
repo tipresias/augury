@@ -1,13 +1,11 @@
 from unittest import TestCase
-import pandas as pd
-import numpy as np
-from sklearn.linear_model import Ridge, Lasso
-from sklearn.pipeline import make_pipeline
-import joblib
+import os
+
+from kedro.context import load_context
 from faker import Faker
 
 from augury.ml_estimators import BaggingEstimator
-from augury.sklearn import AveragingRegressor
+from augury.settings import BASE_DIR
 
 
 FAKE = Faker()
@@ -16,30 +14,15 @@ N_ROWS = 10
 
 class TestBaggingEstimator(TestCase):
     def setUp(self):
-        data_frame = pd.DataFrame(
-            {
-                "team": [FAKE.company() for _ in range(10)],
-                "year": ([2014] * 2) + ([2015] * 6) + ([2016] * 2),
-                "score": np.random.randint(50, 150, 10),
-                "oppo_score": np.random.randint(50, 150, 10),
-                "round_number": 15,
-            }
+        # Need to use production environment for loading model if in CI, because we
+        # don't check model files into source control
+        kedro_env = (
+            "production"
+            if os.environ.get("CI") == "true"
+            else os.environ.get("PYTHON_ENV")
         )
-        self.X = pd.get_dummies(
-            data_frame.drop(["score", "oppo_score"], axis=1)
-        ).astype(float)
-        self.y = data_frame["score"] - data_frame["oppo_score"]
-        pipeline = make_pipeline(
-            AveragingRegressor([("ridge", Ridge()), ("lasso", Lasso())])
-        )
-        self.model = BaggingEstimator(pipeline=pipeline, name="tipresias_2019")
-
-    def test_predict(self):
-        self.model.fit(self.X, self.y)
-        predictions = self.model.predict(self.X)
-
-        self.assertIsInstance(predictions, np.ndarray)
+        context = load_context(BASE_DIR, env=kedro_env)
+        self.loaded_model = context.catalog.load(BaggingEstimator().name)
 
     def test_pickle_file_compatibility(self):
-        loaded_model = joblib.load(self.model.pickle_filepath())
-        self.assertIsInstance(loaded_model, BaggingEstimator)
+        self.assertIsInstance(self.loaded_model, BaggingEstimator)

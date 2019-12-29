@@ -1,4 +1,5 @@
 from unittest import TestCase
+import os
 
 import numpy as np
 from faker import Faker
@@ -15,20 +16,15 @@ N_MATCHES_PER_YEAR = 10
 
 class TestStackingEstimator(TestCase):
     def setUp(self):
-        context = load_context(BASE_DIR)
-        self.loaded_model = context.catalog.load(StackingEstimator().name)
-        # Starting in 2017 to avoid having to refit the Elo model for the sake
-        # of continuous rounds
-        self.data = fake_cleaned_match_data(N_MATCHES_PER_YEAR, (2017, 2019)).assign(
-            prev_match_oppo_team=lambda df: df["oppo_team"].sample(
-                frac=1, replace=False
-            ),
-            oppo_prev_match_oppo_team=lambda df: df["team"].sample(
-                frac=1, replace=False
-            ),
-            prev_match_at_home=lambda df: np.random.rand(len(df)).round(),
-            oppo_prev_match_at_home=lambda df: np.random.rand(len(df)).round(),
+        # Need to use production environment for loading model if in CI, because we
+        # don't check model files into source control
+        kedro_env = (
+            "production"
+            if os.environ.get("CI") == "true"
+            else os.environ.get("PYTHON_ENV")
         )
+        context = load_context(BASE_DIR, env=kedro_env)
+        self.loaded_model = context.catalog.load(StackingEstimator().name)
 
     def test_pickle_file_compatibility(self):
         self.assertIsInstance(self.loaded_model, StackingEstimator)
