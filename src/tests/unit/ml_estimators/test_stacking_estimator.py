@@ -1,11 +1,9 @@
 from unittest import TestCase
 import os
 
-import numpy as np
 from faker import Faker
 from kedro.context import load_context
 
-from tests.fixtures.data_factories import fake_cleaned_match_data
 from augury.settings import BASE_DIR
 from augury.ml_estimators import StackingEstimator
 

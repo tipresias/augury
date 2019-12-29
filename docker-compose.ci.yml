@@ -10,6 +10,7 @@ services:
       - PYTHON_ENV=development
       - AFL_DATA_SERVICE=${AFL_DATA_SERVICE}
       - CI=true
+      - GOOGLE_APPLICATION_CREDENTIALS="${GOOGLE_APPLICATION_CREDENTIALS}"
     command: python3 app.py
   afl_data:
     image: cfranklin11/tipresias_afl_data:latest
