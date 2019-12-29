@@ -535,6 +535,41 @@ class ColumnDropper(BaseEstimator, TransformerMixin):
         return X.drop(self.cols_to_drop, axis=1, errors="ignore")
 
 
+class DataFrameConverter(BaseEstimator, TransformerMixin):
+    """
+    Transformer that converts numpy arrays into DataFrames with named columns
+    and indices per the initial data sets passed to fit/predict. This is mostly
+    for cases when classes from packages convert DataFrames to numpy arrays
+    without asking, and later transformers depend on named indices/columns to work.
+    """
+
+    def __init__(
+        self,
+        columns: Optional[Union[List[str], pd.Index]] = None,
+        index: Optional[Union[List[str], pd.Index]] = None,
+    ):
+        self.columns = columns
+        self.index = index
+
+    def fit(self, X, y=None):  # pylint: disable=unused-argument
+        return self
+
+    def transform(self, X: Union[pd.DataFrame, np.array]):
+        if self.columns is not None:
+            assert X.shape[1] == len(self.columns), (
+                f"X must have the same number of columns {X.shape[1]} "
+                f"as self.columns {len(self.columns)}."
+            )
+
+        if self.index is not None:
+            assert X.shape[0] == len(self.index), (
+                f"X must have the same number of rows {X.shape[0]} "
+                f"as indicated by self.index {len(self.index)}."
+            )
+
+        return pd.DataFrame(X, columns=self.columns, index=self.index)
+
+
 def _calculate_team_margin(team_margin, oppo_margin):
     # We want True to be 1 and False to be -1
     team_margin_multiplier = ((team_margin > oppo_margin).astype(int) * 2) - 1

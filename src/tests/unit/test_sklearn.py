@@ -15,6 +15,7 @@ from augury.sklearn import (
     EloRegressor,
     TeammatchToMatchConverter,
     ColumnDropper,
+    DataFrameConverter,
     MATCH_INDEX_COLS,
     match_accuracy_scorer,
     year_cv_split,
@@ -178,6 +179,44 @@ class TestColumnDropper(TestCase):
 
         for column in self.cols_to_drop:
             self.assertNotIn(column, transformed_data.columns)
+
+
+class TestDataFrameConverter(TestCase):
+    def setUp(self):
+        self.data = fake_cleaned_match_data(ROW_COUNT, (2017, 2018))
+        self.transformer = DataFrameConverter(
+            columns=self.data.columns, index=self.data.index
+        )
+
+    def test_fit(self):
+        self.assertEqual(self.transformer, self.transformer.fit(self.data))
+
+    def test_transform(self):
+        transformed_data = self.transformer.transform(self.data.to_numpy())
+        self.assertIsInstance(transformed_data, pd.DataFrame)
+
+        column_set = set(transformed_data.columns) & set(self.data.columns)
+        self.assertEqual(column_set, set(self.data.columns))
+        index_set = set(transformed_data.index) & set(self.data.index)
+        self.assertEqual(index_set, set(self.data.index))
+
+        with self.subTest("when index length doesn't match data shape"):
+            self.transformer.set_params(index=self.data.iloc[2:, :].index)
+
+            with self.assertRaisesRegex(
+                AssertionError, "X must have the same number of rows"
+            ):
+                self.transformer.transform(self.data.to_numpy())
+
+        with self.subTest("when column length doesn't match data shape"):
+            self.transformer.set_params(
+                index=self.data.index, columns=self.data.iloc[:, 2:].columns
+            )
+
+            with self.assertRaisesRegex(
+                AssertionError, "X must have the same number of columns"
+            ):
+                self.transformer.transform(self.data.to_numpy())
 
 
 class TestSklearn(TestCase):
