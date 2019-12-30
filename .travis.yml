@@ -22,7 +22,7 @@ jobs:
         - sudo rm /usr/local/bin/docker-compose
         - sudo curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
         - sudo chmod +x /usr/local/bin/docker-compose
-        - docker-compose -f docker-compose.ci.yml run -v "${HOME}/.gcloud:/app/.gcloud" data_science kedro test --no-cov src/tests/integration
+        - docker-compose -f docker-compose.ci.yml run data_science kedro test --no-cov -n auto --dist=loadfile src/tests/integration
     - stage: deploy
       if: branch = master
       script:
