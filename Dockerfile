@@ -24,7 +24,14 @@ RUN npm install
 COPY requirements.txt requirements.dev.txt ./
 RUN pip3 install -r requirements.dev.txt \
   && jupyter contrib nbextension install --user \
-  && jupyter nbextensions_configurator enable --user
+  && jupyter nbextensions_configurator enable --user \
+  && jupyter nbextension enable --py widgetsnbextension \
+  && jupyter nbextension enable codefolding/main \
+  && jupyter nbextension enable execute_time/ExecuteTime \
+  && jupyter nbextension enable toc2/main \
+  && jupyter nbextension enable collapsible_headings/main \
+  && jupyter nbextension enable notify/notify \
+  && jupyter nbextension enable codefolding/edit
 
 # Add the rest of the code
 COPY . /app

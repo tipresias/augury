@@ -1,0 +1,15 @@
+artifact_uri: file:///app/mlruns/0/c50b976c376640a0a2f03e5201e1715f/artifacts
+end_time: 1577611984918
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: 'algorithm_selection_base_xgbregressor_meta_ridge'
+run_id: c50b976c376640a0a2f03e5201e1715f
+run_uuid: c50b976c376640a0a2f03e5201e1715f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1577611976204
+status: 3
+tags: []
+user_id: root

@@ -1,0 +1,15 @@
+artifact_uri: file:///app/mlruns/0/a3025a1a515f4f308d49bfa399194eee/artifacts
+end_time: 1577610362496
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: 'algorithm_selection_base_catboostregressor_meta_xgbregressor'
+run_id: a3025a1a515f4f308d49bfa399194eee
+run_uuid: a3025a1a515f4f308d49bfa399194eee
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1577610354978
+status: 3
+tags: []
+user_id: root

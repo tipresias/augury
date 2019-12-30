@@ -58,17 +58,26 @@ class TestModelTracking(TestCase, KedroContextMixin):
         mock_mlflow.set_tags = MagicMock()
 
         start_run(
-            [(model, model_data, "fake_run")],
+            [
+                (
+                    model,
+                    model_data,
+                    {
+                        "tags": {"experiment": "fake_run"},
+                        "params": {"experiment_value": "fake"},
+                    },
+                )
+            ],
             cv_year_range=(max_of_year_range - 1, max_of_year_range),
         )
 
-        mock_mlflow.start_run.assert_called_once()
+        mock_mlflow.start_run.assert_called_once_with(run_name="fake_run_fake")
         mock_mlflow.log_params.assert_called_once()
-        mock_mlflow.log_param.assert_called_once()
         mock_mlflow.log_metric.assert_called()
         mock_mlflow.set_tags.assert_called_with(
             {
                 "model": "fake_estimator",
                 "cv": (max_of_year_range - 1, max_of_year_range),
+                "experiment": "fake_run",
             }
         )

@@ -188,3 +188,6 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# catboost
+catboost_info

@@ -3,7 +3,7 @@ end_time: 1577599334081
 entry_point_name: ''
 experiment_id: '0'
 lifecycle_stage: active
-name: ''
+name: 'architecture_sklearn_pipeline'
 run_id: 175f7fe7005f43dfa447bfd7eb01c2ab
 run_uuid: 175f7fe7005f43dfa447bfd7eb01c2ab
 source_name: ''

@@ -1,0 +1,15 @@
+artifact_uri: file:///app/mlruns/0/dfbaa1814b274b298e3431d6936b099f/artifacts
+end_time: 1577617578824
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: 'algorithm_selection_base_extratreesregressor_meta_xgbregressor'
+run_id: dfbaa1814b274b298e3431d6936b099f
+run_uuid: dfbaa1814b274b298e3431d6936b099f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1577617566727
+status: 3
+tags: []
+user_id: root

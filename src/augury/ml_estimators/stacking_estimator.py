@@ -8,8 +8,8 @@ from sklearn.base import BaseEstimator
 from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
+from sklearn.ensemble import ExtraTreesRegressor
 from mlxtend.regressor import StackingRegressor
-from xgboost import XGBRegressor
 
 from augury.sklearn import (
     CorrelationSelector,
@@ -58,16 +58,14 @@ ML_PIPELINE = make_pipeline(
         ],
         remainder=StandardScaler(),
     ),
-    XGBRegressor(objective="reg:squarederror", random_state=SEED),
+    ExtraTreesRegressor(random_state=SEED),
 )
 
 ELO_PIPELINE = make_pipeline(
     DataFrameConverter(), TeammatchToMatchConverter(), EloRegressor()
 )
 
-META_PIPELINE = make_pipeline(
-    StandardScaler(), XGBRegressor(objective="reg:squarederror", random_state=SEED),
-)
+META_PIPELINE = make_pipeline(StandardScaler(), ExtraTreesRegressor(random_state=SEED),)
 
 PIPELINE = StackingRegressor(
     regressors=[ML_PIPELINE, ELO_PIPELINE], meta_regressor=META_PIPELINE
@@ -86,8 +84,9 @@ class StackingEstimator(BaseMLEstimator):
         name: Optional[str] = "stacking_estimator",
         min_year=DEFAULT_MIN_YEAR,
     ) -> None:
-        self.min_year = min_year
         super().__init__(pipeline, name=name)
+
+        self.min_year = min_year
 
     def fit(self, X: pd.DataFrame, y: Union[pd.Series, np.ndarray]) -> Type[R]:
         """Fit estimator to the data"""

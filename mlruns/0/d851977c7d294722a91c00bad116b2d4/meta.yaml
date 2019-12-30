@@ -3,7 +3,7 @@ end_time: 1577491488282
 entry_point_name: ''
 experiment_id: '0'
 lifecycle_stage: active
-name: ''
+name: 'architecture_stacking_cv'
 run_id: d851977c7d294722a91c00bad116b2d4
 run_uuid: d851977c7d294722a91c00bad116b2d4
 source_name: ''

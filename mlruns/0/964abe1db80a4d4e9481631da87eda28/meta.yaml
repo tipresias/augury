@@ -1,0 +1,15 @@
+artifact_uri: file:///app/mlruns/0/964abe1db80a4d4e9481631da87eda28/artifacts
+end_time: 1577610581805
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: 'algorithm_selection_base_gradientboostingregressor_meta_xgbregressor'
+run_id: 964abe1db80a4d4e9481631da87eda28
+run_uuid: 964abe1db80a4d4e9481631da87eda28
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1577610569408
+status: 3
+tags: []
+user_id: root
