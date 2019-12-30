@@ -42,3 +42,8 @@ BettingData = TypedDict(
         "venue": str,
     },
 )
+
+MLModelDict = TypedDict(
+    "MLModelDict",
+    {"name": str, "data_set": str, "trained_to": int, "prediction_type": str},
+)

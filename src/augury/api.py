@@ -1,13 +1,16 @@
-from typing import List, Optional, Dict, Tuple, Union, Any
+from typing import List, Optional, Dict, Union, Any, cast
 from datetime import date
 
 import pandas as pd
 from mypy_extensions import TypedDict
+from kedro.context import load_context
 
 from augury.data_import import match_data
 from augury.nodes import match
 from augury.predictions import Predictor
-from augury.settings import ML_MODELS, PREDICTION_DATA_START_DATE
+from augury.run import ProjectContext
+from augury.types import YearRange
+from augury.settings import ML_MODELS, PREDICTION_DATA_START_DATE, BASE_DIR
 
 
 PredictionData = TypedDict(
@@ -54,25 +57,37 @@ def _api_response(data: Union[pd.DataFrame, Dict[str, Any]]) -> ApiResponse:
 
 
 def make_predictions(
-    year_range: Tuple[int, int],
+    year_range: YearRange,
     round_number: Optional[int] = None,
     ml_model_names: Optional[List[str]] = None,
     train=False,
 ) -> ApiResponse:
-    prediction_kwargs = {"train": train}
-
-    if ml_model_names is not None:
-        prediction_kwargs["ml_model_names"] = ml_model_names
+    context: ProjectContext = cast(
+        ProjectContext,
+        load_context(
+            BASE_DIR,
+            start_date=PREDICTION_DATA_START_DATE,
+            end_date=END_OF_YEAR,
+            round_number=round_number,
+        ),
+    )
 
     predictor = Predictor(
         year_range,
-        round_number=round_number,
+        context.catalog.load,
+        round_number=context.round_number,
+        train=train,
         verbose=1,
-        start_date=PREDICTION_DATA_START_DATE,
-        end_date=END_OF_YEAR,
     )
 
-    predictions = predictor.make_predictions(**prediction_kwargs)
+    if ml_model_names is None:
+        ml_models = ML_MODELS
+    else:
+        ml_models = [
+            ml_model for ml_model in ML_MODELS if ml_model["name"] in ml_model_names
+        ]
+
+    predictions = predictor.make_predictions(ml_models)
 
     return _api_response(predictions)
 
