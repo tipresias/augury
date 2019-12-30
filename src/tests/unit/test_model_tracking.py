@@ -2,8 +2,7 @@ from unittest import TestCase
 from unittest.mock import patch, MagicMock
 import re
 
-from kedro.context import load_context
-
+from tests.helpers import KedroContextMixin
 from tests.fixtures.fake_estimator import FakeEstimatorData, FakeEstimator
 from augury.model_tracking import (
     present_model_params,
@@ -11,18 +10,18 @@ from augury.model_tracking import (
     BASE_PARAM_VALUE_TYPES,
     start_run,
 )
-from augury.settings import BASE_DIR, VALIDATION_YEAR_RANGE
-
+from augury.settings import VALIDATION_YEAR_RANGE
 
 FAKE_ML_MODELS = [{"name": "fake_estimator", "data_set": "fake_data"}]
 
 
-class TestModelTracking(TestCase):
+class TestModelTracking(TestCase, KedroContextMixin):
     def setUp(self):
         self.model_name = "fake_estimator"
+        self.context = self.load_context()
 
     def test_present_model_params(self):
-        estimator = load_context(BASE_DIR).catalog.load(self.model_name)
+        estimator = self.context.catalog.load(self.model_name)
         trackable_params = present_model_params(estimator)
 
         self.assertIsInstance(trackable_params, dict)
