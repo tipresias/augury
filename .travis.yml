@@ -3,10 +3,12 @@ services:
   - docker
 env:
   DOCKER_COMPOSE_VERSION: 1.22.0
-  GOOGLE_APPLICATION_CREDENTIALS: ./.gcloud/keyfile.json
+  GOOGLE_APPLICATION_CREDENTIALS: .gcloud/keyfile.json
 install:
   - docker pull cfranklin11/tipresias_data_science:latest
   - docker build --cache-from cfranklin11/tipresias_data_science:latest -t cfranklin11/tipresias_data_science:latest .
+  - mkdir $HOME/.gcloud
+  - openssl aes-256-cbc -K $encrypted_88b6344ff4d0_key -iv $encrypted_88b6344ff4d0_iv -in keyfile.json.enc -out ${HOME}/.gcloud/keyfile.json -d
 jobs:
   include:
     - stage: test
@@ -14,20 +16,17 @@ jobs:
       script:
         - docker run cfranklin11/tipresias_data_science:latest pylint --disable=R src
         - docker run cfranklin11/tipresias_data_science:latest mypy src
-        - docker run -e PYTHON_ENV=development cfranklin11/tipresias_data_science:latest kedro test --no-cov src/tests/unit/ src/tests/test_run.py
+        - docker run -v "${HOME}/.gcloud:/app/.gcloud" -e PYTHON_ENV=development -e CI=true -e GOOGLE_APPLICATION_CREDENTIALS="${GOOGLE_APPLICATION_CREDENTIALS}" cfranklin11/tipresias_data_science:latest kedro test --no-cov src/tests/unit/
     - name: "Integration Tests"
       script:
         - sudo rm /usr/local/bin/docker-compose
         - sudo curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
         - sudo chmod +x /usr/local/bin/docker-compose
-        - docker pull cfranklin11/tipresias_afl_data:latest
-        - docker-compose -f docker-compose.ci.yml run data_science kedro test --no-cov -n auto src/tests/integration
+        - docker-compose -f docker-compose.ci.yml run -v "${HOME}/.gcloud:/app/.gcloud" data_science kedro test --no-cov src/tests/integration
     - stage: deploy
       if: branch = master
       script:
         - echo "$DOCKER_PASSWORD" | docker login -u cfranklin11 --password-stdin
         - docker push cfranklin11/tipresias_data_science:latest
-        - mkdir $HOME/.gcloud
-        - openssl aes-256-cbc -K $encrypted_88b6344ff4d0_key -iv $encrypted_88b6344ff4d0_iv -in keyfile.json.enc -out ${HOME}/.gcloud/keyfile.json -d
         - ./scripts/deploy.sh
       name: "Deploy"

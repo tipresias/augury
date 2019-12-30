@@ -1,10 +1,14 @@
 from unittest import TestCase
-from unittest.mock import patch
+from unittest.mock import MagicMock
+import os
 
+import joblib
 from freezegun import freeze_time
 
+from tests.helpers import KedroContextMixin
 from tests.fixtures.fake_estimator import FakeEstimatorData
 from augury.predictions import Predictor
+from augury.settings import BASE_DIR
 
 YEAR_RANGE = (2018, 2019)
 PREDICTION_ROUND = 1
@@ -13,9 +17,15 @@ FAKE_ML_MODELS = [
 ]
 
 
-class TestPredictor(TestCase):
+class TestPredictor(TestCase, KedroContextMixin):
     def setUp(self):
-        self.predictor = Predictor(YEAR_RANGE, PREDICTION_ROUND)
+        self.context = self.load_context()
+        self.context.catalog.load = MagicMock(
+            return_value=joblib.load(
+                os.path.join(BASE_DIR, "src/tests/fixtures/fake_estimator.pkl")
+            )
+        )
+        self.predictor = Predictor(YEAR_RANGE, self.context, PREDICTION_ROUND)
         self.max_year = YEAR_RANGE[1] - 1
 
         fake_data = FakeEstimatorData(max_year=self.max_year)
@@ -25,12 +35,9 @@ class TestPredictor(TestCase):
 
         self.predictor._data = fake_data  # pylint: disable=protected-access
 
-    @patch("augury.predictions.ML_MODELS", FAKE_ML_MODELS)
     def test_make_predictions(self):
         with freeze_time(f"{self.max_year}-06-15"):
-            model_predictions = self.predictor.make_predictions(
-                ml_model_names=["fake_estimator"]
-            )
+            model_predictions = self.predictor.make_predictions(FAKE_ML_MODELS)
 
         self.assertEqual(len(model_predictions), len(self.prediction_matches))
 

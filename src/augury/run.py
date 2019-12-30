@@ -21,7 +21,7 @@ class ProjectContext(KedroContext):
     """
 
     project_name = "augury"
-    project_version = "0.15.2"
+    project_version = "0.15.5"
 
     def __init__(
         self,

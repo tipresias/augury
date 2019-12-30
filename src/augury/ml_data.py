@@ -1,6 +1,6 @@
 """Module for holding model data and returning it in a form useful for ML pipelines"""
 
-from typing import Tuple, Optional
+from typing import Tuple
 from datetime import date
 
 import pandas as pd
@@ -29,28 +29,23 @@ class MLData:
 
     def __init__(
         self,
+        context=None,
         pipeline: str = "full",
         data_set: str = "model_data",
         train_year_range: YearRange = TRAIN_YEAR_RANGE,
         test_year_range: YearRange = VALIDATION_YEAR_RANGE,
-        start_date: str = "1897-01-01",
-        end_date: str = str(date.today()),
-        round_number: Optional[int] = None,
         update_data: bool = False,
         index_cols=INDEX_COLS,
         **pipeline_kwargs,
     ) -> None:
+        self.context = context or load_context(BASE_DIR)
         self.pipeline = pipeline
         self._data_set = data_set
         self._train_year_range = train_year_range
         self._test_year_range = test_year_range
-        self.start_date = start_date
-        self.end_date = end_date
-        self.round_number = round_number
         self.update_data = update_data
         self.index_cols = index_cols
         self._data = None
-        self._data_context = None
         self.pipeline_kwargs = pipeline_kwargs
 
     @property
@@ -133,10 +128,10 @@ class MLData:
         self._data_set = name
 
     def _load_data(self):
-        if self.update_data or not self.__data_context.catalog.exists(self.data_set):
-            self.__data_context.run(pipeline_name=self.pipeline, **self.pipeline_kwargs)
+        if self.update_data or not self.context.catalog.exists(self.data_set):
+            self.context.run(pipeline_name=self.pipeline, **self.pipeline_kwargs)
 
-        data_frame = pd.DataFrame(self.__data_context.catalog.load(self.data_set))
+        data_frame = pd.DataFrame(self.context.catalog.load(self.data_set))
 
         # When loading date columns directly from JSON, we need to convert them
         # from string to datetime
@@ -148,18 +143,6 @@ class MLData:
             .rename_axis([None] * len(self.index_cols))
             .sort_index()
         )
-
-    @property
-    def __data_context(self):
-        if self._data_context is None:
-            self._data_context = load_context(
-                BASE_DIR,
-                start_date=self.start_date,
-                end_date=self.end_date,
-                round_number=self.round_number,
-            )
-
-        return self._data_context
 
     @staticmethod
     def __X(data_frame: pd.DataFrame) -> pd.DataFrame:

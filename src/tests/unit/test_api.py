@@ -1,38 +1,49 @@
 from unittest import TestCase
 from unittest.mock import Mock, patch
 from datetime import date
+from typing import List
 
 from tests.fixtures.data_factories import fake_fixture_data, fake_raw_match_results_data
 from augury.data_import import match_data
 from augury import api
 from augury import settings
+from augury.types import MLModelDict
 
 
 THIS_YEAR = date.today().year
 YEAR_RANGE = (2018, 2019)
 N_MATCHES = 5
+FAKE_ML_MODELS: List[MLModelDict] = [
+    {
+        "name": "fake_estimator",
+        "data_set": "fake_data",
+        "prediction_type": "margin",
+        "trained_to": 2018,
+    }
+]
 
 
 class TestApi(TestCase):
     # It doesn't matter what data Predictor returns since this method doesn't check
     @patch("augury.api.Predictor.make_predictions")
+    @patch("augury.api.ML_MODELS", settings.ML_MODELS + FAKE_ML_MODELS)
     def test_make_predictions(self, mock_make_predictions):
         mock_make_predictions.return_value = fake_fixture_data(N_MATCHES, YEAR_RANGE)
-        response = api.make_predictions(YEAR_RANGE, ml_model_names=["fake_model"])
+        response = api.make_predictions(YEAR_RANGE, ml_model_names=["fake_estimator"])
 
         data = response["data"]
 
         self.assertIsInstance(data, list)
         self.assertIsInstance(data[0], dict)
         self.assertGreater(len(data[0].keys()), 0)
-        mock_make_predictions.assert_called_with(
-            ml_model_names=["fake_model"], train=False
-        )
+        mock_make_predictions.assert_called_with(FAKE_ML_MODELS)
 
         with self.subTest(ml_model_names=None):
             mock_make_predictions.reset_mock()
             api.make_predictions(YEAR_RANGE, ml_model_names=None)
-            mock_make_predictions.assert_called_with(train=False)
+            mock_make_predictions.assert_called_with(
+                settings.ML_MODELS + FAKE_ML_MODELS
+            )
 
     def test_fetch_fixture_data(self):
         PROCESSED_FIXTURE_FIELDS = [

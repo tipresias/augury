@@ -5,8 +5,8 @@ from sklearn.linear_model import Ridge, Lasso
 import pandas as pd
 import numpy as np
 from faker import Faker
-from kedro.context import load_context
 
+from tests.helpers import KedroContextMixin
 from tests.fixtures.data_factories import fake_cleaned_match_data
 from tests.fixtures.fake_estimator import FakeEstimatorData
 from augury.sklearn import (
@@ -219,12 +219,12 @@ class TestDataFrameConverter(TestCase):
                 self.transformer.transform(self.data.to_numpy())
 
 
-class TestSklearn(TestCase):
+class TestSklearn(TestCase, KedroContextMixin):
     def setUp(self):
         self.data = FakeEstimatorData()
 
     def test_match_accuracy_scorer(self):
-        estimator = load_context(BASE_DIR).catalog.load("fake_estimator")
+        estimator = self.load_context().catalog.load("fake_estimator")
         X_test, y_test = self.data.test_data
 
         match_acc = match_accuracy_scorer(estimator, X_test, y_test)
