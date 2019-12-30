@@ -1,6 +1,6 @@
 """Generates predictions with the given models for the given inputs"""
 
-from typing import List, Optional, Callable
+from typing import List, Optional
 import itertools
 
 import pandas as pd
@@ -17,18 +17,18 @@ class Predictor:
     def __init__(
         self,
         year_range: YearRange,
-        load_model_instance: Callable[[str], BaseMLEstimator],
+        context,
         round_number: Optional[int] = None,
         train=False,
         verbose: int = 1,
         **data_kwargs,
     ):
-        self.load_model_instance = load_model_instance
+        self.context = context
         self.year_range = year_range
         self.round_number = round_number
         self.train = train
         self.verbose = verbose
-        self._data = MLData(test_year_range=year_range, **data_kwargs)
+        self._data = MLData(context=context, test_year_range=year_range, **data_kwargs)
 
     def make_predictions(self, ml_models: List[MLModelDict]) -> pd.DataFrame:
         """Predict margins or confidence percentages for matches"""
@@ -49,7 +49,7 @@ class Predictor:
         if self.verbose == 1:
             print(f"Making predictions with {ml_model['name']}")
 
-        loaded_model = self.load_model_instance(ml_model["name"])
+        loaded_model = self.context.catalog.load(ml_model["name"])
         self._data.data_set = ml_model["data_set"]
 
         trained_model = self._train_model(loaded_model) if self.train else loaded_model

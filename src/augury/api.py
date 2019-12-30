@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict, Union, Any, cast
+from typing import List, Optional, Dict, Union, Any
 from datetime import date
 
 import pandas as pd
@@ -8,7 +8,6 @@ from kedro.context import load_context
 from augury.data_import import match_data
 from augury.nodes import match
 from augury.predictions import Predictor
-from augury.run import ProjectContext
 from augury.types import YearRange
 from augury.settings import ML_MODELS, PREDICTION_DATA_START_DATE, BASE_DIR
 
@@ -62,20 +61,19 @@ def make_predictions(
     ml_model_names: Optional[List[str]] = None,
     train=False,
 ) -> ApiResponse:
-    context: ProjectContext = cast(
-        ProjectContext,
-        load_context(
-            BASE_DIR,
-            start_date=PREDICTION_DATA_START_DATE,
-            end_date=END_OF_YEAR,
-            round_number=round_number,
-        ),
+    context = load_context(
+        BASE_DIR,
+        start_date=PREDICTION_DATA_START_DATE,
+        end_date=END_OF_YEAR,
+        round_number=round_number,
     )
 
     predictor = Predictor(
         year_range,
-        context.catalog.load,
-        round_number=context.round_number,
+        context,
+        # Ignoring, because ProjectContext has project-specific attributes,
+        # and importing it to use as a type tends to create circular dependencies
+        round_number=context.round_number,  # type: ignore
         train=train,
         verbose=1,
     )

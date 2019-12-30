@@ -5,6 +5,7 @@ import os
 import joblib
 from freezegun import freeze_time
 
+from tests.helpers import KedroContextMixin
 from tests.fixtures.fake_estimator import FakeEstimatorData
 from augury.predictions import Predictor
 from augury.settings import BASE_DIR
@@ -16,14 +17,15 @@ FAKE_ML_MODELS = [
 ]
 
 
-class TestPredictor(TestCase):
+class TestPredictor(TestCase, KedroContextMixin):
     def setUp(self):
-        load_model_instance = MagicMock(
+        self.context = self.load_context()
+        self.context.catalog.load = MagicMock(
             return_value=joblib.load(
                 os.path.join(BASE_DIR, "src/tests/fixtures/fake_estimator.pkl")
             )
         )
-        self.predictor = Predictor(YEAR_RANGE, load_model_instance, PREDICTION_ROUND)
+        self.predictor = Predictor(YEAR_RANGE, self.context, PREDICTION_ROUND)
         self.max_year = YEAR_RANGE[1] - 1
 
         fake_data = FakeEstimatorData(max_year=self.max_year)
