@@ -45,4 +45,8 @@ services:
       - "5000:5000"
     depends_on:
       - data_science
-    command: mlflow server -h 0.0.0.0
+    command: mlflow server -h 0.0.0.0 --backend-store-uri sqlite:////app/db/augury.db --default-artifact-root ./mlruns
+  db:
+    image: nouchka/sqlite3:latest
+    volumes:
+      - ./db:/root/db
