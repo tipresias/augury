@@ -58,9 +58,9 @@ benchmark_estimator:
   type: PickleLocalDataSet
   filepath: data/06_models/benchmark_estimator.pkl
   backend: joblib
-stacking_estimator:
+tipresias_2020:
   type: PickleLocalDataSet
-  filepath: data/06_models/stacking_estimator.pkl
+  filepath: data/06_models/tipresias_2020.pkl
   backend: joblib
 confidence_estimator:
   type: PickleLocalDataSet

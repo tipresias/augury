@@ -2,6 +2,7 @@
 
 from typing import Union, List, Tuple, Dict, Callable, Any
 import re
+import os
 
 from sklearn.base import BaseEstimator
 from sklearn.model_selection import cross_validate
@@ -13,7 +14,7 @@ import numpy as np
 from augury.ml_data import MLData
 from augury.sklearn import year_cv_split, match_accuracy_scorer
 from augury.ml_estimators.base_ml_estimator import BaseMLEstimator
-from augury.settings import CV_YEAR_RANGE, SEED
+from augury.settings import CV_YEAR_RANGE, SEED, BASE_DIR
 from augury.types import YearRange
 
 
@@ -199,6 +200,8 @@ def start_run(
     Perform cros-validation of models, recording params and metrics
     with mlflow's tracking module.
     """
+
+    mlflow.set_tracking_uri("sqlite:///" + os.path.join(BASE_DIR, "db/mlflow.db"))
 
     if experiment is not None:
         mlflow.set_experiment(experiment)
