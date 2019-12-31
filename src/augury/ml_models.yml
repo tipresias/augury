@@ -11,7 +11,7 @@ models:
     prediction_type: margin
     data_set: legacy_model_data
     trained_to: 2016
-  - name: stacking_estimator
+  - name: tipresias_2020
     prediction_type: margin
     data_set: model_data
     trained_to: 2016
