@@ -201,7 +201,7 @@ def start_run(
     with mlflow's tracking module.
     """
 
-    mlflow.set_tracking_uri("sqlite:///" + os.path.join(BASE_DIR, "db/augury.db"))
+    mlflow.set_tracking_uri("sqlite:///" + os.path.join(BASE_DIR, "db/mlflow.db"))
 
     if experiment is not None:
         mlflow.set_experiment(experiment)
