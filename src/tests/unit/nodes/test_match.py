@@ -8,9 +8,9 @@ from faker import Faker
 import pytz
 
 from tests.fixtures.data_factories import fake_cleaned_match_data
+from tests.helpers import ColumnAssertionMixin
 from augury.nodes import match
 from augury.settings import VENUES, BASE_DIR
-from .node_test_mixins import ColumnAssertionMixin
 
 
 FAKE = Faker()

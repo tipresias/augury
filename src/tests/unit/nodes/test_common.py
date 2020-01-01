@@ -10,9 +10,9 @@ from tests.fixtures.data_factories import (
     fake_footywire_betting_data,
     fake_cleaned_match_data,
 )
+from tests.helpers import ColumnAssertionMixin
 from augury.nodes import common
 from augury.settings import MELBOURNE_TIMEZONE, INDEX_COLS
-from .node_test_mixins import ColumnAssertionMixin
 
 START_DATE = "2013-01-01"
 END_DATE = "2014-12-31"
