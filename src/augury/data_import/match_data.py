@@ -1,4 +1,4 @@
-"""Module for fetching match data from afl_data service"""
+"""Module for fetching match data from afl_data service."""
 
 from typing import List, Dict, Any
 from datetime import date
@@ -28,7 +28,6 @@ def fetch_match_data(
     Returns
         list of dicts of match data.
     """
-
     if verbose == 1:
         print("Fetching match data from between " f"{start_date} and {end_date}...")
 
@@ -50,7 +49,7 @@ def save_match_data(
     for_prod: bool = False,
 ) -> None:
     """
-    Save match data as a *.json file with name based on date range of data
+    Save match data as a *.json file with name based on date range of data.
 
     Args:
         start_date (string: YYYY-MM-DD): Earliest date for match data returned.
@@ -63,7 +62,6 @@ def save_match_data(
     Returns:
         None
     """
-
     if for_prod:
         start_date = max(start_date, PREDICTION_DATA_START_DATE)
 
@@ -90,7 +88,6 @@ def fetch_fixture_data(
     Returns
         list of dicts of fixture data.
     """
-
     if verbose == 1:
         print("Fetching fixture data from between " f"{start_date} and {end_date}...")
 

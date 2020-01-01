@@ -1,4 +1,4 @@
-"""ML model classes and associated data classes"""
+"""ML model classes and associated data classes."""
 
 from .benchmark_estimator import BenchmarkEstimator
 from .bagging_estimator import BaggingEstimator

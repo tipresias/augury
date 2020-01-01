@@ -46,14 +46,20 @@ PIPELINE = make_pipeline(
 
 
 class FakeEstimator(BaseMLEstimator):
-    """Create test MLModel for use in integration tests"""
+    """Test MLEstimator for use in integration tests."""
 
     def __init__(self, pipeline=PIPELINE, name="fake_estimator"):
+        """Instantiate a FakeEstimator object.
+
+        Params:
+            pipeline: Scikit-learn pipeline.
+            name: Name of the estimator for finding its pickle file and loading it.
+        """
         super().__init__(pipeline=pipeline, name=name)
 
 
 class FakeEstimatorData(MLData):
-    """Process data for FakeEstimator"""
+    """Process data for FakeEstimator."""
 
     def __init__(
         self,
@@ -62,6 +68,15 @@ class FakeEstimatorData(MLData):
         max_year=(VALIDATION_YEAR_RANGE[0] - 1),
         **kwargs
     ):
+        """Instantiate a FakeEstimatorData object.
+
+        Params:
+            pipeline: Name of the pipeline to run if the data set isn't available.
+            data_set: Name of the data set to load.
+            max_year: Maximum year (inclusive) for the data set. This lets us load
+                the same data fixture without having worry about whether it has
+                the correct range of years for a given test.
+        """
         data_kwargs = {
             **{
                 "pipeline": pipeline,
@@ -77,6 +92,7 @@ class FakeEstimatorData(MLData):
 
     @property
     def data(self):
+        """Return full data set."""
         if self._data is None:
             self._data = super().data
 
@@ -101,8 +117,7 @@ class FakeEstimatorData(MLData):
 
 
 def create_fake_pipeline(*_args, **_kwargs):
-    """Kedro pipeline for loading and transforming match data for test estimator"""
-
+    """Create a pipeline for loading and transforming match data for test estimator."""
     return Pipeline(
         [
             node(common.convert_to_data_frame, "fake_match_data", "match_data_frame"),
@@ -139,7 +154,6 @@ def create_fake_pipeline(*_args, **_kwargs):
 
 def pickle_fake_estimator():
     """Save FakeEstimator as a pickle file."""
-
     estimator = FakeEstimator()
     data = FakeEstimatorData()
 

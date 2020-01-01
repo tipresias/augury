@@ -15,22 +15,30 @@ from augury.io import JSONRemoteDataSet
 
 
 class ProjectContext(KedroContext):
-    """Users can override the remaining methods from the parent class here, or create new ones
-    (e.g. as required by plugins)
-
-    """
+    """Specialisation of generic KedroContext object with params specific to Augury."""
 
     project_name = "augury"
     project_version = "0.15.5"
 
     def __init__(
         self,
-        project_path,
-        env=os.getenv("PYTHON_ENV"),
+        project_path: str,
+        env: Optional[str] = os.getenv("PYTHON_ENV"),
         round_number: Optional[int] = None,
         start_date: str = "1897-01-01",
         end_date: str = f"{date.today().year}-12-31",
     ):
+        """
+        Instantiate ProjectContext object.
+
+        Params:
+            project_path: Absolute path to project root.
+            env: Name of the current environment. Principally used
+                to load the correct `conf/` files.
+            round_number: The relevant round_number for filtering data.
+            start_date: The earliest match date (inclusive) to include in any data sets.
+            end_date: The latest match date (inclusive) to include in any data sets.
+        """
         super().__init__(project_path, env=env)
         self.round_number = round_number
         self.start_date = start_date
@@ -38,6 +46,7 @@ class ProjectContext(KedroContext):
 
     @property
     def pipeline(self):
+        """Create the default pipeline for the Augury app."""
         return create_full_pipeline(self.start_date, self.end_date)
 
     def _get_pipelines(self) -> Dict[str, Pipeline]:

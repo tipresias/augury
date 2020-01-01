@@ -1,1 +1,1 @@
-"""Module for data readers"""
+"""Module for importing data from external APIs."""

@@ -52,8 +52,7 @@ def _calculate_features(calculators: List[CalculatorPair], data_frame: pd.DataFr
 
 
 def feature_calculator(calculators: List[CalculatorPair]) -> DataFrameTransformer:
-    """Meta function that calls individual feature-calculation functions."""
-
+    """Call individual feature-calculation functions."""
     return update_wrapper(
         partial(_calculate_features, calculators), _calculate_features
     )
@@ -88,8 +87,7 @@ def _rolling_rate(column: str, data_frame: pd.DataFrame) -> pd.Series:
 
 
 def calculate_rolling_rate(column: Sequence[str]) -> DataFrameCalculator:
-    """Calculate the rolling mean of a column"""
-
+    """Calculate the rolling mean of a column."""
     if len(column) != 1:
         raise ValueError(
             "Can only calculate one rolling average at a time, but received "
@@ -145,13 +143,12 @@ def _rolling_mean_by_dimension(
 def calculate_rolling_mean_by_dimension(
     column_pair: Sequence[str], rolling_windows: Dict[str, int] = ROLLING_WINDOWS
 ) -> DataFrameCalculator:
-    """
-    Calculate the rolling mean of a team's metric column when grouped by a dimension column.
+    """Calculate the rolling mean of a numeric column grouped by a categorical column.
+
     Note: Be sure not to use 'last_week'/'prev_match' metric columns, because that data
     refers to the previous match's dimension, not the current one, so grouping the metric
     values will result in incorrect aggregations.
     """
-
     if len(column_pair) != 2:
         raise ValueError(
             "Can only calculate one rolling average at a time, grouped by one dimension "
@@ -184,8 +181,7 @@ def _division(column_pair: Sequence[str], data_frame: pd.DataFrame) -> pd.Series
 
 
 def calculate_division(column_pair: Sequence[str]) -> DataFrameCalculator:
-    """Calculates the first column's values divided by the second's"""
-
+    """Calculate the first column's values divided by the second's."""
     if len(column_pair) != 2:
         raise ValueError(
             "Can only calculate one column divided by another, but received "
@@ -210,8 +206,7 @@ def _multiplication(column_pair: Sequence[str], data_frame: pd.DataFrame) -> pd.
 
 
 def calculate_multiplication(column_pair: Sequence[str]) -> DataFrameCalculator:
-    """Multiplies the values of the two columns"""
-
+    """Multiply the values of two columns."""
     if len(column_pair) != 2:
         raise ValueError(
             "Can only calculate one column multiplied by another, but received "
@@ -247,8 +242,7 @@ def _addition(columns: Sequence[str], data_frame: pd.DataFrame) -> pd.Series:
 
 
 def calculate_addition(columns: Sequence[str]) -> DataFrameCalculator:
-    """Adds the values of the columns"""
-
+    """Add the values of multiple columns."""
     if len(columns) < 2:
         raise ValueError(
             "Must have at least two columns to add together, but received " f"{columns}"

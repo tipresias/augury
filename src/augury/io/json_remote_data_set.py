@@ -1,4 +1,4 @@
-"""kedro data set based on fetching fresh data from the afl_data service"""
+"""kedro data set based on fetching fresh data from the afl_data service."""
 
 from typing import Any, List, Dict, Callable, Union
 import importlib
@@ -30,11 +30,24 @@ DATE_RANGE_TYPE: Dict[str, Dict[str, str]] = {
 
 
 class JSONRemoteDataSet(AbstractDataSet):
-    """kedro data set based on fetching fresh data from the afl_data service"""
+    """Kedro data set based on fetching fresh data from the afl_data service."""
 
     def __init__(
         self, data_source: Union[Callable, str], date_range_type: str, load_kwargs={},
     ):
+        """Instantiate a JSONRemoteDataSet object.
+
+        Params:
+            data_source: Either a function that fetches data from an external API,
+                or a reference to one that can be loaded via `getattr`.
+            date_range_type: Defines the date range of the data to be fetched.
+                Can be one of the following:
+                    'whole_season': all of the current year.
+                    'past_rounds': the current year up to the current date (inclusive).
+                    'future_rounds': the current date until the end of the current year
+                        (inclusive).
+            load_kwargs: Keyword arguments to pass to the data import function.
+        """
         if date_range_type not in DATE_RANGE_TYPE.keys():
             raise ValueError(
                 f"Argument date_range_type must be one of {DATE_RANGE_TYPE.keys()}, "

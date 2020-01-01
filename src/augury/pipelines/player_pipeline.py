@@ -18,8 +18,7 @@ PLAYER_MATCH_STATS_COLS = [
 
 
 def create_past_player_pipeline():
-    """Creates pipeline that loads and cleans historical player data."""
-
+    """Create a pipeline that loads and cleans historical player data."""
     return Pipeline(
         [
             node(
@@ -42,8 +41,7 @@ def create_past_player_pipeline():
 
 
 def create_roster_pipeline():
-    """Creates a pipeline that loads and cleans player data for future matches."""
-
+    """Create a pipeline that loads and cleans player data for future matches."""
     return Pipeline(
         [
             node(common.convert_to_data_frame, "roster_data", "roster_data_frame"),
@@ -60,7 +58,7 @@ def create_player_pipeline(
     start_date: str, end_date: str, past_match_pipeline=Pipeline([]), **_kwargs
 ):
     """
-    Kedro pipeline for loading and transforming player data.
+    Create a Kedro pipeline for loading and transforming player data.
 
     Args:
         start_date (str): Stringified date (yyyy-mm-dd)
@@ -68,7 +66,6 @@ def create_player_pipeline(
         past_match_pipeline (kedro.pipeline.Pipeline): Pipeline for past match data,
             required for player data cleaning if player pipeline is run in isolation.
     """
-
     return Pipeline(
         [
             past_match_pipeline,

@@ -29,8 +29,7 @@ MATCH_OPPO_COLS = [
 
 
 def create_past_match_pipeline():
-    """Kedro pipeline for match data to the end of last year"""
-
+    """Create Kedro pipeline for match data to the end of last year."""
     return Pipeline(
         [
             node(
@@ -53,8 +52,7 @@ def create_past_match_pipeline():
 
 
 def create_future_match_pipeline():
-    """Creates pipeline for loading and cleaning fixture (i.e. future matches) data."""
-
+    """Create a pipeline for loading and cleaning fixture (i.e. future matches) data."""
     return Pipeline(
         [
             node(common.convert_to_data_frame, "fixture_data", "fixture_data_frame"),
@@ -70,7 +68,7 @@ def create_match_pipeline(
     **_kwargs
 ):
     """
-    Kedro pipeline for loading and transforming match data
+    Create a Kedro pipeline for loading and transforming match data.
 
     Args:
         start_date (str, YYYY-MM-DD format): Earliest date for included data.
@@ -78,7 +76,6 @@ def create_match_pipeline(
         past_match_pipeline (kedro.pipeline.Pipeline): Pipeline for loading and
             cleaning data for past matches.
     """
-
     return Pipeline(
         [
             past_match_pipeline,
@@ -171,7 +168,8 @@ def create_legacy_match_pipeline(
     **_kwargs
 ):
     """
-    Kedro pipeline for loading and transforming match data with Elo features included.
+    Create a pipeline for match data with Elo features included.
+
     Only relevant for generating predictions from older models.
 
     Args:
@@ -180,7 +178,6 @@ def create_legacy_match_pipeline(
         past_match_pipeline (kedro.pipeline.Pipeline): Pipeline for loading and
             cleaning data for past matches.
     """
-
     return Pipeline(
         [
             past_match_pipeline,

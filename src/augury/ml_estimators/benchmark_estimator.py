@@ -1,4 +1,4 @@
-"""Class for model trained on all AFL data and its associated data class"""
+"""Class for benchmark model without any fancy ensembling."""
 
 import numpy as np
 from sklearn.compose import ColumnTransformer
@@ -41,9 +41,16 @@ PIPELINE = make_pipeline(
 
 
 class BenchmarkEstimator(BaseMLEstimator):
-    """Create pipeline for fitting/predicting with model trained on all AFL data"""
+    """Basic estimator based on a single Scikit-learn pipeline."""
 
     def __init__(
         self, pipeline: Pipeline = PIPELINE, name: str = "benchmark_estimator"
     ) -> None:
+        """Instantiate a BenchmarkEstimator object.
+
+        Params:
+            pipeline: Pipeline of Scikit-learn estimators ending in a regressor
+                or classifier.
+            name: Name of the estimator for reference by Kedro data sets and filenames.
+        """
         super().__init__(pipeline=pipeline, name=name)

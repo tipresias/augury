@@ -1,9 +1,6 @@
-"""
-Classes based on existing Scikit-learn classes or functionality with slight
-modifications
-"""
+"""Classes and functions based on existing Scikit-learn functionality."""
 
-from typing import Sequence, Type, List, Union, Optional, Any, Tuple
+from typing import Sequence, Type, List, Union, Optional, Any, Tuple, Dict
 import re
 import copy
 import math
@@ -75,13 +72,21 @@ MIN_VAL = 1 * 10 ** -10
 
 
 class AveragingRegressor(_BaseComposition, RegressorMixin):
-    """Scikit-Learn-style ensemble regressor for averaging regressors' predictions"""
+    """Scikit-Learn-style ensemble regressor for averaging regressors' predictions."""
 
     def __init__(
         self,
         estimators: Sequence[Tuple[str, BaseEstimator]],
         weights: Optional[List[float]] = None,
     ) -> None:
+        """Instantiate an AveragingRegressor object.
+
+        Params:
+            estimators: Scikit-learn estimators (and their names) for generating
+                base predictions that will be averaged.
+            weights: Multipliers for individual base predictions to weight their impact
+                on the final prediction.
+        """
         super().__init__()
 
         self.estimators = estimators
@@ -92,8 +97,7 @@ class AveragingRegressor(_BaseComposition, RegressorMixin):
     def fit(
         self, X: Union[pd.DataFrame, np.ndarray], y: Union[pd.Series, np.ndarray]
     ) -> Type[R]:
-        """Fit estimators to data"""
-
+        """Fit estimators to the data."""
         self.__validate_estimators_weights_equality()
 
         for _, estimator in self.estimators:
@@ -102,19 +106,20 @@ class AveragingRegressor(_BaseComposition, RegressorMixin):
         return self
 
     def predict(self, X: Union[pd.DataFrame, np.ndarray]) -> np.ndarray:
-        """Predict with each estimator, then average the predictions"""
-
+        """Predict with each estimator, then average the predictions."""
         self.__validate_estimators_weights_equality()
 
         predictions = [estimator.predict(X) for _, estimator in self.estimators]
 
         return np.average(np.array(predictions), axis=0, weights=self.weights)
 
-    # The params Dict is way too complicated to try typing it
-    def get_params(self, deep=True) -> Any:
+    # The params Dict is way too complicated to try properly typing it
+    def get_params(self, deep=True) -> Dict[str, Any]:
+        """Get the params dictionary comprised of all estimators."""
         return super()._get_params("estimators", deep=deep)
 
     def set_params(self, **params) -> BaseEstimator:
+        """Set params on any estimators."""
         super()._set_params("estimators", **params)
 
         return self
@@ -128,9 +133,7 @@ class AveragingRegressor(_BaseComposition, RegressorMixin):
 
 
 class CorrelationSelector(BaseEstimator, TransformerMixin):
-    """
-    Proprocessing transformer for filtering out features that are less correlated with labels
-    """
+    """Transformer for filtering out features that are less correlated with labels."""
 
     def __init__(
         self,
@@ -138,25 +141,25 @@ class CorrelationSelector(BaseEstimator, TransformerMixin):
         threshold: Optional[float] = None,
         labels=pd.Series(),
     ) -> None:
+        """Instantiate a CorrelationSelector transformer.
+
+        Params:
+            cols_to_keep: List of feature names to always keep in the data set.
+            threshold: Minimum correlation value (exclusive) for keeping a feature.
+            labels: Label values from the training data set for calculating
+                correlations.
+        """
         self.threshold = threshold
         self.labels = labels
         self._cols_to_keep = cols_to_keep
         self._above_threshold_columns = cols_to_keep
 
     def transform(self, X: pd.DataFrame, _y=None) -> pd.DataFrame:
-        """
-        Filter out features whose correlation with the labels is below
-        the chosen threshold.
-        """
-
+        """Filter out features with weak correlation with the labels."""
         return X[self._above_threshold_columns]
 
     def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> Type[T]:
-        """
-        Calculate correlation between each feature and labels, saving the list
-        of features whose correlation is above the chose threshold.
-        """
-
+        """Calculate feature/label correlations and save high-correlation features."""
         if not any(self.labels) and y is not None:
             self.labels = y
 
@@ -180,25 +183,21 @@ class CorrelationSelector(BaseEstimator, TransformerMixin):
 
     @property
     def cols_to_keep(self) -> List[str]:
-        """
-        List of columns that are kept regardless of their correlation with the labels.
-        """
-
+        """List columns that never filtered out."""
         return self._cols_to_keep
 
     @cols_to_keep.setter
     def cols_to_keep(self, cols_to_keep: List[str]) -> None:
-        """
-        Defines a list of columns to keep regardless of their correlation
-        with the labels. Also, resets the overall list of columns to keep.
-        """
+        """Set the list of columns to always keep.
 
+        Also resets the overall list of columns to keep to the given list.
+        """
         self._cols_to_keep = cols_to_keep
         self._above_threshold_columns = self._cols_to_keep
 
 
 class EloRegressor(BaseEstimator, RegressorMixin):
-    """Elo regression model with a scikit-learn interface"""
+    """Elo regression model with a scikit-learn interface."""
 
     def __init__(
         self,
@@ -209,6 +208,19 @@ class EloRegressor(BaseEstimator, RegressorMixin):
         s=S,
         season_carryover=SEASON_CARRYOVER,
     ):
+        """
+        Instantiate an EloRegressor object.
+
+        Params:
+            k: Elo model param for regulating for how long match results affect Elo ratings.
+            x: Elo model param.
+            m: Elo model param.
+            home_ground_advantage: Elo model param for how many points an average home team
+                is expected to win by.
+            s: Elo model param.
+            season_carryover: The percentage of a team's end-of-season Elo score
+                that is kept for the next season.
+        """
         self.k = k
         self.x = x
         self.m = m
@@ -233,8 +245,7 @@ class EloRegressor(BaseEstimator, RegressorMixin):
         self._null_team = self._team_encoder.transform([NULL_TEAM_NAME])[0]
 
     def fit(self, X: pd.DataFrame, _y: pd.Series = None) -> Type[R]:
-        """Fit estimators to data"""
-
+        """Fit estimator to data."""
         REQUIRED_COLS = set(ELO_INDEX_COLS) | set(MATRIX_COLS)
         _validate_required_columns(REQUIRED_COLS, X.columns)
 
@@ -267,8 +278,11 @@ class EloRegressor(BaseEstimator, RegressorMixin):
         return self
 
     def predict(self, X: pd.DataFrame) -> np.ndarray:
-        """Predict with each estimator, then average the predictions"""
+        """Make predictions.
 
+        Data set used for predictions must follow the training set chronologically.
+        Otherwise, an error is raised to avoid making invalid predictions.
+        """
         REQUIRED_COLS = set(ELO_INDEX_COLS) | {"away_team"}
 
         _validate_required_columns(REQUIRED_COLS, X.columns)
@@ -461,34 +475,32 @@ class EloRegressor(BaseEstimator, RegressorMixin):
 
 
 class TeammatchToMatchConverter(BaseEstimator, TransformerMixin):
-    """
-    Transformer for converting data frames from having one team-match combination per
-    row to one match per row.
-
-    Parameters:
-        match_cols (list of strings,
-            default=["date", "venue", "round_type"]):
-            List of match columns that are team neutral (e.g. round_number, venue).
-            These won't be renamed with 'home_' or 'away_' prefixes.
-    """
+    """Transformer for converting data frames to be organised by match."""
 
     def __init__(self, match_cols=MATCH_COLS):
+        """
+        Instantiate a TeammatchToMatchConverter transformer.
+
+        Params:
+            match_cols (list of strings,
+                default=["date", "venue", "round_type"]):
+                List of match columns that are team neutral (e.g. round_number, venue).
+                These won't be renamed with 'home_' or 'away_' prefixes.
+        """
         self.match_cols = match_cols
         self._match_cols = list(set(match_cols + MATCH_INDEX_COLS))
 
     def fit(self, _X, _y=None):
-        """
-        Does nothing. Only included for consistency with the Scikit-learn interface.
-        """
-
+        """Include for consistency with the Scikit-learn interface."""
         return self
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
-        """
-        Transforms data from being organised by team-match (2 rows per match,
-        1 row each for home and away team) to match (1 row per match).
-        """
+        """Transform data from being organised by team-match to match.
 
+        This means that input has two rows per match (one row each
+        for home and away teams), and output has one row per match (with separate
+        columns for home and away team data).
+        """
         self._validate_required_columns(X)
 
         return (
@@ -549,30 +561,32 @@ class TeammatchToMatchConverter(BaseEstimator, TransformerMixin):
 
 
 class ColumnDropper(BaseEstimator, TransformerMixin):
-    """
-    Transformer that drops named columns from data frames.
-    """
+    """Transformer that drops named columns from data frames."""
 
     def __init__(self, cols_to_drop: List[str] = []):
+        """Instantiate a ColumbnDropper transformer.
+
+        Params:
+            cols_to_drop: List of column names to drop.
+        """
         self.cols_to_drop = cols_to_drop
 
     def fit(self, _X, y=None):  # pylint: disable=unused-argument
-        """Included for consistency with Scikit-learn interface only."""
-
+        """Include for consistency with Scikit-learn interface."""
         return self
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
-        """Drops the given columns from the data."""
-
+        """Drop the given columns from the data."""
         return X.drop(self.cols_to_drop, axis=1, errors="ignore")
 
 
 class DataFrameConverter(BaseEstimator, TransformerMixin):
-    """
-    Transformer that converts numpy arrays into DataFrames with named columns
-    and indices per the initial data sets passed to fit/predict. This is mostly
-    for cases when classes from packages convert DataFrames to numpy arrays
-    without asking, and later transformers depend on named indices/columns to work.
+    """Transformer that converts numpy arrays into DataFrames with named axes.
+
+    Resulting data frame is assigned named columns and indices per the initial data sets
+    passed to fit/predict. This is mostly for cases when classes from packages
+    convert DataFrames to numpy arrays without asking, and later transformers depend
+    on named indices/columns to work.
     """
 
     def __init__(
@@ -580,19 +594,21 @@ class DataFrameConverter(BaseEstimator, TransformerMixin):
         columns: Optional[Union[List[str], pd.Index]] = None,
         index: Optional[Union[List[str], pd.Index]] = None,
     ):
+        """Instantiate a DataFrameConverter transformer.
+
+        Params:
+            columns: List of column names or a pd.Index to assign as columns.
+            index: List of row names or a pd.Index to assign as the index.
+        """
         self.columns = columns
         self.index = index
 
     def fit(self, X, y=None):  # pylint: disable=unused-argument
-        """Included for consistency with Scikit-learn interface only."""
-
+        """Include for consistency with Scikit-learn interface."""
         return self
 
     def transform(self, X: Union[pd.DataFrame, np.array]):
-        """
-        Converts the data into a pandas DataFrame with the given columns and index.
-        """
-
+        """Convert data into a pandas DataFrame with the given columns and index."""
         if self.columns is not None:
             assert X.shape[1] == len(self.columns), (
                 f"X must have the same number of columns {X.shape[1]} "
@@ -622,8 +638,7 @@ def _calculate_team_margin(team_margin, oppo_margin):
 
 
 def match_accuracy_scorer(estimator, X, y):
-    """Scikit-learn scorer function for calculating tipping accuracy of an estimator"""
-
+    """Scikit-learn scorer function for calculating tipping accuracy of an estimator."""
     y_pred = estimator.predict(X)
 
     team_match_data_frame = X.assign(y_true=y, y_pred=y_pred)
@@ -678,12 +693,12 @@ def _calculate_bits(row):
 
 
 def bits_scorer(estimator, X, y):
-    """
-    Scikit-learn scorer for the bits metric. Mostly for use in calls to cross_validate.
-    Calculates a score based on the the model's predicted probability of a given result.
-    For this metric, higher scores are better.
-    """
+    """Scikit-learn scorer for the bits metric.
 
+    Mostly for use in calls to cross_validate. Calculates a score
+    based on the the model's predicted probability of a given result. For this metric,
+    higher scores are better.
+    """
     y_pred = estimator.predict(X)
 
     team_match_data_frame = X.assign(y_true=y.to_numpy(), y_pred=y_pred)
@@ -709,11 +724,11 @@ def bits_scorer(estimator, X, y):
 
 
 def year_cv_split(X, year_range):
-    """
-    Split data by year for cross-validation for time-series data. Makes each year
-    in the year_range a test set per split.
-    """
+    """Split data by year for cross-validation for time-series data.
 
+    Makes data from each year in the year_range a test set per split, with data
+    from all earlier years being in the train split.
+    """
     return [
         ((X["year"] < year).to_numpy(), (X["year"] == year).to_numpy())
         for year in range(*year_range)

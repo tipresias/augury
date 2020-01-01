@@ -25,7 +25,7 @@ LEGACY_FEATURE_CALCS = [
 
 def create_pipelines(start_date, end_date, **_kwargs) -> Dict[str, Pipeline]:
     """
-    Creates a dictionary of available pipelines for the Kedro context object
+    Create a dictionary of available pipelines for the Kedro context object.
 
     Args:
         kwargs: Ignore any additional arguments added in the future.
@@ -34,7 +34,6 @@ def create_pipelines(start_date, end_date, **_kwargs) -> Dict[str, Pipeline]:
         A mapping from a pipeline name to a ``Pipeline`` object.
 
     """
-
     return {
         "__default__": Pipeline([]),
         "betting": create_betting_pipeline(start_date, end_date),

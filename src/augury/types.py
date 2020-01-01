@@ -1,4 +1,4 @@
-"""Module for custom static data types"""
+"""Module for custom static data types."""
 
 from typing import Callable, Tuple, TypeVar, Dict, Any, List, Sequence, Union
 from datetime import datetime

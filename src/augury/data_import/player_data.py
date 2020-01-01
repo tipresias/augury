@@ -64,7 +64,7 @@ def fetch_player_data(
     verbose: int = 1,
 ) -> List[Dict[str, Any]]:
     """
-    Get player data from AFL tables
+    Get player data from AFL tables.
 
     Args:
         start_date (string: YYYY-MM-DD): Earliest date for match data returned.
@@ -72,9 +72,8 @@ def fetch_player_data(
         verbose (int): Whether to print info statements (1 means yes, 0 means no).
 
     Returns:
-    list of dicts of player data.
+        list of dicts of player data.
     """
-
     if verbose == 1:
         print(
             f"Fetching player data from between {start_date} and {end_date} "
@@ -110,7 +109,7 @@ def save_player_data(
     for_prod: bool = False,
 ) -> None:
     """
-    Save match data as a *.json file with name based on date range of data
+    Save match data as a *.json file with name based on date range of data.
 
     Args:
         start_date (string: YYYY-MM-DD): Earliest date for match data returned.
@@ -123,7 +122,6 @@ def save_player_data(
     Returns:
         None
     """
-
     if for_prod:
         start_date = max(start_date, PREDICTION_DATA_START_DATE)
 
@@ -141,7 +139,7 @@ def fetch_roster_data(
     round_number: int = None, verbose: int = 1
 ) -> List[Dict[str, Any]]:
     """
-    Get player data from AFL tables
+    Get player data from AFL tables.
 
     Args:
         start_date (string: YYYY-MM-DD): Earliest date for match data returned.
@@ -149,9 +147,8 @@ def fetch_roster_data(
         verbose (int): Whether to print info statements (1 means yes, 0 means no).
 
     Returns:
-    list of dicts of player data.
+        list of dicts of player data.
     """
-
     if verbose == 1:
         print(f"Fetching roster data for round {round_number}...")
 

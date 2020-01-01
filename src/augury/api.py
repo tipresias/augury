@@ -64,7 +64,6 @@ def make_predictions(
     train=False,
 ) -> ApiResponse:
     """Generate match predictions with the given models for the given seasons."""
-
     context = load_context(
         BASE_DIR,
         start_date=PREDICTION_DATA_START_DATE,
@@ -110,7 +109,6 @@ def fetch_fixture_data(
     Returns:
         List of fixture data dictionaries.
     """
-
     return _api_response(
         pd.DataFrame(
             data_import.fetch_fixture_data(
@@ -136,7 +134,6 @@ def fetch_match_results_data(
     Returns:
         List of match results data dictionaries.
     """
-
     return _api_response(
         pd.DataFrame(
             data_import.fetch_match_data(
@@ -147,6 +144,5 @@ def fetch_match_results_data(
 
 
 def fetch_ml_model_info() -> ApiResponse:
-    """Fetch general info about all saved ML models"""
-
+    """Fetch general info about all saved ML models."""
     return _api_response(ML_MODELS)
