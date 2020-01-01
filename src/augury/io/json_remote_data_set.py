@@ -26,7 +26,6 @@ DATE_RANGE_TYPE: Dict[str, Dict[str, str]] = {
     },
     "past_rounds": {"start_date": str(BEGINNING_OF_YEAR), "end_date": str(TODAY)},
     "future_rounds": {"start_date": str(TODAY), "end_date": str(END_OF_YEAR)},
-    "round_number": {},
 }
 
 
@@ -34,11 +33,7 @@ class JSONRemoteDataSet(AbstractDataSet):
     """kedro data set based on fetching fresh data from the afl_data service"""
 
     def __init__(
-        self,
-        data_source: Union[Callable, str],
-        date_range_type: str,
-        load_kwargs={},
-        **_kwargs,
+        self, data_source: Union[Callable, str], date_range_type: str, load_kwargs={},
     ):
         if date_range_type not in DATE_RANGE_TYPE.keys():
             raise ValueError(

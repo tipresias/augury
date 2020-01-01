@@ -23,10 +23,6 @@ class MLData:
     Class for holding model data and returning it in a form useful for ML pipelines
     """
 
-    @classmethod
-    def class_path(cls):
-        return f"{cls.__module__}.{cls.__name__}"
-
     def __init__(
         self,
         context=None,
