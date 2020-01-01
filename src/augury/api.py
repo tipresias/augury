@@ -1,3 +1,5 @@
+"""The public API for the Augury app."""
+
 from typing import List, Optional, Dict, Union, Any
 from datetime import date
 
@@ -61,6 +63,8 @@ def make_predictions(
     ml_model_names: Optional[List[str]] = None,
     train=False,
 ) -> ApiResponse:
+    """Generate match predictions with the given models for the given seasons."""
+
     context = load_context(
         BASE_DIR,
         start_date=PREDICTION_DATA_START_DATE,

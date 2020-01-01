@@ -1,3 +1,6 @@
+# pylint: disable=missing-module-docstring, missing-function-docstring
+# pylint: disable=missing-class-docstring
+
 from unittest import TestCase
 from collections import Counter
 from datetime import datetime

@@ -71,6 +71,11 @@ def score_model(
     scoring={"neg_mean_absolute_error": get_scorer("neg_mean_absolute_error")},
     n_jobs=None,
 ):
+    """
+    Perform cross validation on the given model without logging params or results
+    to mlflow.
+    """
+
     cv_scoring = {**{"match_accuracy": match_accuracy_scorer}, **scoring}
 
     data.train_year_range = (max(cv_year_range),)

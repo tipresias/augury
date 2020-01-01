@@ -353,6 +353,11 @@ def finalize_data(
 
 
 def convert_to_json(data_frame: pd.DataFrame) -> List[Dict[str, Any]]:
+    """
+    Converts a pandas DataFrame to JSON, performing minimal cleaning to produce
+    valid JSON.
+    """
+
     datetime_cols = data_frame.select_dtypes(["datetime", "datetimetz"]).columns
     # We convert datetime columns to string, because json can't stringify pandas
     # timestamp objects
@@ -388,6 +393,11 @@ def _sort_data_frame_columns_node(
 def sort_data_frame_columns(
     category_cols: Optional[List[str]] = None,
 ) -> Callable[[pd.DataFrame], pd.DataFrame]:
+    """
+    Sorts data frame columns such that category columns are grouped together
+    on the left.
+    """
+
     return update_wrapper(
         partial(_sort_data_frame_columns_node, category_cols),
         _sort_data_frame_columns_node,

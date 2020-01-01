@@ -1,3 +1,5 @@
+"""Collection of functions for performing cross-feature mathematical calculations."""
+
 from typing import List, Sequence, Dict
 from functools import partial, reduce, update_wrapper
 import itertools
@@ -50,6 +52,8 @@ def _calculate_features(calculators: List[CalculatorPair], data_frame: pd.DataFr
 
 
 def feature_calculator(calculators: List[CalculatorPair]) -> DataFrameTransformer:
+    """Meta function that calls individual feature-calculation functions."""
+
     return update_wrapper(
         partial(_calculate_features, calculators), _calculate_features
     )

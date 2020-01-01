@@ -1,3 +1,5 @@
+"""Fixture for dummy estimator and associated data class for use in tests."""
+
 import pandas as pd
 from sklearn.linear_model import Lasso
 from sklearn.pipeline import make_pipeline
@@ -136,6 +138,8 @@ def create_fake_pipeline(*_args, **_kwargs):
 
 
 def pickle_fake_estimator():
+    """Save FakeEstimator as a pickle file."""
+
     estimator = FakeEstimator()
     data = FakeEstimatorData()
 

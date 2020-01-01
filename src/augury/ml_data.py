@@ -20,7 +20,7 @@ END_OF_YEAR = f"{date.today().year}-12-31"
 
 class MLData:
     """
-    Class for holding model data and returning it in a form useful for ML pipelines
+    Class for holding model data and returning it in a form useful for ML pipelines.
     """
 
     def __init__(
@@ -46,6 +46,8 @@ class MLData:
 
     @property
     def data(self) -> pd.DataFrame:
+        """Full data set stored in the given class instance."""
+
         if self._data is None:
             self._data = self._load_data()
 

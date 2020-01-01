@@ -166,6 +166,8 @@ def clean_player_data(
 def clean_roster_data(
     roster_data: pd.DataFrame, clean_player_data_frame: pd.DataFrame
 ) -> pd.DataFrame:
+    """Clean data fetched from the AFL's list of team rosters."""
+
     if not roster_data.any().any():
         return roster_data.assign(player_id=[])
 

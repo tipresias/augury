@@ -1,3 +1,5 @@
+"""Functions for creating Kedro pipelines for match-specific data."""
+
 from kedro.pipeline import Pipeline, node
 
 from augury.nodes import common, match, feature_calculation
@@ -51,6 +53,8 @@ def create_past_match_pipeline():
 
 
 def create_future_match_pipeline():
+    """Creates pipeline for loading and cleaning fixture (i.e. future matches) data."""
+
     return Pipeline(
         [
             node(common.convert_to_data_frame, "fixture_data", "fixture_data_frame"),

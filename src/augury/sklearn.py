@@ -144,9 +144,19 @@ class CorrelationSelector(BaseEstimator, TransformerMixin):
         self._above_threshold_columns = cols_to_keep
 
     def transform(self, X: pd.DataFrame, _y=None) -> pd.DataFrame:
+        """
+        Filter out features whose correlation with the labels is below
+        the chosen threshold.
+        """
+
         return X[self._above_threshold_columns]
 
     def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> Type[T]:
+        """
+        Calculate correlation between each feature and labels, saving the list
+        of features whose correlation is above the chose threshold.
+        """
+
         if not any(self.labels) and y is not None:
             self.labels = y
 
@@ -170,10 +180,19 @@ class CorrelationSelector(BaseEstimator, TransformerMixin):
 
     @property
     def cols_to_keep(self) -> List[str]:
+        """
+        List of columns that are kept regardless of their correlation with the labels.
+        """
+
         return self._cols_to_keep
 
     @cols_to_keep.setter
     def cols_to_keep(self, cols_to_keep: List[str]) -> None:
+        """
+        Defines a list of columns to keep regardless of their correlation
+        with the labels. Also, resets the overall list of columns to keep.
+        """
+
         self._cols_to_keep = cols_to_keep
         self._above_threshold_columns = self._cols_to_keep
 
@@ -458,9 +477,18 @@ class TeammatchToMatchConverter(BaseEstimator, TransformerMixin):
         self._match_cols = list(set(match_cols + MATCH_INDEX_COLS))
 
     def fit(self, _X, _y=None):
+        """
+        Does nothing. Only included for consistency with the Scikit-learn interface.
+        """
+
         return self
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        """
+        Transforms data from being organised by team-match (2 rows per match,
+        1 row each for home and away team) to match (1 row per match).
+        """
+
         self._validate_required_columns(X)
 
         return (
@@ -529,9 +557,13 @@ class ColumnDropper(BaseEstimator, TransformerMixin):
         self.cols_to_drop = cols_to_drop
 
     def fit(self, _X, y=None):  # pylint: disable=unused-argument
+        """Included for consistency with Scikit-learn interface only."""
+
         return self
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        """Drops the given columns from the data."""
+
         return X.drop(self.cols_to_drop, axis=1, errors="ignore")
 
 
@@ -552,9 +584,15 @@ class DataFrameConverter(BaseEstimator, TransformerMixin):
         self.index = index
 
     def fit(self, X, y=None):  # pylint: disable=unused-argument
+        """Included for consistency with Scikit-learn interface only."""
+
         return self
 
     def transform(self, X: Union[pd.DataFrame, np.array]):
+        """
+        Converts the data into a pandas DataFrame with the given columns and index.
+        """
+
         if self.columns is not None:
             assert X.shape[1] == len(self.columns), (
                 f"X must have the same number of columns {X.shape[1]} "
@@ -640,6 +678,12 @@ def _calculate_bits(row):
 
 
 def bits_scorer(estimator, X, y):
+    """
+    Scikit-learn scorer for the bits metric. Mostly for use in calls to cross_validate.
+    Calculates a score based on the the model's predicted probability of a given result.
+    For this metric, higher scores are better.
+    """
+
     y_pred = estimator.predict(X)
 
     team_match_data_frame = X.assign(y_true=y.to_numpy(), y_pred=y_pred)

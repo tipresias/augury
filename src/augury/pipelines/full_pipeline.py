@@ -23,6 +23,11 @@ def create_full_pipeline(
     final_data_set="model_data",
     category_cols=CATEGORY_COLS + ["prev_match_oppo_team", "oppo_prev_match_oppo_team"],
 ):
+    """
+    Creates a pipeline that runs all data-set-specific pipelines
+    (betting, match, player), then joins them.
+    """
+
     return Pipeline(
         [
             create_betting_pipeline(start_date, end_date),

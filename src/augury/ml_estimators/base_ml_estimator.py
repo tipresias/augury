@@ -39,6 +39,8 @@ class BaseMLEstimator(_BaseComposition, RegressorMixin):
         return os.path.join(self._default_directory(), f"{self.name}.pkl")
 
     def dump(self, filepath: str = None) -> None:
+        """Save the model as a pickle file."""
+
         save_path = filepath or self.pickle_filepath()
 
         joblib.dump(self, save_path)

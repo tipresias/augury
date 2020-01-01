@@ -1,3 +1,6 @@
+# pylint: disable=missing-module-docstring, missing-function-docstring
+# pylint: disable=missing-class-docstring
+
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
@@ -18,9 +21,7 @@ class TestJSONRemoteDataSet(TestCase):
         self.data_source.assert_called_with(**DATE_RANGE_TYPE[self.date_range_type])
 
         with self.subTest("with string path to data_source function"):
-            data_source_path = (
-                "augury.data_import.betting_data.fetch_betting_data"
-            )
+            data_source_path = "augury.data_import.betting_data.fetch_betting_data"
 
             with patch(data_source_path):
                 data_set = JSONRemoteDataSet(

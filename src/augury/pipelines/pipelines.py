@@ -1,3 +1,5 @@
+"""Functions for defining all available Kedro pipelines."""
+
 from typing import Dict
 
 from kedro.pipeline import Pipeline
@@ -22,7 +24,8 @@ LEGACY_FEATURE_CALCS = [
 
 
 def create_pipelines(start_date, end_date, **_kwargs) -> Dict[str, Pipeline]:
-    """Create the project's pipeline.
+    """
+    Creates a dictionary of available pipelines for the Kedro context object
 
     Args:
         kwargs: Ignore any additional arguments added in the future.

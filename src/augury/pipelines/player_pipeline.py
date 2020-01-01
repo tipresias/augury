@@ -1,3 +1,5 @@
+"""Functions for creating Kedro pipelines that load and process AFL player data."""
+
 from kedro.pipeline import Pipeline, node
 
 from augury.nodes import common, player, feature_calculation
@@ -16,6 +18,8 @@ PLAYER_MATCH_STATS_COLS = [
 
 
 def create_past_player_pipeline():
+    """Creates pipeline that loads and cleans historical player data."""
+
     return Pipeline(
         [
             node(
@@ -38,6 +42,8 @@ def create_past_player_pipeline():
 
 
 def create_roster_pipeline():
+    """Creates a pipeline that loads and cleans player data for future matches."""
+
     return Pipeline(
         [
             node(common.convert_to_data_frame, "roster_data", "roster_data_frame"),

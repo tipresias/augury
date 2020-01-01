@@ -14,6 +14,8 @@ np.random.seed(SEED)
 
 
 class Predictor:
+    """Generates predictions with the given models for the given inputs"""
+
     def __init__(
         self,
         year_range: YearRange,

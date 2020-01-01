@@ -1,3 +1,5 @@
+"""Functions for generating dummy data for use in tests."""
+
 from typing import List, Dict, Tuple, Any, Union, cast
 from datetime import datetime, timedelta, date
 import itertools
@@ -95,11 +97,18 @@ ROSTER_COLS = [
 
 
 class CyclicalTeamNames:
+    """
+    Cycles through valid team names for use in data fixtures. Sometimes necessary
+    due to validations.
+    """
+
     def __init__(self, team_names: List[str] = CONTEMPORARY_TEAM_NAMES):
         self.team_names = team_names
         self.cyclical_team_names = (name for name in self.team_names)
 
     def next(self) -> str:
+        """Returns the next available team name."""
+
         try:
             return next(self.cyclical_team_names)
         except StopIteration:
@@ -210,6 +219,11 @@ def _add_oppo_rows(match_data: List[CleanedMatchData]) -> List[CleanedMatchData]
 def fake_cleaned_match_data(
     match_count_per_year: int, year_range: Tuple[int, int], oppo_rows: bool = True
 ) -> pd.DataFrame:
+    """
+    Generates dummy data that replicates match data after it has passed through
+    the initial cleaning node `match.clean_match_data`.
+    """
+
     data = cast(
         List[List[CleanedMatchData]], _matches_by_year(match_count_per_year, year_range)
     )
@@ -234,6 +248,12 @@ def fake_cleaned_match_data(
 def fake_raw_match_results_data(
     row_count: int, year_range: Tuple[int, int], clean=False
 ) -> pd.DataFrame:
+    """
+    Generates dummy data that replicates match results data (i.e. data
+    from past matches) before it has passed through the initial cleaning node
+    `match.clean_match_data`.
+    """
+
     data = cast(
         List[List[MatchData]], _matches_by_year(row_count, year_range, raw=True)
     )
@@ -269,6 +289,11 @@ def _players_by_match(
 def fake_cleaned_player_data(
     match_count_per_year: int, year_range: Tuple[int, int], n_players_per_team: int
 ) -> pd.DataFrame:
+    """
+    Generates dummy data that replicates player data after it has passed through
+    the initial cleaning node `player.clean_player_data`.
+    """
+
     match_data = cast(
         List[List[CleanedMatchData]], _matches_by_year(match_count_per_year, year_range)
     )
@@ -343,6 +368,11 @@ def _betting_by_year(
 def fake_footywire_betting_data(
     row_count: int, year_range: Tuple[int, int], clean=True
 ) -> pd.DataFrame:
+    """
+    Generates dummy data that replicates raw betting data before it has passed through
+    the initial cleaning node `betting.clean_data`.
+    """
+
     data = _betting_by_year(row_count, year_range, clean=clean)
     reduced_data = list(itertools.chain.from_iterable(data))
 
@@ -382,6 +412,11 @@ def _fixture_by_year(
 def fake_fixture_data(
     row_count: int, year_range: Tuple[int, int], clean=True
 ) -> pd.DataFrame:
+    """
+    Generates dummy data that replicates fixture data (i.e. future matchd data)
+    before it has passed through the initial cleaning node `match.clean_fixture_data`.
+    """
+
     data = _fixture_by_year(row_count, year_range)
     reduced_data = list(itertools.chain.from_iterable(data))
 
@@ -394,6 +429,12 @@ def fake_fixture_data(
 
 
 def fake_roster_data(match_count: int, n_players_per_team: int) -> pd.DataFrame:
+    """
+    Generates dummy data that replicates roster data (i.e. player data
+    for future matches) after it has passed through the initial cleaning node
+    `player.clean_roster_data`.
+    """
+
     this_year = date.today().year
     match_data = cast(
         List[List[CleanedMatchData]],

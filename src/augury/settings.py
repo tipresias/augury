@@ -1,3 +1,5 @@
+"""App-wide constants for app and data configuration."""
+
 from typing import Dict, Union, List
 import os
 from datetime import date
