@@ -1,3 +1,8 @@
+"""Bottle server routes for mimicking serverless HTTP API.
+
+See the serverless entrypoint main.py for documentation.
+"""
+
 import os
 import sys
 from datetime import date
@@ -21,22 +26,7 @@ app = Bottle()
 
 @app.route("/predictions")
 def predictions():
-    """
-    Generates predictions for the given year and round number, and returns the data
-    as an HTTP response.
-
-    Params:
-        year_range (str, optional): Year range for which you want prediction data.
-            Format = yyyy-yyyy.
-            Default = current year only.
-        round_number (int, optional): Round number for which you want prediction data.
-            Default = All rounds for given year.
-        ml_models (str, optional): Name of the ML model to use for making predictions.
-            Default = All available models
-    Returns:
-        flask.Response with a body that has a JSON of prediction data.
-    """
-
+    """Generate predictions for the given year and round number."""
     this_year = date.today().year
     year_range_param = request.query.year_range or f"{this_year}-{this_year + 1}"
     year_range = tuple([int(year) for year in year_range_param.split("-")])
@@ -58,19 +48,7 @@ def predictions():
 
 @app.route("/fixtures")
 def fixtures():
-    """
-    Fetches fixture data for the given date range, and returns the data
-    as an HTTP response.
-
-    Params:
-        start_date (string of form 'yyyy-mm-dd', required): Start of date range
-            (inclusive) for which you want data.
-        start_date (string of form 'yyyy-mm-dd', required): End of date range
-            (inclusive) for which you want data.
-    Returns:
-        flask.Response with a body that has a JSON of fixture data.
-    """
-
+    """Fetch fixture data for the given date range."""
     start_date = request.query.start_date
     end_date = request.query.end_date
 
@@ -79,19 +57,7 @@ def fixtures():
 
 @app.route("/match_results")
 def match_results():
-    """
-    Fetches match results data for the given date range, and returns the data
-    as an HTTP response.
-
-    Params:
-        start_date (string of form 'yyyy-mm-dd', required): Start of date range
-            (inclusive) for which you want data.
-        start_date (string of form 'yyyy-mm-dd', required): End of date range
-            (inclusive) for which you want data.
-    Returns:
-        flask.Response with a body that has a JSON of match results data.
-    """
-
+    """Fetch match results data for the given date range."""
     start_date = request.query.start_date
     end_date = request.query.end_date
 
@@ -100,13 +66,7 @@ def match_results():
 
 @app.route("/ml_models")
 def ml_models():
-    """
-    Fetches info for all available ML models and returns the data as an HTTP response.
-
-    Returns:
-        flask.Response with a body that has a JSON of ML model data.
-    """
-
+    """Fetch info for all available ML models."""
     return api.fetch_ml_model_info()
 
 
