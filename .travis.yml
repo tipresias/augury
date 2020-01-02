@@ -14,8 +14,9 @@ jobs:
     - stage: test
       name: "Linting & Unit Tests"
       script:
-        - docker run cfranklin11/tipresias_data_science:latest pylint --disable=R src
-        - docker run cfranklin11/tipresias_data_science:latest mypy src
+        - docker run cfranklin11/tipresias_data_science:latest pylint --disable=R src main.py
+        - docker run cfranklin11/tipresias_data_science:latest mypy src main.py
+        - docker run cfranklin11/tipresias_data_science:latest pydocstyle src main.py
         - docker run -v "${HOME}/.gcloud:/app/.gcloud" -e PYTHON_ENV=development -e CI=true -e GOOGLE_APPLICATION_CREDENTIALS="${GOOGLE_APPLICATION_CREDENTIALS}" cfranklin11/tipresias_data_science:latest kedro test --no-cov src/tests/unit/
     - name: "Integration Tests"
       script:
