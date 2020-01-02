@@ -17,7 +17,6 @@ class TestJSONRemoteDataSet(TestCase):
 
     def test_load(self):
         self.data_set.load()
-
         self.data_source.assert_called_with(**DATE_RANGE_TYPE[self.date_range_type])
 
         with self.subTest("with string path to data_source function"):
@@ -32,6 +31,22 @@ class TestJSONRemoteDataSet(TestCase):
 
                 data_set.data_source.assert_called_with(
                     **DATE_RANGE_TYPE[self.date_range_type]
+                )
+
+        with self.subTest("when date_range_type is None"):
+            data_set = JSONRemoteDataSet(
+                data_source=self.data_source, date_range_type=None
+            )
+
+            data_set.load()
+            self.data_source.assert_called_with()
+
+        with self.subTest("when date_range_type is unknown"):
+            with self.assertRaisesRegex(
+                AssertionError, "Argument date_range_type must be None or one of"
+            ):
+                data_set = JSONRemoteDataSet(
+                    data_source=self.data_source, date_range_type="nope"
                 )
 
     def test_save(self):

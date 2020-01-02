@@ -62,8 +62,7 @@ class ProjectContext(KedroContext):
             "roster_data",
             JSONRemoteDataSet(
                 data_source="augury.data_import.player_data.fetch_roster_data",
-                date_range_type="round_number",
-                load_kwargs={"round_number": self.round_number},
+                round_number=self.round_number,
             ),
         )
 

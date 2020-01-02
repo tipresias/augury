@@ -1,6 +1,6 @@
 """kedro data set based on fetching fresh data from the afl_data service."""
 
-from typing import Any, List, Dict, Callable, Union
+from typing import Any, List, Dict, Callable, Union, Optional
 import importlib
 from datetime import date
 
@@ -33,7 +33,10 @@ class JSONRemoteDataSet(AbstractDataSet):
     """Kedro data set based on fetching fresh data from the afl_data service."""
 
     def __init__(
-        self, data_source: Union[Callable, str], date_range_type: str, load_kwargs={},
+        self,
+        data_source: Union[Callable, str],
+        date_range_type: Optional[str] = None,
+        **load_kwargs,
     ):
         """Instantiate a JSONRemoteDataSet object.
 
@@ -48,13 +51,11 @@ class JSONRemoteDataSet(AbstractDataSet):
                         (inclusive).
             load_kwargs: Keyword arguments to pass to the data import function.
         """
-        if date_range_type not in DATE_RANGE_TYPE.keys():
-            raise ValueError(
-                f"Argument date_range_type must be one of {DATE_RANGE_TYPE.keys()}, "
-                f"but {date_range_type} was received."
-            )
+        self._validate_date_range_type(date_range_type)
 
-        self._date_range = DATE_RANGE_TYPE[date_range_type]
+        self._date_range = (
+            {} if date_range_type is None else DATE_RANGE_TYPE[date_range_type]
+        )
         self._data_source_kwargs: Dict[str, Any] = {**self._date_range, **load_kwargs}
 
         if callable(data_source):
@@ -75,3 +76,10 @@ class JSONRemoteDataSet(AbstractDataSet):
 
     def _describe(self):
         return self._data_source_kwargs
+
+    @staticmethod
+    def _validate_date_range_type(date_range_type: Optional[str]) -> None:
+        assert date_range_type is None or date_range_type in DATE_RANGE_TYPE.keys(), (
+            "Argument date_range_type must be None or one of "
+            f"{DATE_RANGE_TYPE.keys()}, but {date_range_type} was received."
+        )
