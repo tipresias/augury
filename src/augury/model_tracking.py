@@ -1,4 +1,4 @@
-"""Helper functions for working with MLFlow, particularly the tracking module"""
+"""Helper functions for working with MLFlow, particularly the tracking module."""
 
 from typing import Union, List, Tuple, Dict, Callable, Any
 import re
@@ -10,6 +10,7 @@ from sklearn.metrics import get_scorer
 from sklearn.pipeline import Pipeline
 import mlflow
 import numpy as np
+import pandas as pd
 
 from augury.ml_data import MLData
 from augury.sklearn import year_cv_split, match_accuracy_scorer
@@ -21,6 +22,10 @@ from augury.types import YearRange
 np.random.seed(SEED)
 
 GenericModel = Union[BaseEstimator, BaseMLEstimator, Pipeline]
+SKLearnScorer = Callable[
+    [BaseEstimator, Union[pd.DataFrame, np.array], Union[pd.DataFrame, np.array]],
+    Union[float, int],
+]
 
 STATIC_TRANSFORMERS = [
     "onehotencoder",
@@ -65,12 +70,33 @@ DOUBLE_UNDERSCORE = "__"
 
 
 def score_model(
-    model,
-    data,
+    model: GenericModel,
+    data: MLData,
     cv_year_range=CV_YEAR_RANGE,
-    scoring={"neg_mean_absolute_error": get_scorer("neg_mean_absolute_error")},
+    scoring: Dict[str, SKLearnScorer] = {
+        "neg_mean_absolute_error": get_scorer("neg_mean_absolute_error")
+    },
     n_jobs=None,
-):
+) -> Dict[str, np.array]:
+    """
+    Perform cross-validation on the given model without logging to mlflow.
+
+    This uses a range of years to create incrementing time-series folds
+    for cross-validation rather than random k-folds to avoid data leakage.
+
+    Params
+    ------
+    model: The model to cross-validate.
+    cv_year_range: Year range for generating time-series folds for cross-validation.
+    scoring: Any Scikit-learn scorers that can calculate a metric from predictions.
+        This is in addition to `match_accuracy`, which is always used.
+    n_jobs: Number of processes to use.
+
+    Returns
+    -------
+    cv_scores: A dictionary whose values are arrays of metrics per Scikit-learn's
+        `cross_validate` function.
+    """
     cv_scoring = {**{"match_accuracy": match_accuracy_scorer}, **scoring}
 
     data.train_year_range = (max(cv_year_range),)
@@ -88,10 +114,11 @@ def score_model(
 
 def _is_experimental_param(key):
     """
-    This is to record any params added as part of an experiment,
-    so we don't have to add them by hand each time.
-    """
+    Record any params added to the base estimator class as part of an experiment.
 
+    This is so we don't have to manually add experimental params to the inclusion list
+    each time.
+    """
     # Double underscores indicate params of pipeline steps or something similar,
     # and we only want params from the wrapper class
     return "pipeline" not in key and key != "name" and DOUBLE_UNDERSCORE not in key
@@ -122,10 +149,7 @@ def _is_relevant_param(key, value):
 
 
 def present_model_params(model: GenericModel):
-    """
-    Filter model parameters, so MLFlow only tracks the ones relevant to param tuning
-    """
-
+    """Select relevant model parameters to include in MLFLow tracking data."""
     try:
         model_name = model.name
     except AttributeError:
@@ -196,11 +220,7 @@ def start_run(
     experiment=None,
     **run_tags,
 ) -> List[Dict[str, Any]]:
-    """
-    Perform cros-validation of models, recording params and metrics
-    with mlflow's tracking module.
-    """
-
+    """Perform cross-validation of models. Record params and metrics with MLFlow."""
     mlflow.set_tracking_uri("sqlite:///" + os.path.join(BASE_DIR, "db/mlflow.db"))
 
     if experiment is not None:

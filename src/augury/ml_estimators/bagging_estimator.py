@@ -1,4 +1,4 @@
-"""Class for model trained on all AFL data and its associated data class"""
+"""Class for model trained on all AFL data and its associated data class."""
 
 from typing import Optional, Union, Type
 
@@ -55,18 +55,25 @@ PIPELINE = make_pipeline(
 
 
 class BaggingEstimator(BaseMLEstimator):
-    """Model for averaging predictions of an ensemble of models"""
+    """Model for averaging predictions of an ensemble of models."""
 
     def __init__(
         self, pipeline: Pipeline = PIPELINE, name: Optional[str] = None
     ) -> None:
+        """Instantiate a BaggingEstimator object.
+
+        Params
+        ------
+        pipeline: Pipeline of Scikit-learn estimators ending in a regressor
+            or classifier.
+        name: Name of the estimator for reference by Kedro data sets and filenames.
+        """
         super().__init__(pipeline=pipeline, name=name)
 
     def fit(
         self, X: Union[pd.DataFrame, np.ndarray], y: Union[pd.Series, np.ndarray]
     ) -> Type[R]:
-        """Fit estimator to the data"""
-
+        """Fit estimator to the data."""
         assert (
             self.pipeline is not None
         ), "pipeline must be a scikit learn estimator but is None"

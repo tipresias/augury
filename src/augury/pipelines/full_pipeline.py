@@ -1,4 +1,4 @@
-"""Pipeline construction."""
+"""Pipelines for loading and processing joined data from other pipelines."""
 
 from kedro.pipeline import Pipeline, node
 
@@ -23,6 +23,7 @@ def create_full_pipeline(
     final_data_set="model_data",
     category_cols=CATEGORY_COLS + ["prev_match_oppo_team", "oppo_prev_match_oppo_team"],
 ):
+    """Create a pipeline that joins all data-source-specific pipelines."""
     return Pipeline(
         [
             create_betting_pipeline(start_date, end_date),

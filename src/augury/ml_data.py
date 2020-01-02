@@ -1,10 +1,10 @@
-"""Module for holding model data and returning it in a form useful for ML pipelines"""
+"""Module for holding model data and returning it in a form useful for ML pipelines."""
 
-from typing import Tuple
+from typing import Tuple, Optional, List
 from datetime import date
 
 import pandas as pd
-from kedro.context import load_context
+from kedro.context import load_context, KedroContext
 
 from augury.types import YearRange
 from augury.settings import (
@@ -19,25 +19,38 @@ END_OF_YEAR = f"{date.today().year}-12-31"
 
 
 class MLData:
-    """
-    Class for holding model data and returning it in a form useful for ML pipelines
-    """
-
-    @classmethod
-    def class_path(cls):
-        return f"{cls.__module__}.{cls.__name__}"
+    """Holds model data and returns it in a form useful for ML pipelines."""
 
     def __init__(
         self,
-        context=None,
+        context: Optional[KedroContext] = None,
         pipeline: str = "full",
         data_set: str = "model_data",
         train_year_range: YearRange = TRAIN_YEAR_RANGE,
         test_year_range: YearRange = VALIDATION_YEAR_RANGE,
         update_data: bool = False,
-        index_cols=INDEX_COLS,
+        index_cols: List[str] = INDEX_COLS,
         **pipeline_kwargs,
     ) -> None:
+        """
+        Instantiate an MLData object.
+
+        Params
+        ------
+        context: Relevant context for loading data sets.
+        pipeline: Name of the pipeline to run if the desired data set
+            is not available.
+        data_set: Name of the data set to load.
+        train_year_range: Year range (inclusive, exclusive per `range` function)
+            for data to include in training sets.
+        test_year_range: Year range (inclusive, exclusive per `range` function)
+            for data to include in testing sets.
+        update_data: Whether to run the pipeline regardless of the status
+            of the data set.
+        index_cols: Column names to use for the DataFrame's index.
+        pipeline_kwargs: Keyword arguments to pass to context.run when running
+            the pipeline.
+        """
         self.context = context or load_context(BASE_DIR)
         self.pipeline = pipeline
         self._data_set = data_set
@@ -50,6 +63,7 @@ class MLData:
 
     @property
     def data(self) -> pd.DataFrame:
+        """Full data set stored in the given class instance."""
         if self._data is None:
             self._data = self._load_data()
 
@@ -57,8 +71,7 @@ class MLData:
 
     @property
     def train_data(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
-        """Filter data by year to produce training data"""
-
+        """Filter data by year to produce training data."""
         if len(self.data.index.names) != 3:
             raise ValueError(
                 "The index of the data frame must have 3 levels. The expected indexes "
@@ -77,8 +90,7 @@ class MLData:
 
     @property
     def test_data(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
-        """Filter data by year to produce test data"""
-
+        """Filter data by year to produce test data."""
         if len(self.data.index.names) != 3:
             raise ValueError(
                 "The index of the data frame must have 3 levels. The expected indexes "
@@ -96,8 +108,7 @@ class MLData:
 
     @property
     def train_year_range(self) -> YearRange:
-        """Range of years for slicing training data"""
-
+        """Range of years for slicing training data."""
         return self._train_year_range
 
     @train_year_range.setter
@@ -106,8 +117,7 @@ class MLData:
 
     @property
     def test_year_range(self) -> YearRange:
-        """Range of years for slicing test data"""
-
+        """Range of years for slicing test data."""
         return self._test_year_range
 
     @test_year_range.setter
@@ -116,8 +126,7 @@ class MLData:
 
     @property
     def data_set(self) -> str:
-        """Name of the associated kedro data set"""
-
+        """Name of the associated kedro data set."""
         return self._data_set
 
     @data_set.setter

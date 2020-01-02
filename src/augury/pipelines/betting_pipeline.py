@@ -1,11 +1,12 @@
+"""Functions for creating Kedro pipelines that load and process AFL betting data."""
+
 from kedro.pipeline import Pipeline, node
 
 from augury.nodes import common, betting, feature_calculation
 
 
 def create_betting_pipeline(start_date: str, end_date: str, **_kwargs):
-    """Kedro pipeline for loading and transforming betting data"""
-
+    """Create Kedro pipeline for loading and transforming betting data."""
     return Pipeline(
         [
             node(

@@ -1,4 +1,4 @@
-"""Pipeline nodes for transforming data"""
+"""Pipeline nodes for transforming data. Used across different pipelines."""
 
 from typing import Sequence, List, Dict, Any, cast, Callable, Optional, Union
 from functools import reduce, partial, update_wrapper
@@ -19,15 +19,16 @@ def convert_to_data_frame(
     *data: List[Dict[str, Any]]
 ) -> Union[List[pd.DataFrame], pd.DataFrame]:
     """
-    Converts JSON data in the form of a list of dictionaries into a data frame
+    Convert JSON data in the form of a list of dictionaries into a data frame.
 
-    Args:
-        data (sequence of list of dictionaries): Data received from a JSON data set.
+    Params
+    ------
+    data (sequence of list of dictionaries): Data received from a JSON data set.
 
-    Returns:
-        Sequence of pandas.DataFrame
+    Returns
+    -------
+    Sequence of pandas.DataFrame
     """
-
     data_frames = [pd.DataFrame(datum) for datum in data]
 
     return data_frames if len(data_frames) > 1 else data_frames[0]
@@ -52,13 +53,11 @@ def _combine_data_horizontally(*data_frames: Sequence[pd.DataFrame]):
 def _append_data_frames(
     acc_data_frame: pd.DataFrame, curr_data_frame: pd.DataFrame
 ) -> pd.DataFrame:
-    """
-    Assumes the following:
-        - All data frames have a date column
-        - Data frames are sorted by date in ascending order
-        - Data frames have all data for a given date (i.e. all matches played
-            on a date, not 1 of 3, which would result in missing data)
-    """
+    # Assumes the following:
+    #     - All data frames have a date column
+    #     - Data frames are sorted by date in ascending order
+    #     - Data frames have all data for a given date (i.e. all matches played
+    #         on a date, not 1 of 3, which would result in missing data)
 
     max_accumulated_date = acc_data_frame[  # pylint: disable=unused-variable
         "date"
@@ -86,17 +85,17 @@ def _combine_data_vertically(*data_frames: Sequence[pd.DataFrame]):
 
 
 def combine_data(axis: int = 0) -> pd.DataFrame:
+    """Concatenate data frames from multiple sources into one data frame.
+
+    Params
+    ------
+    data_frames (list of pandas.DataFrame): Data frames to be concatenated.
+    axis (0 or 1, defaults to 0): Whether to concatenate by rows (0) or columns (1).
+
+    Returns
+    -------
+    Concatenated data frame.
     """
-    Concatenate data frames from multiple sources into one data frame
-
-    Args:
-        data_frames (list of pandas.DataFrame): Data frames to be concatenated.
-        axis (0 or 1, defaults to 0): Whether to concatenate by rows (0) or columns (1).
-
-    Returns:
-        Concatenated data frame.
-    """
-
     assert axis in [0, 1], f"Expected axis to be 0 or 1, but recieved {axis}"
 
     if axis == 0:
@@ -124,17 +123,17 @@ def _filter_by_date(
 def filter_by_date(
     start_date: str, end_date: str
 ) -> Callable[[pd.DataFrame], pd.DataFrame]:
+    """Filter data frames by the given start and end_dates.
+
+    Params
+    ------
+    start_date (str, YYYY-MM-DD): Earliest date (inclusive) for match data.
+    end_date (str, YYYY-MM-DD): Latest date (inclusive) for match data.
+
+    Returns
+    -------
+    Callable function that filters data frames by the given dates.
     """
-    Returns function that filters data frames by the given start and end_dates.
-
-    Args:
-        start_date (str, YYYY-MM-DD): Earliest date (inclusive) for match data.
-        end_date (str, YYYY-MM-DD): Latest date (inclusive) for match data.
-
-    Returns:
-        Callable function that filters data frames by the given dates.
-    """
-
     if not DATE_STRING_REGEX.match(start_date) or not DATE_STRING_REGEX.match(end_date):
         raise ValueError(
             f"Expected date string parameters start_date ({start_date}) and "
@@ -175,18 +174,19 @@ def convert_match_rows_to_teammatch_rows(
     match_row_data_frame: pd.DataFrame,
 ) -> pd.DataFrame:
     """
-    Reshape data frame from one match per row, with home_team and away_team columns,
-    to one team-match combination per row (i.e. two rows per match), with team and
-    oppo_team columns.
+    Reshape data frame from one match per row to one team-match combination per row.
 
+    This results in a data frame with two rows per match, one each for the home
+    and away team.
 
-    Args:
-        match_row_data_frame (pandas.DataFrame): Data frame to be transformed.
+    Params
+    ------
+    match_row_data_frame (pandas.DataFrame): Data frame to be transformed.
 
-    Returns:
-        pandas.DataFrame
+    Returns
+    -------
+    pandas.DataFrame
     """
-
     REQUIRED_COLS: List[str] = [
         "home_team",
         "away_team",
@@ -291,23 +291,25 @@ def _add_oppo_features_node(
 def add_oppo_features(
     match_cols: List[str] = [], oppo_feature_cols: List[str] = []
 ) -> Callable[[pd.DataFrame], pd.DataFrame]:
-    """
-    Add oppo_team equivalents for team features based on the oppo_team for that
-    match based on match_cols (non-team-specific columns to ignore) or
-    oppo_feature_cols (team-specific features to add 'oppo' versions of). Including both
-    column arguments will raise an error.
+    """Calculate team-based features for opposition teams and append them to the data.
 
-    Args:
-        match_cols (list of strings): Names of columns to ignore (calculates oppo
-            features for all columns not listed).
-        oppo_feature_cols (list of strings): Names of columns to add oppo features of
-            (ignores all columns not listed)
+    The team columns to use for creating oppo columns are based on match_cols
+    (non-team-specific columns to ignore) or oppo_feature_cols
+    (team-specific features to add 'oppo' versions of). Including both column arguments
+    will raise an error.
 
-    Returns:
-        Function that takes pandas.DataFrame and returns another pandas.DataFrame
+    Params
+    ------
+    match_cols (list of strings): Names of columns to ignore (calculates oppo
+        features for all columns not listed).
+    oppo_feature_cols (list of strings): Names of columns to add oppo features of
+        (ignores all columns not listed)
+
+    Returns
+    -------
+    Function that takes pandas.DataFrame and returns another pandas.DataFrame
         with 'oppo_' columns added.
     """
-
     if any(match_cols) and any(oppo_feature_cols):
         raise ValueError(
             "To avoid conflicts, you can't include both match_cols "
@@ -328,17 +330,16 @@ def add_oppo_features(
 def finalize_data(
     data_frame: pd.DataFrame, index_cols: List[str] = INDEX_COLS
 ) -> pd.DataFrame:
+    """Perform final data cleaning after all other data transformation steps.
+
+    Params
+    ------
+    data_frame (pandas.DataFrame): Data frame that has been cleaned & transformed.
+
+    Returns
+    -------
+    pandas.DataFrame that's ready to be fed into a machine-learning model.
     """
-    Perform final data cleaning after all the data transformations and feature
-    building steps.
-
-    Args:
-        data_frame (pandas.DataFrame): Data frame that has been cleaned & transformed.
-
-    Returns:
-        pandas.DataFrame that's ready to be fed into a machine-learning model.
-    """
-
     final_data_frame = (
         data_frame.astype({"year": int})
         .fillna(0)
@@ -353,6 +354,11 @@ def finalize_data(
 
 
 def convert_to_json(data_frame: pd.DataFrame) -> List[Dict[str, Any]]:
+    """Convert a pandas DataFrame to JSON.
+
+    Performs minimal cleaning to produce valid JSON (e.g. converting datetime objects
+    to strings).
+    """
     datetime_cols = data_frame.select_dtypes(["datetime", "datetimetz"]).columns
     # We convert datetime columns to string, because json can't stringify pandas
     # timestamp objects
@@ -388,6 +394,14 @@ def _sort_data_frame_columns_node(
 def sort_data_frame_columns(
     category_cols: Optional[List[str]] = None,
 ) -> Callable[[pd.DataFrame], pd.DataFrame]:
+    """Sort data frame columns such that categories are grouped together on the left.
+
+    Params
+    ------
+    category_cols: Explicitly define category columns to put on the left.
+        If omitted, category columns are identified by their dtype not being
+        'number' or a type of 'datetime'.
+    """
     return update_wrapper(
         partial(_sort_data_frame_columns_node, category_cols),
         _sort_data_frame_columns_node,
@@ -395,8 +409,7 @@ def sort_data_frame_columns(
 
 
 def clean_full_data(*data_frames: pd.DataFrame) -> pd.DataFrame:
-    """Cleans up data frames created from 'final_<pipeline>_data' JSON files"""
-
+    """Clean up data frames created from 'final_<pipeline>_data' JSON files."""
     # Need to convert dates from string to datetime for later
     # calculations/comparisons
     return [

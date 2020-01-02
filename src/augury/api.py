@@ -1,3 +1,5 @@
+"""The public API for the Augury app."""
+
 from typing import List, Optional, Dict, Union, Any
 from datetime import date
 
@@ -61,6 +63,7 @@ def make_predictions(
     ml_model_names: Optional[List[str]] = None,
     train=False,
 ) -> ApiResponse:
+    """Generate match predictions with the given models for the given seasons."""
     context = load_context(
         BASE_DIR,
         start_date=PREDICTION_DATA_START_DATE,
@@ -96,17 +99,18 @@ def fetch_fixture_data(
     """
     Fetch fixture data (doesn't include match results) from afl_data service.
 
-    Args:
+    Params
+    ------
         start_date (str): Stringified date of form yyy-mm-dd that determines
             the earliest date for which to fetch data.
         end_date (str): Stringified date of form yyy-mm-dd that determines
             the latest date for which to fetch data.
         verbose (0 or 1): Whether to print info messages while fetching data.
 
-    Returns:
-        List of fixture data dictionaries.
+    Returns
+    -------
+    List of fixture data dictionaries.
     """
-
     return _api_response(
         pd.DataFrame(
             data_import.fetch_fixture_data(
@@ -122,17 +126,18 @@ def fetch_match_results_data(
     """
     Fetch results data for past matches from afl_data service.
 
-    Args:
-        start_date (str): Stringified date of form yyy-mm-dd that determines
-            the earliest date for which to fetch data.
-        end_date (str): Stringified date of form yyy-mm-dd that determines
-            the latest date for which to fetch data.
-        verbose (0 or 1): Whether to print info messages while fetching data.
+    Params
+    ------
+    start_date (str): Stringified date of form yyy-mm-dd that determines
+        the earliest date for which to fetch data.
+    end_date (str): Stringified date of form yyy-mm-dd that determines
+        the latest date for which to fetch data.
+    verbose (0 or 1): Whether to print info messages while fetching data.
 
-    Returns:
-        List of match results data dictionaries.
+    Returns
+    -------
+    List of match results data dictionaries.
     """
-
     return _api_response(
         pd.DataFrame(
             data_import.fetch_match_data(
@@ -143,6 +148,5 @@ def fetch_match_results_data(
 
 
 def fetch_ml_model_info() -> ApiResponse:
-    """Fetch general info about all saved ML models"""
-
+    """Fetch general info about all saved ML models."""
     return _api_response(ML_MODELS)

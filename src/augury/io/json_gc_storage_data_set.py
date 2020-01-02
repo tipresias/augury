@@ -1,5 +1,6 @@
 """
 ``JSONGCStorageDataSet`` loads and saves data to a file in Google Cloud Storage.
+
 Current assumption is that this only runs in the context of a Google Cloud Function,
 meaning that credentials are unnecessary (use local data files when running in
 dev environment).
@@ -17,20 +18,20 @@ from google.cloud import storage
 class JSONGCStorageDataSet(AbstractDataSet):
     """
     ``JSONGCStorageDataSet`` loads and saves data to a file in Google Cloud Storage.
+
     Current assumption is that this only runs in the context of a Google Cloud Function,
     meaning that credentials are unnecessary (use local data files when running in
     dev environment).
     """
 
     def __init__(self, filepath: str, bucket_name: str) -> None:
-        """Creates a new instance of ``JSONGCStorageDataSet`` pointing to a concrete
-        json file on Google Cloud Storage.
+        """Instantiate a JSONGCStorageDataSet object.
 
-        Args:
-            filepath: Path to a json file.
-            bucket_name: GC Storage bucket name.
+        Params
+        ------
+        filepath: Path to a json file.
+        bucket_name: GC Storage bucket name.
         """
-
         self._filepath = filepath
         self._bucket_name = bucket_name
 

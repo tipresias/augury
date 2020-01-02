@@ -1,6 +1,6 @@
-"""kedro data set based on fetching fresh data from the afl_data service"""
+"""kedro data set based on fetching fresh data from the afl_data service."""
 
-from typing import Any, List, Dict, Callable, Union
+from typing import Any, List, Dict, Callable, Union, Optional
 import importlib
 from datetime import date
 
@@ -26,27 +26,37 @@ DATE_RANGE_TYPE: Dict[str, Dict[str, str]] = {
     },
     "past_rounds": {"start_date": str(BEGINNING_OF_YEAR), "end_date": str(TODAY)},
     "future_rounds": {"start_date": str(TODAY), "end_date": str(END_OF_YEAR)},
-    "round_number": {},
 }
 
 
 class JSONRemoteDataSet(AbstractDataSet):
-    """kedro data set based on fetching fresh data from the afl_data service"""
+    """Kedro data set based on fetching fresh data from the afl_data service."""
 
     def __init__(
         self,
         data_source: Union[Callable, str],
-        date_range_type: str,
-        load_kwargs={},
-        **_kwargs,
+        date_range_type: Optional[str] = None,
+        **load_kwargs,
     ):
-        if date_range_type not in DATE_RANGE_TYPE.keys():
-            raise ValueError(
-                f"Argument date_range_type must be one of {DATE_RANGE_TYPE.keys()}, "
-                f"but {date_range_type} was received."
-            )
+        """Instantiate a JSONRemoteDataSet object.
 
-        self._date_range = DATE_RANGE_TYPE[date_range_type]
+        Params
+        ------
+        data_source: Either a function that fetches data from an external API,
+            or a reference to one that can be loaded via `getattr`.
+        date_range_type: Defines the date range of the data to be fetched.
+            Can be one of the following:
+                'whole_season': all of the current year.
+                'past_rounds': the current year up to the current date (inclusive).
+                'future_rounds': the current date until the end of the current year
+                    (inclusive).
+        load_kwargs: Keyword arguments to pass to the data import function.
+        """
+        self._validate_date_range_type(date_range_type)
+
+        self._date_range = (
+            {} if date_range_type is None else DATE_RANGE_TYPE[date_range_type]
+        )
         self._data_source_kwargs: Dict[str, Any] = {**self._date_range, **load_kwargs}
 
         if callable(data_source):
@@ -67,3 +77,10 @@ class JSONRemoteDataSet(AbstractDataSet):
 
     def _describe(self):
         return self._data_source_kwargs
+
+    @staticmethod
+    def _validate_date_range_type(date_range_type: Optional[str]) -> None:
+        assert date_range_type is None or date_range_type in DATE_RANGE_TYPE.keys(), (
+            "Argument date_range_type must be None or one of "
+            f"{DATE_RANGE_TYPE.keys()}, but {date_range_type} was received."
+        )

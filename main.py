@@ -1,3 +1,9 @@
+"""Collection of serverless functions.
+
+All functions must take an HTTP request as a parameter and return an HTTP response
+per Serverless Framework conventions.
+"""
+
 import os
 import sys
 from datetime import date
@@ -30,11 +36,11 @@ def _request_is_authorized(request) -> bool:
 
 
 def predictions(request):
-    """
-    Generates predictions for the given year and round number, and returns the data
-    as an HTTP response.
+    """Generate predictions for the given year and round number.
 
-    Params:
+    Params
+    ------
+    request (flask.Request): HTTP request object with the following query params:
         year_range (str, optional): Year range for which you want prediction data.
             Format = yyyy-yyyy.
             Default = current year only.
@@ -43,12 +49,11 @@ def predictions(request):
         ml_models (str, optional): Comma-separated list of names of ML model to use
             for making predictions.
             Default = All available models
-    Args:
-        request (flask.Request): HTTP request object.
-    Returns:
-        flask.Response with a body that has a JSON of prediction data.
-    """
 
+    Returns
+    -------
+    flask.Response with a body that has a JSON of prediction data.
+    """
     if not _request_is_authorized(request):
         return _unauthorized_response()
 
@@ -74,21 +79,20 @@ def predictions(request):
 
 
 def fixtures(request):
-    """
-    Fetches fixture data for the given date range, and returns the data
-    as an HTTP response.
+    """Fetch fixture data for the given date range.
 
-    Params:
+    Params
+    ------
+    request (flask.Request): HTTP request object with the following query params:
         start_date (string of form 'yyyy-mm-dd', required): Start of date range
             (inclusive) for which you want data.
         start_date (string of form 'yyyy-mm-dd', required): End of date range
             (inclusive) for which you want data.
-    Args:
-        request (flask.Request): HTTP request object.
-    Returns:
-        flask.Response with a body that has a JSON of fixture data.
-    """
 
+    Returns
+    -------
+    flask.Response with a body that has a JSON of fixture data.
+    """
     if not _request_is_authorized(request):
         return _unauthorized_response()
 
@@ -99,21 +103,20 @@ def fixtures(request):
 
 
 def match_results(request):
-    """
-    Fetches match results data for the given date range, and returns the data
-    as an HTTP response.
+    """Fetch match results data for the given date range.
 
-    Params:
+    Params
+    ------
+    request (flask.Request): HTTP request object with the following query params:
         start_date (string of form 'yyyy-mm-dd', required): Start of date range
             (inclusive) for which you want data.
         start_date (string of form 'yyyy-mm-dd', required): End of date range
             (inclusive) for which you want data.
-    Args:
-        request (flask.Request): HTTP request object.
-    Returns:
-        flask.Response with a body that has a JSON of match results data.
-    """
 
+    Returns
+    -------
+    flask.Response with a body that has a JSON of match results data.
+    """
     if not _request_is_authorized(request):
         return _unauthorized_response()
 
@@ -124,15 +127,16 @@ def match_results(request):
 
 
 def ml_models(request):
-    """
-    Fetches info for all available ML models and returns the data as an HTTP response.
+    """Fetch info for all available ML models.
 
-    Args:
+    Params
+    ------
         request (flask.Request): HTTP request object.
-    Returns:
+
+    Returns
+    -------
         flask.Response with a body that has a JSON of ML model data.
     """
-
     if not _request_is_authorized(request):
         return _unauthorized_response()
 

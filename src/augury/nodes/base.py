@@ -1,3 +1,5 @@
+"""Utility functions used in various kedro node functions."""
+
 from typing import Callable, Union, Set, Sequence
 from datetime import datetime, time
 from dateutil import parser

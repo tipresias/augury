@@ -1,3 +1,6 @@
+# pylint: disable=missing-module-docstring, missing-function-docstring
+# pylint: disable=missing-class-docstring
+
 import os
 from unittest import TestCase, skipIf
 from unittest.mock import patch, MagicMock

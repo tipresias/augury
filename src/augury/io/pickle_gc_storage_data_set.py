@@ -1,5 +1,6 @@
 """
-``JSONGCStorageDataSet`` loads and saves data to a file in Google Cloud Storage.
+``PickleGCStorageDataSet`` loads and saves data to a file in Google Cloud Storage.
+
 Current assumption is that this only runs in the context of a Google Cloud Function,
 meaning that credentials are unnecessary (use local data files when running in
 dev environment).
@@ -17,23 +18,19 @@ from augury.settings import BASE_DIR
 
 
 class PickleGCStorageDataSet(AbstractDataSet):
-    """
-    ``PickleGCStorageDataSet`` loads and saves pickled objects to a file
-    in Google Cloud Storage.
-    """
+    """Loads and saves pickled objects to a file in Google Cloud Storage."""
 
     def __init__(
         self, filepath: str, bucket_name: str, project_dir: str = BASE_DIR
     ) -> None:
-        """Creates a new instance of ``PickleGCStorageDataSet`` pointing to a concrete
-        pickle file on Google Cloud Storage.
+        """Instantiate a PickleGCStorageDataSet.
 
-        Args:
-            filepath: Path to a pickle file.
-            bucket_name: GC Storage bucket name.
-            project_dir: Root directory for the project.
+        Params
+        ------
+        filepath: Path to a pickle file.
+        bucket_name: GC Storage bucket name.
+        project_dir: Root directory for the project.
         """
-
         self._filepath = filepath
         self._bucket_name = bucket_name
         self._project_dir = project_dir

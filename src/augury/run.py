@@ -15,22 +15,31 @@ from augury.io import JSONRemoteDataSet
 
 
 class ProjectContext(KedroContext):
-    """Users can override the remaining methods from the parent class here, or create new ones
-    (e.g. as required by plugins)
-
-    """
+    """Specialisation of generic KedroContext object with params specific to Augury."""
 
     project_name = "augury"
     project_version = "0.15.5"
 
     def __init__(
         self,
-        project_path,
-        env=os.getenv("PYTHON_ENV"),
+        project_path: str,
+        env: Optional[str] = os.getenv("PYTHON_ENV"),
         round_number: Optional[int] = None,
         start_date: str = "1897-01-01",
         end_date: str = f"{date.today().year}-12-31",
     ):
+        """
+        Instantiate ProjectContext object.
+
+        Params
+        ------
+        project_path: Absolute path to project root.
+        env: Name of the current environment. Principally used
+            to load the correct `conf/` files.
+        round_number: The relevant round_number for filtering data.
+        start_date: The earliest match date (inclusive) to include in any data sets.
+        end_date: The latest match date (inclusive) to include in any data sets.
+        """
         super().__init__(project_path, env=env)
         self.round_number = round_number
         self.start_date = start_date
@@ -38,6 +47,7 @@ class ProjectContext(KedroContext):
 
     @property
     def pipeline(self):
+        """Create the default pipeline for the Augury app."""
         return create_full_pipeline(self.start_date, self.end_date)
 
     def _get_pipelines(self) -> Dict[str, Pipeline]:
@@ -53,8 +63,7 @@ class ProjectContext(KedroContext):
             "roster_data",
             JSONRemoteDataSet(
                 data_source="augury.data_import.player_data.fetch_roster_data",
-                date_range_type="round_number",
-                load_kwargs={"round_number": self.round_number},
+                round_number=self.round_number,
             ),
         )
 
@@ -75,24 +84,24 @@ def main(
 ):
     """Application main entry point.
 
-    Args:
-        tags: An optional list of node tags which should be used to
-            filter the nodes of the ``Pipeline``. If specified, only the nodes
-            containing *any* of these tags will be run.
-        env: An optional parameter specifying the environment in which
-            the ``Pipeline`` should be run.
-        runner: An optional parameter specifying the runner that you want to run
-            the pipeline with.
-        node_names: An optional list of node names which should be used to filter
-            the nodes of the ``Pipeline``. If specified, only the nodes with these
-            names will be run.
-        from_nodes: An optional list of node names which should be used as a
-            starting point of the new ``Pipeline``.
-        to_nodes: An optional list of node names which should be used as an
-            end point of the new ``Pipeline``.
-        from_inputs: An optional list of input datasets which should be used as a
-            starting point of the new ``Pipeline``.
-
+    Params
+    ------
+    tags: An optional list of node tags which should be used to
+        filter the nodes of the ``Pipeline``. If specified, only the nodes
+        containing *any* of these tags will be run.
+    env: An optional parameter specifying the environment in which
+        the ``Pipeline`` should be run.
+    runner: An optional parameter specifying the runner that you want to run
+        the pipeline with.
+    node_names: An optional list of node names which should be used to filter
+        the nodes of the ``Pipeline``. If specified, only the nodes with these
+        names will be run.
+    from_nodes: An optional list of node names which should be used as a
+        starting point of the new ``Pipeline``.
+    to_nodes: An optional list of node names which should be used as an
+        end point of the new ``Pipeline``.
+    from_inputs: An optional list of input datasets which should be used as a
+        starting point of the new ``Pipeline``.
     """
     project_context = load_context(
         Path.cwd(),

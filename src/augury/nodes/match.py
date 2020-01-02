@@ -1,4 +1,4 @@
-"""Pipeline nodes for transforming match data"""
+"""Pipeline nodes for transforming match data."""
 
 from typing import List, Tuple
 from functools import partial, reduce, update_wrapper
@@ -111,15 +111,15 @@ def _correct_home_away_teams(match_data: pd.DataFrame) -> pd.DataFrame:
 
 
 def clean_match_data(match_data: pd.DataFrame) -> pd.DataFrame:
-    """
-    Basic data cleaning, translation, and dropping in preparation for ML-specific
-    transformations
+    """Clean, translate, and drop data in preparation for ML-specific transformations.
 
-    Args:
-        match_data (pandas.DataFrame): Raw match data
+    Params
+    ------
+    match_data (pandas.DataFrame): Raw match data
 
-    Returns:
-        Cleanish pandas.DataFrame
+    Returns
+    -------
+    Cleanish pandas.DataFrame
     """
     if any(match_data):
         clean_data = (
@@ -201,17 +201,16 @@ def _match_id_column(data_frame: pd.DataFrame) -> pd.Series:
 
 
 def clean_fixture_data(fixture_data: pd.DataFrame) -> pd.DataFrame:
+    """Clean, translate, and drop data in preparation for ML-specific transformations.
+
+    Params
+    ------
+    fixture_data (pandas.DataFrame): Raw fixture data
+
+    Returns
+    -------
+    Cleanish pandas.DataFrame
     """
-    Basic data cleaning, translation, and dropping in preparation for ML-specific
-    transformations
-
-    Args:
-        fixture_data (pandas.DataFrame): Raw fixture data
-
-    Returns:
-        Cleanish pandas.DataFrame
-    """
-
     if not fixture_data.any().any():
         return pd.DataFrame()
 
@@ -295,8 +294,7 @@ def _calculate_match_elo_rating(
 
 
 def add_elo_rating(data_frame_arg: pd.DataFrame) -> pd.DataFrame:
-    """Add Elo rating of team prior to matches"""
-
+    """Append a column for teams' prematch Elo ratings."""
     ELO_INDEX_COLS = {"home_team", "year", "round_number"}
     REQUIRED_COLS = ELO_INDEX_COLS | {"home_score", "away_score", "away_team", "date"}
 
@@ -346,8 +344,7 @@ def add_elo_rating(data_frame_arg: pd.DataFrame) -> pd.DataFrame:
 
 
 def add_out_of_state(data_frame: pd.DataFrame) -> pd.DataFrame:
-    """Add whether a team is playing out of their home state."""
-
+    """Append a column for whether a team is playing out of their home state."""
     REQUIRED_COLS = {"venue", "team"}
     _validate_required_columns(REQUIRED_COLS, data_frame.columns)
 
@@ -361,8 +358,7 @@ def add_out_of_state(data_frame: pd.DataFrame) -> pd.DataFrame:
 def _haversine_formula(
     lat_long1: Tuple[float, float], lat_long2: Tuple[float, float]
 ) -> float:
-    """Formula for distance between two pairs of latitudes & longitudes"""
-
+    """Calculate distance between two pairs of latitudes & longitudes."""
     lat1, long1 = lat_long1
     lat2, long2 = lat_long2
     # Latitude & longitude are in degrees, so have to convert to radians for
@@ -380,8 +376,7 @@ def _haversine_formula(
 
 
 def add_travel_distance(data_frame: pd.DataFrame) -> pd.DataFrame:
-    """Add distance between each team's home city and the venue city for the match"""
-
+    """Append column for distances between teams' home cities and match venue cities."""
     required_cols = {"venue", "team"}
     _validate_required_columns(required_cols, data_frame.columns)
 
@@ -401,8 +396,7 @@ def add_travel_distance(data_frame: pd.DataFrame) -> pd.DataFrame:
 
 
 def add_result(data_frame: pd.DataFrame) -> pd.DataFrame:
-    """Add a team's match result (win, draw, loss) as float"""
-
+    """Append a column for teamsa match results (win, draw, loss) as float."""
     REQUIRED_COLS = {"score", "oppo_score"}
     _validate_required_columns(REQUIRED_COLS, data_frame.columns)
 
@@ -413,8 +407,7 @@ def add_result(data_frame: pd.DataFrame) -> pd.DataFrame:
 
 
 def add_margin(data_frame: pd.DataFrame) -> pd.DataFrame:
-    """Add a team's margin from the match"""
-
+    """Append a column for teams' points margins from matches."""
     REQUIRED_COLS = {"score", "oppo_score"}
     _validate_required_columns(REQUIRED_COLS, data_frame.columns)
 
@@ -447,12 +440,11 @@ def _shift_features(columns: List[str], shift: bool, data_frame: pd.DataFrame):
 def add_shifted_team_features(
     shift_columns: List[str] = [], keep_columns: List[str] = []
 ):
-    """
-    Group features by team and shift by one to get previous match stats.
+    """Group features by team and shift by one to get previous match stats.
+
     Use shift_columns to indicate which features to shift or keep_columns for features
     to leave unshifted, but not both.
     """
-
     if any(shift_columns) and any(keep_columns):
         raise ValueError(
             "To avoid conflicts, you can't include both match_cols "
@@ -467,8 +459,7 @@ def add_shifted_team_features(
 
 
 def add_cum_win_points(data_frame: pd.DataFrame) -> pd.DataFrame:
-    """Add a team's cumulative win points (based on cumulative result)"""
-
+    """Append a column for teams' cumulative win points per season."""
     REQUIRED_COLS = {"prev_match_result"}
     _validate_required_columns(REQUIRED_COLS, data_frame.columns)
 
@@ -481,12 +472,13 @@ def add_cum_win_points(data_frame: pd.DataFrame) -> pd.DataFrame:
     return data_frame.assign(cum_win_points=cum_win_points_col)
 
 
-# Calculate win/loss streaks. Positive result (win or draw) adds 1 (or 0.5);
-# negative result subtracts 1. Changes in direction (i.e. broken streak) result in
-# starting at 1 or -1.
 def add_win_streak(data_frame: pd.DataFrame) -> pd.DataFrame:
-    """Add a team's running win/loss streak through the end of the current match"""
+    """Append a column for teams' running win/loss streaks.
 
+    Streaks calculated through the end of the current match. Positive result
+    (win or draw) adds 1 (or 0.5); negative result subtracts 1. Changes in direction
+    (i.e. broken streak) result in starting over at 1 or -1.
+    """
     REQUIRED_COLS = {"prev_match_result"}
     _validate_required_columns(REQUIRED_COLS, data_frame.columns)
 
@@ -528,8 +520,11 @@ def add_win_streak(data_frame: pd.DataFrame) -> pd.DataFrame:
 
 
 def add_cum_percent(data_frame: pd.DataFrame) -> pd.DataFrame:
-    """Add a team's cumulative percent (cumulative score / cumulative opponents' score)"""
+    """Append a column for teams' cumulative percentages.
 
+    This is an official stat used as a tie-breaker for AFL ladder positions
+    and is calculated as cumulative score / cumulative opponents' score.
+    """
     REQUIRED_COLS = {"prev_match_score", "prev_match_oppo_score"}
     _validate_required_columns(REQUIRED_COLS, data_frame.columns)
 
@@ -546,8 +541,7 @@ def add_cum_percent(data_frame: pd.DataFrame) -> pd.DataFrame:
 
 
 def add_ladder_position(data_frame: pd.DataFrame) -> pd.DataFrame:
-    """Add a team's current ladder position (based on cumulative win points and percent)"""
-
+    """Append a column for teams' current ladder position."""
     REQUIRED_COLS = INDEX_COLS + ["cum_win_points", "cum_percent"]
     _validate_required_columns(REQUIRED_COLS, data_frame.columns)
 
@@ -586,8 +580,7 @@ def add_ladder_position(data_frame: pd.DataFrame) -> pd.DataFrame:
 
 
 def add_elo_pred_win(data_frame: pd.DataFrame) -> pd.DataFrame:
-    """Add whether a team is predicted to win per elo ratings"""
-
+    """Append a column for whether teams are predicted to win per their elo ratings."""
     REQUIRED_COLS = {"elo_rating", "oppo_elo_rating"}
     _validate_required_columns(REQUIRED_COLS, data_frame.columns)
 

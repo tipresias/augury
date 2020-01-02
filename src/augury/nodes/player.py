@@ -1,4 +1,4 @@
-"""Pipeline nodes for transforming player data"""
+"""Pipeline nodes for transforming player data."""
 
 from typing import Callable, List, Dict, Union, Tuple
 from functools import partial, update_wrapper
@@ -97,18 +97,18 @@ def _player_id_col(data_frame: pd.DataFrame) -> pd.DataFrame:
 def clean_player_data(
     player_data: pd.DataFrame, match_data: pd.DataFrame
 ) -> pd.DataFrame:
+    """Clean raw player data.
+
+    Params
+    ------
+    player_data (pandas.DataFrame): Raw player data.
+    match_data (pandas.DataFrame): Raw match data (required for match_id &
+        round_number columns).
+
+    Returns
+    -------
+    pandas.DataFrame: Clean player data
     """
-    Basic cleaning of raw player data.
-
-    Args:
-        player_data (pandas.DataFrame): Raw player data.
-        match_data (pandas.DataFrame): Raw match data (required for match_id &
-            round_number columns).
-
-    Returns:
-        pandas.DataFrame: Clean player data
-    """
-
     cleaned_match_data = (
         # Sometimes the time part of date differs between data sources,
         # so we merge player and match data on date without time.
@@ -166,6 +166,7 @@ def clean_player_data(
 def clean_roster_data(
     roster_data: pd.DataFrame, clean_player_data_frame: pd.DataFrame
 ) -> pd.DataFrame:
+    """Clean data fetched from the AFL's list of team rosters."""
     if not roster_data.any().any():
         return roster_data.assign(player_id=[])
 
@@ -220,13 +221,14 @@ def convert_player_match_rows_to_player_teammatch_rows(
 ) -> pd.DataFrame:
     """Stack home & away player data, and add 'oppo_' team columns.
 
-    Args:
-        data_frame (pandas.DataFrame): Data frame to be transformed.
+    Params
+    ------
+    data_frame (pandas.DataFrame): Data frame to be transformed.
 
-    Returns:
-        pandas.DataFrame
+    Returns
+    -------
+    pandas.DataFrame
     """
-
     REQUIRED_COLS = {
         "playing_for",
         "home_team",
@@ -247,8 +249,7 @@ def convert_player_match_rows_to_player_teammatch_rows(
 
 
 def add_last_year_brownlow_votes(data_frame: pd.DataFrame):
-    """Add column for a player's total brownlow votes from the previous season"""
-
+    """Add column for a player's total brownlow votes from the previous season."""
     REQUIRED_COLS = {"player_id", "year", "brownlow_votes"}
     _validate_required_columns(REQUIRED_COLS, data_frame.columns)
 
@@ -271,8 +272,7 @@ def add_last_year_brownlow_votes(data_frame: pd.DataFrame):
 
 
 def add_rolling_player_stats(data_frame: pd.DataFrame):
-    """Replace players' invidual match stats with rolling averages of those stats"""
-
+    """Replace players' invidual match stats with rolling averages of those stats."""
     STATS_COLS = [
         "kicks",
         "marks",
@@ -329,8 +329,7 @@ def add_rolling_player_stats(data_frame: pd.DataFrame):
 
 
 def add_cum_matches_played(data_frame: pd.DataFrame):
-    """Add cumulative number of matches each player has played"""
-
+    """Add cumulative number of matches each player has played."""
     REQUIRED_COLS = {"player_id"}
     _validate_required_columns(REQUIRED_COLS, data_frame.columns)
 
@@ -410,7 +409,6 @@ def aggregate_player_stats_by_team_match(
     aggregations: List[str],
 ) -> Callable[[pd.DataFrame], pd.DataFrame]:
     """Perform aggregations to turn player-match data into team-match data."""
-
     return update_wrapper(
         partial(_aggregate_player_stats_by_team_match_node, aggregations=aggregations),
         _aggregate_player_stats_by_team_match_node,

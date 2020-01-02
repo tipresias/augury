@@ -1,4 +1,4 @@
-"""Class for model trained on all AFL data and its associated data class"""
+"""Class for model trained on all AFL data and its associated data class."""
 
 from typing import Optional, Union, Type
 
@@ -73,10 +73,7 @@ PIPELINE = StackingRegressor(
 
 
 class StackingEstimator(BaseMLEstimator):
-    """
-    Stacked ensemble model with lower-level model predictions feeding
-    into a meta estimator.
-    """
+    """Stacked ensemble model based on `mlxtend`'s `StackingRegressor`."""
 
     def __init__(
         self,
@@ -84,13 +81,21 @@ class StackingEstimator(BaseMLEstimator):
         name: Optional[str] = "stacking_estimator",
         min_year=DEFAULT_MIN_YEAR,
     ) -> None:
+        """Instantiate a StackingEstimator object.
+
+        Params
+        ------
+        pipeline: Pipeline of Scikit-learn estimators ending in a regressor
+            or classifier.
+        name: Name of the estimator for reference by Kedro data sets and filenames.
+        min_year: Minimum year for data used in training (inclusive).
+        """
         super().__init__(pipeline, name=name)
 
         self.min_year = min_year
 
     def fit(self, X: pd.DataFrame, y: Union[pd.Series, np.ndarray]) -> Type[R]:
-        """Fit estimator to the data"""
-
+        """Fit estimator to the data."""
         X_filtered, y_filtered = (
             self._filter_by_min_year(X),
             self._filter_by_min_year(y),
@@ -114,6 +119,7 @@ class StackingEstimator(BaseMLEstimator):
         return super().fit(X_filtered, y_filtered)
 
     def predict(self, X):
+        """Make predictions."""
         X_filtered = self._filter_by_min_year(X)
 
         # On fit, StackingRegressor reassigns the defined regressors to regr_,

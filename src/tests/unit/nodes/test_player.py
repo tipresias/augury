@@ -1,3 +1,6 @@
+# pylint: disable=missing-module-docstring, missing-function-docstring
+# pylint: disable=missing-class-docstring
+
 from unittest import TestCase
 import os
 from datetime import time
@@ -8,9 +11,9 @@ import numpy as np
 import pytz
 
 from tests.fixtures.data_factories import fake_cleaned_player_data
+from tests.helpers import ColumnAssertionMixin
 from augury.nodes import player
 from augury.settings import INDEX_COLS, BASE_DIR
-from .node_test_mixins import ColumnAssertionMixin
 
 
 N_MATCHES_PER_SEASON = 10

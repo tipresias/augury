@@ -1,3 +1,6 @@
+# pylint: disable=missing-module-docstring, missing-function-docstring
+# pylint: disable=missing-class-docstring
+
 from unittest import TestCase
 from faker import Faker
 import pandas as pd
