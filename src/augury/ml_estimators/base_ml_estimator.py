@@ -21,10 +21,11 @@ class BaseMLEstimator(_BaseComposition, RegressorMixin):
     ) -> None:
         """Instantiate a BaseMLEstimator object.
 
-        Params:
-            pipeline: Pipeline of Scikit-learn estimators ending in a regressor
-                or classifier.
-            name: Name of the estimator for reference by Kedro data sets and filenames.
+        Params
+        ------
+        pipeline: Pipeline of Scikit-learn estimators ending in a regressor
+            or classifier.
+        name: Name of the estimator for reference by Kedro data sets and filenames.
         """
         super().__init__()
 

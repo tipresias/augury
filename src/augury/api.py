@@ -99,15 +99,17 @@ def fetch_fixture_data(
     """
     Fetch fixture data (doesn't include match results) from afl_data service.
 
-    Args:
+    Params
+    ------
         start_date (str): Stringified date of form yyy-mm-dd that determines
             the earliest date for which to fetch data.
         end_date (str): Stringified date of form yyy-mm-dd that determines
             the latest date for which to fetch data.
         verbose (0 or 1): Whether to print info messages while fetching data.
 
-    Returns:
-        List of fixture data dictionaries.
+    Returns
+    -------
+    List of fixture data dictionaries.
     """
     return _api_response(
         pd.DataFrame(
@@ -124,15 +126,17 @@ def fetch_match_results_data(
     """
     Fetch results data for past matches from afl_data service.
 
-    Args:
-        start_date (str): Stringified date of form yyy-mm-dd that determines
-            the earliest date for which to fetch data.
-        end_date (str): Stringified date of form yyy-mm-dd that determines
-            the latest date for which to fetch data.
-        verbose (0 or 1): Whether to print info messages while fetching data.
+    Params
+    ------
+    start_date (str): Stringified date of form yyy-mm-dd that determines
+        the earliest date for which to fetch data.
+    end_date (str): Stringified date of form yyy-mm-dd that determines
+        the latest date for which to fetch data.
+    verbose (0 or 1): Whether to print info messages while fetching data.
 
-    Returns:
-        List of match results data dictionaries.
+    Returns
+    -------
+    List of match results data dictionaries.
     """
     return _api_response(
         pd.DataFrame(

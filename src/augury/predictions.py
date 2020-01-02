@@ -29,16 +29,17 @@ class Predictor:
     ):
         """Instantiate Predictor object.
 
-        Params:
-            year_range: Year range for which to make predictions (first year inclusive,
-                last year exclusive, per `range` function).
-            context: Kedro context object as defined in run.ProjectContext.
-            round_number: Round number for which to make predictions. If omitted,
-                predictions are made for entire seasons.
-            train: Whether to train each model on data from previous years
-                before making predictions on a given year's matches.
-            verbose: (1 or 0) Whether to print information while making predictions.
-            data_kwargs: Keyword arguments to pass to MLData on instantiation.
+        Params
+        ------
+        year_range: Year range for which to make predictions (first year inclusive,
+            last year exclusive, per `range` function).
+        context: Kedro context object as defined in run.ProjectContext.
+        round_number: Round number for which to make predictions. If omitted,
+            predictions are made for entire seasons.
+        train: Whether to train each model on data from previous years
+            before making predictions on a given year's matches.
+        verbose: (1 or 0) Whether to print information while making predictions.
+        data_kwargs: Keyword arguments to pass to MLData on instantiation.
         """
         self.context = context
         self.year_range = year_range

@@ -51,12 +51,14 @@ def fetch_afl_data(path: str, params: Dict[str, Any] = {}) -> List[Dict[str, Any
     """
     Fetch data from the afl_data service.
 
-    Args:
-        path (string): API endpoint to call.
-        params (dict): Query parameters to include in the API request.
+    Params
+    ------
+    path (string): API endpoint to call.
+    params (dict): Query parameters to include in the API request.
 
-    Returns:
-        list of dicts, representing the AFL data requested.
+    Returns
+    -------
+    list of dicts, representing the AFL data requested.
     """
     if os.getenv("PYTHON_ENV") == "production":
         service_host = AFL_DATA_SERVICE

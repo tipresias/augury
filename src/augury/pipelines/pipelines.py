@@ -27,12 +27,13 @@ def create_pipelines(start_date, end_date, **_kwargs) -> Dict[str, Pipeline]:
     """
     Create a dictionary of available pipelines for the Kedro context object.
 
-    Args:
-        kwargs: Ignore any additional arguments added in the future.
+    Params
+    ------
+    kwargs: Ignore any additional arguments added in the future.
 
-    Returns:
-        A mapping from a pipeline name to a ``Pipeline`` object.
-
+    Returns
+    -------
+    A mapping from a pipeline name to a ``Pipeline`` object.
     """
     return {
         "__default__": Pipeline([]),

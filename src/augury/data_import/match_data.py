@@ -21,12 +21,14 @@ def fetch_match_data(
     """
     Get AFL match data for given date range.
 
-    Args:
-        start_date (string: YYYY-MM-DD): Earliest date for match data returned.
-        end_date (string: YYYY-MM-DD): Latest date for match data returned.
+    Params
+    ------
+    start_date (string: YYYY-MM-DD): Earliest date for match data returned.
+    end_date (string: YYYY-MM-DD): Latest date for match data returned.
 
     Returns
-        list of dicts of match data.
+    -------
+    list of dicts of match data.
     """
     if verbose == 1:
         print("Fetching match data from between " f"{start_date} and {end_date}...")
@@ -51,16 +53,18 @@ def save_match_data(
     """
     Save match data as a *.json file with name based on date range of data.
 
-    Args:
-        start_date (string: YYYY-MM-DD): Earliest date for match data returned.
-        end_date (string: YYYY-MM-DD): Latest date for match data returned.
-        verbose (int): Whether to print info statements (1 means yes, 0 means no).
-        for_prod (bool): Whether saved data set is meant for loading in production.
-            If True, this overwrites the given start_date to limit the data set
-            to the last 10 years to limit memory usage.
+    Params
+    ------
+    start_date (string: YYYY-MM-DD): Earliest date for match data returned.
+    end_date (string: YYYY-MM-DD): Latest date for match data returned.
+    verbose (int): Whether to print info statements (1 means yes, 0 means no).
+    for_prod (bool): Whether saved data set is meant for loading in production.
+        If True, this overwrites the given start_date to limit the data set
+        to the last 10 years to limit memory usage.
 
-    Returns:
-        None
+    Returns
+    -------
+    None
     """
     if for_prod:
         start_date = max(start_date, PREDICTION_DATA_START_DATE)
@@ -81,12 +85,14 @@ def fetch_fixture_data(
     """
     Get AFL fixture data for given date range.
 
-    Args:
-        start_date (string: YYYY-MM-DD): Earliest date for fixture data returned.
-        end_date (string: YYYY-MM-DD): Latest date for fixture data returned.
+    Params
+    ------
+    start_date (string: YYYY-MM-DD): Earliest date for fixture data returned.
+    end_date (string: YYYY-MM-DD): Latest date for fixture data returned.
 
     Returns
-        list of dicts of fixture data.
+    -------
+    list of dicts of fixture data.
     """
     if verbose == 1:
         print("Fetching fixture data from between " f"{start_date} and {end_date}...")

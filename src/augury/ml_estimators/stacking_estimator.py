@@ -83,11 +83,12 @@ class StackingEstimator(BaseMLEstimator):
     ) -> None:
         """Instantiate a StackingEstimator object.
 
-        Params:
-            pipeline: Pipeline of Scikit-learn estimators ending in a regressor
-                or classifier.
-            name: Name of the estimator for reference by Kedro data sets and filenames.
-            min_year: Minimum year for data used in training (inclusive).
+        Params
+        ------
+        pipeline: Pipeline of Scikit-learn estimators ending in a regressor
+            or classifier.
+        name: Name of the estimator for reference by Kedro data sets and filenames.
+        min_year: Minimum year for data used in training (inclusive).
         """
         super().__init__(pipeline, name=name)
 

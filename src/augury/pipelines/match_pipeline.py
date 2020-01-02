@@ -70,11 +70,12 @@ def create_match_pipeline(
     """
     Create a Kedro pipeline for loading and transforming match data.
 
-    Args:
-        start_date (str, YYYY-MM-DD format): Earliest date for included data.
-        end_date (str, YYYY-MM-DD format): Latest date for included data.
-        past_match_pipeline (kedro.pipeline.Pipeline): Pipeline for loading and
-            cleaning data for past matches.
+    Params
+    ------
+    start_date (str, YYYY-MM-DD format): Earliest date for included data.
+    end_date (str, YYYY-MM-DD format): Latest date for included data.
+    past_match_pipeline (kedro.pipeline.Pipeline): Pipeline for loading and
+        cleaning data for past matches.
     """
     return Pipeline(
         [
@@ -172,11 +173,12 @@ def create_legacy_match_pipeline(
 
     Only relevant for generating predictions from older models.
 
-    Args:
-        start_date (str, YYYY-MM-DD format): Earliest date for included data.
-        end_date (str, YYYY-MM-DD format): Latest date for included data.
-        past_match_pipeline (kedro.pipeline.Pipeline): Pipeline for loading and
-            cleaning data for past matches.
+    Params
+    ------
+    start_date (str, YYYY-MM-DD format): Earliest date for included data.
+    end_date (str, YYYY-MM-DD format): Latest date for included data.
+    past_match_pipeline (kedro.pipeline.Pipeline): Pipeline for loading and
+        cleaning data for past matches.
     """
     return Pipeline(
         [

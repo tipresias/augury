@@ -60,11 +60,12 @@ def create_player_pipeline(
     """
     Create a Kedro pipeline for loading and transforming player data.
 
-    Args:
-        start_date (str): Stringified date (yyyy-mm-dd)
-        end_date (str): Stringified date (yyyy-mm-dd)
-        past_match_pipeline (kedro.pipeline.Pipeline): Pipeline for past match data,
-            required for player data cleaning if player pipeline is run in isolation.
+    Params
+    ------
+    start_date (str): Stringified date (yyyy-mm-dd)
+    end_date (str): Stringified date (yyyy-mm-dd)
+    past_match_pipeline (kedro.pipeline.Pipeline): Pipeline for past match data,
+        required for player data cleaning if player pipeline is run in isolation.
     """
     return Pipeline(
         [

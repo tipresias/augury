@@ -21,11 +21,13 @@ def convert_to_data_frame(
     """
     Convert JSON data in the form of a list of dictionaries into a data frame.
 
-    Args:
-        data (sequence of list of dictionaries): Data received from a JSON data set.
+    Params
+    ------
+    data (sequence of list of dictionaries): Data received from a JSON data set.
 
-    Returns:
-        Sequence of pandas.DataFrame
+    Returns
+    -------
+    Sequence of pandas.DataFrame
     """
     data_frames = [pd.DataFrame(datum) for datum in data]
 
@@ -85,12 +87,14 @@ def _combine_data_vertically(*data_frames: Sequence[pd.DataFrame]):
 def combine_data(axis: int = 0) -> pd.DataFrame:
     """Concatenate data frames from multiple sources into one data frame.
 
-    Args:
-        data_frames (list of pandas.DataFrame): Data frames to be concatenated.
-        axis (0 or 1, defaults to 0): Whether to concatenate by rows (0) or columns (1).
+    Params
+    ------
+    data_frames (list of pandas.DataFrame): Data frames to be concatenated.
+    axis (0 or 1, defaults to 0): Whether to concatenate by rows (0) or columns (1).
 
-    Returns:
-        Concatenated data frame.
+    Returns
+    -------
+    Concatenated data frame.
     """
     assert axis in [0, 1], f"Expected axis to be 0 or 1, but recieved {axis}"
 
@@ -121,12 +125,14 @@ def filter_by_date(
 ) -> Callable[[pd.DataFrame], pd.DataFrame]:
     """Filter data frames by the given start and end_dates.
 
-    Args:
-        start_date (str, YYYY-MM-DD): Earliest date (inclusive) for match data.
-        end_date (str, YYYY-MM-DD): Latest date (inclusive) for match data.
+    Params
+    ------
+    start_date (str, YYYY-MM-DD): Earliest date (inclusive) for match data.
+    end_date (str, YYYY-MM-DD): Latest date (inclusive) for match data.
 
-    Returns:
-        Callable function that filters data frames by the given dates.
+    Returns
+    -------
+    Callable function that filters data frames by the given dates.
     """
     if not DATE_STRING_REGEX.match(start_date) or not DATE_STRING_REGEX.match(end_date):
         raise ValueError(
@@ -173,11 +179,13 @@ def convert_match_rows_to_teammatch_rows(
     This results in a data frame with two rows per match, one each for the home
     and away team.
 
-    Args:
-        match_row_data_frame (pandas.DataFrame): Data frame to be transformed.
+    Params
+    ------
+    match_row_data_frame (pandas.DataFrame): Data frame to be transformed.
 
-    Returns:
-        pandas.DataFrame
+    Returns
+    -------
+    pandas.DataFrame
     """
     REQUIRED_COLS: List[str] = [
         "home_team",
@@ -290,14 +298,16 @@ def add_oppo_features(
     (team-specific features to add 'oppo' versions of). Including both column arguments
     will raise an error.
 
-    Args:
-        match_cols (list of strings): Names of columns to ignore (calculates oppo
-            features for all columns not listed).
-        oppo_feature_cols (list of strings): Names of columns to add oppo features of
-            (ignores all columns not listed)
+    Params
+    ------
+    match_cols (list of strings): Names of columns to ignore (calculates oppo
+        features for all columns not listed).
+    oppo_feature_cols (list of strings): Names of columns to add oppo features of
+        (ignores all columns not listed)
 
-    Returns:
-        Function that takes pandas.DataFrame and returns another pandas.DataFrame
+    Returns
+    -------
+    Function that takes pandas.DataFrame and returns another pandas.DataFrame
         with 'oppo_' columns added.
     """
     if any(match_cols) and any(oppo_feature_cols):
@@ -322,11 +332,13 @@ def finalize_data(
 ) -> pd.DataFrame:
     """Perform final data cleaning after all other data transformation steps.
 
-    Args:
-        data_frame (pandas.DataFrame): Data frame that has been cleaned & transformed.
+    Params
+    ------
+    data_frame (pandas.DataFrame): Data frame that has been cleaned & transformed.
 
-    Returns:
-        pandas.DataFrame that's ready to be fed into a machine-learning model.
+    Returns
+    -------
+    pandas.DataFrame that's ready to be fed into a machine-learning model.
     """
     final_data_frame = (
         data_frame.astype({"year": int})
@@ -384,10 +396,11 @@ def sort_data_frame_columns(
 ) -> Callable[[pd.DataFrame], pd.DataFrame]:
     """Sort data frame columns such that categories are grouped together on the left.
 
-    Params:
-        category_cols: Explicitly define category columns to put on the left.
-            If omitted, category columns are identified by their dtype not being
-            'number' or a type of 'datetime'.
+    Params
+    ------
+    category_cols: Explicitly define category columns to put on the left.
+        If omitted, category columns are identified by their dtype not being
+        'number' or a type of 'datetime'.
     """
     return update_wrapper(
         partial(_sort_data_frame_columns_node, category_cols),

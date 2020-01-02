@@ -99,13 +99,15 @@ def clean_player_data(
 ) -> pd.DataFrame:
     """Clean raw player data.
 
-    Args:
-        player_data (pandas.DataFrame): Raw player data.
-        match_data (pandas.DataFrame): Raw match data (required for match_id &
-            round_number columns).
+    Params
+    ------
+    player_data (pandas.DataFrame): Raw player data.
+    match_data (pandas.DataFrame): Raw match data (required for match_id &
+        round_number columns).
 
-    Returns:
-        pandas.DataFrame: Clean player data
+    Returns
+    -------
+    pandas.DataFrame: Clean player data
     """
     cleaned_match_data = (
         # Sometimes the time part of date differs between data sources,
@@ -219,11 +221,13 @@ def convert_player_match_rows_to_player_teammatch_rows(
 ) -> pd.DataFrame:
     """Stack home & away player data, and add 'oppo_' team columns.
 
-    Args:
-        data_frame (pandas.DataFrame): Data frame to be transformed.
+    Params
+    ------
+    data_frame (pandas.DataFrame): Data frame to be transformed.
 
-    Returns:
-        pandas.DataFrame
+    Returns
+    -------
+    pandas.DataFrame
     """
     REQUIRED_COLS = {
         "playing_for",

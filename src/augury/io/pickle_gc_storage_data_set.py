@@ -25,10 +25,11 @@ class PickleGCStorageDataSet(AbstractDataSet):
     ) -> None:
         """Instantiate a PickleGCStorageDataSet.
 
-        Args:
-            filepath: Path to a pickle file.
-            bucket_name: GC Storage bucket name.
-            project_dir: Root directory for the project.
+        Params
+        ------
+        filepath: Path to a pickle file.
+        bucket_name: GC Storage bucket name.
+        project_dir: Root directory for the project.
         """
         self._filepath = filepath
         self._bucket_name = bucket_name

@@ -51,7 +51,7 @@ class FakeEstimator(BaseMLEstimator):
     def __init__(self, pipeline=PIPELINE, name="fake_estimator"):
         """Instantiate a FakeEstimator object.
 
-        Params:
+        Params
             pipeline: Scikit-learn pipeline.
             name: Name of the estimator for finding its pickle file and loading it.
         """
@@ -70,7 +70,7 @@ class FakeEstimatorData(MLData):
     ):
         """Instantiate a FakeEstimatorData object.
 
-        Params:
+        Params
             pipeline: Name of the pipeline to run if the data set isn't available.
             data_set: Name of the data set to load.
             max_year: Maximum year (inclusive) for the data set. This lets us load

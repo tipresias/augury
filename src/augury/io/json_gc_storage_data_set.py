@@ -27,9 +27,10 @@ class JSONGCStorageDataSet(AbstractDataSet):
     def __init__(self, filepath: str, bucket_name: str) -> None:
         """Instantiate a JSONGCStorageDataSet object.
 
-        Args:
-            filepath: Path to a json file.
-            bucket_name: GC Storage bucket name.
+        Params
+        ------
+        filepath: Path to a json file.
+        bucket_name: GC Storage bucket name.
         """
         self._filepath = filepath
         self._bucket_name = bucket_name

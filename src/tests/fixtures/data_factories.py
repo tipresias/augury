@@ -105,7 +105,7 @@ class CyclicalTeamNames:
     def __init__(self, team_names: List[str] = CONTEMPORARY_TEAM_NAMES):
         """Instantiate a CyclicalTeamNames object.
 
-        Params:
+        Params
             team_names: List of team names to cycle through.
         """
         self.team_names = team_names

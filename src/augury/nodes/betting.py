@@ -16,11 +16,13 @@ from .base import (
 def clean_data(betting_data: pd.DataFrame) -> pd.DataFrame:
     """Clean, translate, and drop data in preparation for ML-specific transformations.
 
-    Args:
-        betting_data (pandas.DataFrame): Raw betting data
+    Params
+    ------
+    betting_data (pandas.DataFrame): Raw betting data
 
-    Returns:
-        pandas.DataFrame
+    Returns
+    -------
+    pandas.DataFrame
     """
     clean_betting_data = (
         betting_data.rename(columns={"season": "year", "round": "round_number"})
@@ -56,11 +58,13 @@ def clean_data(betting_data: pd.DataFrame) -> pd.DataFrame:
 def add_betting_pred_win(data_frame: pd.DataFrame) -> pd.DataFrame:
     """Add whether a team is predicted to win per the betting odds.
 
-    Args:
-        data_frame (pandas.DataFrame): A data frame with betting data.
+    Params
+    ------
+    data_frame (pandas.DataFrame): A data frame with betting data.
 
-    Returns:
-        pandas.DataFrame with a 'betting_pred_win' column
+    Returns
+    -------
+    pandas.DataFrame with a 'betting_pred_win' column
     """
     REQUIRED_COLS: List[str] = [
         "win_odds",

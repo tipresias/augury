@@ -40,16 +40,17 @@ class JSONRemoteDataSet(AbstractDataSet):
     ):
         """Instantiate a JSONRemoteDataSet object.
 
-        Params:
-            data_source: Either a function that fetches data from an external API,
-                or a reference to one that can be loaded via `getattr`.
-            date_range_type: Defines the date range of the data to be fetched.
-                Can be one of the following:
-                    'whole_season': all of the current year.
-                    'past_rounds': the current year up to the current date (inclusive).
-                    'future_rounds': the current date until the end of the current year
-                        (inclusive).
-            load_kwargs: Keyword arguments to pass to the data import function.
+        Params
+        ------
+        data_source: Either a function that fetches data from an external API,
+            or a reference to one that can be loaded via `getattr`.
+        date_range_type: Defines the date range of the data to be fetched.
+            Can be one of the following:
+                'whole_season': all of the current year.
+                'past_rounds': the current year up to the current date (inclusive).
+                'future_rounds': the current date until the end of the current year
+                    (inclusive).
+        load_kwargs: Keyword arguments to pass to the data import function.
         """
         self._validate_date_range_type(date_range_type)
 

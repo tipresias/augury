@@ -35,20 +35,21 @@ class MLData:
         """
         Instantiate an MLData object.
 
-        Params:
-            context: Relevant context for loading data sets.
-            pipeline: Name of the pipeline to run if the desired data set
-                is not available.
-            data_set: Name of the data set to load.
-            train_year_range: Year range (inclusive, exclusive per `range` function)
-                for data to include in training sets.
-            test_year_range: Year range (inclusive, exclusive per `range` function)
-                for data to include in testing sets.
-            update_data: Whether to run the pipeline regardless of the status
-                of the data set.
-            index_cols: Column names to use for the DataFrame's index.
-            pipeline_kwargs: Keyword arguments to pass to context.run when running
-                the pipeline.
+        Params
+        ------
+        context: Relevant context for loading data sets.
+        pipeline: Name of the pipeline to run if the desired data set
+            is not available.
+        data_set: Name of the data set to load.
+        train_year_range: Year range (inclusive, exclusive per `range` function)
+            for data to include in training sets.
+        test_year_range: Year range (inclusive, exclusive per `range` function)
+            for data to include in testing sets.
+        update_data: Whether to run the pipeline regardless of the status
+            of the data set.
+        index_cols: Column names to use for the DataFrame's index.
+        pipeline_kwargs: Keyword arguments to pass to context.run when running
+            the pipeline.
         """
         self.context = context or load_context(BASE_DIR)
         self.pipeline = pipeline

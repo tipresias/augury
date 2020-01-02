@@ -66,13 +66,15 @@ def fetch_player_data(
     """
     Get player data from AFL tables.
 
-    Args:
-        start_date (string: YYYY-MM-DD): Earliest date for match data returned.
-        end_date (string: YYYY-MM-DD): Latest date for match data returned.
-        verbose (int): Whether to print info statements (1 means yes, 0 means no).
+    Params
+    ------
+    start_date (string: YYYY-MM-DD): Earliest date for match data returned.
+    end_date (string: YYYY-MM-DD): Latest date for match data returned.
+    verbose (int): Whether to print info statements (1 means yes, 0 means no).
 
-    Returns:
-        list of dicts of player data.
+    Returns
+    -------
+    list of dicts of player data.
     """
     if verbose == 1:
         print(
@@ -111,16 +113,18 @@ def save_player_data(
     """
     Save match data as a *.json file with name based on date range of data.
 
-    Args:
-        start_date (string: YYYY-MM-DD): Earliest date for match data returned.
-        end_date (string: YYYY-MM-DD): Latest date for match data returned.
-        verbose (int): Whether to print info statements (1 means yes, 0 means no).
-        for_prod (bool): Whether saved data set is meant for loading in production.
-            If True, this overwrites the given start_date to limit the data set
-            to the last 10 years to limit memory usage.
+    Params
+    ------
+    start_date (string: YYYY-MM-DD): Earliest date for match data returned.
+    end_date (string: YYYY-MM-DD): Latest date for match data returned.
+    verbose (int): Whether to print info statements (1 means yes, 0 means no).
+    for_prod (bool): Whether saved data set is meant for loading in production.
+        If True, this overwrites the given start_date to limit the data set
+        to the last 10 years to limit memory usage.
 
-    Returns:
-        None
+    Returns
+    -------
+    None
     """
     if for_prod:
         start_date = max(start_date, PREDICTION_DATA_START_DATE)
@@ -141,13 +145,15 @@ def fetch_roster_data(
     """
     Get player data from AFL tables.
 
-    Args:
-        start_date (string: YYYY-MM-DD): Earliest date for match data returned.
-        end_date (string: YYYY-MM-DD): Latest date for match data returned.
-        verbose (int): Whether to print info statements (1 means yes, 0 means no).
+    Params
+    ------
+    start_date (string: YYYY-MM-DD): Earliest date for match data returned.
+    end_date (string: YYYY-MM-DD): Latest date for match data returned.
+    verbose (int): Whether to print info statements (1 means yes, 0 means no).
 
-    Returns:
-        list of dicts of player data.
+    Returns
+    -------
+    list of dicts of player data.
     """
     if verbose == 1:
         print(f"Fetching roster data for round {round_number}...")

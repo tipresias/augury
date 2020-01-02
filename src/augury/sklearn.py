@@ -81,11 +81,12 @@ class AveragingRegressor(_BaseComposition, RegressorMixin):
     ) -> None:
         """Instantiate an AveragingRegressor object.
 
-        Params:
-            estimators: Scikit-learn estimators (and their names) for generating
-                base predictions that will be averaged.
-            weights: Multipliers for individual base predictions to weight their impact
-                on the final prediction.
+        Params
+        ------
+        estimators: Scikit-learn estimators (and their names) for generating
+            base predictions that will be averaged.
+        weights: Multipliers for individual base predictions to weight their impact
+            on the final prediction.
         """
         super().__init__()
 
@@ -143,11 +144,12 @@ class CorrelationSelector(BaseEstimator, TransformerMixin):
     ) -> None:
         """Instantiate a CorrelationSelector transformer.
 
-        Params:
-            cols_to_keep: List of feature names to always keep in the data set.
-            threshold: Minimum correlation value (exclusive) for keeping a feature.
-            labels: Label values from the training data set for calculating
-                correlations.
+        Params
+        ------
+        cols_to_keep: List of feature names to always keep in the data set.
+        threshold: Minimum correlation value (exclusive) for keeping a feature.
+        labels: Label values from the training data set for calculating
+            correlations.
         """
         self.threshold = threshold
         self.labels = labels
@@ -211,15 +213,16 @@ class EloRegressor(BaseEstimator, RegressorMixin):
         """
         Instantiate an EloRegressor object.
 
-        Params:
-            k: Elo model param for regulating for how long match results affect Elo ratings.
-            x: Elo model param.
-            m: Elo model param.
-            home_ground_advantage: Elo model param for how many points an average home team
-                is expected to win by.
-            s: Elo model param.
-            season_carryover: The percentage of a team's end-of-season Elo score
-                that is kept for the next season.
+        Params
+        ------
+        k: Elo model param for regulating for how long match results affect Elo ratings.
+        x: Elo model param.
+        m: Elo model param.
+        home_ground_advantage: Elo model param for how many points an average home team
+            is expected to win by.
+        s: Elo model param.
+        season_carryover: The percentage of a team's end-of-season Elo score
+            that is kept for the next season.
         """
         self.k = k
         self.x = x
@@ -481,11 +484,12 @@ class TeammatchToMatchConverter(BaseEstimator, TransformerMixin):
         """
         Instantiate a TeammatchToMatchConverter transformer.
 
-        Params:
-            match_cols (list of strings,
-                default=["date", "venue", "round_type"]):
-                List of match columns that are team neutral (e.g. round_number, venue).
-                These won't be renamed with 'home_' or 'away_' prefixes.
+        Params
+        ------
+        match_cols (list of strings,
+            default=["date", "venue", "round_type"]):
+            List of match columns that are team neutral (e.g. round_number, venue).
+            These won't be renamed with 'home_' or 'away_' prefixes.
         """
         self.match_cols = match_cols
         self._match_cols = list(set(match_cols + MATCH_INDEX_COLS))
@@ -566,8 +570,9 @@ class ColumnDropper(BaseEstimator, TransformerMixin):
     def __init__(self, cols_to_drop: List[str] = []):
         """Instantiate a ColumbnDropper transformer.
 
-        Params:
-            cols_to_drop: List of column names to drop.
+        Params
+        ------
+        cols_to_drop: List of column names to drop.
         """
         self.cols_to_drop = cols_to_drop
 
@@ -596,9 +601,10 @@ class DataFrameConverter(BaseEstimator, TransformerMixin):
     ):
         """Instantiate a DataFrameConverter transformer.
 
-        Params:
-            columns: List of column names or a pd.Index to assign as columns.
-            index: List of row names or a pd.Index to assign as the index.
+        Params
+        ------
+        columns: List of column names or a pd.Index to assign as columns.
+        index: List of row names or a pd.Index to assign as the index.
         """
         self.columns = columns
         self.index = index

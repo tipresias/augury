@@ -84,16 +84,18 @@ def score_model(
     This uses a range of years to create incrementing time-series folds
     for cross-validation rather than random k-folds to avoid data leakage.
 
-    Params:
-        model: The model to cross-validate.
-        cv_year_range: Year range for generating time-series folds for cross-validation.
-        scoring: Any Scikit-learn scorers that can calculate a metric from predictions.
-            This is in addition to `match_accuracy`, which is always used.
-        n_jobs: Number of processes to use.
+    Params
+    ------
+    model: The model to cross-validate.
+    cv_year_range: Year range for generating time-series folds for cross-validation.
+    scoring: Any Scikit-learn scorers that can calculate a metric from predictions.
+        This is in addition to `match_accuracy`, which is always used.
+    n_jobs: Number of processes to use.
 
-    Returns:
-        cv_scores: A dictionary whose values are arrays of metrics per Scikit-learn's
-            `cross_validate` function.
+    Returns
+    -------
+    cv_scores: A dictionary whose values are arrays of metrics per Scikit-learn's
+        `cross_validate` function.
     """
     cv_scoring = {**{"match_accuracy": match_accuracy_scorer}, **scoring}
 

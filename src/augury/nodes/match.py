@@ -113,11 +113,13 @@ def _correct_home_away_teams(match_data: pd.DataFrame) -> pd.DataFrame:
 def clean_match_data(match_data: pd.DataFrame) -> pd.DataFrame:
     """Clean, translate, and drop data in preparation for ML-specific transformations.
 
-    Args:
-        match_data (pandas.DataFrame): Raw match data
+    Params
+    ------
+    match_data (pandas.DataFrame): Raw match data
 
-    Returns:
-        Cleanish pandas.DataFrame
+    Returns
+    -------
+    Cleanish pandas.DataFrame
     """
     if any(match_data):
         clean_data = (
@@ -201,11 +203,13 @@ def _match_id_column(data_frame: pd.DataFrame) -> pd.Series:
 def clean_fixture_data(fixture_data: pd.DataFrame) -> pd.DataFrame:
     """Clean, translate, and drop data in preparation for ML-specific transformations.
 
-    Args:
-        fixture_data (pandas.DataFrame): Raw fixture data
+    Params
+    ------
+    fixture_data (pandas.DataFrame): Raw fixture data
 
-    Returns:
-        Cleanish pandas.DataFrame
+    Returns
+    -------
+    Cleanish pandas.DataFrame
     """
     if not fixture_data.any().any():
         return pd.DataFrame()
