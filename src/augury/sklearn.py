@@ -4,6 +4,7 @@ from typing import Sequence, Type, List, Union, Optional, Any, Tuple, Dict
 import re
 import copy
 import math
+from functools import partial, update_wrapper
 
 import pandas as pd
 import numpy as np
@@ -643,11 +644,9 @@ def _calculate_team_margin(team_margin, oppo_margin):
     )
 
 
-def match_accuracy_scorer(estimator, X, y):
-    """Scikit-learn scorer function for calculating tipping accuracy of an estimator."""
-    y_pred = estimator.predict(X)
-
-    team_match_data_frame = X.assign(y_true=y, y_pred=y_pred)
+def _calculate_match_accuracy(X, y_true, y_pred):
+    """Scikit-learn metric function for calculating tipping accuracy."""
+    team_match_data_frame = X.assign(y_true=y_true, y_pred=y_pred)
     home_match_data_frame = team_match_data_frame.query("at_home == 1").sort_index()
     away_match_data_frame = (
         team_match_data_frame.query("at_home == 0")
@@ -670,6 +669,20 @@ def match_accuracy_scorer(estimator, X, y):
         ((home_margin >= 0) & (home_pred_margin > 0))
         | ((home_margin <= 0) & (home_pred_margin < 0))
     ).mean()
+
+
+def create_match_accuracy(X):
+    """Return Scikit-learn metric function for calculating tipping accuracy."""
+    return update_wrapper(
+        partial(_calculate_match_accuracy, X), _calculate_match_accuracy
+    )
+
+
+def match_accuracy_scorer(estimator, X, y):
+    """Scikit-learn scorer function for calculating tipping accuracy of an estimator."""
+    y_pred = estimator.predict(X)
+
+    return _calculate_match_accuracy(X, y, y_pred)
 
 
 def _calculate_bits(row):
