@@ -5,6 +5,7 @@ import re
 import copy
 import math
 from functools import partial, update_wrapper
+import warnings
 
 import pandas as pd
 import numpy as np
@@ -12,6 +13,7 @@ from sklearn.base import BaseEstimator, RegressorMixin, TransformerMixin
 from sklearn.utils.metaestimators import _BaseComposition
 from sklearn.preprocessing import LabelEncoder
 from mypy_extensions import TypedDict
+from statsmodels.tsa.base.tsa_model import TimeSeriesModel
 
 from augury.types import R, T
 from augury.nodes.base import _validate_required_columns
@@ -70,6 +72,10 @@ ROUND_NUMBER_LVL = 2
 
 LOG_BASE = 2
 MIN_VAL = 1 * 10 ** -10
+
+# Got these default p, d, q values from a combination of statistical tests
+# (mostly for d and q) and trial-and-error (mostly for p)
+DEFAULT_ORDER = (6, 0, 1)
 
 
 class AveragingRegressor(_BaseComposition, RegressorMixin):
@@ -629,6 +635,111 @@ class DataFrameConverter(BaseEstimator, TransformerMixin):
             )
 
         return pd.DataFrame(X, columns=self.columns, index=self.index)
+
+
+class TimeSeriesRegressor(BaseEstimator, RegressorMixin):
+    """Wrapper class with Scikit-learn API for regressors from statsmodels.tsa."""
+
+    def __init__(
+        self,
+        stats_model: TimeSeriesModel,
+        order: Tuple[int, int, int] = DEFAULT_ORDER,
+        exog_cols: List[str] = [],
+        **sm_kwargs,
+    ):
+        """Instantiate a StatsModelsRegressor.
+
+        Params
+        ------
+        stats_model: A model class from the statsmodels package. So far, has only been
+            tested with models from the tsa module.
+        order: The `order` param for ARIMA and similar models.
+        exog_cols: Names of columns to use as exogeneous variables for ARIMA
+            and similar models.
+        sm_kwargs: Any other keyword arguments to pass directly to the instantiation
+            of the given stats_model.
+        """
+        self.stats_model = stats_model
+        self.order = order
+        self.exog_cols = exog_cols
+        self.sm_kwargs = sm_kwargs
+        self._team_models: Dict[str, TimeSeriesModel] = {}
+
+    def fit(self, X: pd.DataFrame, y: Union[pd.DataFrame, np.array]):
+        """Fit the model to the training data."""
+        time_series_df = X.assign(y=y, ts_date=X["date"].dt.date).sort_values(
+            "ts_date", ascending=True
+        )
+
+        _ = [
+            self._fit_team_model(team_name, team_df)
+            for team_name, team_df in time_series_df.groupby("team")
+        ]
+
+        return self
+
+    def predict(self, X: pd.DataFrame) -> pd.Series:
+        """Make predictions."""
+        team_predictions = [
+            self._predict_with_team_model(X, team_name, team_model)
+            for team_name, team_model in self._team_models.items()
+        ]
+
+        return pd.concat(team_predictions, axis=0).sort_index()
+
+    def _fit_team_model(self, team_name, team_df):
+        n_train_years = team_df["date"].dt.year.drop_duplicates().count()
+        y = team_df.set_index("ts_date")["y"]
+
+        # Need smaller p for teams with fewer seasons for training (looking at you GWS),
+        # because higher p values raise weird calculation errors deep in statsmodels:
+        # "On entry to DLASCL parameter number 4 had an illegal value"
+        # The minimum number of years and the hard-coded lower p value are somewhat
+        # arbitrary, but were arrived at after a fair bit of trial-and-error.
+        p_param = self.order[0] if n_train_years >= 3 else min(4, self.order[0])
+        order_param = (p_param, *self.order[1:])
+
+        with warnings.catch_warnings():
+            # Match dates are roughly weekly, but since they aren't consistent,
+            # trying to coerce weekly frequency doesn't work. Ignoring the specific
+            # dates and making up a consistent weekly schedule doesn't improve model
+            # performance, so better to just ignore this unhelpful warning.
+            warnings.filterwarnings(
+                "ignore",
+                message=(
+                    "A date index has been provided, but it has no associated "
+                    "frequency information and so will be ignored when "
+                    "e.g. forecasting."
+                ),
+            )
+            self._team_models[team_name] = self.stats_model(
+                y, order=order_param, exog=self._exog_arg(team_df), **self.sm_kwargs
+            ).fit()
+
+    def _predict_with_team_model(
+        self,
+        X: pd.DataFrame,
+        team_name: str,  # pylint: disable=unused-argument
+        team_model: TimeSeriesModel,
+    ) -> pd.Series:
+        team_df = X.query("team == @team_name").sort_values("date")
+
+        if not team_df.any().any():
+            return pd.Series(name="yhat")
+
+        team_df_index = team_df.index
+
+        # TODO: Oversimplification of mapping of X dates onto forecast dates
+        # that ignores bye weeks and any other scheduling irregularities,
+        # but it's good enough for now.
+        forecast, _se, _conf = team_model.forecast(
+            steps=len(team_df_index), exog=self._exog_arg(team_df)
+        )
+
+        return pd.Series(forecast, name="yhat", index=team_df_index)
+
+    def _exog_arg(self, data_frame: pd.DataFrame) -> Optional[np.array]:
+        return data_frame[self.exog_cols].to_numpy() if any(self.exog_cols) else None
 
 
 def _calculate_team_margin(team_margin, oppo_margin):

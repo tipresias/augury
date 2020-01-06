@@ -11,7 +11,6 @@ scipy
 dask[complete]>=2.3
 mlflow==1.5.0
 catboost
-statsmodels
 fbprophet
 
 # Kedro packages

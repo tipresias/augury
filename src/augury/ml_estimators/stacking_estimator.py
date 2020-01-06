@@ -10,6 +10,7 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import ExtraTreesRegressor
 from mlxtend.regressor import StackingRegressor
+import statsmodels.api as sm
 
 from augury.sklearn import (
     CorrelationSelector,
@@ -17,14 +18,9 @@ from augury.sklearn import (
     TeammatchToMatchConverter,
     EloRegressor,
     DataFrameConverter,
+    TimeSeriesRegressor,
 )
-from augury.settings import (
-    TEAM_NAMES,
-    ROUND_TYPES,
-    VENUES,
-    CATEGORY_COLS,
-    SEED,
-)
+from augury.settings import TEAM_NAMES, ROUND_TYPES, VENUES, CATEGORY_COLS, SEED
 from augury.types import R
 from .base_ml_estimator import BaseMLEstimator
 
@@ -65,10 +61,17 @@ ELO_PIPELINE = make_pipeline(
     DataFrameConverter(), TeammatchToMatchConverter(), EloRegressor()
 )
 
-META_PIPELINE = make_pipeline(StandardScaler(), ExtraTreesRegressor(random_state=SEED),)
+ARIMA_PIPELINE = make_pipeline(
+    DataFrameConverter(),
+    TimeSeriesRegressor(
+        sm.tsa.ARIMA, order=(6, 0, 1), exog_cols=["at_home", "oppo_cum_percent"]
+    ),
+)
+
+META_PIPELINE = make_pipeline(StandardScaler(), ExtraTreesRegressor(random_state=SEED))
 
 PIPELINE = StackingRegressor(
-    regressors=[ML_PIPELINE, ELO_PIPELINE], meta_regressor=META_PIPELINE
+    regressors=[ML_PIPELINE, ELO_PIPELINE, ARIMA_PIPELINE], meta_regressor=META_PIPELINE
 )
 
 
