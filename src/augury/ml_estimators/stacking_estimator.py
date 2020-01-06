@@ -106,14 +106,17 @@ class StackingEstimator(BaseMLEstimator):
             "being passed from lower estimators to the meta estimator."
         )
 
+        for regr in self.pipeline.regressors:
+            if "dataframeconverter__columns" in regr.get_params().keys():
+                regr.set_params(
+                    **{
+                        "dataframeconverter__columns": X_filtered.columns,
+                        "dataframeconverter__index": X_filtered.index,
+                    }
+                )
+
         self.pipeline.set_params(
-            **{
-                "pipeline-1__dataframeconverter__columns": X_filtered.columns,
-                "pipeline-1__dataframeconverter__index": X_filtered.index,
-                "pipeline-2__dataframeconverter__columns": X_filtered.columns,
-                "pipeline-2__dataframeconverter__index": X_filtered.index,
-                "pipeline-1__correlationselector__labels": y_filtered,
-            }
+            **{"pipeline-1__correlationselector__labels": y_filtered}
         )
 
         return super().fit(X_filtered, y_filtered)
