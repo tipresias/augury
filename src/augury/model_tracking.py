@@ -97,9 +97,20 @@ def score_model(
     cv_scores: A dictionary whose values are arrays of metrics per Scikit-learn's
         `cross_validate` function.
     """
-    cv_scoring = {**{"match_accuracy": match_accuracy_scorer}, **scoring}
+    train_year_range = data.train_year_range
 
-    data.train_year_range = (max(cv_year_range),)
+    assert min(train_year_range) < min(cv_year_range) or len(train_year_range) == 1, (
+        "Must have at least one year of data before first test fold. Training data "
+        f"only goes back to {min(train_year_range)}, and first test fold is for "
+        f"{min(cv_year_range)}"
+    )
+    assert max(train_year_range) >= max(cv_year_range), (
+        "Training data must cover all years used for cross-validation. The last year "
+        f"of data is {max(train_year_range)}, but the last test fold is for "
+        f"{max(cv_year_range)}"
+    )
+
+    cv_scoring = {**{"match_accuracy": match_accuracy_scorer}, **scoring}
     X_train, _ = data.train_data
 
     return cross_validate(
@@ -109,6 +120,7 @@ def score_model(
         scoring=cv_scoring,
         n_jobs=n_jobs,
         verbose=2,
+        error_score="raise",
     )
 
 
