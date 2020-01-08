@@ -847,10 +847,14 @@ def bits_scorer(estimator, X, y):
             "draw": home_match_data_frame["y_true"] == away_match_data_frame["y_true"],
             "home_pred": home_match_data_frame["y_pred"],
             "away_pred": away_match_data_frame["y_pred"],
+            "year": home_match_data_frame["year"],
         }
     )
 
-    return bits_data_frame.apply(_calculate_bits, axis=1).sum()
+    return (
+        bits_data_frame.apply(_calculate_bits, axis=1).sum()
+        / bits_data_frame["year"].drop_duplicates().count()
+    )
 
 
 def year_cv_split(X, year_range):
