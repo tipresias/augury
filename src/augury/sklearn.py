@@ -822,14 +822,27 @@ def _calculate_bits(row):
     return 1 + math.log(max(1 - predicted_win_proba, MIN_VAL), LOG_BASE)
 
 
-def bits_scorer(estimator, X, y):
+def bits_scorer(estimator: BaseEstimator, X: pd.DataFrame, y: pd.Series, proba=False):
     """Scikit-learn scorer for the bits metric.
 
     Mostly for use in calls to cross_validate. Calculates a score
     based on the the model's predicted probability of a given result. For this metric,
     higher scores are better.
+
+    Params
+    ------
+    proba: Whether to use the `predict_proba` method to get predictions.
     """
-    y_pred = estimator.predict(X)
+
+    try:
+        y_pred = estimator.predict_proba(X)[:, 1] if proba else estimator.predict(X)
+    # TF/Keras models don't use predict_proba, so for classifiers, we pass proba=True,
+    # then rescue and call predict.
+    except AttributeError:
+        if proba:
+            y_pred = estimator.predict(X)[:, 1]
+        else:
+            raise
 
     team_match_data_frame = X.assign(y_true=y.to_numpy(), y_pred=y_pred)
     home_match_data_frame = team_match_data_frame.query("at_home == 1").sort_index()
