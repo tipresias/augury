@@ -14,6 +14,7 @@ from sklearn.utils.metaestimators import _BaseComposition
 from sklearn.preprocessing import LabelEncoder
 from mypy_extensions import TypedDict
 from statsmodels.tsa.base.tsa_model import TimeSeriesModel
+from scipy.stats import norm
 
 from augury.types import R, T
 from augury.nodes.base import _validate_required_columns
@@ -76,6 +77,16 @@ MIN_VAL = 1 * 10 ** -10
 # Got these default p, d, q values from a combination of statistical tests
 # (mostly for d and q) and trial-and-error (mostly for p)
 DEFAULT_ORDER = (6, 0, 1)
+# Minimum number of training years when using exogeneous variables
+# in a time-series model to avoid the error "On entry to DLASCL parameter number 4
+# had an illegal value". Arrived at through trial-and-error.
+MIN_YEARS_FOR_DLASCL = 3
+# Minimum number of training years when using exogeneous variables
+# in a time-series model to avoid the warning "HessianInversionWarning:
+# Inverting hessian failed, no bse or cov_params available".
+# Arrived at through trial-and-error.
+MIN_YEARS_FOR_HESSIAN = 6
+MIN_TIME_SERIES_YEARS = max(MIN_YEARS_FOR_DLASCL, MIN_YEARS_FOR_HESSIAN)
 
 
 class AveragingRegressor(_BaseComposition, RegressorMixin):
@@ -645,6 +656,7 @@ class TimeSeriesRegressor(BaseEstimator, RegressorMixin):
         stats_model: TimeSeriesModel,
         order: Tuple[int, int, int] = DEFAULT_ORDER,
         exog_cols: List[str] = [],
+        confidence=False,
         **sm_kwargs,
     ):
         """Instantiate a StatsModelsRegressor.
@@ -662,6 +674,7 @@ class TimeSeriesRegressor(BaseEstimator, RegressorMixin):
         self.stats_model = stats_model
         self.order = order
         self.exog_cols = exog_cols
+        self.confidence = confidence
         self.sm_kwargs = sm_kwargs
         self._team_models: Dict[str, TimeSeriesModel] = {}
 
@@ -692,11 +705,15 @@ class TimeSeriesRegressor(BaseEstimator, RegressorMixin):
         y = team_df.set_index("ts_date")["y"]
 
         # Need smaller p for teams with fewer seasons for training (looking at you GWS),
-        # because higher p values raise weird calculation errors deep in statsmodels:
-        # "On entry to DLASCL parameter number 4 had an illegal value"
+        # because higher p values raise weird calculation errors or warnings
+        # deep in statsmodels.
         # The minimum number of years and the hard-coded lower p value are somewhat
         # arbitrary, but were arrived at after a fair bit of trial-and-error.
-        p_param = self.order[0] if n_train_years >= 3 else min(4, self.order[0])
+        p_param = (
+            self.order[0]
+            if n_train_years >= MIN_TIME_SERIES_YEARS
+            else min(4, self.order[0])
+        )
         order_param = (p_param, *self.order[1:])
 
         with warnings.catch_warnings():
@@ -732,11 +749,18 @@ class TimeSeriesRegressor(BaseEstimator, RegressorMixin):
         # TODO: Oversimplification of mapping of X dates onto forecast dates
         # that ignores bye weeks and any other scheduling irregularities,
         # but it's good enough for now.
-        forecast, _se, _conf = team_model.forecast(
+        forecast, standard_error, _conf = team_model.forecast(
             steps=len(team_df_index), exog=self._exog_arg(team_df)
         )
 
-        return pd.Series(forecast, name="yhat", index=team_df_index)
+        if self.confidence:
+            standard_deviation = standard_error * (len(team_model.fittedvalues))**0.5
+            confidence_matrix = np.vstack([forecast, standard_deviation]).transpose()
+            y_pred = [norm.cdf(0, *mean_std) for mean_std in confidence_matrix]
+        else:
+            y_pred = forecast
+
+        return pd.Series(y_pred, name="yhat", index=team_df_index)
 
     def _exog_arg(self, data_frame: pd.DataFrame) -> Optional[np.array]:
         return data_frame[self.exog_cols].to_numpy() if any(self.exog_cols) else None
