@@ -846,7 +846,7 @@ def _calculate_bits(row):
     return 1 + math.log(max(1 - predicted_win_proba, MIN_VAL), LOG_BASE)
 
 
-def bits_scorer(estimator: BaseEstimator, X: pd.DataFrame, y: pd.Series, proba=False):
+def bits_scorer(estimator: BaseEstimator, X: pd.DataFrame, y: pd.Series, proba=False, info_df=None):
     """Scikit-learn scorer for the bits metric.
 
     Mostly for use in calls to cross_validate. Calculates a score
@@ -868,7 +868,12 @@ def bits_scorer(estimator: BaseEstimator, X: pd.DataFrame, y: pd.Series, proba=F
         else:
             raise
 
-    team_match_data_frame = X.assign(y_true=y.to_numpy(), y_pred=y_pred)
+    if info_df is None:
+        df = X
+    else:
+        df = pd.concat([X, info_df], axis=1).dropna()
+
+    team_match_data_frame = df.assign(y_true=y.to_numpy(), y_pred=y_pred)
     home_match_data_frame = team_match_data_frame.query("at_home == 1").sort_index()
     away_match_data_frame = (
         team_match_data_frame.query("at_home == 0")

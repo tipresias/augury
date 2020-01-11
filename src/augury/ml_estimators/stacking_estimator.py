@@ -145,7 +145,9 @@ class StackingEstimator(BaseMLEstimator):
     def _filter_by_min_year(
         self, data: Union[pd.DataFrame, pd.Series]
     ) -> Union[pd.DataFrame, pd.Series]:
-        if isinstance(data, pd.Series):
-            return data.loc[(slice(None), slice(self.min_year, None), slice(None))]
+        row_slice = (slice(None), slice(self.min_year, None), slice(None))
 
-        return data.query("year >= @self.min_year")
+        if isinstance(data, pd.Series):
+            return data.loc[row_slice]
+
+        return data.loc[row_slice, :]
