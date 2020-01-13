@@ -46,4 +46,4 @@ freezegun
 factory_boy
 betamax
 pytest-xdist
-pydocstyle==5.0.1
+pydocstyle==5.0.2
