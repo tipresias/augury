@@ -1,19 +1,28 @@
 """Classes and functions based on existing Scikit-learn functionality."""
 
-from typing import Sequence, Type, List, Union, Optional, Any, Tuple, Dict
+from typing import Sequence, Type, List, Union, Optional, Any, Tuple, Dict, Callable
 import re
 import copy
 from functools import partial, update_wrapper
 import warnings
+import tempfile
+import math
 
 import pandas as pd
 import numpy as np
-from sklearn.base import BaseEstimator, RegressorMixin, TransformerMixin
+from sklearn.base import (
+    BaseEstimator,
+    RegressorMixin,
+    TransformerMixin,
+    ClassifierMixin,
+)
 from sklearn.utils.metaestimators import _BaseComposition
 from sklearn.preprocessing import LabelEncoder
 from mypy_extensions import TypedDict
 from statsmodels.tsa.base.tsa_model import TimeSeriesModel
 from scipy.stats import norm
+from tensorflow import keras
+import tensorflow as tf
 
 from augury.types import R, T
 from augury.nodes.base import _validate_required_columns
@@ -83,6 +92,9 @@ MIN_YEARS_FOR_DLASCL = 3
 # Arrived at through trial-and-error.
 MIN_YEARS_FOR_HESSIAN = 6
 MIN_TIME_SERIES_YEARS = max(MIN_YEARS_FOR_DLASCL, MIN_YEARS_FOR_HESSIAN)
+# For regressors that might try to predict negative values or 0,
+# we need a slightly positive minimum to not get errors when calculating logarithms
+MIN_LOG_VAL = 1 * 10 ** -10
 
 
 class AveragingRegressor(_BaseComposition, RegressorMixin):
@@ -762,6 +774,202 @@ class TimeSeriesRegressor(BaseEstimator, RegressorMixin):
         return data_frame[self.exog_cols].to_numpy() if any(self.exog_cols) else None
 
 
+def _positive_pred_tensor(y_pred):
+    return tf.where(
+        tf.math.less_equal(y_pred, tf.constant(0.0)), tf.constant(MIN_LOG_VAL), y_pred
+    )
+
+
+def _log2(x):
+    return tf.math.divide(
+        tf.math.log(_positive_pred_tensor(x)), tf.math.log(tf.constant(2.0))
+    )
+
+
+def _draw_bits_tensor(y_pred):
+    return tf.math.add(
+        tf.constant(1.0),
+        tf.math.scalar_mul(
+            tf.constant(0.5),
+            _log2(tf.math.multiply(y_pred, tf.math.subtract(tf.constant(1.0), y_pred))),
+        ),
+    )
+
+
+def _win_bits_tensor(y_pred):
+    return tf.math.add(tf.constant(1.0), _log2(y_pred))
+
+
+def _loss_bits_tensor(y_pred):
+    return tf.math.add(
+        tf.constant(1.0), _log2(tf.math.subtract(tf.constant(1.0), y_pred))
+    )
+
+
+# Raw bits calculations per http://probabilistic-footy.monash.edu/~footy/about.shtml
+def bits_loss(y_true, y_pred):
+    """Loss function for Tensorflow models based on the bits metric."""
+    y_true_f = tf.cast(y_true, tf.float32)
+    y_pred_win = y_pred[:, -1:]
+
+    # We adjust bits calculation to make a valid ML error formula such that 0
+    # represents a correct prediction, and the further off the prediction
+    # the higher the error value.
+    return K_backend.mean(
+        tf.where(
+            tf.math.equal(y_true_f, tf.constant(0.5)),
+            tf.math.scalar_mul(tf.constant(-1.0), _draw_bits_tensor(y_pred_win)),
+            tf.where(
+                tf.math.equal(y_true_f, tf.constant(1.0)),
+                tf.math.subtract(tf.constant(1.0), _win_bits_tensor(y_pred_win)),
+                tf.math.add(
+                    tf.constant(1.0),
+                    tf.math.scalar_mul(
+                        tf.constant(-1.0), _loss_bits_tensor(y_pred_win)
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
+class KerasClassifier(BaseEstimator, ClassifierMixin):
+    """Wrapper class for the KerasClassifier Scikit-learn wrapper class.
+
+    This is mostly to override __getstate__ and __setstate__, because TensorFlow
+    functions are not consistently picklable.
+    """
+
+    def __init__(
+        self,
+        model_func: Callable[[Any], Callable],
+        n_hidden_layers: int = 2,
+        n_cells: int = 25,
+        dropout_rate: float = 0.1,
+        label_activation: str = "softmax",
+        n_labels: int = 2,
+        loss: Callable = bits_loss,
+        embed_dim: int = 4,
+        epochs: int = 20,
+        **kwargs,
+    ):
+        """Instantiate a KerasClassifier estimator.
+
+        Params
+        ------
+        model_func: Function that returns a compiled Keras model.
+        n_hidden_layers: Number of hidden layers to include between the input
+            and output layers.
+        n_cells: Number of cells to include in each hidden layer.
+        dropout_rate: Dropout rate between layers. Passed directly to the Keras model.
+        label_activation: Which activation function to use for the output.
+        n_labels: Number of output columns.
+        loss: Loss function to use. Passed directly to the Keras model.
+        embed_dim: Number of columns produced by the embedding layer.
+        """
+        self.model_func = model_func
+        self.n_hidden_layers = n_hidden_layers
+        self.n_cells = n_cells
+        self.dropout_rate = dropout_rate
+        self.label_activation = label_activation
+        self.n_labels = n_labels
+        self.loss = loss
+        self.embed_dim = embed_dim
+        self.epochs = epochs
+        self.kwargs = kwargs
+
+        self._create_model()
+
+    def fit(self, X, y, validation_data=None):
+        """Fit the model to the training data.
+
+        Params
+        ------
+        X: Training features.
+        y: Training labels.
+        validation_data: Optional validation data sets for early stopping.
+            Passed directly to the Keras model's fit method.
+        """
+        self._model.fit(X, y, validation_data=validation_data)
+
+        return self
+
+    def predict_proba(self, X):
+        """Return predictions with class probabilities.
+
+        Only works if the output has more than one column. Otherwise,
+        returns the same predictions as the #predict method.
+        """
+        return self._model.predict(X)
+
+    def predict(self, X):
+        """Return predictions."""
+        return (
+            self.predict_proba(X)
+            if self.n_labels == 1
+            else np.argmax(self.predict_proba(X), axis=1)
+        )
+
+    def set_params(self, **params):
+        """Set instance params."""
+        # We call the parent's #set_params method to avoid an infinite loop.
+        super().set_params(**params)
+
+        # Since most of the params are passed to the model's build function,
+        # we need to create a new instance with the updated params rather than delegate
+        # to the internal model.
+        self._create_model()
+
+        return self
+
+    @property
+    def history(self) -> keras.callbacks.History:
+        """Return the history object of the trained Keras model."""
+        return self._model.model.history
+
+    def _create_model(self):
+        keras.backend.clear_session()
+
+        # We use KerasRegressor, because KerasClassifier only works
+        # with the Sequential model
+        self._model = keras.wrappers.scikit_learn.KerasRegressor(
+            build_fn=self.model_func(
+                n_hidden_layers=self.n_hidden_layers,
+                n_cells=self.n_cells,
+                dropout_rate=self.dropout_rate,
+                label_activation=self.label_activation,
+                n_labels=self.n_labels,
+                loss=self.loss,
+                embed_dim=self.embed_dim,
+                **self.kwargs,
+            ),
+            epochs=self.epochs,
+            callbacks=[keras.callbacks.EarlyStopping(monitor="val_loss", patience=5)],
+        )
+
+    # Adapted this code from: http://zachmoshe.com/2017/04/03/pickling-keras-models.html
+    # Keras has since been updated to be picklable, but my custom tensorflow loss function is not
+    # (at least I can figure out how to pickle it). So, this is necessary
+    # for basic Scikit-learn functionality like grid search and multiprocessing.
+    def __getstate__(self):
+        model_str = ""
+        with tempfile.NamedTemporaryFile(suffix=".hdf5", delete=True) as f:
+            keras.models.save_model(self.model, f.name, overwrite=True)
+            model_str = f.read()
+        d = {key: value for key, value in self.__dict__.items() if key != "model"}
+        d.update({"model_str": model_str})
+        return d
+
+    def __setstate__(self, state):
+        with tempfile.NamedTemporaryFile(suffix=".hdf5", delete=True) as f:
+            f.write(state["model_str"])
+            f.flush()
+            model = keras.models.load_model(f.name)
+        d = {value: key for value, key in state.items() if key != "model_str"}
+        d.update({"model": model})
+        self.__dict__ = d # pylint: disable=attribute-defined-outside-init
+
+
 def _calculate_team_margin(team_margin, oppo_margin):
     # We want True to be 1 and False to be -1
     team_margin_multiplier = ((team_margin > oppo_margin).astype(int) * 2) - 1
@@ -817,10 +1025,6 @@ def match_accuracy_scorer(estimator, X, y):
 
 
 def _positive_pred(y_pred):
-    # For regressors that might try to predict negative values or 0,
-    # we need a slightly positive minimum to not get errors when calculating logarithms
-    MIN_LOG_VAL = 1 * 10 ** -10
-
     return np.maximum(y_pred, np.repeat(MIN_LOG_VAL, len(y_pred)))
 
 
@@ -885,7 +1089,10 @@ def bits_scorer(
     if isinstance(X, pd.DataFrame) and "year" in X.columns:
         n_years = X["year"].drop_duplicates().count()
 
-    return _calculate_bits(y, y_pred).sum() / n_years
+    # For tipping competitions, bits are summed across the season.
+    # We divide by number of seasons for easier comparison with other models.
+    # We divide by two to get a rough per-match bits value.
+    return _calculate_bits(y, y_pred).sum() / n_years / 2
 
 
 def year_cv_split(X, year_range):
