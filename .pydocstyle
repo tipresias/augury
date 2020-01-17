@@ -1,2 +1,3 @@
 [pydocstyle]
 convention = numpy
+match = '(?!test_).*\.py'
