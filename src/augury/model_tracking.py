@@ -11,6 +11,7 @@ from sklearn.pipeline import Pipeline
 import mlflow
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 from augury.ml_data import MLData
 from augury.sklearn import year_cv_split, match_accuracy_scorer
@@ -250,3 +251,38 @@ def start_run(
         )
         for ml_model, model_data, run_info in ml_models
     ]
+
+
+def graph_tf_model_history(history, metrics: List[str] = []) -> None:
+    """Visualize loss and metric values per epoch during Keras model training.
+
+    Params
+    ------
+    history: Keras model history object.
+    metrics: List of metric names that the model tracks in addition to loss.
+
+    Returns
+    -------
+    None, but displays the generated charts.
+    """
+    loss = history.history["loss"]
+    val_loss = history.history["val_loss"]
+
+    epochs = range(len(loss))
+
+    plt.plot(epochs, loss, "bo", label="Training loss")
+    plt.plot(epochs, val_loss, "b", label="Validation loss")
+    plt.title("Training and validation loss")
+    plt.legend()
+
+    for metric in metrics:
+        plt.figure()
+
+        metric_train = history.history[metric]
+        metric_val = history.history[f"val_{metric}"]
+        plt.plot(epochs, metric_train, "bo", label=f"Training {metric}")
+        plt.plot(epochs, metric_val, "b", label=f"Validation {metric}")
+        plt.title(f"Training and validation {metric}")
+        plt.legend()
+
+    plt.show()
