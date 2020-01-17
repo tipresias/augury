@@ -3,7 +3,6 @@
 from typing import Sequence, Type, List, Union, Optional, Any, Tuple, Dict
 import re
 import copy
-import math
 from functools import partial, update_wrapper
 import warnings
 
@@ -70,9 +69,6 @@ PREV_MARGIN_OFFSET = 3
 
 YEAR_LVL = 1
 ROUND_NUMBER_LVL = 2
-
-LOG_BASE = 2
-MIN_VAL = 1 * 10 ** -10
 
 # Got these default p, d, q values from a combination of statistical tests
 # (mostly for d and q) and trial-and-error (mostly for p)
@@ -754,7 +750,7 @@ class TimeSeriesRegressor(BaseEstimator, RegressorMixin):
         )
 
         if self.confidence:
-            standard_deviation = standard_error * (len(team_model.fittedvalues))**0.5
+            standard_deviation = standard_error * (len(team_model.fittedvalues)) ** 0.5
             confidence_matrix = np.vstack([forecast, standard_deviation]).transpose()
             y_pred = [norm.cdf(0, *mean_std) for mean_std in confidence_matrix]
         else:
@@ -820,41 +816,59 @@ def match_accuracy_scorer(estimator, X, y):
     return _calculate_match_accuracy(X, y, y_pred)
 
 
-def _calculate_bits(row):
-    if row["home_pred"] > row["away_pred"]:
-        predicted_win_proba = row["home_pred"]
-        predicted_home_win = True
-    else:
-        predicted_win_proba = row["away_pred"]
-        predicted_home_win = False
+def _positive_pred(y_pred):
+    # For regressors that might try to predict negative values or 0,
+    # we need a slightly positive minimum to not get errors when calculating logarithms
+    MIN_LOG_VAL = 1 * 10 ** -10
 
-    correct = (predicted_home_win and row["home_win"]) or (
-        not predicted_home_win and not row["home_win"]
+    return np.maximum(y_pred, np.repeat(MIN_LOG_VAL, len(y_pred)))
+
+
+def _draw_bits(y_pred):
+    return 1 + (0.5 * np.log2(_positive_pred(y_pred * (1 - y_pred))))
+
+
+def _win_bits(y_pred):
+    return 1 + np.log2(_positive_pred(y_pred))
+
+
+def _loss_bits(y_pred):
+    return 1 + np.log2(_positive_pred(1 - y_pred))
+
+
+# Raw bits calculations per http://probabilistic-footy.monash.edu/~footy/about.shtml
+def _calculate_bits(y_true, y_pred):
+    return np.where(
+        y_true == 0.5,
+        _draw_bits(y_pred),
+        np.where(y_true == 1.0, _win_bits(y_pred), _loss_bits(y_pred)),
     )
 
-    if row["draw"]:
-        return 1 + (
-            0.5
-            * math.log(
-                max(predicted_win_proba * (1 - predicted_win_proba), MIN_VAL), LOG_BASE
-            )
-        )
 
-    if correct:
-        return 1 + math.log(max(row["home_pred"], MIN_VAL), LOG_BASE)
-
-    return 1 + math.log(max(1 - predicted_win_proba, MIN_VAL), LOG_BASE)
-
-
-def bits_scorer(estimator: BaseEstimator, X: pd.DataFrame, y: pd.Series, proba=False, info_df=None):
+def bits_scorer(
+    estimator: BaseEstimator,
+    X: Union[pd.DataFrame, np.ndarray],
+    y: pd.Series,
+    proba=False,
+    n_years=1,
+) -> float:
     """Scikit-learn scorer for the bits metric.
 
     Mostly for use in calls to cross_validate. Calculates a score
     based on the the model's predicted probability of a given result. For this metric,
     higher scores are better.
 
+    We simplify calculations by using Numpy math functions. This has the benefit
+    of not require a lot of reshaping based on categorical features, but gives
+    final values that deviate a little from what is correct, because this scorer
+    calculates bits per team-match combination rather than per match,
+    which is how the official bits score will be calculated.
+
     Params
     ------
+    estimator: The estimator being scored.
+    X: Model features.
+    y: Model labels.
     proba: Whether to use the `predict_proba` method to get predictions.
     """
 
@@ -868,35 +882,10 @@ def bits_scorer(estimator: BaseEstimator, X: pd.DataFrame, y: pd.Series, proba=F
         else:
             raise
 
-    if info_df is None:
-        df = X
-    else:
-        df = pd.concat([X, info_df], axis=1).dropna()
+    if isinstance(X, pd.DataFrame) and "year" in X.columns:
+        n_years = X["year"].drop_duplicates().count()
 
-    team_match_data_frame = df.assign(y_true=y.to_numpy(), y_pred=y_pred)
-    home_match_data_frame = team_match_data_frame.query("at_home == 1").sort_index()
-    away_match_data_frame = (
-        team_match_data_frame.query("at_home == 0")
-        .set_index(["oppo_team", "year", "round_number"])
-        .rename_axis([None, None, None])
-        .sort_index()
-    )
-
-    bits_data_frame = pd.DataFrame(
-        {
-            "home_win": home_match_data_frame["y_true"]
-            > away_match_data_frame["y_true"],
-            "draw": home_match_data_frame["y_true"] == away_match_data_frame["y_true"],
-            "home_pred": home_match_data_frame["y_pred"],
-            "away_pred": away_match_data_frame["y_pred"],
-            "year": home_match_data_frame["year"],
-        }
-    )
-
-    return (
-        bits_data_frame.apply(_calculate_bits, axis=1).sum()
-        / bits_data_frame["year"].drop_duplicates().count()
-    )
+    return _calculate_bits(y, y_pred).sum() / n_years
 
 
 def year_cv_split(X, year_range):

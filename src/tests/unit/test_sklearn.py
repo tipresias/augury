@@ -4,7 +4,7 @@
 from unittest import TestCase
 import os
 
-from sklearn.linear_model import Ridge, Lasso
+from sklearn.linear_model import Ridge, Lasso, LogisticRegression
 import pandas as pd
 import numpy as np
 from faker import Faker
@@ -22,8 +22,9 @@ from augury.sklearn import (
     MATCH_INDEX_COLS,
     match_accuracy_scorer,
     year_cv_split,
+    bits_scorer,
 )
-from augury.settings import BASE_DIR
+from augury.settings import BASE_DIR, CATEGORY_COLS
 
 
 FAKE = Faker()
@@ -225,12 +226,12 @@ class TestDataFrameConverter(TestCase):
 class TestSklearn(TestCase, KedroContextMixin):
     def setUp(self):
         self.data = FakeEstimatorData()
+        self.estimator = self.load_context().catalog.load("fake_estimator")
 
     def test_match_accuracy_scorer(self):
-        estimator = self.load_context().catalog.load("fake_estimator")
         X_test, y_test = self.data.test_data
 
-        match_acc = match_accuracy_scorer(estimator, X_test, y_test)
+        match_acc = match_accuracy_scorer(self.estimator, X_test, y_test)
 
         self.assertIsInstance(match_acc, float)
         self.assertGreater(match_acc, 0)
@@ -252,3 +253,29 @@ class TestSklearn(TestCase, KedroContextMixin):
 
             train, test = split
             self.assertFalse(train[test].any())
+
+    def test_bits_scorer(self):
+        bits = bits_scorer(self.estimator, *self.data.train_data, proba=False)
+        self.assertIsInstance(bits, float)
+
+        with self.subTest("with a superfluous n_years arg"):
+            bits_with_year = bits_scorer(
+                self.estimator, *self.data.train_data, proba=False, n_years=100
+            )
+            self.assertEqual(bits, bits_with_year)
+
+        with self.subTest("with an invalid proba arg"):
+            with self.assertRaisesRegex(IndexError, "too many indices for array"):
+                bits_scorer(self.estimator, *self.data.train_data, proba=True)
+
+        with self.subTest("with a classifier"):
+            classifier = LogisticRegression()
+            _X_train, y_train = self.data.train_data
+            # There are six categorical features in fake data, and we don't need
+            # to bother with encoding them
+            X_train = _X_train.iloc[:, 6:]
+            classifier.fit(X_train, y_train)
+
+            class_bits = bits_scorer(classifier, X_train, y_train, proba=True)
+
+            self.assertIsInstance(class_bits, float)
