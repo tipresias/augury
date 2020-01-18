@@ -95,6 +95,9 @@ MIN_TIME_SERIES_YEARS = max(MIN_YEARS_FOR_DLASCL, MIN_YEARS_FOR_HESSIAN)
 # For regressors that might try to predict negative values or 0,
 # we need a slightly positive minimum to not get errors when calculating logarithms
 MIN_LOG_VAL = 1 * 10 ** -10
+LOSS = 0
+DRAW = 0.5
+WIN = 1
 
 
 class AveragingRegressor(_BaseComposition, RegressorMixin):
@@ -1043,9 +1046,9 @@ def _loss_bits(y_pred):
 # Raw bits calculations per http://probabilistic-footy.monash.edu/~footy/about.shtml
 def _calculate_bits(y_true, y_pred):
     return np.where(
-        y_true == 0.5,
+        y_true == DRAW,
         _draw_bits(y_pred),
-        np.where(y_true == 1.0, _win_bits(y_pred), _loss_bits(y_pred)),
+        np.where(y_true == WIN, _win_bits(y_pred), _loss_bits(y_pred)),
     )
 
 
@@ -1077,12 +1080,12 @@ def bits_scorer(
     """
 
     try:
-        y_pred = estimator.predict_proba(X)[:, 1] if proba else estimator.predict(X)
+        y_pred = estimator.predict_proba(X)[:, -1] if proba else estimator.predict(X)
     # TF/Keras models don't use predict_proba, so for classifiers, we pass proba=True,
     # then rescue and call predict.
     except AttributeError:
         if proba:
-            y_pred = estimator.predict(X)[:, 1]
+            y_pred = estimator.predict(X)[:, -1]
         else:
             raise
 
@@ -1093,6 +1096,112 @@ def bits_scorer(
     # We divide by number of seasons for easier comparison with other models.
     # We divide by two to get a rough per-match bits value.
     return _calculate_bits(y, y_pred).sum() / n_years / 2
+
+
+def _draw_bits_hessian(y_pred):
+    return (y_pred ** 2 - y_pred + 0.5) / (
+        math.log(2) * y_pred ** 2 * (y_pred - 1) ** 2
+    )
+
+
+def _win_bits_hessian(y_pred):
+    return 1 / (math.log(2) * y_pred ** 2)
+
+
+def _loss_bits_hessian(y_pred):
+    return 1 / (math.log(2) * (1 - y_pred) ** 2)
+
+
+def _bits_hessian(y_true, y_pred):
+    return np.where(
+        y_true == DRAW,
+        _draw_bits_hessian(y_pred),
+        np.where(y_true == WIN, _win_bits_hessian(y_pred), _loss_bits_hessian(y_pred),),
+    )
+
+
+def _draw_bits_gradient(y_pred):
+    return (y_pred - 0.5) / (math.log(2) * (y_pred - y_pred ** 2))
+
+
+def _win_bits_gradient(y_pred):
+    return -1 / (math.log(2) * y_pred)
+
+
+def _loss_bits_gradient(y_pred):
+    return 1 / (math.log(2) * (1 - y_pred))
+
+
+def _bits_gradient(y_true, y_pred):
+    return np.where(
+        y_true == DRAW,
+        _draw_bits_gradient(y_pred),
+        np.where(
+            y_true == WIN, _win_bits_gradient(y_pred), _loss_bits_gradient(y_pred),
+        ),
+    )
+
+
+def bits_objective(y_true, y_pred) -> Tuple[np.array, np.array]:
+    """Objective function for XGBoost estimators.
+
+    The gradient and hessian formulas are based on the formula for the bits error
+    function rather than the bits metric to make the math more consistent
+    with other objective and error functions.
+
+    Params
+    ------
+    y_true [array-like, (n_observations,)]: Data labels.
+    y_pred [array-like, (n_observations, n_label_classes)]: Model predictions.
+        In the case of binary classification, the shape is (n_observations,)
+
+    Returns
+    -------
+    gradient, hessian [tuple of array-like, (n_observations * n_classes,)]:
+        gradient function is the derivative of the loss function, and hessian function
+        is the derivative of the gradient function.
+    """
+    # Since y_pred can be 1- or 2-dimensional, we should only reshape y_true
+    # when the latter is the case.
+    y_true_matrix = (
+        y_true.reshape(-1, 1) if len(y_true.shape) != len(y_pred.shape) else y_true
+    )
+
+    return (
+        _bits_gradient(y_true_matrix, y_pred).flatten(),
+        _bits_hessian(y_true_matrix, y_pred).flatten(),
+    )
+
+
+def _bits_error(y_true, y_pred):
+    # We adjust bits calculation to make a valid ML error formula such that 0
+    # represents a correct prediction, and the further off the prediction
+    # the higher the error value.
+    return np.where(
+        y_true == DRAW,
+        -1 * _draw_bits(y_pred),
+        np.where(y_true == WIN, 1 - _win_bits(y_pred), 1 + (-1 * _loss_bits(y_pred)),),
+    )
+
+
+def bits_metric(y_pred, y_true_matrix) -> Tuple[str, float]:
+    """Metric function for internal model evaluation in XGBoost estimators.
+
+    Note that the order of params, per the xgboost documentation, is y_pred, y_true
+    as opposed to the usual y_true, y_pred for Scikit-learn metric functions.
+
+    Params
+    ------
+    y_pred: Model predictions.
+    y_true: Data labels.
+
+    Returns
+    -------
+    Tuple of the metric name and mean bits error.
+    """
+    y_true = y_true_matrix.get_label()
+
+    return "mean_bits_error", _bits_error(y_true, y_pred).mean()
 
 
 def year_cv_split(X, year_range):
