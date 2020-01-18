@@ -14,8 +14,7 @@ from augury.settings import (
     CATEGORY_COLS,
 )
 from augury.sklearn import ColumnDropper
-from .base_ml_estimator import BaseMLEstimator
-from .stacking_estimator import ELO_MODEL_COLS
+from .base_ml_estimator import BaseMLEstimator, ELO_MODEL_COLS
 
 
 np.random.seed(SEED)
