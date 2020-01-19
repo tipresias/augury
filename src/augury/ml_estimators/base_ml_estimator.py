@@ -12,7 +12,7 @@ import joblib
 import pandas as pd
 import numpy as np
 
-from augury.sklearn import ColumnDropper, CorrelationSelector
+from augury.sklearn.preprocessing import ColumnDropper, CorrelationSelector
 from augury.settings import BASE_DIR, TEAM_NAMES, ROUND_TYPES, VENUES, CATEGORY_COLS
 from augury.types import R
 

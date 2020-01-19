@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 from xgboost import XGBClassifier
 
-from augury.sklearn import bits_objective
+from augury.sklearn.metrics import bits_objective
 from augury.settings import SEED
 from .base_ml_estimator import BaseMLEstimator, BASE_ML_PIPELINE
 

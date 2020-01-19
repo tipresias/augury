@@ -11,7 +11,7 @@ from sklearn.ensemble import BaggingRegressor
 from xgboost import XGBRegressor
 
 from augury.settings import TEAM_NAMES, ROUND_TYPES, VENUES, CATEGORY_COLS
-from augury.sklearn import CorrelationSelector, ColumnDropper
+from augury.sklearn.preprocessing import CorrelationSelector, ColumnDropper
 from augury.types import R
 from .base_ml_estimator import BaseMLEstimator, ELO_MODEL_COLS
 

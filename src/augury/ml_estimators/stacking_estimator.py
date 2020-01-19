@@ -11,12 +11,11 @@ from sklearn.ensemble import ExtraTreesRegressor
 from mlxtend.regressor import StackingRegressor
 import statsmodels.api as sm
 
-from augury.sklearn import (
+from augury.sklearn.preprocessing import (
     TeammatchToMatchConverter,
-    EloRegressor,
     DataFrameConverter,
-    TimeSeriesRegressor,
 )
+from augury.sklearn.models import EloRegressor, TimeSeriesRegressor
 from augury.settings import SEED
 from augury.types import R
 from .base_ml_estimator import BaseMLEstimator, BASE_ML_PIPELINE

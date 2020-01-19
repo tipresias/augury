@@ -14,7 +14,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from augury.ml_data import MLData
-from augury.sklearn import year_cv_split, match_accuracy_scorer
+from augury.sklearn.model_selection import year_cv_split
+from augury.sklearn.metrics import match_accuracy_scorer
 from augury.ml_estimators.base_ml_estimator import BaseMLEstimator
 from augury.settings import CV_YEAR_RANGE, SEED, BASE_DIR
 

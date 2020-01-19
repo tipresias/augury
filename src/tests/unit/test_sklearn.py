@@ -12,19 +12,20 @@ from tensorflow import keras
 from tests.helpers import KedroContextMixin
 from tests.fixtures.data_factories import fake_cleaned_match_data
 from tests.fixtures.fake_estimator import FakeEstimatorData
-from augury.sklearn import (
+from augury.sklearn.models import (
     AveragingRegressor,
-    CorrelationSelector,
     EloRegressor,
+    KerasClassifier,
+)
+from augury.sklearn.preprocessing import (
+    CorrelationSelector,
     TeammatchToMatchConverter,
     ColumnDropper,
     DataFrameConverter,
     MATCH_INDEX_COLS,
-    match_accuracy_scorer,
-    year_cv_split,
-    bits_scorer,
-    KerasClassifier,
 )
+from augury.sklearn.metrics import match_accuracy_scorer, bits_scorer
+from augury.sklearn.model_selection import year_cv_split
 from augury.settings import BASE_DIR
 
 

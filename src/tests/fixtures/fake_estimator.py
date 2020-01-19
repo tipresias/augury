@@ -9,7 +9,7 @@ from kedro.pipeline import Pipeline, node
 
 from augury.nodes import common, match
 from augury.ml_estimators.base_ml_estimator import BaseMLEstimator
-from augury.sklearn import ColumnDropper
+from augury.sklearn.preprocessing import ColumnDropper
 from augury.ml_data import MLData
 from augury.settings import (
     TEAM_NAMES,

@@ -13,7 +13,7 @@ from augury.settings import (
     SEED,
     CATEGORY_COLS,
 )
-from augury.sklearn import ColumnDropper
+from augury.sklearn.preprocessing import ColumnDropper
 from .base_ml_estimator import BaseMLEstimator, ELO_MODEL_COLS
 
 
