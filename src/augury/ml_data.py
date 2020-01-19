@@ -30,6 +30,7 @@ class MLData:
         test_year_range: YearRange = VALIDATION_YEAR_RANGE,
         update_data: bool = False,
         index_cols: List[str] = INDEX_COLS,
+        label_col: str = "margin",
         **pipeline_kwargs,
     ) -> None:
         """
@@ -48,6 +49,7 @@ class MLData:
         update_data: Whether to run the pipeline regardless of the status
             of the data set.
         index_cols: Column names to use for the DataFrame's index.
+        label_col: Name of the column to use for data labels (i.e. y data set).
         pipeline_kwargs: Keyword arguments to pass to context.run when running
             the pipeline.
         """
@@ -58,6 +60,7 @@ class MLData:
         self._test_year_range = test_year_range
         self.update_data = update_data
         self.index_cols = index_cols
+        self.label_col = label_col
         self._data = None
         self.pipeline_kwargs = pipeline_kwargs
 
@@ -172,16 +175,5 @@ class MLData:
         # for some data transformations further down the pipeline
         return pd.concat([categorical_features, numeric_features], axis=1)
 
-    @staticmethod
-    def __y(data_frame: pd.DataFrame) -> pd.Series:
-        TEAM_SCORE_SET = set(["score", "oppo_score"])
-        if TEAM_SCORE_SET & set(data_frame.columns) == TEAM_SCORE_SET:
-            return data_frame.eval("score - oppo_score").rename("margin")
-
-        HOME_AWAY_SCORE_SET = set(["home_score", "away_score"])
-        if HOME_AWAY_SCORE_SET & set(data_frame.columns) == HOME_AWAY_SCORE_SET:
-            return data_frame.eval("home_score - away_score").rename("home_margin")
-
-        raise ValueError(
-            "Didn't find a valid pair of score columns to calculate margins"
-        )
+    def __y(self, data_frame: pd.DataFrame) -> pd.Series:
+        return data_frame[self.label_col]
