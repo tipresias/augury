@@ -1,33 +1,37 @@
-# pylint: disable=missing-module-docstring, missing-function-docstring
-# pylint: disable=missing-class-docstring
+# pylint: disable=missing-docstring
 
 from unittest import TestCase
 import os
 
-from sklearn.linear_model import Ridge, Lasso
+from sklearn.linear_model import Ridge, Lasso, LogisticRegression
 import pandas as pd
 import numpy as np
 from faker import Faker
+from tensorflow import keras
 
 from tests.helpers import KedroContextMixin
 from tests.fixtures.data_factories import fake_cleaned_match_data
 from tests.fixtures.fake_estimator import FakeEstimatorData
-from augury.sklearn import (
+from augury.sklearn.models import (
     AveragingRegressor,
-    CorrelationSelector,
     EloRegressor,
+    KerasClassifier,
+)
+from augury.sklearn.preprocessing import (
+    CorrelationSelector,
     TeammatchToMatchConverter,
     ColumnDropper,
     DataFrameConverter,
     MATCH_INDEX_COLS,
-    match_accuracy_scorer,
-    year_cv_split,
 )
+from augury.sklearn.metrics import match_accuracy_scorer, bits_scorer
+from augury.sklearn.model_selection import year_cv_split
 from augury.settings import BASE_DIR
 
 
 FAKE = Faker()
 ROW_COUNT = 10
+N_FAKE_CATS = 6
 
 
 class TestAveragingRegressor(TestCase):
@@ -222,15 +226,68 @@ class TestDataFrameConverter(TestCase):
                 self.transformer.transform(self.data.to_numpy())
 
 
+class TestKerasClassifier(TestCase):
+    def setUp(self):
+        data = FakeEstimatorData()
+        _X_train, _y_train = data.train_data
+        self.X_train = _X_train.iloc[:, N_FAKE_CATS:]
+        self.y_train = (_y_train > 0).astype(int)
+
+        _X_test, _y_test = data.test_data
+        self.X_test = _X_test.iloc[:, N_FAKE_CATS:]
+
+        self.classifier = KerasClassifier(self.model_func, epochs=1)
+
+    def test_predict(self):
+        self.classifier.fit(self.X_train, self.y_train)
+        predictions = self.classifier.predict(self.X_test)
+
+        self.assertIsInstance(predictions, np.ndarray)
+        self.assertEqual(predictions.shape, (len(self.X_test),))
+        self.assertTrue(np.all(np.logical_or(predictions == 0, predictions == 1)))
+
+    def test_predict_proba(self):
+        self.classifier.fit(self.X_train, self.y_train)
+        predictions = self.classifier.predict_proba(self.X_test)
+
+        self.assertIsInstance(predictions, np.ndarray)
+        self.assertEqual(predictions.shape, (len(self.X_test), 2))
+        self.assertTrue(np.all(np.logical_and(predictions >= 0, predictions <= 1)))
+
+    def test_set_params(self):
+        self.classifier.set_params(epochs=2)
+        self.assertEqual(self.classifier.epochs, 2)
+
+    def test_history(self):
+        self.classifier.fit(self.X_train, self.y_train)
+        self.assertIsInstance(self.classifier.history, keras.callbacks.History)
+
+    def model_func(self, **_kwargs):
+        N_FEATURES = len(self.X_train.columns)
+
+        stats_input = keras.layers.Input(shape=(N_FEATURES,), dtype="float32", name="stats")
+        layer_n = keras.layers.Dense(10, input_shape=(N_FEATURES,), activation="relu")(
+            stats_input
+        )
+        dropout_n = keras.layers.Dropout(0.1)(layer_n)
+
+        output = keras.layers.Dense(2, activation="softmax")(dropout_n)
+
+        model = keras.models.Model(inputs=stats_input, outputs=output)
+        model.compile(loss="categorical_crossentropy", optimizer="adam")
+
+        return lambda: model
+
+
 class TestSklearn(TestCase, KedroContextMixin):
     def setUp(self):
         self.data = FakeEstimatorData()
+        self.estimator = self.load_context().catalog.load("fake_estimator")
 
     def test_match_accuracy_scorer(self):
-        estimator = self.load_context().catalog.load("fake_estimator")
         X_test, y_test = self.data.test_data
 
-        match_acc = match_accuracy_scorer(estimator, X_test, y_test)
+        match_acc = match_accuracy_scorer(self.estimator, X_test, y_test)
 
         self.assertIsInstance(match_acc, float)
         self.assertGreater(match_acc, 0)
@@ -252,3 +309,29 @@ class TestSklearn(TestCase, KedroContextMixin):
 
             train, test = split
             self.assertFalse(train[test].any())
+
+    def test_bits_scorer(self):
+        bits = bits_scorer(self.estimator, *self.data.train_data, proba=False)
+        self.assertIsInstance(bits, float)
+
+        with self.subTest("with a superfluous n_years arg"):
+            bits_with_year = bits_scorer(
+                self.estimator, *self.data.train_data, proba=False, n_years=100
+            )
+            self.assertEqual(bits, bits_with_year)
+
+        with self.subTest("with an invalid proba arg"):
+            with self.assertRaisesRegex(IndexError, "too many indices for array"):
+                bits_scorer(self.estimator, *self.data.train_data, proba=True)
+
+        with self.subTest("with a classifier"):
+            classifier = LogisticRegression()
+            _X_train, y_train = self.data.train_data
+            # There are six categorical features in fake data, and we don't need
+            # to bother with encoding them
+            X_train = _X_train.iloc[:, N_FAKE_CATS:]
+            classifier.fit(X_train, y_train)
+
+            class_bits = bits_scorer(classifier, X_train, y_train, proba=True)
+
+            self.assertIsInstance(class_bits, float)

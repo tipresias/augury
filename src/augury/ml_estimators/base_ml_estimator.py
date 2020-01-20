@@ -2,15 +2,47 @@
 
 import os
 from typing import Optional, Union, Type
-from sklearn.pipeline import Pipeline
+
+from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.utils.metaestimators import _BaseComposition
 from sklearn.base import RegressorMixin, BaseEstimator
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.compose import ColumnTransformer
 import joblib
 import pandas as pd
 import numpy as np
 
-from augury.settings import BASE_DIR
+from augury.sklearn.preprocessing import ColumnDropper, CorrelationSelector
+from augury.settings import BASE_DIR, TEAM_NAMES, ROUND_TYPES, VENUES, CATEGORY_COLS
 from augury.types import R
+
+
+ELO_MODEL_COLS = [
+    "prev_match_oppo_team",
+    "oppo_prev_match_oppo_team",
+    "prev_match_at_home",
+    "oppo_prev_match_at_home",
+    "date",
+]
+
+BASE_ML_PIPELINE = make_pipeline(
+    ColumnDropper(cols_to_drop=ELO_MODEL_COLS),
+    CorrelationSelector(cols_to_keep=CATEGORY_COLS),
+    ColumnTransformer(
+        [
+            (
+                "onehotencoder",
+                OneHotEncoder(
+                    categories=[TEAM_NAMES, TEAM_NAMES, ROUND_TYPES, VENUES],
+                    sparse=False,
+                    handle_unknown="ignore",
+                ),
+                CATEGORY_COLS,
+            )
+        ],
+        remainder=StandardScaler(),
+    ),
+)
 
 
 class BaseMLEstimator(_BaseComposition, RegressorMixin):
@@ -48,9 +80,7 @@ class BaseMLEstimator(_BaseComposition, RegressorMixin):
 
         joblib.dump(self, save_path)
 
-    def fit(
-        self, X: Union[pd.DataFrame, np.ndarray], y: Union[pd.Series, np.ndarray]
-    ) -> Type[R]:
+    def fit(self, X: pd.DataFrame, y: pd.Series) -> Type[R]:
         """Fit estimator to the data."""
         if self.pipeline is None:
             raise TypeError("pipeline must be a scikit learn estimator but is None")

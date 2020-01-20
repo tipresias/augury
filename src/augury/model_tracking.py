@@ -11,12 +11,13 @@ from sklearn.pipeline import Pipeline
 import mlflow
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 from augury.ml_data import MLData
-from augury.sklearn import year_cv_split, match_accuracy_scorer
+from augury.sklearn.model_selection import year_cv_split
+from augury.sklearn.metrics import match_accuracy_scorer
 from augury.ml_estimators.base_ml_estimator import BaseMLEstimator
 from augury.settings import CV_YEAR_RANGE, SEED, BASE_DIR
-from augury.types import YearRange
 
 
 np.random.seed(SEED)
@@ -74,7 +75,8 @@ def score_model(
     data: MLData,
     cv_year_range=CV_YEAR_RANGE,
     scoring: Dict[str, SKLearnScorer] = {
-        "neg_mean_absolute_error": get_scorer("neg_mean_absolute_error")
+        "neg_mean_absolute_error": get_scorer("neg_mean_absolute_error"),
+        "match_accuracy": match_accuracy_scorer,
     },
     n_jobs=None,
 ) -> Dict[str, np.array]:
@@ -110,14 +112,13 @@ def score_model(
         f"{max(cv_year_range)}"
     )
 
-    cv_scoring = {**{"match_accuracy": match_accuracy_scorer}, **scoring}
     X_train, _ = data.train_data
 
     return cross_validate(
         model,
         *data.train_data,
         cv=year_cv_split(X_train, cv_year_range),
-        scoring=cv_scoring,
+        scoring=scoring,
         n_jobs=n_jobs,
         verbose=2,
         error_score="raise",
@@ -183,18 +184,10 @@ def _track_model(
     loaded_model: GenericModel,
     model_data: MLData,
     run_info: Dict[str, Any],
-    cv_year_range: YearRange,
-    scoring: Dict[str, Callable],
-    n_jobs=None,
-    **tags,
+    run_tags,
+    **score_model_kwargs,
 ) -> Dict[str, Any]:
-    cv_scores = score_model(
-        loaded_model,
-        model_data,
-        cv_year_range=cv_year_range,
-        scoring=scoring,
-        n_jobs=n_jobs,
-    )
+    cv_scores = score_model(loaded_model, model_data, **score_model_kwargs,)
 
     run_tags = run_info.get("tags") or {}
     run_params = run_info.get("params") or {}
@@ -216,7 +209,11 @@ def _track_model(
                 )
 
         mlflow.set_tags(
-            {"model": loaded_model.name, "cv": cv_year_range, **tags, **run_tags}
+            {
+                "model": loaded_model.name,
+                "cv": score_model_kwargs.get("cv_year_range") or CV_YEAR_RANGE,
+                **run_tags,
+            }
         )
 
     return {"model": loaded_model.name, **cv_scores}
@@ -224,13 +221,9 @@ def _track_model(
 
 def start_run(
     ml_models: List[Tuple[GenericModel, MLData, Dict[str, Any]]],
-    cv_year_range=CV_YEAR_RANGE,
-    scoring: Dict[str, Callable] = {
-        "neg_mean_absolute_error": get_scorer("neg_mean_absolute_error")
-    },
-    n_jobs=None,
     experiment=None,
-    **run_tags,
+    run_tags={},
+    **score_model_kwargs,
 ) -> List[Dict[str, Any]]:
     """Perform cross-validation of models. Record params and metrics with MLFlow."""
     mlflow.set_tracking_uri("sqlite:///" + os.path.join(BASE_DIR, "db/mlflow.db"))
@@ -239,14 +232,41 @@ def start_run(
         mlflow.set_experiment(experiment)
 
     return [
-        _track_model(
-            ml_model,
-            model_data,
-            run_info,
-            cv_year_range=cv_year_range,
-            scoring=scoring,
-            n_jobs=n_jobs,
-            **run_tags,
-        )
+        _track_model(ml_model, model_data, run_info, run_tags, **score_model_kwargs,)
         for ml_model, model_data, run_info in ml_models
     ]
+
+
+def graph_tf_model_history(history, metrics: List[str] = []) -> None:
+    """Visualize loss and metric values per epoch during Keras model training.
+
+    Params
+    ------
+    history: Keras model history object.
+    metrics: List of metric names that the model tracks in addition to loss.
+
+    Returns
+    -------
+    None, but displays the generated charts.
+    """
+    loss = history.history["loss"]
+    val_loss = history.history["val_loss"]
+
+    epochs = range(len(loss))
+
+    plt.plot(epochs, loss, "bo", label="Training loss")
+    plt.plot(epochs, val_loss, "b", label="Validation loss")
+    plt.title("Training and validation loss")
+    plt.legend()
+
+    for metric in metrics:
+        plt.figure()
+
+        metric_train = history.history[metric]
+        metric_val = history.history[f"val_{metric}"]
+        plt.plot(epochs, metric_train, "bo", label=f"Training {metric}")
+        plt.plot(epochs, metric_val, "b", label=f"Validation {metric}")
+        plt.title(f"Training and validation {metric}")
+        plt.legend()
+
+    plt.show()

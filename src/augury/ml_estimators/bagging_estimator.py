@@ -11,10 +11,10 @@ from sklearn.ensemble import BaggingRegressor
 from xgboost import XGBRegressor
 
 from augury.settings import TEAM_NAMES, ROUND_TYPES, VENUES, CATEGORY_COLS
-from augury.sklearn import CorrelationSelector, ColumnDropper
+from augury.sklearn.preprocessing import CorrelationSelector, ColumnDropper
 from augury.types import R
-from .base_ml_estimator import BaseMLEstimator
-from .stacking_estimator import ELO_MODEL_COLS
+from .base_ml_estimator import BaseMLEstimator, ELO_MODEL_COLS
+
 
 SEED = 42
 np.random.seed(SEED)
