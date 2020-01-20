@@ -13,7 +13,10 @@ xgboost==0.90
 mlxtend==0.17.0
 statsmodels==0.10.2
 scipy==1.4.1
-tensorflow==2.0.0
+# Can't install latest version as of 21-1-2020, because Google Cloud Platform
+# uses an older version of pip that doesn't recognise versions 2+ except for
+# some weird pre-release versions of 2.0.0
+tensorflow==1.14.0
 
 # Kedro packages
 kedro==0.15.5
