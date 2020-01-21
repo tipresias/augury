@@ -124,16 +124,21 @@ class CyclicalTeamNames:
 def _min_max_datetimes_by_year(
     year: int, force_future: bool = False
 ) -> Dict[str, datetime]:
+    # About as early as matches ever start
+    MIN_MATCH_HOUR = 12
+    # About as late as matches ever start
+    MAX_MATCH_HOUR = 20
+
     if force_future:
         today = datetime.now()
         tomorrow = today + timedelta(hours=24)
-        datetime_start = datetime(year, tomorrow.month, tomorrow.day)
+        datetime_start = datetime(year, tomorrow.month, tomorrow.day, MIN_MATCH_HOUR)
     else:
-        datetime_start = datetime(year, JAN, FIRST)
+        datetime_start = datetime(year, JAN, FIRST, MIN_MATCH_HOUR)
 
     return {
         "datetime_start": datetime_start,
-        "datetime_end": datetime(year, DEC, THIRTY_FIRST, 11, 59, 59),
+        "datetime_end": datetime(year, DEC, THIRTY_FIRST, MAX_MATCH_HOUR),
     }
 
 
