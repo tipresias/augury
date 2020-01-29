@@ -16,6 +16,6 @@ models:
     data_set: model_data
     trained_to: 2016
   - name: confidence_estimator
-    prediction_type: margin
+    prediction_type: confidence
     data_set: model_data
     trained_to: 2016
