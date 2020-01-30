@@ -143,8 +143,18 @@ class TestEloRegressor(TestCase):
 
 class TestTeammatchToMatchConverter(TestCase):
     def setUp(self):
-        self.data = fake_cleaned_match_data(ROW_COUNT, (2017, 2018))
-        self.data.loc[:, "at_home"] = [row % 2 for row in range(len(self.data))]
+        DATA_YEARS = (2017, 2018)
+        total_rows = ROW_COUNT * (len(range(*DATA_YEARS)) + 1)
+        # Need to sort by year/round_number to avoid duplicate match-ups
+        # (e.g. team A and B "play" each other in rounds 1 and 2)
+        # resulting in both teams being home or away for the same match.
+        self.data = (
+            fake_cleaned_match_data(ROW_COUNT, DATA_YEARS)
+            .sort_values(["year", "round_number"])
+            .assign(at_home=[row % 2 for row in range(total_rows)])
+            .sort_index()
+        )
+
         self.match_cols = ["date", "year", "round_number"]
         self.transformer = TeammatchToMatchConverter(match_cols=self.match_cols)
 
