@@ -8,15 +8,12 @@ import pandas as pd
 import numpy as np
 from faker import Faker
 from tensorflow import keras
+import pytest
 
 from tests.helpers import KedroContextMixin
 from tests.fixtures.data_factories import fake_cleaned_match_data
 from tests.fixtures.fake_estimator import FakeEstimatorData
-from augury.sklearn.models import (
-    AveragingRegressor,
-    EloRegressor,
-    KerasClassifier,
-)
+from augury.sklearn.models import AveragingRegressor, EloRegressor, KerasClassifier
 from augury.sklearn.preprocessing import (
     CorrelationSelector,
     TeammatchToMatchConverter,
@@ -265,7 +262,9 @@ class TestKerasClassifier(TestCase):
     def model_func(self, **_kwargs):
         N_FEATURES = len(self.X_train.columns)
 
-        stats_input = keras.layers.Input(shape=(N_FEATURES,), dtype="float32", name="stats")
+        stats_input = keras.layers.Input(
+            shape=(N_FEATURES,), dtype="float32", name="stats"
+        )
         layer_n = keras.layers.Dense(10, input_shape=(N_FEATURES,), activation="relu")(
             stats_input
         )
@@ -310,6 +309,9 @@ class TestSklearn(TestCase, KedroContextMixin):
             train, test = split
             self.assertFalse(train[test].any())
 
+    # We use FakeEstimator to generate predictions for #test_bits_scorer,
+    # and we don't care if it doesn't converge
+    @pytest.mark.filterwarnings("ignore:lbfgs failed to converge")
     def test_bits_scorer(self):
         bits = bits_scorer(self.estimator, *self.data.train_data, proba=False)
         self.assertIsInstance(bits, float)
