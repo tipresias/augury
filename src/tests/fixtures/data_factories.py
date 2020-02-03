@@ -251,6 +251,7 @@ def fake_cleaned_match_data(
         )
         .set_index(INDEX_COLS, drop=False)
         .rename_axis([None] * len(INDEX_COLS))
+        .sort_index()
     )
 
 
@@ -267,7 +268,7 @@ def fake_raw_match_results_data(
         List[List[MatchData]], _matches_by_year(row_count, year_range, raw=True)
     )
     reduced_data = list(itertools.chain.from_iterable(data))
-    data_frame = pd.DataFrame(list(reduced_data))
+    data_frame = pd.DataFrame(list(reduced_data)).sort_index()
 
     if clean:
         return data_frame.rename(columns={"season": "year"})
@@ -315,7 +316,7 @@ def fake_cleaned_player_data(
     ]
     reduced_player_data = list(itertools.chain.from_iterable(player_data))
 
-    return pd.DataFrame(reduced_player_data)
+    return pd.DataFrame(reduced_player_data).sort_index()
 
 
 def _betting_data(year: int, team_names: Tuple[str, str], clean=True) -> BettingData:
@@ -386,7 +387,7 @@ def fake_footywire_betting_data(
     data = _betting_by_year(row_count, year_range, clean=clean)
     reduced_data = list(itertools.chain.from_iterable(data))
 
-    return pd.DataFrame(list(reduced_data))
+    return pd.DataFrame(list(reduced_data)).sort_index()
 
 
 def _fixture_data(year: int, team_names: Tuple[str, str]) -> FixtureData:
@@ -430,7 +431,7 @@ def fake_fixture_data(
     data = _fixture_by_year(row_count, year_range)
     reduced_data = list(itertools.chain.from_iterable(data))
 
-    data_frame = pd.DataFrame(list(reduced_data))
+    data_frame = pd.DataFrame(list(reduced_data)).sort_index()
 
     if clean:
         return data_frame.assign(date=_parse_dates)
@@ -457,4 +458,4 @@ def fake_roster_data(match_count: int, n_players_per_team: int) -> pd.DataFrame:
     ]
     reduced_roster_data = list(itertools.chain.from_iterable(roster_data))
 
-    return pd.DataFrame(reduced_roster_data).loc[:, ROSTER_COLS]
+    return pd.DataFrame(reduced_roster_data).loc[:, ROSTER_COLS].sort_index()

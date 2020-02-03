@@ -39,7 +39,7 @@ class TestPlayer(TestCase, ColumnAssertionMixin):
         )
         match_data = pd.read_csv(
             os.path.join(TEST_DATA_DIR, "fitzroy_match_results.csv")
-        )
+        ).assign(match_id=lambda df: df.index.values)
 
         clean_data = player.clean_player_data(player_data, match_data)
 
