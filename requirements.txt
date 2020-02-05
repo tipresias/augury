@@ -4,6 +4,7 @@
 requests
 google-cloud-storage==1.25.0
 joblib
+simplejson
 
 # Data packages
 numpy==1.16.4

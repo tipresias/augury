@@ -246,7 +246,10 @@ def fake_cleaned_match_data(
     return (
         data_frame.assign(
             date=lambda df: pd.to_datetime(df["date"]).dt.tz_localize(
-                MELBOURNE_TIMEZONE
+                # Sometimes get ambiguous datetime errors due to 2:00 am to 3:00 am
+                # potentially being daylight-savings time or standard time
+                # on transitional days, so we just infer, because we don't really care.
+                MELBOURNE_TIMEZONE, ambiguous='infer',
             )
         )
         .set_index(INDEX_COLS, drop=False)

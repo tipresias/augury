@@ -6,6 +6,7 @@ from datetime import date
 import pandas as pd
 from mypy_extensions import TypedDict
 from kedro.context import load_context
+import simplejson
 
 from augury.data_import import match_data
 from augury.nodes import match
@@ -13,24 +14,6 @@ from augury.predictions import Predictor
 from augury.types import YearRange
 from augury.settings import ML_MODELS, PREDICTION_DATA_START_DATE, BASE_DIR
 
-
-PredictionData = TypedDict(
-    "PredictionData",
-    {
-        "team": str,
-        "year": int,
-        "round_number": int,
-        "at_home": int,
-        "oppo_team": str,
-        "ml_model": str,
-        "predicted_margin": float,
-    },
-)
-
-DataConfig = TypedDict(
-    "DataConfig",
-    {"team_names": List[str], "defunct_team_names": List[str], "venues": List[str]},
-)
 
 ApiResponse = TypedDict(
     "ApiResponse", {"data": Union[List[Dict[str, Any]], Dict[str, Any]]}
@@ -40,13 +23,12 @@ END_OF_YEAR = f"{date.today().year}-12-31"
 
 
 def _clean_data_frame_for_json(data_frame: pd.DataFrame) -> List[Dict[str, Any]]:
-    clean_data_frame = (
-        data_frame.astype({"date": str})
-        if "date" in data_frame.columns
-        else data_frame.copy()
+    # I don't feel great about this, but there isn't a good way of converting np.nan
+    # to null for JSON. Since GCF expects dicts that it converts to JSON for us,
+    # we call dumps then loads to avoid nested stringified weirdness.
+    return simplejson.loads(
+        simplejson.dumps(data_frame.to_dict("records"), ignore_nan=True, default=str)
     )
-
-    return clean_data_frame.to_dict("records")
 
 
 def _api_response(data: Union[pd.DataFrame, Dict[str, Any]]) -> ApiResponse:

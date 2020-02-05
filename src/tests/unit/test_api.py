@@ -5,6 +5,7 @@ from unittest import TestCase
 from unittest.mock import Mock, patch
 from datetime import date
 from typing import List
+import json
 
 from tests.fixtures.data_factories import fake_fixture_data, fake_raw_match_results_data
 from augury.data_import import match_data
@@ -33,6 +34,10 @@ class TestApi(TestCase):
     def test_make_predictions(self, mock_make_predictions):
         mock_make_predictions.return_value = fake_fixture_data(N_MATCHES, YEAR_RANGE)
         response = api.make_predictions(YEAR_RANGE, ml_model_names=["fake_estimator"])
+
+        # Check that it serializes to valid JSON due to potential issues
+        # with pd.Timestamp and np.nan values
+        self.assertEqual(response, json.loads(json.dumps(response)))
 
         data = response["data"]
 
