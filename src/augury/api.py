@@ -15,24 +15,6 @@ from augury.types import YearRange
 from augury.settings import ML_MODELS, PREDICTION_DATA_START_DATE, BASE_DIR
 
 
-PredictionData = TypedDict(
-    "PredictionData",
-    {
-        "team": str,
-        "year": int,
-        "round_number": int,
-        "at_home": int,
-        "oppo_team": str,
-        "ml_model": str,
-        "predicted_margin": float,
-    },
-)
-
-DataConfig = TypedDict(
-    "DataConfig",
-    {"team_names": List[str], "defunct_team_names": List[str], "venues": List[str]},
-)
-
 ApiResponse = TypedDict(
     "ApiResponse", {"data": Union[List[Dict[str, Any]], Dict[str, Any]]}
 )
