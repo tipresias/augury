@@ -7,7 +7,7 @@ joblib
 simplejson
 
 # Data packages
-numpy==1.16.4
+numpy==1.18.1
 pandas>=0.23.0,<0.26.0
 scikit-learn==0.22.1
 xgboost==0.90
