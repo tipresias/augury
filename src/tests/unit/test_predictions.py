@@ -16,7 +16,12 @@ from augury.settings import BASE_DIR
 YEAR_RANGE = (2018, 2019)
 PREDICTION_ROUND = 1
 FAKE_ML_MODELS = [
-    {"name": "fake_estimator", "data_set": "fake_data", "prediction_type": "margin"}
+    {"name": "fake_estimator", "data_set": "fake_data", "prediction_type": "margin"},
+    {
+        "name": "fake_estimator",
+        "data_set": "fake_data",
+        "prediction_type": "win_probability",
+    },
 ]
 
 
@@ -42,8 +47,7 @@ class TestPredictor(TestCase, KedroContextMixin):
         with freeze_time(f"{self.max_year}-06-15"):
             model_predictions = self.predictor.make_predictions(FAKE_ML_MODELS)
 
-        self.assertEqual(len(model_predictions), len(self.prediction_matches))
-
+        self.assertEqual(len(model_predictions), len(self.prediction_matches) * 2)
         self.assertEqual(
             set(model_predictions.columns),
             set(
@@ -55,7 +59,7 @@ class TestPredictor(TestCase, KedroContextMixin):
                     "oppo_team",
                     "ml_model",
                     "predicted_margin",
-                    "prediction_type",
+                    "predicted_win_probability",
                 ]
             ),
         )

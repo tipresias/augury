@@ -57,7 +57,7 @@ class Predictor:
             for year in range(*self.year_range)
         ]
 
-        return pd.concat(list(itertools.chain.from_iterable(predictions)))
+        return pd.concat(list(itertools.chain.from_iterable(predictions)), sort=False)
 
     def _make_predictions_by_year(self, ml_models, year: int) -> List[pd.DataFrame]:
         return [self._make_model_predictions(year, ml_model) for ml_model in ml_models]
@@ -83,12 +83,11 @@ class Predictor:
             year,
             slice(self.round_number, self.round_number),
         )
+        prediction_type = ml_model["prediction_type"]
 
         model_predictions = (
             X_test.assign(
-                predicted_margin=y_pred,
-                ml_model=ml_model["name"],
-                prediction_type=ml_model["prediction_type"],
+                **{f"predicted_{prediction_type}": y_pred}, ml_model=ml_model["name"]
             )
             .set_index("ml_model", append=True, drop=False)
             .loc[
@@ -100,8 +99,7 @@ class Predictor:
                     "oppo_team",
                     "at_home",
                     "ml_model",
-                    "predicted_margin",
-                    "prediction_type",
+                    f"predicted_{prediction_type}",
                 ],
             ]
         )
