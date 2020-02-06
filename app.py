@@ -32,13 +32,11 @@ def predictions():
     year_range = tuple([int(year) for year in year_range_param.split("-")])
 
     round_number = request.query.round_number
-    round_number = int(round_number) if round_number is not None else None
+    round_number = int(round_number) if round_number not in [None, ""] else None
 
     ml_models_param = request.query.ml_models
     ml_models_param = (
-        ml_models_param.split(",")
-        if ml_models_param is not None and ml_models_param != ""
-        else None
+        ml_models_param.split(",") if ml_models_param not in [None, ""] else None
     )
 
     return api.make_predictions(
