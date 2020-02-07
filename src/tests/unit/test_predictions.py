@@ -47,24 +47,44 @@ class TestPredictor(TestCase, KedroContextMixin):
         with freeze_time(f"{self.max_year}-06-15"):
             model_predictions = self.predictor.make_predictions(FAKE_ML_MODELS)
 
-        self.assertEqual(len(model_predictions), len(self.prediction_matches) * 2)
-        self.assertEqual(
-            set(model_predictions.columns),
-            set(
-                [
-                    "team",
-                    "year",
-                    "round_number",
-                    "at_home",
-                    "oppo_team",
-                    "ml_model",
-                    "predicted_margin",
-                    "predicted_win_probability",
-                ]
-            ),
-        )
+            self.assertEqual(len(model_predictions), len(self.prediction_matches) * 2)
+            self.assertEqual(
+                set(model_predictions.columns),
+                set(
+                    [
+                        "team",
+                        "year",
+                        "round_number",
+                        "at_home",
+                        "oppo_team",
+                        "ml_model",
+                        "predicted_margin",
+                        "predicted_win_probability",
+                    ]
+                ),
+            )
 
-        prediction_years = model_predictions["year"].drop_duplicates()
-        self.assertEqual(len(prediction_years), 1)
-        prediction_year = prediction_years.iloc[0]
-        self.assertEqual(prediction_year, [YEAR_RANGE[0]])
+            prediction_years = model_predictions["year"].drop_duplicates()
+            self.assertEqual(len(prediction_years), 1)
+            prediction_year = prediction_years.iloc[0]
+            self.assertEqual(prediction_year, [YEAR_RANGE[0]])
+
+            with self.subTest('when only one ml_model is given'):
+                model_predictions = self.predictor.make_predictions(FAKE_ML_MODELS[1:])
+
+                self.assertEqual(len(model_predictions), len(self.prediction_matches))
+                self.assertEqual(
+                    set(model_predictions.columns),
+                    set(
+                        [
+                            "team",
+                            "year",
+                            "round_number",
+                            "at_home",
+                            "oppo_team",
+                            "ml_model",
+                            "predicted_margin",
+                            "predicted_win_probability",
+                        ]
+                    ),
+                )

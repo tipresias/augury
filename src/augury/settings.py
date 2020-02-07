@@ -30,6 +30,9 @@ PREDICTION_DATA_START_DATE = f"{date.today().year - N_SEASONS_FOR_PREDICTION}-01
 
 with open(os.path.join(BASE_DIR, "src/augury/ml_models.yml"), "r") as file:
     ML_MODELS: List[MLModelDict] = yaml.safe_load(file).get("models", [])
+    PREDICTION_TYPES: List[str] = list(
+        {ml_model["prediction_type"] for ml_model in ML_MODELS}
+    )
 
 # TODO: Create an SQLite DB to store and handle logic for these hard-coded entities
 # (i.e. there could be Team, City, Venue models with associations & model logic)
