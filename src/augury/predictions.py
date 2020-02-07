@@ -1,6 +1,6 @@
 """Generates predictions with the given models for the given inputs."""
 
-from typing import List, Optional
+from typing import List, Optional, Dict
 import itertools
 
 import pandas as pd
@@ -10,9 +10,19 @@ from kedro.context import KedroContext
 from augury.ml_data import MLData
 from augury.ml_estimators.base_ml_estimator import BaseMLEstimator
 from augury.types import YearRange, MLModelDict
-from augury.settings import SEED
+from augury.settings import SEED, PREDICTION_TYPES
 
 np.random.seed(SEED)
+
+
+PREDICTION_COLS = [
+    "team",
+    "year",
+    "round_number",
+    "oppo_team",
+    "at_home",
+    "ml_model",
+] + [f"predicted_{pred_type}" for pred_type in PREDICTION_TYPES]
 
 
 class Predictor:
@@ -83,25 +93,11 @@ class Predictor:
             year,
             slice(self.round_number, self.round_number),
         )
-        prediction_type = ml_model["prediction_type"]
 
         model_predictions = (
-            X_test.assign(
-                **{f"predicted_{prediction_type}": y_pred}, ml_model=ml_model["name"]
-            )
+            X_test.assign(**self._prediction_data(ml_model, y_pred))
             .set_index("ml_model", append=True, drop=False)
-            .loc[
-                data_row_slice,
-                [
-                    "team",
-                    "year",
-                    "round_number",
-                    "oppo_team",
-                    "at_home",
-                    "ml_model",
-                    f"predicted_{prediction_type}",
-                ],
-            ]
+            .loc[data_row_slice, PREDICTION_COLS]
         )
 
         assert model_predictions.any().any(), (
@@ -127,3 +123,19 @@ class Predictor:
         ml_model.fit(X_train, y_train)
 
         return ml_model
+
+    @staticmethod
+    def _prediction_data(
+        ml_model: MLModelDict, y_pred: np.array
+    ) -> Dict[str, Optional[np.array]]:
+        model_pred_type = ml_model["prediction_type"]
+
+        return {
+            **{
+                f"predicted_{pred_type}": np.nan
+                for pred_type in PREDICTION_TYPES
+                if pred_type != model_pred_type
+            },
+            f"predicted_{model_pred_type}": y_pred,
+            "ml_model": ml_model["name"],
+        }
