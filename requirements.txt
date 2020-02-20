@@ -10,7 +10,7 @@ simplejson
 numpy==1.16.4
 pandas>=0.23.0,<0.26.0
 scikit-learn==0.22.1
-xgboost==0.90
+xgboost==1.0.0
 mlxtend==0.17.1
 statsmodels==0.11.0
 scipy==1.4.1
