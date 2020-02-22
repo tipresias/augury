@@ -669,9 +669,10 @@ class KerasClassifier(BaseEstimator, ClassifierMixin):
         )
 
     # Adapted this code from: http://zachmoshe.com/2017/04/03/pickling-keras-models.html
-    # Keras has since been updated to be picklable, but my custom tensorflow loss function is not
-    # (at least I can figure out how to pickle it). So, this is necessary
-    # for basic Scikit-learn functionality like grid search and multiprocessing.
+    # Keras has since been updated to be picklable, but my custom tensorflow
+    # loss function is not (at least I can't figure out how to pickle it).
+    # So, this is necessary for basic Scikit-learn functionality like grid search
+    # and multiprocessing.
     def __getstate__(self):
         model_str = ""
         with tempfile.NamedTemporaryFile(suffix=".hdf5", delete=True) as f:
