@@ -313,8 +313,12 @@ class EloRegressor(BaseEstimator, RegressorMixin):
 
         self._update_prev_elo_ratings(match_row)
 
-        home_elo_rating = self._calculate_current_elo_rating(self.HOME_TEAM_IDX, match_row)
-        away_elo_rating = self._calculate_current_elo_rating(self.AWAY_TEAM_IDX, match_row)
+        home_elo_rating = self._calculate_current_elo_rating(
+            self.HOME_TEAM_IDX, match_row
+        )
+        away_elo_rating = self._calculate_current_elo_rating(
+            self.AWAY_TEAM_IDX, match_row
+        )
 
         self._running_elo_ratings["current_elo"][home_team] = home_elo_rating
         self._running_elo_ratings["current_elo"][away_team] = away_elo_rating
@@ -439,6 +443,7 @@ class TimeSeriesRegressor(BaseEstimator, RegressorMixin):
         order: Tuple[int, int, int] = DEFAULT_ORDER,
         exog_cols: List[str] = [],
         confidence=False,
+        verbose=0,
         **sm_kwargs,
     ):
         """Instantiate a StatsModelsRegressor.
@@ -458,6 +463,7 @@ class TimeSeriesRegressor(BaseEstimator, RegressorMixin):
         self.exog_cols = exog_cols
         self.confidence = confidence
         self.sm_kwargs = sm_kwargs
+        self.verbose = verbose
         self._team_models: Dict[str, TimeSeriesModel] = {}
 
     def fit(self, X: pd.DataFrame, y: Union[pd.DataFrame, np.array]):
@@ -513,7 +519,7 @@ class TimeSeriesRegressor(BaseEstimator, RegressorMixin):
             )
             self._team_models[team_name] = self.stats_model(
                 y, order=order_param, exog=self._exog_arg(team_df), **self.sm_kwargs
-            ).fit()
+            ).fit(disp=self.verbose)
 
     def _predict_with_team_model(
         self,
@@ -682,4 +688,4 @@ class KerasClassifier(BaseEstimator, ClassifierMixin):
             model = keras.models.load_model(f.name)
         d = {value: key for value, key in state.items() if key != "model_str"}
         d.update({"model": model})
-        self.__dict__ = d # pylint: disable=attribute-defined-outside-init
+        self.__dict__ = d  # pylint: disable=attribute-defined-outside-init

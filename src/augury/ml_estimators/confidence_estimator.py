@@ -13,7 +13,8 @@ from .base_ml_estimator import BaseMLEstimator, BASE_ML_PIPELINE
 
 
 PIPELINE = make_pipeline(
-    BASE_ML_PIPELINE, XGBClassifier(random_state=SEED, objective=bits_objective),
+    BASE_ML_PIPELINE,
+    XGBClassifier(random_state=SEED, objective=bits_objective, verbosity=0),
 )
 
 
