@@ -35,7 +35,7 @@ PIPELINE = make_pipeline(
         ],
         remainder=StandardScaler(),
     ),
-    XGBRegressor(objective="reg:squarederror"),
+    XGBRegressor(objective="reg:squarederror", verbosity=0),
 )
 
 
