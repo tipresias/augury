@@ -8,11 +8,12 @@ dev environment).
 
 from typing import Any, Dict, List
 import os
+import logging
 
 import joblib
 from kedro.io.core import AbstractDataSet
 from google.cloud import storage
-from google.api_core import timeout
+import requests
 
 from augury.settings import BASE_DIR
 
@@ -57,7 +58,6 @@ class PickleGCStorageDataSet(AbstractDataSet):
 
         return joblib.load(local_filepath)
 
-    @timeout.ConstantTimeout(timeout=UPLOAD_TIMEOUT)
     def _save(self, data: Any) -> None:
         """Save a Python object as a pickle file in Google Cloud Storage.
 
