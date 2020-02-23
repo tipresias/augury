@@ -182,7 +182,7 @@ def _bits_gradient(y_true, y_pred):
         y_true == DRAW,
         _draw_bits_gradient(y_pred),
         np.where(
-            y_true == WIN, _win_bits_gradient(y_pred), _loss_bits_gradient(y_pred)
+            y_true == WIN, _win_bits_gradient(y_pred), _loss_bits_gradient(y_pred),
         ),
     )
 
@@ -212,9 +212,15 @@ def bits_objective(y_true, y_pred) -> Tuple[np.array, np.array]:
         y_true.reshape(-1, 1) if len(y_true.shape) != len(y_pred.shape) else y_true
     )
 
+    # Sometimes during training, the confidence estimator will get frisky
+    # and give a team a 100% chance of winning, which results
+    # in some divide-by-zero errors, so we make the maximum just a little less than 1.
+    MAX_PROBA = 1 - MIN_LOG_VAL
+    normalized_y_pred = np.maximum(y_pred, np.full_like(y_pred, MAX_PROBA))
+
     return (
-        _bits_gradient(y_true_matrix, y_pred).flatten(),
-        _bits_hessian(y_true_matrix, y_pred).flatten(),
+        _bits_gradient(y_true_matrix, normalized_y_pred).flatten(),
+        _bits_hessian(y_true_matrix, normalized_y_pred).flatten(),
     )
 
 
