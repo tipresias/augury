@@ -131,8 +131,20 @@ def _min_max_datetimes_by_year(
 
     if force_future:
         today = datetime.now()
-        tomorrow = today + timedelta(hours=24)
-        datetime_start = datetime(year, tomorrow.month, tomorrow.day, MIN_MATCH_HOUR)
+
+        # Running tests on 28 Feb of a leap year breaks them, because the given year
+        # generally won't be a leap year (e.g. 2018-2-29 doesn't exist),
+        # so we retry with two days in the future (e.g. 2018-3-1).
+        try:
+            tomorrow = today + timedelta(hours=24)
+            datetime_start = datetime(
+                year, tomorrow.month, tomorrow.day, MIN_MATCH_HOUR
+            )
+        except ValueError:
+            tomorrow = today + timedelta(hours=48)
+            datetime_start = datetime(
+                year, tomorrow.month, tomorrow.day, MIN_MATCH_HOUR
+            )
     else:
         datetime_start = datetime(year, JAN, FIRST, MIN_MATCH_HOUR)
 
@@ -249,7 +261,8 @@ def fake_cleaned_match_data(
                 # Sometimes get ambiguous datetime errors due to 2:00 am to 3:00 am
                 # potentially being daylight-savings time or standard time
                 # on transitional days, so we just infer, because we don't really care.
-                MELBOURNE_TIMEZONE, ambiguous='infer',
+                MELBOURNE_TIMEZONE,
+                ambiguous="infer",
             )
         )
         .set_index(INDEX_COLS, drop=False)
