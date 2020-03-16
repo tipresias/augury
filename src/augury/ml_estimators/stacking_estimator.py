@@ -23,24 +23,56 @@ from .base_ml_estimator import BaseMLEstimator, BASE_ML_PIPELINE
 np.random.seed(SEED)
 
 
-DEFAULT_MIN_YEAR = 1965
+BEST_PARAMS = {
+    "min_year": 1965,
+    "ml_pipeline": {
+        "extratreesregressor__max_depth": 45,
+        "extratreesregressor__max_features": 0.9493692952,
+        "extratreesregressor__min_samples_leaf": 2,
+        "extratreesregressor__min_samples_split": 3,
+        "extratreesregressor__n_estimators": 113,
+        "pipeline__correlationselector__threshold": 0.0376827797,
+    },
+    "elo_pipeline": {
+        "eloregressor__home_ground_advantage": 7,
+        "eloregressor__k": 23.5156358583,
+        "eloregressor__m": 131.54906178,
+        "eloregressor__s": 257.5770727802,
+        "eloregressor__season_carryover": 0.5329064035,
+        "eloregressor__x": 0.6343992255,
+    },
+    "arima_pipeline": {
+        "timeseriesregressor__exog_cols": ["at_home", "oppo_cum_percent"],
+        "timeseriesregressor__fit_method": "css",
+        "timeseriesregressor__fit_solver": "bfgs",
+        "timeseriesregressor__order": (8, 0, 1),
+    },
+    "meta_pipeline": {
+        "extratreesregressor__max_depth": 41,
+        "extratreesregressor__min_samples_leaf": 1,
+        "extratreesregressor__min_samples_split": 3,
+        "extratreesregressor__n_estimators": 172,
+    },
+}
 
 ML_PIPELINE = make_pipeline(
     DataFrameConverter(), BASE_ML_PIPELINE, ExtraTreesRegressor(random_state=SEED)
-)
+).set_params(**BEST_PARAMS["ml_pipeline"])
 
 ELO_PIPELINE = make_pipeline(
     DataFrameConverter(), TeammatchToMatchConverter(), EloRegressor()
-)
+).set_params(**BEST_PARAMS["elo_pipeline"])
 
 ARIMA_PIPELINE = make_pipeline(
     DataFrameConverter(),
     TimeSeriesRegressor(
         sm.tsa.ARIMA, order=(6, 0, 1), exog_cols=["at_home", "oppo_cum_percent"]
     ),
-)
+).set_params(**BEST_PARAMS["arima_pipeline"])
 
-META_PIPELINE = make_pipeline(StandardScaler(), ExtraTreesRegressor(random_state=SEED))
+META_PIPELINE = make_pipeline(
+    StandardScaler(), ExtraTreesRegressor(random_state=SEED)
+).set_params(**BEST_PARAMS["meta_pipeline"])
 
 PIPELINE = StackingRegressor(
     regressors=[ML_PIPELINE, ELO_PIPELINE, ARIMA_PIPELINE], meta_regressor=META_PIPELINE
@@ -54,7 +86,7 @@ class StackingEstimator(BaseMLEstimator):
         self,
         pipeline: Union[Pipeline, BaseEstimator] = PIPELINE,
         name: Optional[str] = "stacking_estimator",
-        min_year=DEFAULT_MIN_YEAR,
+        min_year=BEST_PARAMS["min_year"],
     ) -> None:
         """Instantiate a StackingEstimator object.
 
