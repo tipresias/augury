@@ -8,7 +8,7 @@ simplejson
 
 # Data packages
 numpy==1.16.4
-pandas==1.0.1
+pandas==1.0.2
 scikit-learn==0.22.2.post1
 xgboost==1.0.2
 mlxtend==0.17.2
