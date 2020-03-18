@@ -5,17 +5,21 @@
 models:
   - name: tipresias_2019
     prediction_type: margin
-    data_set: legacy_model_data
     trained_to: 2016
+    data_set: legacy_model_data
+    label_col: margin
   - name: benchmark_estimator
     prediction_type: margin
-    data_set: legacy_model_data
     trained_to: 2016
+    data_set: legacy_model_data
+    label_col: margin
   - name: tipresias_2020
     prediction_type: margin
-    data_set: model_data
     trained_to: 2016
+    data_set: model_data
+    label_col: margin
   - name: confidence_estimator
     prediction_type: win_probability
-    data_set: model_data
     trained_to: 2016
+    data_set: model_data
+    label_col: result
