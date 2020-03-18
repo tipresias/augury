@@ -2,6 +2,7 @@
 
 from unittest import TestCase
 import os
+import warnings
 
 from sklearn.linear_model import Ridge, Lasso, LogisticRegression
 import pandas as pd
@@ -21,7 +22,7 @@ from augury.sklearn.preprocessing import (
     DataFrameConverter,
     MATCH_INDEX_COLS,
 )
-from augury.sklearn.metrics import match_accuracy_scorer, bits_scorer
+from augury.sklearn.metrics import match_accuracy_scorer, bits_scorer, bits_objective
 from augury.sklearn.model_selection import year_cv_split
 from augury.settings import BASE_DIR
 
@@ -347,3 +348,27 @@ class TestSklearn(TestCase, KedroContextMixin):
             class_bits = bits_scorer(classifier, X_train, y_train, proba=True)
 
             self.assertIsInstance(class_bits, float)
+
+    def test_bits_objective(self):
+        y_true = np.random.randint(0, 2, 10)
+        y_pred = np.random.random(10)
+
+        grad, hess = bits_objective(y_true, y_pred)
+
+        self.assertIsInstance(grad, np.ndarray)
+        self.assertEqual(grad.dtype, "float64")
+        self.assertIsInstance(hess, np.ndarray)
+        self.assertEqual(hess.dtype, "float64")
+
+        with self.subTest("when some predictions equal 1"):
+            warnings.filterwarnings(
+                "error",
+                category=RuntimeWarning,
+                message="divide by zero encountered in true_divide",
+            )
+
+            y_pred[:5] = np.ones(5)
+
+            # Will raise a divide-by-zero error if a y_pred value of 1 gets through,
+            # so we don't need to assert anything
+            bits_objective(y_true, y_pred)

@@ -216,7 +216,7 @@ def bits_objective(y_true, y_pred) -> Tuple[np.array, np.array]:
     # and give a team a 100% chance of winning, which results
     # in some divide-by-zero errors, so we make the maximum just a little less than 1.
     MAX_PROBA = 1 - MIN_LOG_VAL
-    normalized_y_pred = np.maximum(y_pred, np.full_like(y_pred, MAX_PROBA))
+    normalized_y_pred = np.minimum(y_pred, np.full_like(y_pred, MAX_PROBA))
 
     return (
         _bits_gradient(y_true_matrix, normalized_y_pred).flatten(),
