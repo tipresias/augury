@@ -215,8 +215,15 @@ def bits_objective(y_true, y_pred) -> Tuple[np.array, np.array]:
     # Sometimes during training, the confidence estimator will get frisky
     # and give a team a 100% chance of winning, which results
     # in some divide-by-zero errors, so we make the maximum just a little less than 1.
-    MAX_PROBA = 1 - MIN_LOG_VAL
-    normalized_y_pred = np.maximum(y_pred, np.full_like(y_pred, MAX_PROBA))
+    # We use the exponent -7, because any smaller and numpy rounds the values to 1.
+    MAX_PROBA = 1 - (1 * 10 ** -7)
+    normalized_y_pred = np.minimum(y_pred, np.full_like(y_pred, MAX_PROBA))
+
+    assert not np.any(normalized_y_pred[normalized_y_pred == 1]), (
+        "No predictions can be exactly 1, because they eventually produce "
+        "divide-by-one errors due to how the gradient and hessian are calculated "
+        "for the bits metric."
+    )
 
     return (
         _bits_gradient(y_true_matrix, normalized_y_pred).flatten(),

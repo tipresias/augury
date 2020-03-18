@@ -16,6 +16,7 @@ services:
     environment:
       - PYTHON_ENV=development
       - GOOGLE_APPLICATION_CREDENTIALS=.gcloud/keyfile.json
+      - PYTHONPATH=./src
     command: python3 app.py
   afl_data:
     image: cfranklin11/tipresias_afl_data:latest

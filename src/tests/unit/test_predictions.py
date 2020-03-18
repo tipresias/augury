@@ -16,11 +16,17 @@ from augury.settings import BASE_DIR
 YEAR_RANGE = (2018, 2019)
 PREDICTION_ROUND = 1
 FAKE_ML_MODELS = [
-    {"name": "fake_estimator", "data_set": "fake_data", "prediction_type": "margin"},
+    {
+        "name": "fake_estimator",
+        "data_set": "fake_data",
+        "prediction_type": "margin",
+        "label_col": "margin",
+    },
     {
         "name": "fake_estimator",
         "data_set": "fake_data",
         "prediction_type": "win_probability",
+        "label_col": "result",
     },
 ]
 
@@ -69,7 +75,7 @@ class TestPredictor(TestCase, KedroContextMixin):
             prediction_year = prediction_years.iloc[0]
             self.assertEqual(prediction_year, [YEAR_RANGE[0]])
 
-            with self.subTest('when only one ml_model is given'):
+            with self.subTest("when only one ml_model is given"):
                 model_predictions = self.predictor.make_predictions(FAKE_ML_MODELS[1:])
 
                 self.assertEqual(len(model_predictions), len(self.prediction_matches))

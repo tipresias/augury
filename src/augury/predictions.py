@@ -78,6 +78,7 @@ class Predictor:
 
         loaded_model = self.context.catalog.load(ml_model["name"])
         self._data.data_set = ml_model["data_set"]
+        self._data.label_col = ml_model["label_col"]
 
         trained_model = self._train_model(loaded_model) if self.train else loaded_model
         X_test, _ = self._data.test_data
