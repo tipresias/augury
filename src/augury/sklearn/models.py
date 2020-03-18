@@ -442,6 +442,8 @@ class TimeSeriesRegressor(BaseEstimator, RegressorMixin):
         stats_model: TimeSeriesModel,
         order: Tuple[int, int, int] = DEFAULT_ORDER,
         exog_cols: List[str] = [],
+        fit_method: Optional[str] = None,
+        fit_solver: Optional[str] = None,
         confidence=False,
         verbose=0,
         **sm_kwargs,
@@ -455,12 +457,19 @@ class TimeSeriesRegressor(BaseEstimator, RegressorMixin):
         order: The `order` param for ARIMA and similar models.
         exog_cols: Names of columns to use as exogeneous variables for ARIMA
             and similar models.
+        fit_method: Name of formula to maximise when fitting.
+        fit_solver: Name of solver function passed to the statsmodel's fit method.
+        confidence: Whether to return predictions as percentage confidence
+            of an outcome (e.g. win) or float value (e.g. predicted margin).
+        verbose: How much information to print during the fitting of the statsmodel.
         sm_kwargs: Any other keyword arguments to pass directly to the instantiation
             of the given stats_model.
         """
         self.stats_model = stats_model
         self.order = order
         self.exog_cols = exog_cols
+        self.fit_method = fit_method
+        self.fit_solver = fit_solver
         self.confidence = confidence
         self.sm_kwargs = sm_kwargs
         self.verbose = verbose
@@ -517,9 +526,17 @@ class TimeSeriesRegressor(BaseEstimator, RegressorMixin):
                     "e.g. forecasting."
                 ),
             )
+
+            fit_kwargs = {
+                "solver": self.fit_solver,
+                "method": self.fit_method,
+                "disp": self.verbose,
+            }
+            fit_kwargs = {k: v for k, v in fit_kwargs.items() if v is not None}
+
             self._team_models[team_name] = self.stats_model(
                 y, order=order_param, exog=self._exog_arg(team_df), **self.sm_kwargs
-            ).fit(disp=self.verbose)
+            ).fit(**fit_kwargs)
 
     def _predict_with_team_model(
         self,

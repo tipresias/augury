@@ -24,6 +24,7 @@ from augury.settings import SEED
 np.random.seed(SEED)
 
 BUCKET_NAME = "afl_data"
+TRAIN_YEAR_RANGE = (2020,)
 
 
 def _train_save_model(model, **data_kwargs):
@@ -40,8 +41,16 @@ def _train_save_model(model, **data_kwargs):
 
 def main():
     """Loop through models, training and saving each."""
-    legacy_data_kwargs = {"data_set": "legacy_model_data", "pipeline": "legacy"}
-    data_kwargs = {"data_set": "model_data", "pipeline": "full"}
+    legacy_data_kwargs = {
+        "data_set": "legacy_model_data",
+        "pipeline": "legacy",
+        "train_year_range": TRAIN_YEAR_RANGE,
+    }
+    data_kwargs = {
+        "data_set": "model_data",
+        "pipeline": "full",
+        "train_year_range": TRAIN_YEAR_RANGE,
+    }
 
     model_info = [
         (BenchmarkEstimator(), legacy_data_kwargs),
