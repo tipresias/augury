@@ -6,7 +6,11 @@ from unittest.mock import patch, MagicMock
 import re
 
 from tests.helpers import KedroContextMixin
-from tests.fixtures.fake_estimator import FakeEstimatorData, FakeEstimator
+from tests.fixtures.fake_estimator import (
+    FakeEstimatorData,
+    FakeEstimator,
+    create_fake_pipeline,
+)
 from augury.model_tracking import (
     present_model_params,
     IRRELEVANT_PARAM_REGEX,
@@ -44,6 +48,7 @@ class TestModelTracking(TestCase, KedroContextMixin):
             all([isinstance(value, BASE_PARAM_VALUE_TYPES) for value in param_values])
         )
 
+    @patch("augury.run.create_pipelines", {"fake": create_fake_pipeline()})
     @patch("augury.model_tracking.mlflow")
     def test_start_run(self, mock_mlflow):
         max_of_year_range = VALIDATION_YEAR_RANGE[1]

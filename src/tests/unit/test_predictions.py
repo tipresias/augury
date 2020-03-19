@@ -2,14 +2,14 @@
 # pylint: disable=missing-class-docstring
 
 from unittest import TestCase
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 import os
 
 import joblib
 from freezegun import freeze_time
 
 from tests.helpers import KedroContextMixin
-from tests.fixtures.fake_estimator import FakeEstimatorData
+from tests.fixtures.fake_estimator import FakeEstimatorData, create_fake_pipeline
 from augury.predictions import Predictor
 from augury.settings import BASE_DIR
 
@@ -49,6 +49,7 @@ class TestPredictor(TestCase, KedroContextMixin):
 
         self.predictor._data = fake_data  # pylint: disable=protected-access
 
+    @patch("augury.run.create_pipelines", {"fake": create_fake_pipeline()})
     def test_make_predictions(self):
         with freeze_time(f"{self.max_year}-06-15"):
             model_predictions = self.predictor.make_predictions(FAKE_ML_MODELS)

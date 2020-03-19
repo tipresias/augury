@@ -1,6 +1,7 @@
 # pylint: disable=missing-docstring
 
 from unittest import TestCase
+from unittest.mock import patch
 import os
 import warnings
 
@@ -13,7 +14,7 @@ import pytest
 
 from tests.helpers import KedroContextMixin
 from tests.fixtures.data_factories import fake_cleaned_match_data
-from tests.fixtures.fake_estimator import FakeEstimatorData
+from tests.fixtures.fake_estimator import FakeEstimatorData, create_fake_pipeline
 from augury.sklearn.models import AveragingRegressor, EloRegressor, KerasClassifier
 from augury.sklearn.preprocessing import (
     CorrelationSelector,
@@ -235,6 +236,7 @@ class TestDataFrameConverter(TestCase):
 
 
 class TestKerasClassifier(TestCase):
+    @patch("augury.run.create_pipelines", {"fake": create_fake_pipeline()})
     def setUp(self):
         data = FakeEstimatorData()
         _X_train, _y_train = data.train_data
