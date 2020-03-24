@@ -1,25 +1,28 @@
-service: machine-learning
+service: augury
 
-custom: ${file(./env.js):env}
+custom:
+  environment: ${file(./env.js):env}
+  serverless-offline:
+    host: 0.0.0.0
+    port: 8008
 
 provider:
-  name: google
-  stage: dev
-  runtime: python37
-  region: asia-east2
+  name: aws
+  runtime: python3.7
+  stage: prod
+  region: ap-southeast-2
   memorySize: 1024
   timeout: "540s"
-  project: ${self:custom.project}
-  credentials: ${self:custom.credentials}
   environment:
-    AFL_DATA_SERVICE: ${self:custom.afl_data_service}
-    PYTHON_ENV: production
-    GCPF_TOKEN: ${self:custom.gcpf_token}
-    GCR_TOKEN: ${self:custom.gcr_token}
+    PYTHON_ENV: ${self:custom.environment.python_env}
     PYTHONPATH: ./src
+    AFL_DATA_SERVICE: ${self:custom.environment.afl_data_service}
+    GCPF_TOKEN: ${self:custom.environment.gcpf_token}
+    GCR_TOKEN: ${self:custom.environment.gcr_token}
 
 plugins:
-  - serverless-google-cloudfunctions
+  - serverless-offline
+  - serverless-python-requirements
 
 package:
   exclude:
@@ -28,7 +31,7 @@ package:
     - conf/**
     - src/augury/**
     - src/setup.py
-    - main.py
+    - handler.py
     - package-lock.json
     - package.json
     - requirements.txt
@@ -36,18 +39,26 @@ package:
 
 functions:
   predictions:
-    handler: predictions
+    handler: handler.predictions
     events:
-      - http: path
+      - http:
+          path: predictions
+          method: get
   fixtures:
-    handler: fixtures
+    handler: handler.fixtures
     events:
-      - http: path
+      - http:
+          path: fixtures
+          method: get
   match_results:
-    handler: match_results
+    handler: handler.match_results
     events:
-      - http: path
+      - http:
+          path: match_results
+          method: get
   ml_models:
-    handler: ml_models
+    handler: handler.ml_models
     events:
-      - http: path
+      - http:
+          path: ml_models
+          method: get
