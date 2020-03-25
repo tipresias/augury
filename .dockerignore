@@ -91,6 +91,7 @@ deploy_rsa.enc
 # Tracking/Log stuff
 mlruns
 log
+*.log
 
 
 ##########################
@@ -108,6 +109,3 @@ data/**
 logs/**
 references/**
 results/**
-
-# Keep saved models, because dynamic data sources can create inconsistency
-!data/06_models/**
