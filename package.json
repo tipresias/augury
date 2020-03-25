@@ -10,7 +10,7 @@
   "license": "MIT",
   "devDependencies": {
     "serverless": "1.67.0",
-    "serverless-offline": "^5.12.1"
+    "serverless-offline": "^6.1.2"
   },
   "dependencies": {
     "serverless-python-requirements": "^5.1.0"
