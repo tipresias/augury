@@ -35,9 +35,3 @@ RUN pip3 install -r requirements.dev.txt \
 
 # Add the rest of the code
 COPY . /app
-
-# Make port 8888 available for Jupyter notebooks
-EXPOSE 8888
-
-# Make port 8008 available for the app
-EXPOSE 8008
