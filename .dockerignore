@@ -91,6 +91,7 @@ deploy_rsa.enc
 # Tracking/Log stuff
 mlruns
 log
+*.log
 
 
 ##########################
@@ -100,12 +101,11 @@ log
 conf/**/*credentials*
 .gcloud
 keyfile.json
+.aws
+credentials
 
 # ignore everything in the following folders
 data/**
 logs/**
 references/**
 results/**
-
-# Keep saved models, because dynamic data sources can create inconsistency
-!data/06_models/**
