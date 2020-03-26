@@ -15,7 +15,6 @@ services:
       - afl_data
     env_file: .env
     environment:
-      - PYTHON_ENV=development
       - GOOGLE_APPLICATION_CREDENTIALS=.gcloud/keyfile.json
       - AWS_SHARED_CREDENTIALS_FILE=.aws/credentials
       - PYTHONPATH=./src

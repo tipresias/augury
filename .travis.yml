@@ -21,7 +21,7 @@ jobs:
         - docker run cfranklin11/tipresias_data_science:latest pylint --disable=R src handler.py
         - docker run cfranklin11/tipresias_data_science:latest mypy src handler.py
         - docker run cfranklin11/tipresias_data_science:latest pydocstyle src handler.py
-        - docker run -v "${HOME}/.gcloud:/app/.gcloud" -v "${HOME}/.aws:/app/.aws" -e PYTHON_ENV=development -e CI=true -e GOOGLE_APPLICATION_CREDENTIALS="${GOOGLE_APPLICATION_CREDENTIALS}" -e AWS_SHARED_CREDENTIALS_FILE="${AWS_SHARED_CREDENTIALS_FILE}" cfranklin11/tipresias_data_science:latest kedro test --no-cov src/tests/unit/
+        - docker run -v "${HOME}/.gcloud:/app/.gcloud" -v "${HOME}/.aws:/app/.aws" -e CI=true -e GOOGLE_APPLICATION_CREDENTIALS="${GOOGLE_APPLICATION_CREDENTIALS}" -e AWS_SHARED_CREDENTIALS_FILE="${AWS_SHARED_CREDENTIALS_FILE}" cfranklin11/tipresias_data_science:latest kedro test --no-cov src/tests/unit/
     - name: "Integration Tests"
       script:
         - sudo rm /usr/local/bin/docker-compose
