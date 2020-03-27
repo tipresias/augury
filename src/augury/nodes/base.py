@@ -53,6 +53,18 @@ def _localize_dates(row: pd.Series) -> datetime:
     return match_datetime.replace(tzinfo=pytz.timezone(venue_timezone))
 
 
+def _format_time(unformatted_time: str):
+    if not unformatted_time.isnumeric():
+        return unformatted_time
+
+    assert len(unformatted_time) in [3, 4], (
+        "Time values are expected to be 3 or 4 digits, 1 or 2 for the hour "
+        f"and 2 for the minute, but we received: {unformatted_time}."
+    )
+
+    return unformatted_time[:-2] + ":" + unformatted_time[2:]
+
+
 def _parse_dates(data_frame: pd.DataFrame, time_col=None) -> pd.Series:
     localize_columns = list(set(["date", "venue", time_col]) & set(data_frame.columns))
 
@@ -64,7 +76,9 @@ def _parse_dates(data_frame: pd.DataFrame, time_col=None) -> pd.Series:
             # Some data sources have separate date and local_start_time columns,
             # so we concat them to get consistent datetimes for matches
             .assign(
-                date=lambda df: df["date"].astype(str) + " " + df[time_col].astype(str)
+                date=lambda df: df["date"].astype(str)
+                + " "
+                + df[time_col].astype(str).map(_format_time)
             ).apply(_localize_dates, axis=1)
         )
 
