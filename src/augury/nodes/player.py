@@ -2,10 +2,8 @@
 
 from typing import Callable, List, Dict, Union, Tuple
 from functools import partial, update_wrapper
-from datetime import datetime
 
 import pandas as pd
-import pytz
 
 from augury.settings import TEAM_TRANSLATIONS, AVG_SEASON_LENGTH, INDEX_COLS
 from .base import (
@@ -172,20 +170,8 @@ def clean_roster_data(
     if not roster_data.any().any():
         return roster_data.assign(player_id=[])
 
-    # This filter generally isn't needed, but when the season has been postponed
-    # on account of a global pandemic, people have priorities other than updating
-    # the team lineup page on afl.com.au, which results in rosters for past matches,
-    # which violates assumptions that make joining future & past player data work.
-    # As such, filtering out matches that were played before today should be sufficient
-    # without risking weird results due to timezones if you decide to run the pipeline
-    # mid-round.
-    start_of_today = datetime.now(  # pylint: disable=unused-variable
-        tz=pytz.timezone("Australia/Melbourne")
-    )
-
     roster_data_frame = (
         roster_data.assign(date=_parse_dates)
-        .query("date > @start_of_today")
         .rename(columns={"season": "year"})
         .merge(
             clean_player_data_frame[["player_name", "player_id"]],
