@@ -101,8 +101,6 @@ log
 conf/**/*credentials*
 .gcloud
 keyfile.json
-.aws
-credentials
 
 # ignore everything in the following folders
 data/**
