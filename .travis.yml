@@ -4,24 +4,20 @@ services:
 env:
   DOCKER_COMPOSE_VERSION: 1.22.0
   GOOGLE_APPLICATION_CREDENTIALS: .gcloud/keyfile.json
-  AWS_SHARED_CREDENTIALS_FILE: .aws/credentials
 install:
   - docker pull cfranklin11/tipresias_data_science:latest
   - docker build --cache-from cfranklin11/tipresias_data_science:latest -t cfranklin11/tipresias_data_science:latest .
-  - openssl aes-256-cbc -K $encrypted_7e9dc410325f_key -iv $encrypted_7e9dc410325f_iv -in cloud_credentials.tar.enc -out cloud_credentials.tar -d
-  # cloud_credentials.tar contains Google Cloud's keyfile.json and AWS's credentials file
-  - tar xvf cloud_credentials.tar
-  - mkdir ${HOME}/.gcloud && mv keyfile.json ${HOME}/.gcloud/
-  - mkdir ${HOME}/.aws && mv credentials ${HOME}/.aws/
+  - mkdir ${HOME}/.gcloud
+  - openssl aes-256-cbc -K $encrypted_7fb3f8574845_key -iv $encrypted_7fb3f8574845_iv -in keyfile.json.enc -out ${HOME}/.gcloud/keyfile.json -d
 jobs:
   include:
     - stage: test
       name: "Linting & Unit Tests"
       script:
-        - docker run cfranklin11/tipresias_data_science:latest pylint --disable=R src handler.py
-        - docker run cfranklin11/tipresias_data_science:latest mypy src handler.py
-        - docker run cfranklin11/tipresias_data_science:latest pydocstyle src handler.py
-        - docker run -v "${HOME}/.gcloud:/app/.gcloud" -v "${HOME}/.aws:/app/.aws" -e CI=true -e GOOGLE_APPLICATION_CREDENTIALS="${GOOGLE_APPLICATION_CREDENTIALS}" -e AWS_SHARED_CREDENTIALS_FILE="${AWS_SHARED_CREDENTIALS_FILE}" cfranklin11/tipresias_data_science:latest kedro test --no-cov src/tests/unit/
+        - docker run cfranklin11/tipresias_data_science:latest pylint --disable=R src main.py
+        - docker run cfranklin11/tipresias_data_science:latest mypy src main.py
+        - docker run cfranklin11/tipresias_data_science:latest pydocstyle src main.py
+        - docker run -v "${HOME}/.gcloud:/app/.gcloud" -e CI=true -e GOOGLE_APPLICATION_CREDENTIALS="${GOOGLE_APPLICATION_CREDENTIALS}" cfranklin11/tipresias_data_science:latest kedro test --no-cov src/tests/unit/
     - name: "Integration Tests"
       script:
         - sudo rm /usr/local/bin/docker-compose
