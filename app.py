@@ -33,21 +33,35 @@ def predictions():
     round_number: Round number to predict. Predicts all rounds if omitted.
     ml_models: Comma separated names of ML models to use for predictions.
         Uses all ML models if omitted.
+    train_models (bool, optional): Whether to train each model
+        on earlier seasons' data before generating predictions
+        for a given season/round.
+        Default = False.
     """
     this_year = date.today().year
-    year_range_param = request.query.year_range or f"{this_year}-{this_year + 1}"
+    year_range_param = (
+        f"{this_year}-{this_year + 1}"
+        if request.query.year_range in [None, ""]
+        else request.query.year_range
+    )
     year_range = tuple([int(year) for year in year_range_param.split("-")])
 
     round_number = request.query.round_number
-    round_number = int(round_number) if round_number not in [None, ""] else None
+    round_number = None if round_number in [None, ""] else int(round_number)
 
     ml_models_param = request.query.ml_models
     ml_models_param = (
-        ml_models_param.split(",") if ml_models_param not in [None, ""] else None
+        None if ml_models_param in [None, ""] else ml_models_param.split(",")
     )
 
+    train_models_param = request.query.train_models
+    train_models = train_models_param.lower() == "true"
+
     return api.make_predictions(
-        year_range, round_number=round_number, ml_model_names=ml_models_param
+        year_range,
+        round_number=round_number,
+        ml_model_names=ml_models_param,
+        train=train_models,
     )
 
 

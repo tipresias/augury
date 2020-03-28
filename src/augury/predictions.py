@@ -56,7 +56,12 @@ class Predictor:
         self.round_number = round_number
         self.train = train
         self.verbose = verbose
-        self._data = MLData(context=context, test_year_range=year_range, **data_kwargs)
+        self._data = MLData(
+            context=context,
+            train_year_range=(min(year_range),),
+            test_year_range=year_range,
+            **data_kwargs,
+        )
 
     def make_predictions(self, ml_models: List[MLModelDict]) -> pd.DataFrame:
         """Predict margins or confidence percentages for matches."""
@@ -109,6 +114,8 @@ class Predictor:
         return model_predictions
 
     def _train_model(self, ml_model: BaseMLEstimator) -> BaseMLEstimator:
+        assert max(self._data.train_year_range) <= min(self._data.test_year_range)
+
         X_train, y_train = self._data.train_data
 
         # On the off chance that we try to run predictions for years that have

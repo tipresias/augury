@@ -44,7 +44,11 @@ def predictions(request):
             Default = All rounds for given year.
         ml_models (str, optional): Comma-separated list of names of ML model to use
             for making predictions.
-            Default = All available models
+            Default = All available models.
+        train_models (bool, optional): Whether to train each model
+            on earlier seasons' data before generating predictions
+            for a given season/round.
+            Default = False.
 
     Returns
     -------
@@ -67,9 +71,15 @@ def predictions(request):
         else None
     )
 
+    train_models_param = request.args.get("train_models", "false")
+    train_models = train_models_param.lower() == "true"
+
     return json.dumps(
         api.make_predictions(
-            year_range, round_number=round_number, ml_model_names=ml_models_param
+            year_range,
+            round_number=round_number,
+            ml_model_names=ml_models_param,
+            train=train_models,
         )
     )
 
