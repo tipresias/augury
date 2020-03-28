@@ -45,7 +45,18 @@ def make_predictions(
     ml_model_names: Optional[List[str]] = None,
     train=False,
 ) -> ApiResponse:
-    """Generate match predictions with the given models for the given seasons."""
+    """Generate predictions for the given year and round number.
+
+    Params
+    ------
+    year_range: Year range for which you want prediction data. Format = yyyy-yyyy.
+    round_number: Round number for which you want prediction data.
+    ml_models: Comma-separated list of names of ML model to use for making predictions.
+
+    Returns
+    -------
+    List of prediction data dictionaries.
+    """
     context = load_context(
         BASE_DIR,
         start_date=PREDICTION_DATA_START_DATE,
