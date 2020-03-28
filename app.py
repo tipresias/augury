@@ -18,9 +18,6 @@ if SRC_PATH not in sys.path:
 from augury import api
 
 
-TRUE = "true"
-FALSE = "false"
-
 app = Bottle()
 
 
