@@ -39,7 +39,7 @@ class TestBettingData(TestCase):
         a_month = timedelta(days=30)
         a_month_ago = today - a_month
 
-        if today > start_of_this_season and a_month_ago < end_of_this_season:
+        if today >= start_of_this_season and a_month_ago < end_of_this_season:
             self.start_date = str(a_month_ago)
         elif today < start_of_this_season:
             self.start_date = str(end_of_previous_season - a_month)
