@@ -2,7 +2,7 @@
 # This reduces the file size deployed to Google Cloud.
 
 requests
-google-cloud-storage==1.26.0
+google-cloud-storage==1.27.0
 joblib
 simplejson
 
