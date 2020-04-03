@@ -2,32 +2,46 @@ sudo: required
 services:
   - docker
 env:
-  DOCKER_COMPOSE_VERSION: 1.22.0
-  GOOGLE_APPLICATION_CREDENTIALS: .gcloud/keyfile.json
+  global:
+    DOCKER_COMPOSE_VERSION: 1.22.0
+    GOOGLE_APPLICATION_CREDENTIALS: .gcloud/keyfile.json
+    CC_TEST_REPORTER_ID: 3c6e7d3ecb1089284ed54da495ee9062362337415223df4c122dc68b575dd708
 install:
+  # Install docker-compose
+  - sudo rm /usr/local/bin/docker-compose
+  - sudo curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  - sudo chmod +x /usr/local/bin/docker-compose
+  # Install test coverage monitoring
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+before_script:
+  # Pull & build image
   - docker pull cfranklin11/tipresias_data_science:latest
   - docker build --cache-from cfranklin11/tipresias_data_science:latest -t cfranklin11/tipresias_data_science:latest .
+  # Set up Google Cloud credentials
   - mkdir ${HOME}/.gcloud
   - openssl aes-256-cbc -K $encrypted_7fb3f8574845_key -iv $encrypted_7fb3f8574845_iv -in keyfile.json.enc -out ${HOME}/.gcloud/keyfile.json -d
-jobs:
-  include:
-    - stage: test
-      name: "Linting & Unit Tests"
-      script:
-        - docker run cfranklin11/tipresias_data_science:latest pylint --disable=R src main.py
-        - docker run cfranklin11/tipresias_data_science:latest mypy src main.py
-        - docker run cfranklin11/tipresias_data_science:latest pydocstyle src main.py
-        - docker run -v "${HOME}/.gcloud:/app/.gcloud" -e CI=true -e GOOGLE_APPLICATION_CREDENTIALS="${GOOGLE_APPLICATION_CREDENTIALS}" cfranklin11/tipresias_data_science:latest kedro test --no-cov src/tests/unit/
-    - name: "Integration Tests"
-      script:
-        - sudo rm /usr/local/bin/docker-compose
-        - sudo curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-        - sudo chmod +x /usr/local/bin/docker-compose
-        - docker-compose -f docker-compose.ci.yml run data_science kedro test --no-cov -n auto --dist=loadfile src/tests/integration
-    - stage: deploy
-      if: branch = master
-      script:
-        - echo "$DOCKER_PASSWORD" | docker login -u cfranklin11 --password-stdin
-        - docker push cfranklin11/tipresias_data_science:latest
-        - ./scripts/deploy.sh
-      name: "Deploy"
+  # Set up test coverage monitoring
+  - ./cc-test-reporter before-build
+script:
+  # Linting & unit tests
+  - docker run cfranklin11/tipresias_data_science:latest pylint --disable=R src main.py
+  - docker run cfranklin11/tipresias_data_science:latest mypy src main.py
+  - docker run cfranklin11/tipresias_data_science:latest pydocstyle src main.py
+  # Using pytest, because coverage.py doesn't play nice with the kedro CLI
+  - docker run -v "${HOME}/.gcloud:/app/.gcloud" -v "${PWD}:/app" -e CI=true -e GOOGLE_APPLICATION_CREDENTIALS="${GOOGLE_APPLICATION_CREDENTIALS}" cfranklin11/tipresias_data_science:latest coverage run -m pytest --no-cov src/tests/unit/
+  # Integration tests
+  # Using pytest, because coverage.py doesn't play nice with the kedro CLI
+  - docker-compose -f docker-compose.ci.yml run data_science coverage run --append -m pytest --no-cov -n auto --dist=loadfile src/tests/integration
+after_script:
+  - docker-compose -f docker-compose.ci.yml run data_science coverage xml
+  - ./cc-test-reporter format-coverage -t coverage.py
+  - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./cc-test-reporter upload-coverage; fi
+before_deploy:
+  - echo "$DOCKER_PASSWORD" | docker login -u cfranklin11 --password-stdin
+  - docker push cfranklin11/tipresias_data_science:latest
+deploy:
+  provider: script
+  script: ./scripts/deploy.sh
+  on:
+    branch: master
