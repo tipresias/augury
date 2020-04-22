@@ -2,7 +2,7 @@
 # pylint: disable=missing-class-docstring
 
 import os
-from unittest import TestCase
+from unittest import TestCase, skip
 from unittest.mock import patch, MagicMock
 from datetime import date, timedelta
 
@@ -48,6 +48,7 @@ class TestBettingData(TestCase):
 
         self.end_date = str(today)
 
+    @skip("Data is blank because there's no AFL season because pandemic")
     def test_fetch_betting_data(self):
         data = fetch_betting_data(
             start_date=self.start_date, end_date=self.end_date, verbose=0
