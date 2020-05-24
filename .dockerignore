@@ -84,9 +84,11 @@ node_modules
 LICENSE
 README.md
 deploy_rsa.enc
+keyfile.json.enc
 .travis.yml
 .vscode
 .serverless
+tmp
 
 # Tracking/Log stuff
 mlruns
@@ -107,3 +109,4 @@ data/**
 logs/**
 references/**
 results/**
+db/**
