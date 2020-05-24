@@ -43,7 +43,10 @@ def _unauthorized_response():
 def _request_is_authorized(http_request) -> bool:
     auth_token = http_request.headers.get("Authorization")
 
-    if IS_PRODUCTION and auth_token != f"Bearer {os.environ['GCPF_TOKEN']}":
+    if (
+        IS_PRODUCTION
+        and auth_token != f"Bearer {os.environ['DATA_SCIENCE_SERVICE_TOKEN']}"
+    ):
         return False
 
     return True

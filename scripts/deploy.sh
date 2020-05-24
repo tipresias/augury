@@ -16,4 +16,4 @@ gcloud beta run deploy augury \
   --memory 2Gi \
   --region us-central1 \
   --platform managed \
-  --update-env-vars GCR_TOKEN=${GCR_TOKEN},PYTHON_ENV=production,GCPF_TOKEN=${GCPF_TOKEN},AFL_DATA_SERVICE=${AFL_DATA_SERVICE}
+  --update-env-vars AFL_DATA_SERVICE_TOKEN=${AFL_DATA_SERVICE_TOKEN},PYTHON_ENV=production,DATA_SCIENCE_SERVICE_TOKEN=${DATA_SCIENCE_SERVICE_TOKEN},AFL_DATA_SERVICE=${AFL_DATA_SERVICE}

@@ -62,7 +62,7 @@ def fetch_afl_data(path: str, params: Dict[str, Any] = {}) -> List[Dict[str, Any
     """
     if os.getenv("PYTHON_ENV") == "production":
         service_host = AFL_DATA_SERVICE
-        headers = {"Authorization": f'Bearer {os.getenv("GCR_TOKEN")}'}
+        headers = {"Authorization": f'Bearer {os.getenv("AFL_DATA_SERVICE_TOKEN")}'}
     else:
         service_host = LOCAL_AFL_DATA_SERVICE
         headers = {}
