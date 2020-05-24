@@ -5,7 +5,7 @@
 # https://github.com/docker-library/python/issues/381#issuecomment-464258800
 FROM python:3.7.5-slim-buster@sha256:59af1bb7fb92ff97c9a23abae23f6beda13a95dbfd8100c7a2f71d150c0dc6e5
 
-# Install linux packages
+# Install linux packages & node
 RUN apt-get --no-install-recommends update \
   # g++ is a dependency of gcc, so must come before
   && apt-get -y --no-install-recommends install g++ gcc \
@@ -14,8 +14,17 @@ RUN apt-get --no-install-recommends update \
 WORKDIR /app
 
 # Install Python dependencies
-COPY requirements.txt .
-RUN pip3 install -r requirements.txt
+COPY requirements.txt requirements.dev.txt ./
+RUN pip3 install -r requirements.dev.txt \
+  && jupyter contrib nbextension install --user \
+  && jupyter nbextensions_configurator enable --user \
+  && jupyter nbextension enable --py widgetsnbextension \
+  && jupyter nbextension enable codefolding/main \
+  && jupyter nbextension enable execute_time/ExecuteTime \
+  && jupyter nbextension enable toc2/main \
+  && jupyter nbextension enable collapsible_headings/main \
+  && jupyter nbextension enable notify/notify \
+  && jupyter nbextension enable codefolding/edit
 
 # Add the rest of the code
 COPY . /app

@@ -1,7 +1,9 @@
 version: "3.2"
 services:
   data_science:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.local
     volumes:
       - ./:/app
       - ./.gcloud:/app/.gcloud
@@ -16,6 +18,7 @@ services:
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=.gcloud/keyfile.json
       - PYTHONPATH=./src
+      - PYTHON_ENV=local
     command: python3 app.py
   afl_data:
     image: cfranklin11/tipresias_afl_data:latest

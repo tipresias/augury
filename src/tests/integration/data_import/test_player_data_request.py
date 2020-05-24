@@ -20,7 +20,7 @@ MAR = 3
 FIFTEENTH = 15
 THIRTY_FIRST = 31
 AFL_DATA_SERVICE = os.getenv("AFL_DATA_SERVICE", default="")
-GCR_TOKEN = os.getenv("GCR_TOKEN", default="")
+AFL_DATA_SERVICE_TOKEN = os.getenv("AFL_DATA_SERVICE_TOKEN", default="")
 ENV_VARS = os.environ.copy()
 DATA_IMPORT_PATH = "augury.data_import"
 ARBITRARY_PLAYED_ROUND_NUMBER = 5
@@ -39,7 +39,7 @@ ROSTER_COLS = set(
 
 with Betamax.configure() as config:
     config.cassette_library_dir = CASSETTE_LIBRARY_DIR
-    config.define_cassette_placeholder("<AFL_DATA_TOKEN>", GCR_TOKEN)
+    config.define_cassette_placeholder("<AFL_DATA_TOKEN>", AFL_DATA_SERVICE_TOKEN)
     config.define_cassette_placeholder("<AFL_DATA_URL>", AFL_DATA_SERVICE)
 
 
