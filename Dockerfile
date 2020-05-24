@@ -35,3 +35,5 @@ RUN pip3 install -r requirements.dev.txt \
 
 # Add the rest of the code
 COPY . /app
+
+CMD [ "python3", "app.py" ]
