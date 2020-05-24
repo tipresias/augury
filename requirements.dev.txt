@@ -3,7 +3,6 @@
 
 -r requirements.txt
 
-bottle==0.12.18
 responses>=0.10.6,<0.11
 
 # Data packages
