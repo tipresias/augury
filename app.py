@@ -30,7 +30,7 @@ def _run_kwargs():
     }
 
     if IS_PRODUCTION:
-        run_kwargs["server"] = "gunicorn"
+        run_kwargs["server"] = "paste"
 
     return run_kwargs
 
