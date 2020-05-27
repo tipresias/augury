@@ -72,6 +72,7 @@ def make_predictions(
         round_number=context.round_number,  # type: ignore
         train=train,
         verbose=1,
+        update_data=True,
     )
 
     if ml_model_names is None:
