@@ -48,3 +48,9 @@ class JSONGCStorageDataSet(AbstractDataSet):
 
     def _describe(self) -> Dict[str, Any]:
         return dict(filepath=self._filepath, bucket_name=self._bucket_name)
+
+    def _exists(self) -> bool:
+        client = storage.Client()
+        bucket = client.get_bucket(self._bucket_name)
+
+        return storage.Blob(bucket=bucket, name=self._filepath).exists(client)
