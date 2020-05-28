@@ -56,9 +56,9 @@ def _append_data_frames(
     # Assumes the following:
     #     - All data frames have a date column
     #     - Data frames are sorted by date in ascending order
+    #       (the data frames themselves, not their rows)
     #     - Data frames have all data for a given date (i.e. all matches played
     #         on a date, not 1 of 3, which would result in missing data)
-
     max_accumulated_date = acc_data_frame[  # pylint: disable=unused-variable
         "date"
     ].max()
