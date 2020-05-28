@@ -62,16 +62,11 @@ class FakeEstimatorData(MLData):
     """Process data for FakeEstimator."""
 
     def __init__(
-        self,
-        pipeline="fake",
-        data_set="fake_data",
-        max_year=(VALIDATION_YEAR_RANGE[0] - 1),
-        **kwargs
+        self, data_set="fake_data", max_year=(VALIDATION_YEAR_RANGE[0] - 1), **kwargs
     ):
         """Instantiate a FakeEstimatorData object.
 
         Params
-            pipeline: Name of the pipeline to run if the data set isn't available.
             data_set: Name of the data set to load.
             max_year: Maximum year (inclusive) for the data set. This lets us load
                 the same data fixture without having worry about whether it has
@@ -79,7 +74,6 @@ class FakeEstimatorData(MLData):
         """
         data_kwargs = {
             **{
-                "pipeline": pipeline,
                 "data_set": data_set,
                 "train_year_range": (max_year,),
                 "test_year_range": (max_year, max_year + 1),

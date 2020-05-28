@@ -2,12 +2,13 @@
 # pylint: disable=missing-class-docstring
 
 from unittest import TestCase
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch, MagicMock
 from datetime import date
 from typing import List
 import json
 
 from tests.fixtures.data_factories import fake_fixture_data, fake_raw_match_results_data
+from tests.fixtures.fake_estimator import create_fake_pipeline
 from augury.data_import import match_data
 from augury import api
 from augury import settings
@@ -30,7 +31,12 @@ FAKE_ML_MODELS: List[MLModelDict] = [
 class TestApi(TestCase):
     # It doesn't matter what data Predictor returns since this method doesn't check
     @patch("augury.api.Predictor.make_predictions")
-    @patch("augury.api.ML_MODELS", settings.ML_MODELS + FAKE_ML_MODELS)
+    @patch("augury.api.ML_MODELS", FAKE_ML_MODELS)
+    @patch("augury.api.PIPELINE_NAMES", {"fake_data": "fake"})
+    @patch(
+        "augury.run.create_pipelines",
+        MagicMock(return_value={"fake": create_fake_pipeline()}),
+    )
     def test_make_predictions(self, mock_make_predictions):
         mock_make_predictions.return_value = fake_fixture_data(N_MATCHES, YEAR_RANGE)
         response = api.make_predictions(YEAR_RANGE, ml_model_names=["fake_estimator"])
@@ -49,9 +55,7 @@ class TestApi(TestCase):
         with self.subTest(ml_model_names=None):
             mock_make_predictions.reset_mock()
             api.make_predictions(YEAR_RANGE, ml_model_names=None)
-            mock_make_predictions.assert_called_with(
-                settings.ML_MODELS + FAKE_ML_MODELS
-            )
+            mock_make_predictions.assert_called_with(FAKE_ML_MODELS)
 
     def test_fetch_fixture_data(self):
         PROCESSED_FIXTURE_FIELDS = [
