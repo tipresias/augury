@@ -26,5 +26,5 @@ loggers:
     propagate: no
 
 root:
-  level: INFO
+  level: WARNING
   handlers: [console]
