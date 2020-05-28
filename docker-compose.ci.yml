@@ -8,6 +8,12 @@ services:
       - ./:/app
     ports:
       - "8008:8008"
+    deploy:
+      resources:
+        limits:
+          # We set the memory limit to the max allowed for Google Cloud Run
+          # to try to catch potential crashes in CI rather than prod
+          memory: 2048M
     depends_on:
       - afl_data
     environment:
