@@ -43,7 +43,7 @@ services:
     depends_on:
       - data_science
     environment:
-      - PYTHON_ENV=development
+      - PYTHON_ENV=local
       - GIT_PYTHON_REFRESH=silence
     command: kedro jupyter notebook --ip 0.0.0.0 --no-browser --allow-root
   mlflow:
