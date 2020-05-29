@@ -5,13 +5,13 @@ from datetime import date
 
 import pandas as pd
 from mypy_extensions import TypedDict
-from kedro.context import load_context
+from kedro.context import load_context, KedroContext
 import simplejson
 
 from augury.data_import import match_data
 from augury.nodes import match
 from augury.predictions import Predictor
-from augury.types import YearRange
+from augury.types import YearRange, MLModelDict
 from augury.settings import ML_MODELS, PREDICTION_DATA_START_DATE, BASE_DIR
 
 
@@ -20,6 +20,7 @@ ApiResponse = TypedDict(
 )
 
 END_OF_YEAR = f"{date.today().year}-12-31"
+PIPELINE_NAMES = {"model_data": "full", "legacy_model_data": "legacy"}
 
 
 def _clean_data_frame_for_json(data_frame: pd.DataFrame) -> List[Dict[str, Any]]:
@@ -37,6 +38,13 @@ def _api_response(data: Union[pd.DataFrame, Dict[str, Any]]) -> ApiResponse:
     )
 
     return {"data": response_data}
+
+
+def _run_pipelines(context: KedroContext, ml_models: List[MLModelDict]):
+    data_set_names = {ml_model["data_set"] for ml_model in ml_models}
+
+    for data_set_name in data_set_names:
+        context.run(pipeline_name=PIPELINE_NAMES[data_set_name])
 
 
 def make_predictions(
@@ -64,6 +72,15 @@ def make_predictions(
         round_number=round_number,
     )
 
+    if ml_model_names is None:
+        ml_models = ML_MODELS
+    else:
+        ml_models = [
+            ml_model for ml_model in ML_MODELS if ml_model["name"] in ml_model_names
+        ]
+
+    _run_pipelines(context, ml_models)
+
     predictor = Predictor(
         year_range,
         context,
@@ -72,15 +89,7 @@ def make_predictions(
         round_number=context.round_number,  # type: ignore
         train=train,
         verbose=1,
-        update_data=True,
     )
-
-    if ml_model_names is None:
-        ml_models = ML_MODELS
-    else:
-        ml_models = [
-            ml_model for ml_model in ML_MODELS if ml_model["name"] in ml_model_names
-        ]
 
     predictions = predictor.make_predictions(ml_models)
 
@@ -144,3 +153,12 @@ def fetch_match_results_data(
 def fetch_ml_model_info() -> ApiResponse:
     """Fetch general info about all saved ML models."""
     return _api_response(ML_MODELS)
+
+
+if __name__ == "__main__":
+    make_predictions(
+        year_range=(2020, 2021),
+        round_number=2,
+        ml_model_names=["tipresias_2020"],
+        train=False,
+    )

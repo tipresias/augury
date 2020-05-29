@@ -191,3 +191,7 @@ venv.bak/
 
 # catboost
 catboost_info
+
+# memory_profiler
+mprofile_*
+profile.svg
