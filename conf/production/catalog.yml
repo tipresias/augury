@@ -5,21 +5,21 @@ betting_data:
   bucket_name: afl_data
 match_data:
   type: augury.io.JSONGCStorageDataSet
-  filepath: match-data_1897-01-01_2019-12-31.json
+  filepath: match-data_2010-01-01_2019-12-31.json
   bucket_name: afl_data
 player_data:
   type: augury.io.JSONGCStorageDataSet
-  filepath: player-data_1965-01-01_2019-12-31.json
+  filepath: player-data_2010-01-01_2019-12-31.json
   bucket_name: afl_data
 
 # Final data
 legacy_model_data:
   type: augury.io.JSONGCStorageDataSet
-  filepath: legacy-model-data_1897-01-01_2020-12-31.json
+  filepath: legacy-model-data_2010-01-01_2020-12-31.json
   bucket_name: afl_data
 model_data:
   type: augury.io.JSONGCStorageDataSet
-  filepath: model-data_1897-01-01_2020-12-31.json
+  filepath: model-data_2010-01-01_2020-12-31.json
   bucket_name: afl_data
 
 # Models
