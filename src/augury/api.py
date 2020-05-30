@@ -153,12 +153,3 @@ def fetch_match_results_data(
 def fetch_ml_model_info() -> ApiResponse:
     """Fetch general info about all saved ML models."""
     return _api_response(ML_MODELS)
-
-
-if __name__ == "__main__":
-    make_predictions(
-        year_range=(2020, 2021),
-        round_number=2,
-        ml_model_names=["tipresias_2020"],
-        train=False,
-    )
