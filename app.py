@@ -1,10 +1,13 @@
 """API routes and request resolvers for a Bottle app."""
 
-from typing import Dict, Any
+from typing import Dict, Any, Optional, List
 import os
 import sys
 from datetime import date
+from threading import Thread
+from urllib.parse import urljoin
 
+import requests
 from bottle import Bottle, run, request, response
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__)))
@@ -14,10 +17,11 @@ if SRC_PATH not in sys.path:
     sys.path.append(SRC_PATH)
 
 from augury import api
+from augury.types import YearRange
 
 
 IS_PRODUCTION = os.getenv("PYTHON_ENV", "").lower() == "production"
-
+TIPRESIAS_HOST = "tipresias.net"
 
 app = Bottle()
 
@@ -27,17 +31,15 @@ def _run_kwargs():
         "port": int(os.getenv("PORT", "8008")),
         "reloader": not IS_PRODUCTION,
         "host": "0.0.0.0",
+        "server": "paste",
     }
-
-    if IS_PRODUCTION:
-        run_kwargs["server"] = "paste"
 
     return run_kwargs
 
 
 def _unauthorized_response():
     response.status = 401
-    return "Not authorized"
+    return "Unauthorized"
 
 
 def _request_is_authorized(http_request) -> bool:
@@ -50,6 +52,26 @@ def _request_is_authorized(http_request) -> bool:
         return False
 
     return True
+
+
+def _send_predictions(
+    year_range: YearRange,
+    round_number: Optional[int] = None,
+    ml_model_names: Optional[List[str]] = None,
+    train=False,
+) -> None:
+    prediction_data = api.make_predictions(
+        year_range,
+        round_number=round_number,
+        ml_model_names=ml_model_names,
+        train=train,
+    )
+
+    if IS_PRODUCTION:
+        url = urljoin(TIPRESIAS_HOST, "predictions")
+        headers = {"Authorization": f'Bearer {os.environ["TIPRESIAS_APP_TOKEN"]}'}
+
+        requests.post(url, json=prediction_data, headers=headers)
 
 
 @app.route("/predictions")
@@ -99,12 +121,26 @@ def predictions():
     train_models_param = request.query.train_models
     train_models = train_models_param.lower() == "true"
 
-    return api.make_predictions(
-        year_range,
-        round_number=round_number,
-        ml_model_names=ml_models_param,
-        train=train_models,
+    thread = Thread(
+        target=_send_predictions,
+        args=(year_range,),
+        kwargs={
+            "round_number": round_number,
+            "ml_model_names": ml_models_param,
+            "train": train_models,
+        },
     )
+    thread.start()
+
+    response.status = 202
+
+    return {
+        "data": {
+            "ml_models": ml_models_param,
+            "round_number": round_number,
+            "year_range": year_range,
+        }
+    }
 
 
 @app.route("/fixtures")
