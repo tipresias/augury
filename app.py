@@ -39,7 +39,7 @@ def _run_kwargs():
 
 def _unauthorized_response():
     response.status = 401
-    return "Not authorized"
+    return "Unauthorized"
 
 
 def _request_is_authorized(http_request) -> bool:
