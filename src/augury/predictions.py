@@ -94,6 +94,12 @@ class Predictor:
         )
 
         y_pred = trained_model.predict(X_test)
+
+        assert not any(np.isnan(y_pred)), (
+            f"Predictions should never be NaN, but {trained_model.name} predicted:\n"
+            f"{y_pred}."
+        )
+
         data_row_slice = (
             slice(None),
             year,

@@ -362,14 +362,21 @@ class TestSklearn(TestCase, KedroContextMixin):
         self.assertIsInstance(hess, np.ndarray)
         self.assertEqual(hess.dtype, "float64")
 
-        with self.subTest("when some predictions equal 1"):
-            warnings.filterwarnings(
-                "error",
-                category=RuntimeWarning,
-                message="divide by zero encountered in true_divide",
-            )
+        warnings.filterwarnings(
+            "error",
+            category=RuntimeWarning,
+            message="divide by zero encountered in true_divide",
+        )
 
+        with self.subTest("when some predictions equal 1"):
             y_pred[:5] = np.ones(5)
+
+            # Will raise a divide-by-zero error if a y_pred value of 1 gets through,
+            # so we don't need to assert anything
+            bits_objective(y_true, y_pred)
+
+        with self.subTest("when some predictions equal 0"):
+            y_pred[:5] = np.zeros(5)
 
             # Will raise a divide-by-zero error if a y_pred value of 1 gets through,
             # so we don't need to assert anything
