@@ -72,6 +72,9 @@ class Predictor:
             for year in range(*self.year_range)
         ]
 
+        if self.verbose == 1:
+            print("Finished making predictions!")
+
         return pd.concat(list(itertools.chain.from_iterable(predictions)), sort=False)
 
     def _make_predictions_by_year(self, ml_models, year: int) -> List[pd.DataFrame]:
