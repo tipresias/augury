@@ -21,7 +21,9 @@ from augury.types import YearRange
 
 
 IS_PRODUCTION = os.getenv("PYTHON_ENV", "").lower() == "production"
-TIPRESIAS_HOST = "tipresias.net"
+TIPRESIAS_HOST = (
+    "tipresias.net" if IS_PRODUCTION else "http://host.docker.internal:8000"
+)
 
 app = Bottle()
 
@@ -67,11 +69,10 @@ def _send_predictions(
         train=train,
     )
 
-    if IS_PRODUCTION:
-        url = urljoin(TIPRESIAS_HOST, "predictions")
-        headers = {"Authorization": f'Bearer {os.environ["TIPRESIAS_APP_TOKEN"]}'}
+    url = urljoin(TIPRESIAS_HOST, "predictions")
+    headers = {"Authorization": f'Bearer {os.environ["TIPRESIAS_APP_TOKEN"]}'}
 
-        requests.post(url, json=prediction_data, headers=headers)
+    requests.post(url, json=prediction_data, headers=headers)
 
 
 @app.route("/predictions")
