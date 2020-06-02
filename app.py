@@ -4,7 +4,6 @@ from typing import Dict, Any, Optional, List
 import os
 import sys
 from datetime import date
-from threading import Thread
 from urllib.parse import urljoin
 
 import requests
@@ -122,17 +121,16 @@ def predictions():
     train_models_param = request.query.train_models
     train_models = train_models_param.lower() == "true"
 
-    thread = Thread(
-        target=_send_predictions,
-        args=(year_range,),
-        kwargs={
-            "round_number": round_number,
-            "ml_model_names": ml_models_param,
-            "train": train_models,
-        },
+    _send_predictions(
+        year_range,
+        round_number=round_number,
+        ml_model_names=ml_models_param,
+        train=train_models,
     )
-    thread.start()
 
+    # I don't actually expect this to get returned, as data processing takes too long
+    # for an HTTP request, but might as well give a response in case anyone
+    # is still listening
     response.status = 202
 
     return {
