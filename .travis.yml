@@ -3,13 +3,13 @@ services:
   - docker
 env:
   global:
-    DOCKER_COMPOSE_VERSION: 1.22.0
+    DOCKER_COMPOSE_VERSION: 1.25.5
     GOOGLE_APPLICATION_CREDENTIALS: .gcloud/keyfile.json
     CC_TEST_REPORTER_ID: 3c6e7d3ecb1089284ed54da495ee9062362337415223df4c122dc68b575dd708
 install:
   # Install docker-compose
   - sudo rm /usr/local/bin/docker-compose
-  - sudo curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  - sudo curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-Linux-x86_64" -o /usr/local/bin/docker-compose
   - sudo chmod +x /usr/local/bin/docker-compose
   # Install test coverage monitoring
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
