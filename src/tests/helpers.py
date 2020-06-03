@@ -1,10 +1,6 @@
 """Functions and classes to deduplicate and simplify test code."""
 
-import os
-
-from kedro.context import load_context
-
-from augury.settings import BASE_DIR
+from augury.context import load_project_context
 
 
 class KedroContextMixin:
@@ -17,13 +13,7 @@ class KedroContextMixin:
         Need to use production environment for loading data sets if in CI, because we
         don't check data set files into source control
         """
-        kedro_env = (
-            "production"
-            if os.environ.get("CI") == "true"
-            else os.environ.get("PYTHON_ENV")
-        )
-
-        return load_context(BASE_DIR, env=kedro_env, **context_kwargs)
+        return load_project_context(**context_kwargs)
 
 
 class ColumnAssertionMixin:

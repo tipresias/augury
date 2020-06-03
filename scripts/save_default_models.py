@@ -5,9 +5,11 @@ make old model files obsolete.
 """
 
 import os
+from dateutil import parser
 
 from joblib import Parallel, delayed
 import numpy as np
+import pandas as pd
 
 from tests.fixtures.fake_estimator import pickle_fake_estimator
 from augury.ml_estimators import (
@@ -18,7 +20,8 @@ from augury.ml_estimators import (
 )
 from augury.ml_data import MLData
 from augury.io import PickleGCStorageDataSet
-from augury.settings import SEED
+from augury.settings import SEED, PREDICTION_DATA_START_DATE
+from augury.context import load_project_context
 
 
 np.random.seed(SEED)
@@ -50,11 +53,17 @@ def main():
         "train_year_range": TRAIN_YEAR_RANGE,
     }
 
+    context = load_project_context()
+    model_data = pd.DataFrame(context.catalog.load("model_data"))
+
+    # Make sure we're using full data sets instead of truncated prod data sets
+    assert model_data["year"].min() < parser.parse(PREDICTION_DATA_START_DATE).year
+
     model_info = [
         (BenchmarkEstimator(), legacy_data_kwargs),
         (BaggingEstimator(name="tipresias_2019"), legacy_data_kwargs),
-        (StackingEstimator(name="tipresias_2020"), data_kwargs),
         (ConfidenceEstimator(), {**data_kwargs, "label_col": "result"}),
+        (StackingEstimator(name="tipresias_2020"), data_kwargs),
     ]
 
     Parallel(n_jobs=-1)(
