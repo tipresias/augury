@@ -22,7 +22,7 @@ scipy==1.4.1
 tensorflow==2.0.0b0
 
 # Kedro packages
-kedro==0.15.5
+kedro==0.16.1
 
 # Testing/Linting
 mypy>=0.70 # Need mypy due to references to mypy_extensions in production code
