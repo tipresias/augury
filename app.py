@@ -21,7 +21,7 @@ from augury.types import YearRange
 
 IS_PRODUCTION = os.getenv("PYTHON_ENV", "").lower() == "production"
 TIPRESIAS_HOST = (
-    "tipresias.net" if IS_PRODUCTION else "http://host.docker.internal:8000"
+    "http://www.tipresias.net" if IS_PRODUCTION else "http://host.docker.internal:8000"
 )
 
 app = Bottle()
