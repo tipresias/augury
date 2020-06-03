@@ -84,6 +84,9 @@ def _combine_data_vertically(*data_frames: Sequence[pd.DataFrame]):
     return combined_data_frame
 
 
+# TODO: Combining vertically vs horizontally are so different that it doesn't make
+# sense for both to be contained within a single node. Make combine_data_vertically
+# and combine_data_horizontally their own nodes.
 def combine_data(axis: int = 0) -> pd.DataFrame:
     """Concatenate data frames from multiple sources into one data frame.
 
