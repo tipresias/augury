@@ -51,6 +51,8 @@ class MLData:
         self.index_cols = index_cols
         self.label_col = label_col
         self._data = None
+        self._X_data = None
+        self._y_data = None
 
     @property
     def data(self) -> pd.DataFrame:
@@ -70,12 +72,17 @@ class MLData:
                 f"{self.data.index.names}"
             )
 
-        data_train = self.data.loc[
-            (slice(None), range(*self.train_year_range), slice(None)), :
+        train_year_range = range(*self.train_year_range)
+        X_train = self._X.loc[(slice(None), train_year_range, slice(None)), :]
+        y_train = self._y.loc[
+            (
+                slice(None),
+                # Series can't slice by range, so we have to convert to a valid
+                # slice (i.e. end inclusive, so subtract 1)
+                slice(min(train_year_range), max(train_year_range)),
+                slice(None),
+            )
         ]
-
-        X_train = self.__X(data_train)
-        y_train = self.__y(data_train)
 
         return X_train, y_train
 
@@ -89,11 +96,17 @@ class MLData:
                 f"{self.data.index.names}"
             )
 
-        data_test = self.data.loc[
-            (slice(None), range(*self.test_year_range), slice(None)), :
+        test_year_range = range(*self.test_year_range)
+        X_test = self._X.loc[(slice(None), test_year_range, slice(None)), :]
+        y_test = self._y.loc[
+            (
+                slice(None),
+                # Series can't slice by range, so we have to convert to a valid
+                # slice (i.e. end inclusive)
+                slice(min(test_year_range), max(test_year_range)),
+                slice(None),
+            )
         ]
-        X_test = self.__X(data_test)
-        y_test = self.__y(data_test)
 
         return X_test, y_test
 
@@ -124,6 +137,8 @@ class MLData:
     def data_set(self, name: str) -> None:
         if self._data_set != name:
             self._data = None
+            self._X_data = None
+            self._y_data = None
 
         self._data_set = name
 
@@ -141,8 +156,14 @@ class MLData:
             .sort_index()
         )
 
-    @staticmethod
-    def __X(data_frame: pd.DataFrame) -> pd.DataFrame:
+    @property
+    def _X(self) -> pd.DataFrame:
+        if self._X_data is None:
+            self._X_data = self._load_X()
+
+        return self._X_data
+
+    def _load_X(self) -> pd.DataFrame:
         labels = [
             "(?:oppo_)?score",
             "(?:oppo_)?(?:team_)?behinds",
@@ -150,15 +171,30 @@ class MLData:
             "(?:oppo_)?margin",
             "(?:oppo_)?result",
         ]
-        label_cols = data_frame.filter(regex=f"^{'$|^'.join(labels)}$").columns
-        features = data_frame.drop(label_cols, axis=1)
+        label_cols = self.data.filter(regex=f"^{'$|^'.join(labels)}$").columns
+        features = self.data.drop(label_cols, axis=1)
 
         numeric_features = features.select_dtypes("number").astype(float)
         categorical_features = features.select_dtypes(exclude=["number"])
 
         # Sorting columns with categorical features first to allow for positional indexing
-        # for some data transformations further down the pipeline
-        return pd.concat([categorical_features, numeric_features], axis=1)
+        # for some data transformations further down the pipeline.
+        # We sort each column group alphabetically to guarantee the same column order
+        # as long as the columns are the same.
+        return pd.concat(
+            [
+                categorical_features[sorted(categorical_features.columns)],
+                numeric_features[sorted(numeric_features.columns)],
+            ],
+            axis=1,
+        )
 
-    def __y(self, data_frame: pd.DataFrame) -> pd.Series:
-        return data_frame[self.label_col]
+    @property
+    def _y(self) -> pd.Series:
+        if self._y_data is None:
+            self._y_data = self._load_y()
+
+        return self._y_data
+
+    def _load_y(self) -> pd.Series:
+        return self.data[self.label_col]
