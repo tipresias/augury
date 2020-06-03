@@ -1,25 +1,24 @@
 """The public API for the Augury app."""
 
 from typing import List, Optional, Dict, Union, Any
-from datetime import date
 
 import pandas as pd
 from mypy_extensions import TypedDict
-from kedro.context import load_context, KedroContext
+from kedro.context import KedroContext
 import simplejson
 
 from augury.data_import import match_data
 from augury.nodes import match
 from augury.predictions import Predictor
 from augury.types import YearRange, MLModelDict
-from augury.settings import ML_MODELS, PREDICTION_DATA_START_DATE, BASE_DIR
+from augury.settings import ML_MODELS
+from augury.context import load_project_context
 
 
 ApiResponse = TypedDict(
     "ApiResponse", {"data": Union[List[Dict[str, Any]], Dict[str, Any]]}
 )
 
-END_OF_YEAR = f"{date.today().year}-12-31"
 PIPELINE_NAMES = {"model_data": "full", "legacy_model_data": "legacy"}
 
 
@@ -65,12 +64,7 @@ def make_predictions(
     -------
     List of prediction data dictionaries.
     """
-    context = load_context(
-        BASE_DIR,
-        start_date=PREDICTION_DATA_START_DATE,
-        end_date=END_OF_YEAR,
-        round_number=round_number,
-    )
+    context = load_project_context(round_number=round_number)
 
     if ml_model_names is None:
         ml_models = ML_MODELS

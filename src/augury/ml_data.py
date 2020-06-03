@@ -4,15 +4,15 @@ from typing import Tuple, Optional, List
 from datetime import date
 
 import pandas as pd
-from kedro.context import load_context, KedroContext
+from kedro.context import KedroContext
 
 from augury.types import YearRange
 from augury.settings import (
-    BASE_DIR,
     INDEX_COLS,
     TRAIN_YEAR_RANGE,
     VALIDATION_YEAR_RANGE,
 )
+from augury.context import load_project_context
 
 
 END_OF_YEAR = f"{date.today().year}-12-31"
@@ -44,7 +44,7 @@ class MLData:
         index_cols: Column names to use for the DataFrame's index.
         label_col: Name of the column to use for data labels (i.e. y data set).
         """
-        self.context = context or load_context(BASE_DIR)
+        self.context = context or load_project_context()
         self._data_set = data_set
         self._train_year_range = train_year_range
         self._test_year_range = test_year_range
