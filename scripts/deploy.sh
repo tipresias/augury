@@ -20,7 +20,7 @@ RUN_APP="
     && docker container rm ${PROJECT_ID}_app \
     && docker run \
       -d \
-      - v .gcloud:/app/.gcloud \
+      -v ${APP_DIR}/.gcloud:/app/.gcloud \
       --env-file .env \
       -p ${PORT}:${PORT} \
       -e PYTHON_ENV=production \
@@ -40,7 +40,7 @@ then
   exit $?
 fi
 
-./backend/scripts/wait-for-it.sh ${PRODUCTION_HOST}:${PORT} \
+./scripts/wait-for-it.sh ${PRODUCTION_HOST}:${PORT} \
   -t 60 \
   -- ./scripts/post_deploy.sh
 
