@@ -195,3 +195,7 @@ catboost_info
 # memory_profiler
 mprofile_*
 profile.svg
+
+# secrets
+*_rsa
+secrets.tar
