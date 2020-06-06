@@ -1,12 +1,10 @@
 """API routes and request resolvers for a Bottle app."""
 
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any
 import os
 import sys
 from datetime import date
-from urllib.parse import urljoin
 
-import requests
 from bottle import Bottle, run, request, response
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__)))
@@ -16,7 +14,6 @@ if SRC_PATH not in sys.path:
     sys.path.append(SRC_PATH)
 
 from augury import api
-from augury.types import YearRange
 
 
 IS_PRODUCTION = os.getenv("PYTHON_ENV", "").lower() == "production"
@@ -53,25 +50,6 @@ def _request_is_authorized(http_request) -> bool:
         return False
 
     return True
-
-
-def _send_predictions(
-    year_range: YearRange,
-    round_number: Optional[int] = None,
-    ml_model_names: Optional[List[str]] = None,
-    train=False,
-) -> requests.Response:
-    prediction_data = api.make_predictions(
-        year_range,
-        round_number=round_number,
-        ml_model_names=ml_model_names,
-        train=train,
-    )
-
-    url = urljoin(TIPRESIAS_HOST, "predictions")
-    headers = {"Authorization": f'Bearer {os.environ["TIPRESIAS_APP_TOKEN"]}'}
-
-    return requests.post(url, json=prediction_data, headers=headers)
 
 
 @app.route("/predictions")
@@ -121,29 +99,11 @@ def predictions():
     train_models_param = request.query.train_models
     train_models = train_models_param.lower() == "true"
 
-    post_response = _send_predictions(
+    return api.make_predictions(
         year_range,
         round_number=round_number,
         ml_model_names=ml_models_param,
         train=train_models,
-    )
-
-    if 200 <= post_response.status_code < 300:
-        response.status = 202
-
-        return {
-            "data": {
-                "ml_models": ml_models_param,
-                "round_number": round_number,
-                "year_range": year_range,
-            }
-        }
-
-    raise Exception(
-        f"Bad response from application when posting predictions:\n"
-        f"Status: {post_response.status_code}\n"
-        f"Headers: {post_response.headers}\n"
-        f"Body: {post_response.text}"
     )
 
 
