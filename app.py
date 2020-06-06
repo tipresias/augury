@@ -60,7 +60,7 @@ def _send_predictions(
     round_number: Optional[int] = None,
     ml_model_names: Optional[List[str]] = None,
     train=False,
-) -> None:
+) -> requests.Response:
     prediction_data = api.make_predictions(
         year_range,
         round_number=round_number,
@@ -71,7 +71,7 @@ def _send_predictions(
     url = urljoin(TIPRESIAS_HOST, "predictions")
     headers = {"Authorization": f'Bearer {os.environ["TIPRESIAS_APP_TOKEN"]}'}
 
-    requests.post(url, json=prediction_data, headers=headers)
+    return requests.post(url, json=prediction_data, headers=headers)
 
 
 @app.route("/predictions")
@@ -121,25 +121,30 @@ def predictions():
     train_models_param = request.query.train_models
     train_models = train_models_param.lower() == "true"
 
-    _send_predictions(
+    post_response = _send_predictions(
         year_range,
         round_number=round_number,
         ml_model_names=ml_models_param,
         train=train_models,
     )
 
-    # I don't actually expect this to get returned, as data processing takes too long
-    # for an HTTP request, but might as well give a response in case anyone
-    # is still listening
-    response.status = 202
+    if 200 <= post_response.status_code < 300:
+        response.status = 202
 
-    return {
-        "data": {
-            "ml_models": ml_models_param,
-            "round_number": round_number,
-            "year_range": year_range,
+        return {
+            "data": {
+                "ml_models": ml_models_param,
+                "round_number": round_number,
+                "year_range": year_range,
+            }
         }
-    }
+
+    raise Exception(
+        f"Bad response from application when posting predictions:\n"
+        f"Status: {post_response.status_code}\n"
+        f"Headers: {post_response.headers}\n"
+        f"Body: {post_response.text}"
+    )
 
 
 @app.route("/fixtures")
