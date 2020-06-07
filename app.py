@@ -29,7 +29,10 @@ def _run_kwargs():
         "port": int(os.getenv("PORT", "8008")),
         "reloader": not IS_PRODUCTION,
         "host": "0.0.0.0",
-        "server": "paste",
+        "server": "gunicorn",
+        "accesslog": "-",
+        "timeout": 1200,
+        "workers": 3,
     }
 
     return run_kwargs
