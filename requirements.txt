@@ -6,7 +6,7 @@ google-cloud-storage==1.28.1
 joblib
 simplejson
 bottle==0.12.18
-paste==3.4.0
+gunicorn
 
 # Data packages
 numpy==1.18.4
