@@ -13,6 +13,7 @@ from .base import (
     _filter_out_dodgy_data,
     _convert_id_to_string,
     _validate_required_columns,
+    _validate_canoncial_team_names,
 )
 
 PLAYER_COL_TRANSLATIONS = {
@@ -120,7 +121,7 @@ def clean_player_data(
         ]
     )
 
-    return (
+    cleaned_player_data = (
         player_data.rename(columns=PLAYER_COL_TRANSLATIONS)
         .astype({"year": int})
         .assign(
@@ -163,6 +164,10 @@ def clean_player_data(
         .set_index("id")
         .sort_index()
     )
+
+    _validate_canoncial_team_names(cleaned_player_data)
+
+    return cleaned_player_data
 
 
 def clean_roster_data(
@@ -210,6 +215,8 @@ def clean_roster_data(
     roster_data_frame["player_id"].fillna(
         roster_data_frame["player_name"], inplace=True
     )
+
+    _validate_canoncial_team_names(roster_data_frame)
 
     return roster_data_frame.assign(id=_player_id_col).set_index("id")
 

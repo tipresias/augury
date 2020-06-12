@@ -8,7 +8,12 @@ import pytz
 import pandas as pd
 from mypy_extensions import TypedDict
 
-from augury.settings import TEAM_TRANSLATIONS, INDEX_COLS, VENUE_TIMEZONES
+from augury.settings import (
+    TEAM_TRANSLATIONS,
+    INDEX_COLS,
+    VENUE_TIMEZONES,
+    CANONICAL_TEAM_NAMES,
+)
 
 
 ReplaceKwargs = TypedDict("ReplaceKwargs", {"hour": int, "minute": int})
@@ -137,6 +142,20 @@ def _validate_no_dodgy_zeros(data_frame: pd.DataFrame):
     assert (
         not zeros_data_frame.any().any()
     ), f"An invalid fillna produced index column values of 0:\n{zeros_data_frame}"
+
+
+def _validate_canoncial_team_names(data_frame: pd.DataFrame):
+    TEAM_NAME_COLS = ["team", "oppo_team", "home_team", "away_team", "playing_for"]
+
+    cols_to_check = list(set(data_frame.columns) & set(TEAM_NAME_COLS))
+    unique_team_names = set(data_frame[cols_to_check].to_numpy().flatten())
+    non_canonical_team_names = unique_team_names - CANONICAL_TEAM_NAMES
+
+    assert not any(non_canonical_team_names), (
+        "All team names must be the canonical versions or table joins won't work. "
+        "The non-canonical team names are:\n"
+        f"{non_canonical_team_names}"
+    )
 
 
 def _filter_out_dodgy_data(duplicate_subset=None) -> Callable:

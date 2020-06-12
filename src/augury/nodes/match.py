@@ -24,6 +24,7 @@ from .base import (
     _filter_out_dodgy_data,
     _convert_id_to_string,
     _validate_unique_team_index_columns,
+    _validate_canoncial_team_names,
 )
 
 
@@ -142,6 +143,7 @@ def clean_match_data(match_data: pd.DataFrame) -> pd.DataFrame:
         )
 
         _validate_unique_team_index_columns(clean_data)
+        _validate_canoncial_team_names(clean_data)
 
         return clean_data
 
@@ -229,6 +231,7 @@ def clean_fixture_data(fixture_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     _validate_unique_team_index_columns(fixture_data_frame)
+    _validate_canoncial_team_names(fixture_data_frame)
 
     return fixture_data_frame
 
