@@ -184,7 +184,12 @@ def clean_roster_data(
     )
 
     roster_data_frame = (
-        roster_data.assign(date=_parse_dates)
+        roster_data.assign(
+            date=_parse_dates,
+            home_team=_translate_team_column("home_team"),
+            away_team=_translate_team_column("away_team"),
+            playing_for=_translate_team_column("playing_for"),
+        )
         .query("date > @start_of_today")
         .rename(columns={"season": "year"})
         .merge(
