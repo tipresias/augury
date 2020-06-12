@@ -2,7 +2,7 @@
 
 from typing import Any, List, Dict, Callable, Union, Optional
 import importlib
-from datetime import date
+from datetime import date, timedelta
 
 import pandas as pd
 from kedro.io.core import AbstractDataSet
@@ -18,14 +18,22 @@ THIRTY_FIRST = 31
 BEGINNING_OF_YEAR = date(TODAY.year, JAN, FIRST)
 END_OF_YEAR = date(TODAY.year, DEC, THIRTY_FIRST)
 MODULE_SEPARATOR = "."
+# We make start of week the dividing line between past & future rounds,
+# because "past" data sets aren't updated until a few days after a given round is over,
+# meaning we have to keep relying on "future" data sets for past matches
+# if we run the pipeline mid-round
+START_OF_WEEK = TODAY - timedelta(days=TODAY.weekday())
 
 DATE_RANGE_TYPE: Dict[str, Dict[str, str]] = {
     "whole_season": {
         "start_date": str(BEGINNING_OF_YEAR),
         "end_date": str(END_OF_YEAR),
     },
-    "past_rounds": {"start_date": str(BEGINNING_OF_YEAR), "end_date": str(TODAY)},
-    "future_rounds": {"start_date": str(TODAY), "end_date": str(END_OF_YEAR)},
+    "past_rounds": {
+        "start_date": str(BEGINNING_OF_YEAR),
+        "end_date": str(START_OF_WEEK),
+    },
+    "future_rounds": {"start_date": str(START_OF_WEEK), "end_date": str(END_OF_YEAR)},
 }
 
 

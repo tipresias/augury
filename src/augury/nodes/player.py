@@ -2,7 +2,7 @@
 
 from typing import Callable, List, Dict, Union, Tuple
 from functools import partial, update_wrapper
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pandas as pd
 import pytz
@@ -181,11 +181,14 @@ def clean_roster_data(
     # on account of a global pandemic, people have priorities other than updating
     # the team lineup page on afl.com.au, which results in rosters for past matches,
     # which violates assumptions that make joining future & past player data work.
-    # As such, filtering out matches that were played before today should be sufficient
-    # without risking weird results due to timezones if you decide to run the pipeline
-    # mid-round.
-    start_of_today = datetime.now(  # pylint: disable=unused-variable
-        tz=pytz.timezone("Australia/Melbourne")
+    # As such, filtering out matches that were played before this week
+    # should be sufficient without risking weird results due to timezones
+    # if you decide to run the pipeline mid-round.
+    start_of_today = datetime.now(tz=pytz.timezone("Australia/Melbourne"))
+    # We filter from start of week, because past match player data
+    # usually isn't available until a few days after a round ends.
+    start_of_week = start_of_today - timedelta(  # pylint: disable=unused-variable
+        days=start_of_today.weekday()
     )
 
     roster_data_frame = (
@@ -195,7 +198,7 @@ def clean_roster_data(
             away_team=_translate_team_column("away_team"),
             playing_for=_translate_team_column("playing_for"),
         )
-        .query("date > @start_of_today")
+        .query("date > @start_of_week")
         .rename(columns={"season": "year"})
         .merge(
             clean_player_data_frame[["player_name", "player_id"]],
