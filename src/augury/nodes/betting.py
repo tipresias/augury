@@ -10,6 +10,7 @@ from .base import (
     _validate_required_columns,
     _validate_unique_team_index_columns,
     _filter_out_dodgy_data,
+    _validate_canoncial_team_names,
 )
 
 
@@ -51,6 +52,7 @@ def clean_data(betting_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     _validate_unique_team_index_columns(clean_betting_data)
+    _validate_canoncial_team_names(clean_betting_data)
 
     return clean_betting_data
 
