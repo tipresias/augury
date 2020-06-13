@@ -67,8 +67,6 @@ TEAM_TRANSLATIONS = {
     "Sydney Swans": "Sydney",
 }
 
-CANONICAL_TEAM_NAMES = set(TEAM_TRANSLATIONS.values())
-
 # For when we fetch upcoming matches in the fixture and need to make Footywire venue
 # names consistent with AFL tables venue names
 FOOTYWIRE_VENUE_TRANSLATIONS = {

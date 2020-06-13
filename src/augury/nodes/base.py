@@ -12,7 +12,7 @@ from augury.settings import (
     TEAM_TRANSLATIONS,
     INDEX_COLS,
     VENUE_TIMEZONES,
-    CANONICAL_TEAM_NAMES,
+    TEAM_NAMES,
 )
 
 
@@ -149,7 +149,7 @@ def _validate_canoncial_team_names(data_frame: pd.DataFrame):
 
     cols_to_check = list(set(data_frame.columns) & set(TEAM_NAME_COLS))
     unique_team_names = set(data_frame[cols_to_check].to_numpy().flatten())
-    non_canonical_team_names = unique_team_names - CANONICAL_TEAM_NAMES
+    non_canonical_team_names = unique_team_names - set(TEAM_NAMES)
 
     assert not any(non_canonical_team_names), (
         "All team names must be the canonical versions or table joins won't work. "
