@@ -38,13 +38,16 @@ services:
     image: augury_data_science:latest
     volumes:
       - ./:/app
+      - ./.gcloud:/app/.gcloud
     ports:
       - "8888:8888"
     depends_on:
       - data_science
+    env_file: .env
     environment:
       - PYTHON_ENV=local
       - GIT_PYTHON_REFRESH=silence
+      - GOOGLE_APPLICATION_CREDENTIALS=.gcloud/keyfile.json
     command: kedro jupyter notebook --ip 0.0.0.0 --no-browser --allow-root
   mlflow:
     image: augury_data_science:latest
