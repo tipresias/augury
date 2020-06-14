@@ -14,11 +14,11 @@ else
 fi
 
 GOOGLE_ENV_VARS="
-  AFL_DATA_SERVICE_TOKEN=${AFL_DATA_SERVICE_TOKEN},\
-  PYTHON_ENV=production,\
-  DATA_SCIENCE_SERVICE_TOKEN=${DATA_SCIENCE_SERVICE_TOKEN},\
-  AFL_DATA_SERVICE=${AFL_DATA_SERVICE},\
-  TIPRESIAS_APP_TOKEN=${TIPRESIAS_APP_TOKEN}
+AFL_DATA_SERVICE_TOKEN=${AFL_DATA_SERVICE_TOKEN},\
+PYTHON_ENV=production,\
+DATA_SCIENCE_SERVICE_TOKEN=${DATA_SCIENCE_SERVICE_TOKEN},\
+AFL_DATA_SERVICE=${AFL_DATA_SERVICE},\
+TIPRESIAS_APP_TOKEN=${TIPRESIAS_APP_TOKEN}
 "
 
 gcloud beta run deploy augury \
@@ -37,7 +37,7 @@ then
 fi
 
 
-APP_DIR=/var/www/${PROJECT_ID}
+APP_DIR=/var/www/${PROJECT_NAME}
 DOCKER_IMAGE=cfranklin11/tipresias_data_science:latest
 
 sudo chmod 600 ~/.ssh/deploy_rsa
@@ -50,8 +50,8 @@ docker push ${DOCKER_IMAGE}
 RUN_APP="
   cd ${APP_DIR} \
     && docker pull ${DOCKER_IMAGE} \
-    && docker stop ${PROJECT_ID}_app \
-    && docker container rm ${PROJECT_ID}_app \
+    && docker stop ${PROJECT_NAME}_app \
+    && docker container rm ${PROJECT_NAME}_app \
     && docker run \
       -d \
       -v ${APP_DIR}/.gcloud:/app/.gcloud \
@@ -60,7 +60,7 @@ RUN_APP="
       -e PYTHON_ENV=production \
       -e GOOGLE_APPLICATION_CREDENTIALS=.gcloud/keyfile.json \
       -e PYTHONPATH=./src \
-      --name ${PROJECT_ID}_app \
+      --name ${PROJECT_NAME}_app \
       ${DOCKER_IMAGE}
 "
 

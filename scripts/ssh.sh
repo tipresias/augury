@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-APP_DIR=/var/www/${PROJECT_ID}
+APP_DIR=/var/www/${PROJECT_NAME}
 
 COMMAND="cd ${APP_DIR}"
 
