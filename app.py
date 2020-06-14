@@ -32,7 +32,7 @@ def _run_kwargs():
         "server": "gunicorn",
         "accesslog": "-",
         "timeout": 1200,
-        "workers": 3,
+        "workers": 1,
     }
 
     return run_kwargs
