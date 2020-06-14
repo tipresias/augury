@@ -18,14 +18,14 @@ remote_player_data:
 
 # Test data
 fake_match_data:
-  type: JSONLocalDataSet
+  type: pandas.JSONDataSet
   filepath: src/tests/fixtures/afl_match.json
   save_args:
     indent: 2
 fake_data:
-  type: JSONLocalDataSet
+  type: pandas.JSONDataSet
   filepath: src/tests/fixtures/fake_data.json
 fake_estimator:
-  type: PickleLocalDataSet
+  type: pickle.PickleDataSet
   filepath: src/tests/fixtures/fake_estimator.pkl
   backend: joblib
