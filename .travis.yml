@@ -43,6 +43,14 @@ before_deploy:
   # Push docker image
   - echo "$DOCKER_PASSWORD" | docker login -u cfranklin11 --password-stdin
   - docker push cfranklin11/tipresias_data_science:latest
+  # Prepare gcloud tool for deployment
+  - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com | bash; fi
+  - source /home/travis/google-cloud-sdk/path.bash.inc
+  - gcloud --quiet version
+  - gcloud --quiet components install beta
+  - gcloud --quiet components update
+  - gcloud auth activate-service-account --key-file ${HOME}/.gcloud/keyfile.json
+  - gcloud --quiet config set project $PROJECT_ID
 deploy:
   provider: script
   script: ./scripts/deploy.sh
