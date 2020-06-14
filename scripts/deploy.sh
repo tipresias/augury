@@ -27,9 +27,6 @@ gcloud beta run deploy augury \
   --region us-central1 \
   --platform managed \
   --update-env-vars ${GOOGLE_ENV_VARS}
-./backend/scripts/wait-for-it.sh ${GCR_HOST}:${PORT} \
-  -t 60 \
-  -- ./scripts/post_deploy.sh
 
 if [ $? != 0 ]
 then
