@@ -49,7 +49,7 @@ before_deploy:
   - gcloud --quiet version
   - gcloud --quiet components install beta
   - gcloud --quiet components update
-  - gcloud auth activate-service-account --key-file ${HOME}/.gcloud/keyfile.json
+  - gcloud auth activate-service-account --key-file ${GOOGLE_APPLICATION_CREDENTIALS}
   - gcloud --quiet config set project $PROJECT_ID
 deploy:
   provider: script
