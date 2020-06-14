@@ -18,7 +18,7 @@ class ProjectContext(KedroContext):
     """Specialisation of generic KedroContext object with params specific to Augury."""
 
     project_name = "augury"
-    project_version = "0.15.5"
+    project_version = "0.16.1"
 
     def __init__(
         self,
