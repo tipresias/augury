@@ -12,7 +12,7 @@ def reload_kedro(project_path, line=None):
     global catalog
     try:
         import kedro.config.default_logger
-        from kedro.context import load_context
+        from kedro.framework.context import load_context
 
         context = load_context(project_path)
         catalog = context.catalog

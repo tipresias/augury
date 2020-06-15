@@ -4,7 +4,7 @@ from typing import Optional
 from datetime import date
 import os
 
-from kedro.context import load_context
+from kedro.framework.context import load_context
 
 from augury.settings import BASE_DIR, PREDICTION_DATA_START_DATE
 

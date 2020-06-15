@@ -40,8 +40,8 @@ from typing import Iterable, List, Dict
 
 import click
 from click import secho, style
-from kedro.cli import main as kedro_main
-from kedro.cli.utils import (
+from kedro.framework.cli import main as kedro_main
+from kedro.framework.cli.utils import (
     KedroCliError,
     call,
     forward_command,
@@ -50,7 +50,7 @@ from kedro.cli.utils import (
 )
 from kedro.utils import load_obj
 from kedro.runner import SequentialRunner
-from kedro.context import load_context
+from kedro.framework.context import load_context
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
@@ -250,13 +250,7 @@ def build_docs(open_docs):
     python_call("ipykernel", ["install", "--user", "--name=augury"])
     shutil.rmtree("docs/build", ignore_errors=True)
     call(
-        [
-            "sphinx-apidoc",
-            "--module-first",
-            "-o",
-            "docs/source",
-            "src/augury",
-        ]
+        ["sphinx-apidoc", "--module-first", "-o", "docs/source", "src/augury",]
     )
     call(["sphinx-build", "-M", "html", "docs/source", "docs/build", "-a"])
     if open_docs:

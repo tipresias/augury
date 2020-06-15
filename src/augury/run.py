@@ -5,7 +5,7 @@ from typing import Iterable, Dict, Optional
 from datetime import date
 import os
 
-from kedro.context import KedroContext, load_context
+from kedro.framework.context import KedroContext, load_context
 from kedro.runner import AbstractRunner
 from kedro.pipeline import Pipeline
 from kedro.io import DataCatalog

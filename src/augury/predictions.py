@@ -5,7 +5,7 @@ import itertools
 
 import pandas as pd
 import numpy as np
-from kedro.context import KedroContext
+from kedro.framework.context import KedroContext
 
 from augury.ml_data import MLData
 from augury.ml_estimators.base_ml_estimator import BaseMLEstimator
