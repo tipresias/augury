@@ -34,12 +34,12 @@ def create_past_match_pipeline():
         [
             node(
                 common.convert_to_data_frame,
-                ["match_data", "remote_match_data"],
-                ["match_data_frame", "remote_match_data_frame"],
+                "remote_match_data",
+                "remote_match_data_frame",
             ),
             node(
                 common.combine_data(axis=0),
-                ["match_data_frame", "remote_match_data_frame"],
+                ["match_data", "remote_match_data_frame"],
                 "combined_past_match_data",
             ),
             node(

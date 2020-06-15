@@ -114,8 +114,7 @@ def create_fake_pipeline(*_args, **_kwargs):
     """Create a pipeline for loading and transforming match data for test estimator."""
     return Pipeline(
         [
-            node(common.convert_to_data_frame, "fake_match_data", "match_data_frame"),
-            node(match.clean_match_data, "match_data_frame", "clean_match_data"),
+            node(match.clean_match_data, "fake_match_data", "clean_match_data"),
             node(
                 common.convert_match_rows_to_teammatch_rows,
                 "clean_match_data",

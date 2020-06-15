@@ -23,12 +23,12 @@ def create_past_player_pipeline():
         [
             node(
                 common.convert_to_data_frame,
-                ["player_data", "remote_player_data"],
-                ["player_data_frame", "remote_player_data_frame"],
+                "remote_player_data",
+                "remote_player_data_frame",
             ),
             node(
                 common.combine_data(axis=0),
-                ["player_data_frame", "remote_player_data_frame"],
+                ["player_data", "remote_player_data_frame"],
                 "combined_past_player_data",
             ),
             node(

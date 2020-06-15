@@ -11,12 +11,12 @@ def create_betting_pipeline(start_date: str, end_date: str, **_kwargs):
         [
             node(
                 common.convert_to_data_frame,
-                ["betting_data", "remote_betting_data"],
-                ["betting_data_frame", "remote_betting_data_frame"],
+                "remote_betting_data",
+                "remote_betting_data_frame",
             ),
             node(
                 common.combine_data(axis=0),
-                ["betting_data_frame", "remote_betting_data_frame"],
+                ["betting_data", "remote_betting_data_frame"],
                 "combined_betting_data",
             ),
             node(betting.clean_data, "combined_betting_data", "clean_betting_data"),

@@ -29,7 +29,10 @@ def convert_to_data_frame(
     -------
     Sequence of pandas.DataFrame
     """
-    data_frames = [pd.DataFrame(datum) for datum in data]
+    data_frames = [
+        pd.DataFrame(datum).assign(date=lambda df: pd.to_datetime(df["date"]))
+        for datum in data
+    ]
 
     return data_frames if len(data_frames) > 1 else data_frames[0]
 
