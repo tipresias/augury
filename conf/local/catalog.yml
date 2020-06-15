@@ -4,16 +4,22 @@ betting_data:
   filepath: /app/data/01_raw/betting-data_2010-01-01_2019-12-31.json
   save_args:
     indent: 2
+    orient: records
+    date_format: iso
 match_data:
   type: pandas.JSONDataSet
   filepath: /app/data/01_raw/match-data_1897-01-01_2019-12-31.json
   save_args:
     indent: 2
+    orient: records
+    date_format: iso
 player_data:
   type: pandas.JSONDataSet
   filepath: /app/data/01_raw/player-data_1965-01-01_2019-12-31.json
   save_args:
     indent: 2
+    orient: records
+    date_format: iso
 
 # Intermediate data
 final_betting_data:
@@ -21,21 +27,29 @@ final_betting_data:
   filepath: /app/data/02_intermediate/betting-data_2010-01-01_2020-12-31.json
   save_args:
     indent: 2
+    orient: records
+    date_format: iso
 final_match_data:
   type: pandas.JSONDataSet
   filepath: /app/data/02_intermediate/match-data_1897-01-01_2020-12-31.json
   save_args:
     indent: 2
+    orient: records
+    date_format: iso
 final_legacy_match_data:
   type: pandas.JSONDataSet
   filepath: /app/data/02_intermediate/legacy-match-data_1897-01-01_2020-12-31.json
   save_args:
     indent: 2
+    orient: records
+    date_format: iso
 final_player_data:
   type: pandas.JSONDataSet
   filepath: /app/data/02_intermediate/player-data_1965-01-01_2020-12-31.json
   save_args:
     indent: 2
+    orient: records
+    date_format: iso
 
 # Final data
 legacy_model_data:
@@ -43,11 +57,15 @@ legacy_model_data:
   filepath: /app/data/05_model_input/legacy-model-data_1897-01-01_2020-12-31.json
   save_args:
     indent: 2
+    orient: records
+    date_format: iso
 model_data:
   type: pandas.JSONDataSet
   filepath: /app/data/05_model_input/model-data_1897-01-01_2020-12-31.json
   save_args:
     indent: 2
+    orient: records
+    date_format: iso
 
 # Models
 tipresias_2019:

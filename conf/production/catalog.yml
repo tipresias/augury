@@ -3,24 +3,39 @@ betting_data:
   type: pandas.JSONDataSet
   filepath: gs://afl_data/betting-data_2010-01-01_2019-12-31.json
   project: tipresias
+  indent: 2
+  orient: records
+  data_format: iso
 match_data:
   type: pandas.JSONDataSet
   filepath: gs://afl_data/match-data_2010-01-01_2019-12-31.json
   project: tipresias
+  indent: 2
+  orient: records
+  data_format: iso
 player_data:
   type: pandas.JSONDataSet
   filepath: gs://afl_data/player-data_2010-01-01_2019-12-31.json
   project: tipresias
+  indent: 2
+  orient: records
+  data_format: iso
 
 # Final data
 legacy_model_data:
   type: pandas.JSONDataSet
   filepath: gs://afl_data/legacy-model-data_2010-01-01_2020-12-31.json
   project: tipresias
+  indent: 2
+  orient: records
+  data_format: iso
 model_data:
   type: pandas.JSONDataSet
   filepath: gs://afl_data/model-data_2010-01-01_2020-12-31.json
   project: tipresias
+  indent: 2
+  orient: records
+  data_format: iso
 
 # Models
 tipresias_2019:
