@@ -140,7 +140,6 @@ def create_player_pipeline(
                 "aggregated_player_data",
                 "oppo_player_data",
             ),
-            node(common.finalize_data, "oppo_player_data", "prefinal_player_data"),
-            node(common.convert_to_json, "prefinal_player_data", "final_player_data"),
+            node(common.finalize_data, "oppo_player_data", "final_player_data"),
         ]
     )

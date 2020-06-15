@@ -356,20 +356,6 @@ def finalize_data(
     return final_data_frame
 
 
-def convert_to_json(data_frame: pd.DataFrame) -> List[Dict[str, Any]]:
-    """Convert a pandas DataFrame to JSON.
-
-    Performs minimal cleaning to produce valid JSON (e.g. converting datetime objects
-    to strings).
-    """
-    datetime_cols = data_frame.select_dtypes(["datetime", "datetimetz"]).columns
-    # We convert datetime columns to string, because json can't stringify pandas
-    # timestamp objects
-    col_type_conversions = {col: str for col in datetime_cols}
-
-    return data_frame.astype(col_type_conversions).to_dict("records")
-
-
 def _sort_data_frame_columns_node(
     category_cols: List[str], data_frame: pd.DataFrame
 ) -> pd.DataFrame:

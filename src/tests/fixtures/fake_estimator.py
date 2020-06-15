@@ -141,7 +141,6 @@ def create_fake_pipeline(*_args, **_kwargs):
             ),
             node(match.add_cum_win_points, "match_data_g", "match_data_h"),
             node(match.add_win_streak, "match_data_h", "match_data_i"),
-            node(common.convert_to_json, "match_data_i", "fake_data"),
         ]
     )
 

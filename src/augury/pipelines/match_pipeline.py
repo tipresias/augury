@@ -156,8 +156,7 @@ def create_match_pipeline(
                 "match_data_l",
                 "match_data_m",
             ),
-            node(common.finalize_data, "match_data_m", "prefinal_match_data"),
-            node(common.convert_to_json, "prefinal_match_data", "final_match_data"),
+            node(common.finalize_data, "match_data_m", "final_match_data"),
         ]
     )
 
@@ -279,11 +278,6 @@ def create_legacy_match_pipeline(
                 "match_data_o",
                 "match_data_p",
             ),
-            node(common.finalize_data, "match_data_p", "prefinal_legacy_match_data"),
-            node(
-                common.convert_to_json,
-                "prefinal_legacy_match_data",
-                "final_legacy_match_data",
-            ),
+            node(common.finalize_data, "match_data_p", "final_legacy_match_data"),
         ]
     )

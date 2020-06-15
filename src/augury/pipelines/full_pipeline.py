@@ -69,9 +69,6 @@ def create_full_pipeline(
                 "data_a",
                 "sorted_data",
             ),
-            node(
-                common.finalize_data, "sorted_data", "data_c", name="final_model_data"
-            ),
-            node(common.convert_to_json, "data_c", final_data_set),
+            node(common.finalize_data, "sorted_data", final_data_set),
         ],
     )
