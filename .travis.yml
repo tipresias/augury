@@ -31,7 +31,7 @@ script:
   - docker run cfranklin11/tipresias_data_science:latest mypy src app.py
   - docker run cfranklin11/tipresias_data_science:latest pydocstyle src app.py
   # Using pytest, because coverage.py doesn't play nice with the kedro CLI
-  - docker run -v "${PWD}/.gcloud:/app/.gcloud" -v "${PWD}:/app" -e CI=true -e GOOGLE_APPLICATION_CREDENTIALS="${GOOGLE_APPLICATION_CREDENTIALS}" cfranklin11/tipresias_data_science:latest coverage run -m pytest --no-cov src/tests/unit/
+  - docker run -v "${PWD}/.gcloud:/app/.gcloud" -v "${PWD}:/app" -e PYTHON_ENV=ci -e GOOGLE_APPLICATION_CREDENTIALS="${GOOGLE_APPLICATION_CREDENTIALS}" cfranklin11/tipresias_data_science:latest coverage run -m pytest --no-cov src/tests/unit/
   # Integration tests
   # Using pytest, because coverage.py doesn't play nice with the kedro CLI
   - docker-compose -f docker-compose.ci.yml run data_science coverage run --append -m pytest --no-cov -n auto --dist=loadfile src/tests/integration

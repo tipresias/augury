@@ -14,11 +14,8 @@ END_OF_YEAR = f"{date.today().year}-12-31"
 
 def load_project_context(round_number: Optional[int] = None, **context_kwargs):
     """Load a Kedro context specific to this project and the current environment."""
-    kedro_env = (
-        "production"
-        if os.environ.get("CI", "").lower() == "true"
-        else os.environ.get("PYTHON_ENV")
-    )
+    kedro_env = os.environ.get("PYTHON_ENV") or "local"
+
     date_kwargs = (
         {"start_date": PREDICTION_DATA_START_DATE, "end_date": END_OF_YEAR}
         if os.getenv("PYTHON_ENV", "").lower() == "production"
