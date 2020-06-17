@@ -7,7 +7,7 @@ betting_data:
   save_args:
     indent: 2
     orient: records
-    data_format: iso
+    date_format: iso
   credentials:
     token: /app/.gcloud/keyfile.json
 match_data:
@@ -18,7 +18,7 @@ match_data:
   save_args:
     indent: 2
     orient: records
-    data_format: iso
+    date_format: iso
   credentials:
     token: /app/.gcloud/keyfile.json
 player_data:
@@ -29,31 +29,7 @@ player_data:
   save_args:
     indent: 2
     orient: records
-    data_format: iso
-  credentials:
-    token: /app/.gcloud/keyfile.json
-
-# Final data
-legacy_model_data:
-  type: pandas.JSONDataSet
-  filepath: gs://afl_data/legacy-model-data_2010-01-01_2020-12-31.json
-  fs_args:
-    project: tipresias
-  save_args:
-    indent: 2
-    orient: records
-    data_format: iso
-  credentials:
-    token: /app/.gcloud/keyfile.json
-model_data:
-  type: pandas.JSONDataSet
-  filepath: gs://afl_data/model-data_2010-01-01_2020-12-31.json
-  fs_args:
-    project: tipresias
-  save_args:
-    indent: 2
-    orient: records
-    data_format: iso
+    date_format: iso
   credentials:
     token: /app/.gcloud/keyfile.json
 

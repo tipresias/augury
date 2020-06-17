@@ -7,7 +7,7 @@ betting_data:
   save_args:
     indent: 2
     orient: records
-    data_format: iso
+    date_format: iso
   credentials:
     token: cloud
 match_data:
@@ -18,7 +18,7 @@ match_data:
   save_args:
     indent: 2
     orient: records
-    data_format: iso
+    date_format: iso
   credentials:
     token: cloud
 player_data:
@@ -29,7 +29,7 @@ player_data:
   save_args:
     indent: 2
     orient: records
-    data_format: iso
+    date_format: iso
   credentials:
     token: cloud
 
@@ -42,7 +42,7 @@ legacy_model_data:
   save_args:
     indent: 2
     orient: records
-    data_format: iso
+    date_format: iso
   credentials:
     token: cloud
 model_data:
@@ -53,7 +53,7 @@ model_data:
   save_args:
     indent: 2
     orient: records
-    data_format: iso
+    date_format: iso
   credentials:
     token: cloud
 
