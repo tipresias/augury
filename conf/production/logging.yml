@@ -1,0 +1,30 @@
+version: 1
+disable_existing_loggers: False
+formatters:
+  simple:
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  json_formatter:
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    class: pythonjsonlogger.jsonlogger.JsonFormatter
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: INFO
+    formatter: simple
+    stream: ext://sys.stdout
+
+loggers:
+  kedro.io:
+    level: INFO
+    handlers: [console]
+    propagate: no
+
+  kedro.pipeline:
+    level: INFO
+    handlers: [console]
+    propagate: no
+
+root:
+  level: INFO
+  handlers: [console]
