@@ -20,4 +20,4 @@ class TestProjectContext:
 
     @staticmethod
     def test_project_version(project_context):  # pylint: disable=redefined-outer-name
-        assert project_context.project_version == "0.15.5"
+        assert project_context.project_version == "0.16.1"

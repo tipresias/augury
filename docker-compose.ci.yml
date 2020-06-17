@@ -18,8 +18,8 @@ services:
       - afl_data
     environment:
       - AFL_DATA_SERVICE=${AFL_DATA_SERVICE}
-      - CI=true
       - GOOGLE_APPLICATION_CREDENTIALS="${GOOGLE_APPLICATION_CREDENTIALS}"
+      - PYTHON_ENV=ci
     command: python3 app.py
   afl_data:
     image: cfranklin11/tipresias_afl_data:latest

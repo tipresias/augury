@@ -34,12 +34,12 @@ def create_past_match_pipeline():
         [
             node(
                 common.convert_to_data_frame,
-                ["match_data", "remote_match_data"],
-                ["match_data_frame", "remote_match_data_frame"],
+                "remote_match_data",
+                "remote_match_data_frame",
             ),
             node(
                 common.combine_data(axis=0),
-                ["match_data_frame", "remote_match_data_frame"],
+                ["match_data", "remote_match_data_frame"],
                 "combined_past_match_data",
             ),
             node(
@@ -156,8 +156,7 @@ def create_match_pipeline(
                 "match_data_l",
                 "match_data_m",
             ),
-            node(common.finalize_data, "match_data_m", "prefinal_match_data"),
-            node(common.convert_to_json, "prefinal_match_data", "final_match_data"),
+            node(common.finalize_data, "match_data_m", "final_match_data"),
         ]
     )
 
@@ -279,11 +278,6 @@ def create_legacy_match_pipeline(
                 "match_data_o",
                 "match_data_p",
             ),
-            node(common.finalize_data, "match_data_p", "prefinal_legacy_match_data"),
-            node(
-                common.convert_to_json,
-                "prefinal_legacy_match_data",
-                "final_legacy_match_data",
-            ),
+            node(common.finalize_data, "match_data_p", "final_legacy_match_data"),
         ]
     )

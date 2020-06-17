@@ -4,7 +4,7 @@ from typing import List, Optional, Dict, Union, Any
 
 import pandas as pd
 from mypy_extensions import TypedDict
-from kedro.context import KedroContext
+from kedro.framework.context import KedroContext
 import simplejson
 
 from augury.data_import import match_data

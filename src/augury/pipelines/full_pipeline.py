@@ -30,14 +30,8 @@ def create_full_pipeline(
             match_pipeline_func(start_date, end_date),
             create_player_pipeline(start_date, end_date),
             node(
-                common.convert_to_data_frame,
-                ["final_betting_data", match_data_set, "final_player_data"],
-                ["betting_data_df", "match_data_df", "player_data_df"],
-                name="converted_data_frames",
-            ),
-            node(
                 common.clean_full_data,
-                ["betting_data_df", "match_data_df", "player_data_df"],
+                ["final_betting_data", match_data_set, "final_player_data"],
                 [
                     "clean_betting_data_df",
                     "clean_match_data_df",
@@ -69,9 +63,6 @@ def create_full_pipeline(
                 "data_a",
                 "sorted_data",
             ),
-            node(
-                common.finalize_data, "sorted_data", "data_c", name="final_model_data"
-            ),
-            node(common.convert_to_json, "data_c", final_data_set),
+            node(common.finalize_data, "sorted_data", final_data_set),
         ],
     )

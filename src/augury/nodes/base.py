@@ -35,7 +35,7 @@ def _localize_dates(row: pd.Series) -> datetime:
         venue_timezone, str
     ), f"Could not find timezone for {row['venue']}"
 
-    match_date = parser.parse(row["date"])
+    match_date: datetime = parser.parse(row["date"])
     # For match dates without start times, we add the minimum start time that
     # (more-or-less) guarantees that converting times from local timezones to UTC
     # won't change the date as well. This should make joining data on dates
@@ -71,21 +71,21 @@ def _format_time(unformatted_time: str):
 
 
 def _parse_dates(data_frame: pd.DataFrame, time_col=None) -> pd.Series:
-    localize_columns = list(set(["date", "venue", time_col]) & set(data_frame.columns))
+    localization_columns = list(
+        set(["date", "venue", time_col]) & set(data_frame.columns)
+    )
+    localization_data = data_frame[localization_columns].astype(str)
 
-    if time_col is None:
-        localized_dates = data_frame[localize_columns].apply(_localize_dates, axis=1)
-    else:
-        localized_dates = (
-            data_frame[localize_columns]
-            # Some data sources have separate date and local_start_time columns,
-            # so we concat them to get consistent datetimes for matches
-            .assign(
-                date=lambda df: df["date"].astype(str)
-                + " "
-                + df[time_col].astype(str).map(_format_time)
-            ).apply(_localize_dates, axis=1)
+    # Some data sources have separate date and local_start_time columns,
+    # so we concat them to get consistent datetimes for matches
+    if time_col is not None:
+        localization_data.loc[:, "date"] = (
+            localization_data["date"]
+            + " "
+            + localization_data[time_col].map(_format_time)
         )
+
+    localized_dates = localization_data.apply(_localize_dates, axis=1)
 
     return pd.to_datetime(localized_dates, utc=True)
 

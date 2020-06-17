@@ -4,7 +4,7 @@ from typing import Tuple, Optional, List
 from datetime import date
 
 import pandas as pd
-from kedro.context import KedroContext
+from kedro.framework.context import KedroContext
 
 from augury.types import YearRange
 from augury.settings import (

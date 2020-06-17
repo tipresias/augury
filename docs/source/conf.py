@@ -48,7 +48,7 @@
 import re
 from typing import Dict
 
-from kedro.cli.utils import find_stylesheets
+from kedro.framework.cli.utils import find_stylesheets
 from recommonmark.transform import AutoStructify
 
 from augury import __version__ as release

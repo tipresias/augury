@@ -87,7 +87,7 @@ class TestPlayerDataProd(TestCase):
         self.end_date = "2013-06-30"
 
     @skipIf(
-        os.getenv("CI", "").lower() == "true",
+        os.getenv("PYTHON_ENV") == "ci",
         "Absolutely cannot get this test to run in CI without getting a 'MemoryError',"
         "even when I reduce the time period to a month",
     )

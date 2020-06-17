@@ -29,7 +29,10 @@ def convert_to_data_frame(
     -------
     Sequence of pandas.DataFrame
     """
-    data_frames = [pd.DataFrame(datum) for datum in data]
+    data_frames = [
+        pd.DataFrame(datum).assign(date=lambda df: pd.to_datetime(df["date"]))
+        for datum in data
+    ]
 
     return data_frames if len(data_frames) > 1 else data_frames[0]
 
@@ -354,20 +357,6 @@ def finalize_data(
     _validate_no_dodgy_zeros(final_data_frame)
 
     return final_data_frame
-
-
-def convert_to_json(data_frame: pd.DataFrame) -> List[Dict[str, Any]]:
-    """Convert a pandas DataFrame to JSON.
-
-    Performs minimal cleaning to produce valid JSON (e.g. converting datetime objects
-    to strings).
-    """
-    datetime_cols = data_frame.select_dtypes(["datetime", "datetimetz"]).columns
-    # We convert datetime columns to string, because json can't stringify pandas
-    # timestamp objects
-    col_type_conversions = {col: str for col in datetime_cols}
-
-    return data_frame.astype(col_type_conversions).to_dict("records")
 
 
 def _sort_data_frame_columns_node(

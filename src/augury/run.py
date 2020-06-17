@@ -5,7 +5,7 @@ from typing import Iterable, Dict, Optional
 from datetime import date
 import os
 
-from kedro.context import KedroContext, load_context
+from kedro.framework.context import KedroContext, load_context
 from kedro.runner import AbstractRunner
 from kedro.pipeline import Pipeline
 from kedro.io import DataCatalog
@@ -18,7 +18,7 @@ class ProjectContext(KedroContext):
     """Specialisation of generic KedroContext object with params specific to Augury."""
 
     project_name = "augury"
-    project_version = "0.15.5"
+    project_version = "0.16.1"
 
     def __init__(
         self,
@@ -27,6 +27,7 @@ class ProjectContext(KedroContext):
         round_number: Optional[int] = None,
         start_date: str = "1897-01-01",
         end_date: str = f"{date.today().year}-12-31",
+        **kwargs,
     ):
         """
         Instantiate ProjectContext object.
@@ -40,7 +41,7 @@ class ProjectContext(KedroContext):
         start_date: The earliest match date (inclusive) to include in any data sets.
         end_date: The latest match date (inclusive) to include in any data sets.
         """
-        super().__init__(project_path, env=env)
+        super().__init__(project_path, env=env, **kwargs)
         self.round_number = round_number
         self.start_date = start_date
         self.end_date = end_date

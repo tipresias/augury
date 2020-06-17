@@ -9,7 +9,7 @@ betting_data:
     orient: records
     data_format: iso
   credentials:
-    token: cloud
+    token: /app/.gcloud/keyfile.json
 match_data:
   type: pandas.JSONDataSet
   filepath: gs://afl_data/match-data_2010-01-01_2019-12-31.json
@@ -20,7 +20,7 @@ match_data:
     orient: records
     data_format: iso
   credentials:
-    token: cloud
+    token: /app/.gcloud/keyfile.json
 player_data:
   type: pandas.JSONDataSet
   filepath: gs://afl_data/player-data_2010-01-01_2019-12-31.json
@@ -31,7 +31,7 @@ player_data:
     orient: records
     data_format: iso
   credentials:
-    token: cloud
+    token: /app/.gcloud/keyfile.json
 
 # Final data
 legacy_model_data:
@@ -44,7 +44,7 @@ legacy_model_data:
     orient: records
     data_format: iso
   credentials:
-    token: cloud
+    token: /app/.gcloud/keyfile.json
 model_data:
   type: pandas.JSONDataSet
   filepath: gs://afl_data/model-data_2010-01-01_2020-12-31.json
@@ -55,7 +55,7 @@ model_data:
     orient: records
     data_format: iso
   credentials:
-    token: cloud
+    token: /app/.gcloud/keyfile.json
 
 # Models
 tipresias_2019:
@@ -65,7 +65,7 @@ tipresias_2019:
   fs_args:
     project: tipresias
   credentials:
-    token: cloud
+    token: /app/.gcloud/keyfile.json
 benchmark_estimator:
   type: pickle.PickleDataSet
   filepath: gs://afl_data/benchmark_estimator.pkl
@@ -73,7 +73,7 @@ benchmark_estimator:
   fs_args:
     project: tipresias
   credentials:
-    token: cloud
+    token: /app/.gcloud/keyfile.json
 tipresias_2020:
   type: pickle.PickleDataSet
   filepath: gs://afl_data/tipresias_2020.pkl
@@ -81,7 +81,7 @@ tipresias_2020:
   fs_args:
     project: tipresias
   credentials:
-    token: cloud
+    token: /app/.gcloud/keyfile.json
 confidence_estimator:
   type: pickle.PickleDataSet
   filepath: gs://afl_data/confidence_estimator.pkl
@@ -89,4 +89,4 @@ confidence_estimator:
   fs_args:
     project: tipresias
   credentials:
-    token: cloud
+    token: /app/.gcloud/keyfile.json
