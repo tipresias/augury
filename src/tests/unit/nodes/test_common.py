@@ -50,6 +50,16 @@ class TestCommon(TestCase, ColumnAssertionMixin):
 
         self.assertEqual(set(raw_data_fields), set(data_frame_columns))
 
+        with self.subTest("when data is empty"):
+            data = []
+
+            data_frames = common.convert_to_data_frame(data)
+
+            # It is an empty data frame with no columns
+            self.assertIsInstance(data_frames, pd.DataFrame)
+            self.assertEqual(len(data_frames), 0)
+            self.assertFalse(any(data_frames.columns))
+
     def test_combine_data(self):
         raw_betting_data = fake_footywire_betting_data(
             N_MATCHES_PER_SEASON, YEAR_RANGE, clean=False

@@ -29,10 +29,17 @@ def convert_to_data_frame(
     -------
     Sequence of pandas.DataFrame
     """
-    data_frames = [
-        pd.DataFrame(datum).assign(date=lambda df: pd.to_datetime(df["date"]))
-        for datum in data
-    ]
+    if len(data) == 0:
+        return pd.DataFrame()
+
+    data_frames = [pd.DataFrame(datum) for datum in data]
+
+    # TODO: Quick fix for empty roster data not having a 'date' column.
+    # We should figure out a better way to handle empty data such that
+    # its shape/columns are consistent, but one doesn't occur to me at the moment.
+    for df in data_frames:
+        if "date" in df.columns:
+            df.loc[:, "date"] = pd.to_datetime(df["date"])
 
     return data_frames if len(data_frames) > 1 else data_frames[0]
 
