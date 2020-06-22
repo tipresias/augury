@@ -9,7 +9,7 @@ bottle==0.12.18
 gunicorn
 
 # Data packages
-numpy==1.18.5
+numpy==1.19.0
 pandas==1.0.5
 scikit-learn==0.23.1
 xgboost==1.1.0
