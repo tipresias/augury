@@ -12,7 +12,7 @@ gunicorn
 numpy==1.19.0
 pandas==1.0.5
 scikit-learn==0.23.1
-xgboost==1.1.0
+xgboost==1.1.1
 mlxtend==0.17.2
 statsmodels==0.11.1
 scipy==1.5.0
