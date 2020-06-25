@@ -8,7 +8,7 @@ memory_profiler
 
 # Data packages
 dask[complete]>=2.3
-mlflow==1.9.0
+mlflow==1.9.1
 catboost
 fbprophet
 category_encoders
