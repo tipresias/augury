@@ -19,7 +19,7 @@ scipy==1.5.1
 tensorflow==2.2.0
 
 # Kedro packages
-kedro==0.16.1
+kedro==0.16.3
 gcsfs # Needed to access Google Cloud Storage files
 
 # Testing/Linting
