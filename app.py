@@ -120,7 +120,7 @@ def fixtures():
     Request with the following URL params:
         start_date (string of form 'yyyy-mm-dd', required): Start of date range
             (inclusive) for which you want data.
-        start_date (string of form 'yyyy-mm-dd', required): End of date range
+        end_date (string of form 'yyyy-mm-dd', required): End of date range
             (inclusive) for which you want data.
 
     Returns
@@ -146,7 +146,7 @@ def match_results():
     Request with the following URL params:
         start_date (string of form 'yyyy-mm-dd', required): Start of date range
             (inclusive) for which you want data.
-        start_date (string of form 'yyyy-mm-dd', required): End of date range
+        end_date (string of form 'yyyy-mm-dd', required): End of date range
             (inclusive) for which you want data.
 
     Returns

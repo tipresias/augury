@@ -29,7 +29,7 @@ def clean_data(betting_data: pd.DataFrame) -> pd.DataFrame:
         betting_data.rename(columns={"season": "year", "round": "round_number"})
         .pipe(
             _filter_out_dodgy_data(
-                duplicate_subset=["year", "round_number", "home_team", "away_team"]
+                subset=["year", "round_number", "home_team", "away_team"]
             )
         )
         .drop(
