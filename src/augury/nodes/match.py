@@ -128,7 +128,7 @@ def clean_match_data(match_data: pd.DataFrame) -> pd.DataFrame:
             .astype({"year": int, "round_number": int})
             .pipe(
                 _filter_out_dodgy_data(
-                    duplicate_subset=["year", "round_number", "home_team", "away_team"]
+                    subset=["year", "round_number", "home_team", "away_team"]
                 )
             )
             .assign(

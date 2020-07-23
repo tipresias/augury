@@ -148,11 +148,7 @@ def clean_player_data(
         # from match_results. Also, match_results round_numbers are integers rather than
         # a mix of ints and strings.
         .merge(cleaned_match_data, on=["merge_date", "venue"], how="left")
-        .pipe(
-            _filter_out_dodgy_data(
-                duplicate_subset=["year", "round_number", "player_id"]
-            )
-        )
+        .pipe(_filter_out_dodgy_data(subset=["year", "round_number", "player_id"]))
         .drop(["venue", "merge_date"], axis=1)
         # brownlow_votes aren't known until the end of the season
         .fillna({"brownlow_votes": 0})
