@@ -228,11 +228,6 @@ def clean_fixture_data(fixture_data: pd.DataFrame) -> pd.DataFrame:
             match_id=_match_id_column,
         )
         .fillna(0)
-        # TEMPORARY filter out for bad future round numbers in the fixture data
-        # due to the AFL scheduling a constant run of matches to finish out the season
-        # as early as possible. The upcoming round is still okay, but we'll need to fix
-        # the data source before the next round.
-        .query("~((year == 2020) & (round_number > 8))")
     )
 
     _validate_unique_team_index_columns(fixture_data_frame)
