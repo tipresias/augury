@@ -159,7 +159,33 @@ def match_results():
     start_date = request.query.start_date
     end_date = request.query.end_date
 
-    return api.fetch_match_results_data(start_date, end_date)
+    return api.fetch_match_data(start_date, end_date)
+
+
+@app.route("/matches")
+def matches():
+    """
+    Fetch match data for the given date range.
+
+    Params
+    ------
+    Request with the following URL params:
+        start_date (string of form 'yyyy-mm-dd', required): Start of date range
+            (inclusive) for which you want data.
+        end_date (string of form 'yyyy-mm-dd', required): End of date range
+            (inclusive) for which you want data.
+
+    Returns
+    -------
+    Response with a body that has a JSON of match data.
+    """
+    if not _request_is_authorized(request):
+        return _unauthorized_response()
+
+    start_date = request.query.start_date
+    end_date = request.query.end_date
+
+    return api.fetch_match_data(start_date, end_date)
 
 
 @app.route("/ml_models")

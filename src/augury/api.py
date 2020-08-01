@@ -117,11 +117,11 @@ def fetch_fixture_data(
     )
 
 
-def fetch_match_results_data(
+def fetch_match_data(
     start_date: str, end_date: str, data_import=match_data, verbose: int = 1
 ) -> ApiResponse:
     """
-    Fetch results data for past matches from afl_data service.
+    Fetch data for past matches from afl_data service.
 
     Params
     ------
@@ -133,7 +133,7 @@ def fetch_match_results_data(
 
     Returns
     -------
-    List of match results data dictionaries.
+    List of match data dictionaries.
     """
     return _api_response(
         pd.DataFrame(
