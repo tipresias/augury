@@ -6,8 +6,13 @@ from unittest.mock import Mock, patch, MagicMock
 from datetime import date
 from typing import List
 import json
+from faker import Faker
 
-from tests.fixtures.data_factories import fake_fixture_data, fake_raw_match_results_data
+from tests.fixtures.data_factories import (
+    fake_fixture_data,
+    fake_raw_match_data,
+    fake_match_results_data,
+)
 from tests.fixtures.fake_estimator import create_fake_pipeline
 from augury.data_import import match_data
 from augury import api
@@ -15,6 +20,7 @@ from augury import settings
 from augury.types import MLModelDict
 
 
+FAKE = Faker()
 THIS_YEAR = date.today().year
 YEAR_RANGE = (2018, 2019)
 N_MATCHES = 5
@@ -92,7 +98,7 @@ class TestApi(TestCase):
     def test_fetch_match_data(self):
         data_importer = match_data
         data_importer.fetch_match_data = Mock(
-            return_value=fake_raw_match_results_data(N_MATCHES, YEAR_RANGE)
+            return_value=fake_raw_match_data(N_MATCHES, YEAR_RANGE)
         )
 
         response = api.fetch_match_data(
@@ -125,6 +131,41 @@ class TestApi(TestCase):
 
         match_years = list({match["year"] for match in matches})
         self.assertEqual(match_years, [YEAR_RANGE[0]])
+
+    def test_fetch_match_results_data(self):
+        round_number = FAKE.pyint(1, 25)
+
+        data_importer = match_data
+        data_importer.fetch_match_results_data = Mock(
+            return_value=fake_match_results_data(N_MATCHES, round_number)
+        )
+
+        response = api.fetch_match_results_data(
+            round_number, data_import=data_importer, verbose=0
+        )
+
+        match_results = response["data"]
+
+        # It returns all available match results for the round
+        self.assertEqual(len(match_results), N_MATCHES)
+
+        required_fields = set(
+            [
+                "date",
+                "year",
+                "round_number",
+                "home_team",
+                "away_team",
+                "home_score",
+                "away_score",
+            ]
+        )
+        first_match = match_results[0]
+
+        self.assertEqual(required_fields, set(first_match.keys()) & required_fields)
+
+        match_rounds = {result["round_number"] for result in match_results}
+        self.assertEqual(match_rounds, set([round_number]))
 
     def test_fetch_ml_model_info(self):
         response = api.fetch_ml_model_info()

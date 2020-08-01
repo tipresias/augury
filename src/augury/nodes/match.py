@@ -236,6 +236,53 @@ def clean_fixture_data(fixture_data: pd.DataFrame) -> pd.DataFrame:
     return fixture_data_frame
 
 
+def clean_match_results_data(data_frame: pd.DataFrame):
+    """
+    Clean and translate match results data to match other other data sets.
+
+    Params
+    ------
+    data_frame: Match results data to be cleaned.
+
+    Response
+    --------
+    Cleanish match results data.
+    """
+    results_data_frame = (
+        data_frame.rename(
+            columns={
+                "hteam": "home_team",
+                "ateam": "away_team",
+                "hscore": "home_score",
+                "ascore": "away_score",
+                "round": "round_number",
+            }
+        )
+        .assign(
+            date=_parse_dates,
+            home_team=_translate_team_column("home_team"),
+            away_team=_translate_team_column("away_team"),
+        )
+        .loc[
+            :,
+            [
+                "date",
+                "home_team",
+                "home_score",
+                "away_team",
+                "away_score",
+                "round_number",
+                "year",
+            ],
+        ]
+    )
+
+    _validate_unique_team_index_columns(results_data_frame)
+    _validate_canoncial_team_names(results_data_frame)
+
+    return results_data_frame
+
+
 # Basing Elo calculations on:
 # http://www.matterofstats.com/mafl-stats-journal/2013/10/13/building-your-own-team-rating-system.html
 def _elo_formula(

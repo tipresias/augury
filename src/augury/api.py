@@ -144,6 +144,28 @@ def fetch_match_data(
     )
 
 
+def fetch_match_results_data(
+    round_number: int, data_import=match_data, verbose: int = 1
+) -> ApiResponse:
+    """
+    Fetch data for past matches from afl_data service.
+
+    Params
+    ------
+    round_number: Fetch results for the given round.
+    verbose (0 or 1): Whether to print info messages while fetching data.
+
+    Returns
+    -------
+    List of match results data dictionaries.
+    """
+    return _api_response(
+        pd.DataFrame(
+            data_import.fetch_match_results_data(round_number, verbose=verbose)
+        ).pipe(match.clean_match_results_data)
+    )
+
+
 def fetch_ml_model_info() -> ApiResponse:
     """Fetch general info about all saved ML models."""
     return _api_response(ML_MODELS)
