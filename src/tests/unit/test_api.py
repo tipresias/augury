@@ -89,13 +89,13 @@ class TestApi(TestCase):
         fixture_years = list({match["year"] for match in matches})
         self.assertEqual(fixture_years, [YEAR_RANGE[0]])
 
-    def test_fetch_match_results_data(self):
+    def test_fetch_match_data(self):
         data_importer = match_data
         data_importer.fetch_match_data = Mock(
             return_value=fake_raw_match_results_data(N_MATCHES, YEAR_RANGE)
         )
 
-        response = api.fetch_match_results_data(
+        response = api.fetch_match_data(
             "2019-01-01", "2019-12-31", data_import=data_importer, verbose=0
         )
 
