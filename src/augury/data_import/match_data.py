@@ -107,6 +107,32 @@ def fetch_fixture_data(
     return data
 
 
+def fetch_match_results_data(
+    round_number: int, verbose: int = 1
+) -> List[Dict[str, Any]]:
+    """
+    Get AFL match results for the given round.
+
+    Params
+    ------
+    round_number: The round number for which to fetch match data.
+    verbose: Whether to print status messages.
+
+    Returns
+    -------
+    list of dicts of match results data
+    """
+    if verbose == 1:
+        print(f"Fetching match results data for round {round_number}...")
+
+    data = fetch_afl_data("/match_results", params={"round_number": round_number})
+
+    if verbose == 1:
+        print("Match results data received!")
+
+    return data
+
+
 if __name__ == "__main__":
     last_year = date.today().year - 1
     end_of_last_year = f"{last_year}-12-31"
