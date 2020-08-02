@@ -139,15 +139,13 @@ def fixtures():
 @app.route("/match_results")
 def match_results():
     """
-    Fetch match results data for the given date range.
+    Fetch match results data for the given round.
 
     Params
     ------
     Request with the following URL params:
-        start_date (string of form 'yyyy-mm-dd', required): Start of date range
-            (inclusive) for which you want data.
-        end_date (string of form 'yyyy-mm-dd', required): End of date range
-            (inclusive) for which you want data.
+        round_number (int): Fetch data for the given round. If missing, will fetch
+            all match results for the current year.
 
     Returns
     -------
@@ -156,10 +154,9 @@ def match_results():
     if not _request_is_authorized(request):
         return _unauthorized_response()
 
-    start_date = request.query.start_date
-    end_date = request.query.end_date
+    round_number = request.query.round_number
 
-    return api.fetch_match_data(start_date, end_date)
+    return api.fetch_match_results_data(round_number)
 
 
 @app.route("/matches")

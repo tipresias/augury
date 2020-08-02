@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 
 from tests.fixtures.data_factories import (
-    fake_raw_match_results_data,
+    fake_raw_match_data,
     fake_footywire_betting_data,
     fake_cleaned_match_data,
 )
@@ -34,7 +34,7 @@ class TestCommon(TestCase, ColumnAssertionMixin):
         self.data_frame = fake_cleaned_match_data(N_MATCHES_PER_SEASON, YEAR_RANGE)
 
     def test_convert_to_data_frame(self):
-        data = fake_raw_match_results_data(
+        data = fake_raw_match_data(
             N_MATCHES_PER_SEASON, (START_YEAR, END_YEAR)
         ).to_dict("records")
 
@@ -81,9 +81,7 @@ class TestCommon(TestCase, ColumnAssertionMixin):
 
         with self.subTest(axis=1):
             match_year_range = (START_YEAR - 2, END_YEAR)
-            match_data = fake_raw_match_results_data(
-                N_MATCHES_PER_SEASON, match_year_range
-            )
+            match_data = fake_raw_match_data(N_MATCHES_PER_SEASON, match_year_range)
 
             combine_data_func = common.combine_data(axis=1)
             combined_data = combine_data_func(raw_betting_data, match_data)

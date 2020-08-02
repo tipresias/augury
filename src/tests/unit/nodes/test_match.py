@@ -10,7 +10,10 @@ import numpy as np
 from faker import Faker
 import pytz
 
-from tests.fixtures.data_factories import fake_cleaned_match_data
+from tests.fixtures.data_factories import (
+    fake_cleaned_match_data,
+    fake_match_results_data,
+)
 from tests.helpers import ColumnAssertionMixin
 from augury.nodes import match
 from augury.settings import VENUES, BASE_DIR
@@ -21,6 +24,7 @@ FAKE = Faker()
 TEST_DATA_DIR = os.path.join(BASE_DIR, "src/tests/fixtures")
 N_MATCHES_PER_SEASON = 10
 YEAR_RANGE = (2015, 2016)
+MAX_MATCHES_PER_ROUND = 9
 
 # Need to multiply by two, because we add team & oppo_team row per match
 N_TEAMMATCH_ROWS = N_MATCHES_PER_SEASON * len(range(*YEAR_RANGE)) * 2
@@ -72,6 +76,35 @@ class TestMatch(TestCase, ColumnAssertionMixin):
             self.assertTrue(col in clean_data.columns.values)
 
         self.assertEqual(clean_data["date"].dt.tz, pytz.UTC)
+        self.assertFalse((clean_data["date"].dt.time == time()).any())
+
+    def test_clean_match_results_data(self):
+        match_results = fake_match_results_data(
+            MAX_MATCHES_PER_ROUND, FAKE.pyint(1, 25)
+        )
+
+        clean_data = match.clean_match_results_data(match_results)
+
+        # It returns a data frame with data
+        self.assertIsInstance(clean_data, pd.DataFrame)
+        self.assertFalse(clean_data.isna().any().any())
+
+        # It has all required columns
+        required_columns = set(
+            [
+                "home_team",
+                "home_score",
+                "away_team",
+                "away_score",
+                "round_number",
+                "year",
+            ]
+        )
+        self.assertEqual(required_columns, set(clean_data.columns) & required_columns)
+
+        # Dates are in UTC
+        self.assertEqual(clean_data["date"].dt.tz, pytz.UTC)
+        # Dates have real times
         self.assertFalse((clean_data["date"].dt.time == time()).any())
 
     def test_add_elo_rating(self):

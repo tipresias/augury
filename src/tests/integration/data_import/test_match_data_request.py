@@ -9,7 +9,11 @@ from datetime import date, timedelta
 from betamax import Betamax
 from requests import Session
 
-from augury.data_import.match_data import fetch_match_data, fetch_fixture_data
+from augury.data_import.match_data import (
+    fetch_match_data,
+    fetch_fixture_data,
+    fetch_match_results_data,
+)
 from augury.settings import CASSETTE_LIBRARY_DIR
 
 SEPT = 9
@@ -78,6 +82,22 @@ class TestMatchData(TestCase):
         self.assertLessEqual(start_date, min(dates))
         self.assertGreaterEqual(end_date, max(dates))
 
+    def test_fetch_match_results_data(self):
+        # We hard-code the round_number to 1 to maximise the chance of getting data.
+        round_number = 1
+        data = fetch_match_results_data(round_number=round_number, verbose=0)
+
+        self.assertIsInstance(data, list)
+
+        # We always fetch match results from the current year, meaning that the data
+        # will be empty during the part of the year before the season begins.
+        if len(data) > 0:
+            self.assertIsInstance(data[0], dict)
+            self.assertTrue(any(data))
+
+            round_numbers = {datum["round"] for datum in data}
+            self.assertEqual(round_numbers, set([round_number]))
+
 
 @patch.dict(os.environ, {**ENV_VARS, **{"PYTHON_ENV": "production"}}, clear=True)
 @patch(f"{DATA_IMPORT_PATH}.match_data.json.dump", MagicMock())
@@ -120,3 +140,16 @@ class TestMatchDataProd(TestCase):
                 dates = {datum["date"] for datum in data}
                 self.assertLessEqual(start_date, min(dates))
                 self.assertGreaterEqual(end_date, max(dates))
+
+    def test_fetch_match_results_data(self):
+        with Betamax(self.session).use_cassette("match_results_data"):
+            with patch(f"{DATA_IMPORT_PATH}.base_data.requests.get", self.session.get):
+                round_number = 5
+
+                data = fetch_match_results_data(round_number=round_number, verbose=0)
+                self.assertIsInstance(data, list)
+                self.assertIsInstance(data[0], dict)
+                self.assertTrue(any(data))
+
+                round_numbers = {datum["round"] for datum in data}
+                self.assertEqual(round_numbers, set([round_number]))

@@ -6,7 +6,7 @@ from unittest import TestCase
 from unittest.mock import patch, mock_open
 import json
 
-from tests.fixtures.data_factories import fake_raw_match_results_data
+from tests.fixtures.data_factories import fake_raw_match_data
 from augury.settings import RAW_DATA_DIR
 from augury.data_import.match_data import save_match_data
 
@@ -22,7 +22,7 @@ MATCH_DATA_PATH = os.path.join(RAW_DATA_DIR, f"match-data_{START_DATE}_{END_DATE
 
 class TestMatchData(TestCase):
     def setUp(self):
-        self.fake_match_data = fake_raw_match_results_data(
+        self.fake_match_data = fake_raw_match_data(
             N_MATCHES_PER_YEAR, (START_YEAR, END_YEAR)
         ).to_dict("records")
 

@@ -273,11 +273,11 @@ def fake_cleaned_match_data(
     )
 
 
-def fake_raw_match_results_data(
+def fake_raw_match_data(
     row_count: int, year_range: Tuple[int, int], clean=False
 ) -> pd.DataFrame:
     """
-    Generate dummy data that replicates raw match results data.
+    Generate dummy data that replicates raw match data.
 
     This represents data from past matches before it has passed through
     the initial cleaning node `match.clean_match_data`.
@@ -292,6 +292,60 @@ def fake_raw_match_results_data(
         return data_frame.rename(columns={"season": "year"})
 
     return data_frame
+
+
+def _results_by_match(round_number: int, team_names: CyclicalTeamNames):
+    home_team = team_names.next_team()
+    away_team = team_names.next_team()
+    winner = np.random.choice([home_team, away_team])
+    match_date = FAKE.date_time_between_dates(
+        **_min_max_datetimes_by_year(date.today().year)
+    )
+
+    return {
+        "date": str(match_date),
+        "tz": "+10:00",
+        "updated": str(match_date + timedelta(hours=3)),
+        "round": round_number,
+        "roundname": f"Round {round_number}",
+        "year": date.today().year,
+        "hbehinds": FAKE.pyint(1, 15),
+        "hgoals": FAKE.pyint(1, 15),
+        "hscore": FAKE.pyint(20, 120),
+        "hteam": home_team,
+        "hteamid": TEAM_NAMES.index(home_team),
+        "abehinds": FAKE.pyint(1, 15),
+        "agoals": FAKE.pyint(1, 15),
+        "ascore": FAKE.pyint(20, 120),
+        "ateam": away_team,
+        "ateamid": TEAM_NAMES.index(away_team),
+        "winner": winner,
+        "winnerteamid": TEAM_NAMES.index(winner),
+        "is_grand_final": 0,
+        "complete": 100,
+        "is_final": 0,
+        "id": FAKE.pyint(1, 200),
+        "venue": np.random.choice(list(VENUE_CITIES.keys())),
+    }
+
+
+def fake_match_results_data(row_count: int, round_number: int) -> pd.DataFrame:
+    """
+    Generate dummy data that replicates match results data.
+
+    Params
+    ------
+    row_count: Number of match rows to return
+
+    Returns
+    -------
+    DataFrame of match results data
+    """
+    team_names = CyclicalTeamNames()
+
+    return pd.DataFrame(
+        [_results_by_match(round_number, team_names) for _ in range(row_count)]
+    )
 
 
 def _players_by_match(
