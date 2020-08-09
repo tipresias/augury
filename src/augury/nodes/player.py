@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 import pytz
 
+from augury.nodes.feature_calculation import rolling_rate_filled_by_expanding_rate
 from augury.settings import TEAM_TRANSLATIONS, AVG_SEASON_LENGTH, INDEX_COLS
 from .base import (
     _parse_dates,
@@ -332,13 +333,15 @@ def add_rolling_player_stats(data_frame: pd.DataFrame):
         .shift()
         .assign(player_id=player_data_frame["player_id"])
         .fillna(0)
-        .groupby("player_id", group_keys=False)
+        .groupby("player_id", group_keys=True)
     )
 
-    rolling_stats = player_groups.rolling(window=AVG_SEASON_LENGTH).mean()
-    expanding_stats = player_groups.expanding(1).mean()
+    player_stats = (
+        rolling_rate_filled_by_expanding_rate(player_groups, AVG_SEASON_LENGTH)
+        .droplevel(level=0)
+        .sort_index()
+    )
 
-    player_stats = rolling_stats.fillna(expanding_stats).sort_index()
     rolling_stats_cols = {
         stats_col: f"rolling_prev_match_{stats_col}" for stats_col in STATS_COLS
     }

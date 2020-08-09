@@ -42,6 +42,16 @@ class TestFeatureCalculations(TestCase):
         self.assertIsInstance(calculated_data_frame, pd.DataFrame)
         self.assertFalse(any(calculated_data_frame.columns.duplicated()))
 
+    def test_rolling_rate_filled_by_expanding_rate(self):
+        groups = self.data_frame[["team", "score", "oppo_score"]].groupby("team")
+        window = 10
+        rolling_values = feature_calculation.rolling_rate_filled_by_expanding_rate(
+            groups, window
+        )
+
+        # It doesn't have any blank values
+        self.assertFalse(rolling_values.isna().any().any())
+
     def test_calculate_rolling_rate(self):
         calc_function = feature_calculation.calculate_rolling_rate(("score",))
 
