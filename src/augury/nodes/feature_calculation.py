@@ -58,6 +58,42 @@ def feature_calculator(calculators: List[CalculatorPair]) -> DataFrameTransforme
     )
 
 
+def rolling_rate_filled_by_expanding_rate(
+    groups: pd.DataFrame, rolling_window: int
+) -> pd.DataFrame:
+    """
+    Fill blank values from rolling mean with expanding mean values.
+
+    Params:
+    -------
+    groups: A data frame produced by pandas' groupby method
+    rolling_window: How large a window to use for rolling mean calculations
+
+    Returns:
+    --------
+    A data frame with rolling mean values, using expanding values
+        for the initial window
+    """
+    expanding_rate = groups.expanding(1).mean()
+    rolling_rate = groups.rolling(window=rolling_window).mean()
+
+    # When the original data frame has a multi-index, expanding and rolling produce
+    # different index shapes:
+    # Group.expanding appends the data frame's original index at the end
+    # of the group-key index.
+    # Group.rolling converts a data frame's multi-index into a single level
+    # with tuple values and appends that at the end of the group-key index.
+    # It seems that the easiest way to make the indices compatible is to expand
+    # the tuples from rolling into separate index levels to match expanding.
+    if expanding_rate.index.names != rolling_rate.index.names:
+        rolling_rate.index = pd.MultiIndex.from_tuples(
+            [tuple([*value[:-1], *value[-1]]) for value in rolling_rate.index.values],
+            names=expanding_rate.index.names,
+        )
+
+    return rolling_rate.fillna(expanding_rate)
+
+
 def _rolling_rate(column: str, data_frame: pd.DataFrame) -> pd.Series:
     if column not in data_frame.columns:
         raise ValueError(
@@ -66,20 +102,10 @@ def _rolling_rate(column: str, data_frame: pd.DataFrame) -> pd.Series:
             f"{data_frame.columns}"
         )
 
-    groups = data_frame[column].groupby(level=TEAM_LEVEL, group_keys=False)
-
-    # Using mean season length (23) for rolling window due to a combination of
-    # testing different window values for a previous model and finding 23 to be
-    # a good window for data vis.
-    # Not super scientific, but it works well enough.
-    rolling_rate = groups.rolling(window=AVG_SEASON_LENGTH).mean()
-
-    # Only select rows that are NaNs in rolling series
-    blank_rolling_rows = rolling_rate.isna()
-    expanding_rate = groups.expanding(1).mean()[blank_rolling_rows]
+    groups = data_frame[column].groupby(level=TEAM_LEVEL, group_keys=True)
 
     return (
-        pd.concat([rolling_rate, expanding_rate], join="inner")
+        rolling_rate_filled_by_expanding_rate(groups, AVG_SEASON_LENGTH)
         .dropna()
         .sort_index()
         .rename(f"rolling_{column}_rate")
@@ -122,17 +148,11 @@ def _rolling_mean_by_dimension(
     prev_match_values_label = f"prev_{metric_column}_by_{dimension_column}"
 
     groups = data_frame.assign(**{prev_match_values_label: prev_match_values}).groupby(
-        ["team", dimension_column], group_keys=False
+        ["team", dimension_column], group_keys=True
     )[prev_match_values_label]
 
-    rolling_rate = groups.rolling(window=rolling_window).mean()
-
-    # Only select rows that are NaNs in rolling series
-    blank_rolling_rows = rolling_rate.isna()
-    expanding_rate = groups.expanding(1).mean()[blank_rolling_rows]
-
     return (
-        pd.concat([rolling_rate, expanding_rate], join="inner")
+        rolling_rate_filled_by_expanding_rate(groups, rolling_window)
         .reset_index(level=[0, 1], drop=True)
         .dropna()
         .sort_index()
