@@ -42,6 +42,18 @@ class TestFeatureCalculations(TestCase):
         self.assertIsInstance(calculated_data_frame, pd.DataFrame)
         self.assertFalse(any(calculated_data_frame.columns.duplicated()))
 
+        with self.subTest("with calculate_rolling_rate"):
+            calculators = [(feature_calculation.calculate_rolling_rate, [("score",)])]
+
+            with self.subTest("with a multi-indexed data frame"):
+                multi_index_df = self.data_frame.set_index(
+                    ["team", "year", "round_number"], drop=False
+                )
+
+                # It runs without error
+                calc_function = feature_calculation.feature_calculator(calculators)
+                calc_function(multi_index_df)
+
     def test_rolling_rate_filled_by_expanding_rate(self):
         groups = self.data_frame[["team", "score", "oppo_score"]].groupby("team")
         window = 10
