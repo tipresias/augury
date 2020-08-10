@@ -106,6 +106,7 @@ def _rolling_rate(column: str, data_frame: pd.DataFrame) -> pd.Series:
 
     return (
         rolling_rate_filled_by_expanding_rate(groups, AVG_SEASON_LENGTH)
+        .droplevel(level=0)
         .dropna()
         .sort_index()
         .rename(f"rolling_{column}_rate")
