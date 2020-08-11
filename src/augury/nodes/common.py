@@ -62,7 +62,7 @@ def _combine_data_horizontally(*data_frames: Sequence[pd.DataFrame]):
     max_date_data_frame = max(sorted_data_frames, key=lambda df: df["date"].max())
 
     for column in set(joined_data_frame.columns[duplicate_columns]):
-        combined_data_frame.loc[:, column] = combined_data_frame[column].fillna(
+        combined_data_frame.loc[:, [column]] = combined_data_frame[column].fillna(
             max_date_data_frame[column]
         )
 
