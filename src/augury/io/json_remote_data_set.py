@@ -13,16 +13,18 @@ JAN = 1
 FIRST = 1
 DEC = 12
 THIRTY_FIRST = 31
+WEEK = 7
 # Saved data will generally go to the end of previous year, so default for start_date
 # for fetched data is beginning of this year
 BEGINNING_OF_YEAR = date(TODAY.year, JAN, FIRST)
 END_OF_YEAR = date(TODAY.year, DEC, THIRTY_FIRST)
 MODULE_SEPARATOR = "."
-# We make start of week the dividing line between past & future rounds,
+# We make a week ago the dividing line between past & future rounds,
 # because "past" data sets aren't updated until a few days after a given round is over,
 # meaning we have to keep relying on "future" data sets for past matches
 # if we run the pipeline mid-round
 START_OF_WEEK = TODAY - timedelta(days=TODAY.weekday())
+ONE_WEEK_AGO = TODAY - timedelta(days=WEEK)
 
 DATE_RANGE_TYPE: Dict[str, Dict[str, str]] = {
     "whole_season": {
@@ -33,7 +35,7 @@ DATE_RANGE_TYPE: Dict[str, Dict[str, str]] = {
         "start_date": str(BEGINNING_OF_YEAR),
         "end_date": str(START_OF_WEEK),
     },
-    "future_rounds": {"start_date": str(START_OF_WEEK), "end_date": str(END_OF_YEAR)},
+    "future_rounds": {"start_date": str(ONE_WEEK_AGO), "end_date": str(END_OF_YEAR)},
 }
 
 
