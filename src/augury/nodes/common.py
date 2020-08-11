@@ -49,15 +49,28 @@ def _combine_data_horizontally(*data_frames: Sequence[pd.DataFrame]):
     # duplicated column to make sure we don't lose earlier values of shared columns
     # (e.g. dropping match data's 'date' column in favor of the betting data 'date'
     # column results in lots of NaT values, because betting data only goes back to 2010)
-    sorted_data_frames = sorted(data_frames, key=len, reverse=True)
+    sorted_data_frames: List[pd.DataFrame] = sorted(data_frames, key=len, reverse=True)
     joined_data_frame = pd.concat(sorted_data_frames, axis=1, sort=False)
     duplicate_columns = joined_data_frame.columns.duplicated(keep="first")
 
-    combined_data_frame = joined_data_frame.loc[:, ~duplicate_columns].fillna(0)
+    combined_data_frame = joined_data_frame.loc[:, ~duplicate_columns]
 
-    _validate_no_dodgy_zeros(combined_data_frame)
+    # Due to vagaries in data updates, sometimes the longest data set is missing
+    # the most-recent round which results in blank rows for required columns
+    # like data and round_number. So, we make sure to fill those values
+    # with the data set that has the most-recent data just to be sure.
+    max_date_data_frame = max(sorted_data_frames, key=lambda df: df["date"].max())
 
-    return combined_data_frame
+    for column in set(joined_data_frame.columns[duplicate_columns]):
+        combined_data_frame.loc[:, column] = combined_data_frame[column].fillna(
+            max_date_data_frame[column]
+        )
+
+    filled_data_frame = combined_data_frame.fillna(0)
+
+    _validate_no_dodgy_zeros(filled_data_frame)
+
+    return filled_data_frame
 
 
 def _append_data_frames(
@@ -84,9 +97,7 @@ def _combine_data_vertically(*data_frames: Sequence[pd.DataFrame]):
     valid_data_frames = [
         df for df in cast(Sequence[pd.DataFrame], data_frames) if df.any().any()
     ]
-
     sorted_data_frames = sorted(valid_data_frames, key=lambda df: df["date"].min())
-
     combined_data_frame = reduce(_append_data_frames, sorted_data_frames).fillna(0)
 
     _validate_no_dodgy_zeros(combined_data_frame)
