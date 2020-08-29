@@ -40,7 +40,7 @@ yellowbrick
 shap
 
 # Testing/Linting
-pylint==2.5.3
+pylint==2.6.0
 black
 faker
 freezegun
