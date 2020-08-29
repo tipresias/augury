@@ -21,6 +21,7 @@ tensorflow==2.3.0
 # Kedro packages
 kedro==0.16.4
 gcsfs # Needed to access Google Cloud Storage files
+fsspec==0.8.0 # Needed for DataSet functionality
 
 # Testing/Linting
 mypy>=0.70 # Need mypy due to references to mypy_extensions in production code
