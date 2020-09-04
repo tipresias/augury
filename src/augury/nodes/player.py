@@ -3,6 +3,7 @@
 from typing import Callable, List, Dict, Union, Tuple
 from functools import partial, update_wrapper
 from datetime import datetime, timedelta
+import re
 
 import pandas as pd
 import pytz
@@ -76,6 +77,8 @@ PLAYER_STATS_COLS = [
     "rolling_prev_match_time_on_ground",
     "last_year_brownlow_votes",
 ]
+
+SURNAME_REGEX = re.compile(r"[^\s]*\s+(.+)")
 
 
 def _translate_team_name(team_name: str) -> str:
@@ -194,14 +197,28 @@ def clean_roster_data(
             home_team=_translate_team_column("home_team"),
             away_team=_translate_team_column("away_team"),
             playing_for=_translate_team_column("playing_for"),
+            surname=lambda df: df["player_name"].str.extract(SURNAME_REGEX),
         )
+        .drop("player_name", axis=1)
         .query("date > @start_of_week")
         .rename(columns={"season": "year"})
         .merge(
-            clean_player_data_frame[["player_name", "player_id"]],
-            on=["player_name"],
+            clean_player_data_frame[["player_name", "player_id", "playing_for"]].assign(
+                surname=lambda df: df["player_name"].str.extract(SURNAME_REGEX)
+            ),
+            # We join on surname + team name, because different data sources
+            # use different versions of first names
+            # (e.g. 'Mike' vs 'Michael', 'Nic' vs 'Nicholas').
+            # A quick check of data from 1965-2019 shows that this results
+            # in 1.6% of rows being duplicates, mostly from a pair of players
+            # with the same surname playing together for multiple seasons.
+            # The alternative is manual mapping of names, which would be excessive,
+            # so we'll accept this error rate, especially since the _real_ error rate
+            # is a bit lower due to joins sometimes being correct due to random chance.
+            on=["surname", "playing_for"],
             how="left",
         )
+        .drop("surname", axis=1)
         .sort_values("player_id", ascending=False)
         # There are some duplicate player names over the years, so we drop the oldest,
         # hoping that the contemporary player matches the one with the most-recent

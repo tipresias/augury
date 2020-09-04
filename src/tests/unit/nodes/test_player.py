@@ -57,11 +57,8 @@ class TestPlayer(TestCase, ColumnAssertionMixin):
         roster_data = pd.read_json(
             os.path.join(TEST_DATA_DIR, "team_rosters.json"), convert_dates=False
         )
-        dummy_player_data = pd.DataFrame(
-            {
-                "player_id": [FAKE.ean() for _ in range(len(roster_data))],
-                "player_name": [FAKE.name() for _ in range(len(roster_data))],
-            }
+        dummy_player_data = fake_cleaned_player_data(
+            N_MATCHES_PER_SEASON, YEAR_RANGE, N_PLAYERS_PER_TEAM
         )
 
         clean_data = player.clean_roster_data(roster_data, dummy_player_data)
