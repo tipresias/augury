@@ -19,10 +19,8 @@ before_script:
   - docker pull cfranklin11/tipresias_data_science:latest
   - docker build --cache-from cfranklin11/tipresias_data_science:latest -t cfranklin11/tipresias_data_science:latest -f Dockerfile.local .
   # Set up authentication
-  - openssl aes-256-cbc -K $encrypted_3b9f0b9d36d1_key -iv $encrypted_3b9f0b9d36d1_iv -in secrets.tar.enc -out secrets.tar -d
-  - tar xvf secrets.tar
+  - openssl aes-256-cbc -K $encrypted_241002f0ef4b_key -iv $encrypted_241002f0ef4b_iv -in keyfile.json.enc -out keyfile.json -d
   - mkdir ${PWD}/.gcloud && mv keyfile.json ${GOOGLE_APPLICATION_CREDENTIALS}
-  - mv deploy_rsa ${HOME}/.ssh/
   # Set up test coverage monitoring
   - ./cc-test-reporter before-build
 script:
