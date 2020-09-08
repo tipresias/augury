@@ -18,12 +18,15 @@ AFL_DATA_SERVICE_TOKEN=${AFL_DATA_SERVICE_TOKEN},\
 PYTHON_ENV=production,\
 DATA_SCIENCE_SERVICE_TOKEN=${DATA_SCIENCE_SERVICE_TOKEN},\
 AFL_DATA_SERVICE=${AFL_DATA_SERVICE},\
-TIPRESIAS_APP_TOKEN=${TIPRESIAS_APP_TOKEN}
+TIPRESIAS_APP_TOKEN=${TIPRESIAS_APP_TOKEN},\
+ROLLBAR_TOKEN=${ROLLBAR_TOKEN}
 "
 
 gcloud beta run deploy augury \
   --image gcr.io/${PROJECT_ID}/augury \
-  --memory 2048Mi \
-  --region us-central1 \
+  --memory 4Gi \
+  --region australia-southeast1 \
+  --max-instances 5 \
+  --concurrency 1 \
   --platform managed \
   --update-env-vars ${GOOGLE_ENV_VARS}

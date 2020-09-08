@@ -7,6 +7,7 @@ joblib
 simplejson
 bottle==0.12.18
 gunicorn
+rollbar
 
 # Data packages
 numpy==1.19.1
