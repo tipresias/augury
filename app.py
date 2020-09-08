@@ -16,12 +16,21 @@ if SRC_PATH not in sys.path:
 from augury import api
 
 
-IS_PRODUCTION = os.getenv("PYTHON_ENV", "").lower() == "production"
+PYTHON_ENV = os.getenv("PYTHON_ENV", "development").lower()
+IS_PRODUCTION = PYTHON_ENV == "production"
 TIPRESIAS_HOST = (
     "http://www.tipresias.net" if IS_PRODUCTION else "http://host.docker.internal:8000"
 )
 
 app = Bottle()
+
+if IS_PRODUCTION:
+    from rollbar.contrib.bottle import RollbarBottleReporter
+
+    rbr = RollbarBottleReporter(
+        access_token=os.getenv("ROLLBAR_TOKEN", ""), environment=PYTHON_ENV,
+    )
+    app.install(rbr)
 
 
 def _run_kwargs():
