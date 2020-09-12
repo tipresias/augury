@@ -10,7 +10,8 @@ memory_profiler
 dask[complete]>=2.3
 mlflow==1.11.0
 catboost
-fbprophet
+pystan # required for fbprophet
+fbprophet==0.7.1
 category_encoders
 
 # Kedro packages
@@ -19,8 +20,7 @@ jupyter>=1.0.0, <2.0
 jupyterlab==2.2.6
 jupyter_nbextensions_configurator==0.4.1
 jupyter_contrib_nbextensions==0.5.1
-# Required version for jupyter-console 6.0.0
-prompt-toolkit>=2.0.0,<3.1.0
+prompt-toolkit>=2.0.0,<3.1.0 # Required version for jupyter-console 6.0.0
 nbstripout==0.3.9
 pytest==6.0.1
 pytest-cov>=2.5, <3.0
