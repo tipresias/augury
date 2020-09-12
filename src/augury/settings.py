@@ -55,12 +55,10 @@ TEAM_TRANSLATIONS = {
     "Power": "Port Adelaide",
     "Saints": "St Kilda",
     "Eagles": "West Coast",
-    "Lions": "Brisbane",
+    "Lions": "Brisbane Lions",
     "Cats": "Geelong",
     "Hawks": "Hawthorn",
     "Adelaide Crows": "Adelaide",
-    "Brisbane Lions": "Brisbane",
-    "Brisbane Bears": "Brisbane",
     "Gold Coast Suns": "Gold Coast",
     "Geelong Cats": "Geelong",
     "West Coast Eagles": "West Coast",
@@ -221,7 +219,8 @@ CITIES: Dict[str, Dict[str, Union[str, float]]] = {
 
 TEAM_CITIES = {
     "Adelaide": "Adelaide",
-    "Brisbane": "Brisbane",
+    "Brisbane Lions": "Brisbane",
+    "Brisbane Bears": "Brisbane",
     "Carlton": "Melbourne",
     "Collingwood": "Melbourne",
     "Essendon": "Melbourne",
