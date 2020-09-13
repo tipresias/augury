@@ -7,9 +7,9 @@ from datetime import date
 from typing import List
 import json
 from faker import Faker
+import candystore
 
 from tests.fixtures.data_factories import (
-    fake_fixture_data,
     fake_raw_match_data,
     fake_match_results_data,
 )
@@ -44,7 +44,9 @@ class TestApi(TestCase):
         MagicMock(return_value={"fake": create_fake_pipeline()}),
     )
     def test_make_predictions(self, mock_make_predictions):
-        mock_make_predictions.return_value = fake_fixture_data(N_MATCHES, YEAR_RANGE)
+        mock_make_predictions.return_value = candystore.generate_fixtures(
+            seasons=YEAR_RANGE
+        )
         response = api.make_predictions(YEAR_RANGE, ml_model_names=["fake_estimator"])
 
         # Check that it serializes to valid JSON due to potential issues
@@ -77,7 +79,7 @@ class TestApi(TestCase):
 
         data_importer = match_data
         data_importer.fetch_fixture_data = Mock(
-            return_value=fake_fixture_data(N_MATCHES, YEAR_RANGE, clean=False)
+            return_value=candystore.generate_fixtures(YEAR_RANGE)
         )
 
         response = api.fetch_fixture_data(

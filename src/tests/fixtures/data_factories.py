@@ -17,7 +17,6 @@ from augury.settings import (
     MELBOURNE_TIMEZONE,
 )
 from augury.types import BettingData
-from augury.nodes.base import _parse_dates
 
 
 FixtureData = TypedDict(
@@ -462,55 +461,6 @@ def fake_footywire_betting_data(
     reduced_data = list(itertools.chain.from_iterable(data))
 
     return pd.DataFrame(list(reduced_data)).sort_index()
-
-
-def _fixture_data(year: int, team_names: Tuple[str, str]) -> FixtureData:
-    return {
-        "date": str(
-            FAKE.date_time_between_dates(
-                **_min_max_datetimes_by_year(year, force_future=True)
-            )
-        ),
-        "season": year,
-        "round": 1,
-        "home_team": team_names[0],
-        "away_team": team_names[1],
-        "venue": np.random.choice(list(VENUE_CITIES.keys())),
-    }
-
-
-def _fixture_by_round(row_count: int, year: int) -> List[FixtureData]:
-    team_names = CyclicalTeamNames()
-
-    return [
-        _fixture_data(year, (team_names.next_team(), team_names.next_team()))
-        for idx in range(row_count)
-    ]
-
-
-def _fixture_by_year(
-    row_count: int, year_range: Tuple[int, int]
-) -> List[List[FixtureData]]:
-    return [_fixture_by_round(row_count, year) for year in range(*year_range)]
-
-
-def fake_fixture_data(
-    row_count: int, year_range: Tuple[int, int], clean=True
-) -> pd.DataFrame:
-    """Generate dummy data that replicates fixture data.
-
-    This represents future match data before it has passed through
-    the initial cleaning node `match.clean_fixture_data`.
-    """
-    data = _fixture_by_year(row_count, year_range)
-    reduced_data = list(itertools.chain.from_iterable(data))
-
-    data_frame = pd.DataFrame(list(reduced_data)).sort_index()
-
-    if clean:
-        return data_frame.assign(date=_parse_dates)
-
-    return data_frame
 
 
 def fake_roster_data(match_count: int, n_players_per_team: int) -> pd.DataFrame:
