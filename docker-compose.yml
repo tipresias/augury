@@ -25,15 +25,17 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - browser
+      - splash
     stdin_open: true
     tty: true
     env_file: .env
     command: Rscript app.R
-  browser:
-    image: selenium/standalone-chrome:3.141.59
+  splash:
+    image: scrapinghub/splash
     ports:
-      - "4444:4444"
+      - "8050:8050"
+    # String matching functions aren't available in sandbox mode for some reason
+    command: --disable-lua-sandbox
   notebook:
     image: augury_data_science:latest
     volumes:
