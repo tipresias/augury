@@ -25,6 +25,7 @@ before_script:
   - ./cc-test-reporter before-build
 script:
   # Linting & unit tests
+  - docker run cfranklin11/tipresias_data_science:latest pip3 check
   - docker run cfranklin11/tipresias_data_science:latest pylint --disable=R src app.py
   - docker run cfranklin11/tipresias_data_science:latest mypy src app.py
   - docker run cfranklin11/tipresias_data_science:latest pydocstyle src app.py
