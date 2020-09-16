@@ -17,7 +17,7 @@ category_encoders
 # Kedro packages
 ipython>=7.0.0, <8.0
 jupyter>=1.0.0, <2.0
-jupyterlab==2.2.6
+jupyterlab==2.2.8
 jupyter_nbextensions_configurator==0.4.1
 jupyter_contrib_nbextensions==0.5.1
 prompt-toolkit>=2.0.0,<3.1.0 # Required version for jupyter-console 6.0.0
