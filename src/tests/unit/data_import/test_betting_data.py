@@ -5,8 +5,8 @@ import os
 from unittest import TestCase
 from unittest.mock import patch, mock_open
 import json
+from candystore import CandyStore
 
-from tests.fixtures.data_factories import fake_footywire_betting_data
 from augury.settings import RAW_DATA_DIR
 from augury.data_import.betting_data import save_betting_data
 
@@ -24,9 +24,9 @@ BETTING_DATA_PATH = os.path.join(
 
 class TestBettingData(TestCase):
     def setUp(self):
-        self.fake_betting_data = fake_footywire_betting_data(
-            N_MATCHES_PER_YEAR, (START_YEAR, END_YEAR)
-        ).to_dict("records")
+        self.fake_betting_data = CandyStore(
+            seasons=(START_YEAR, END_YEAR)
+        ).betting_odds()
 
     @patch(f"{BETTING_DATA_MODULE_PATH}.fetch_betting_data")
     @patch("builtins.open", mock_open())
