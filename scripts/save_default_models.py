@@ -10,6 +10,7 @@ from dateutil import parser
 from joblib import Parallel, delayed
 import numpy as np
 import pandas as pd
+from kedro.extras.datasets.pickle import PickleDataSet
 
 from tests.fixtures.fake_estimator import pickle_fake_estimator
 from augury.ml_estimators import (
@@ -19,7 +20,6 @@ from augury.ml_estimators import (
     ConfidenceEstimator,
 )
 from augury.ml_data import MLData
-from augury.io import PickleGCStorageDataSet
 from augury.settings import SEED, PREDICTION_DATA_START_DATE
 from augury.context import load_project_context
 
@@ -28,6 +28,7 @@ np.random.seed(SEED)
 
 BUCKET_NAME = "afl_data"
 TRAIN_YEAR_RANGE = (2020,)
+GOOGLE_APPLICATION_CREDENTIALS = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "")
 
 
 def _train_save_model(model, **data_kwargs):
@@ -37,8 +38,13 @@ def _train_save_model(model, **data_kwargs):
 
     # For now, we're using a flat file structure in the data bucket,
     # so we just want the filename of the pickled model
-    bucket_filepath = os.path.split(model.pickle_filepath)[-1]
-    data_set = PickleGCStorageDataSet(filepath=bucket_filepath, bucket_name=BUCKET_NAME)
+    bucket_filename = os.path.split(model.pickle_filepath)[-1]
+    data_set = PickleDataSet(
+        filepath=f"gs://{BUCKET_NAME}/{bucket_filename}",
+        backend="joblib",
+        fs_args={"project": "tipresias"},
+        credentials={"token": GOOGLE_APPLICATION_CREDENTIALS},
+    )
     data_set.save(model)
 
 
