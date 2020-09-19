@@ -108,7 +108,7 @@ class TestCorrelationSelector(TestCase):
             self.selector = CorrelationSelector()
 
             with self.assertRaisesRegex(AssertionError, r"Need labels argument"):
-                self.selector.fit_transform(self.X, pd.Series())
+                self.selector.fit_transform(self.X, pd.Series(dtype="object"))
 
 
 class TestEloRegressor(TestCase):

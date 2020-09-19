@@ -53,7 +53,7 @@ def _combine_data_horizontally(*data_frames: Sequence[pd.DataFrame]):
     joined_data_frame = pd.concat(sorted_data_frames, axis=1, sort=False)
     duplicate_columns = joined_data_frame.columns.duplicated(keep="first")
 
-    combined_data_frame = joined_data_frame.loc[:, ~duplicate_columns]
+    combined_data_frame = joined_data_frame.loc[:, ~duplicate_columns].copy()
 
     # Due to vagaries in data updates, sometimes the longest data set is missing
     # the most-recent round which results in blank rows for required columns
@@ -291,7 +291,7 @@ def _add_oppo_features_node(
         data_frame, match_cols=match_cols, oppo_feature_cols=oppo_feature_cols
     )
 
-    REQUIRED_COLS: List[str] = (INDEX_COLS + ["oppo_team"] + cols_to_convert)
+    REQUIRED_COLS: List[str] = INDEX_COLS + ["oppo_team"] + cols_to_convert
 
     _validate_required_columns(REQUIRED_COLS, data_frame.columns)
 

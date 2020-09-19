@@ -23,7 +23,7 @@ class CorrelationSelector(BaseEstimator, TransformerMixin):
         self,
         cols_to_keep: List[str] = [],
         threshold: Optional[float] = None,
-        labels=pd.Series(),
+        labels=pd.Series(dtype="object"),
     ) -> None:
         """Instantiate a CorrelationSelector transformer.
 
