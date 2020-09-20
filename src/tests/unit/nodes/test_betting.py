@@ -6,11 +6,9 @@ from datetime import time
 
 import numpy as np
 import pytz
+from candystore import CandyStore
 
-from tests.fixtures.data_factories import (
-    fake_footywire_betting_data,
-    fake_cleaned_match_data,
-)
+from tests.fixtures import data_factories
 from tests.helpers import ColumnAssertionMixin
 from augury.nodes import betting
 
@@ -27,8 +25,8 @@ N_TEAMMATCH_ROWS = N_MATCHES_PER_SEASON * len(range(*YEAR_RANGE)) * 2
 
 class TestBetting(TestCase, ColumnAssertionMixin):
     def setUp(self):
-        self.raw_betting_data = fake_footywire_betting_data(
-            N_MATCHES_PER_SEASON, YEAR_RANGE, clean=False
+        self.raw_betting_data = CandyStore(seasons=YEAR_RANGE).betting_odds(
+            to_dict=None
         )
 
     def test_clean_data(self):
@@ -48,7 +46,7 @@ class TestBetting(TestCase, ColumnAssertionMixin):
     def test_add_betting_pred_win(self):
         feature_function = betting.add_betting_pred_win
 
-        valid_data_frame = fake_cleaned_match_data(
+        valid_data_frame = data_factories.fake_cleaned_match_data(
             N_MATCHES_PER_SEASON, YEAR_RANGE
         ).assign(
             win_odds=np.random.randint(0, 2, N_TEAMMATCH_ROWS),

@@ -7,14 +7,11 @@ from datetime import datetime
 
 import pandas as pd
 import numpy as np
+from candystore import CandyStore
 
-from tests.fixtures.data_factories import (
-    fake_raw_match_data,
-    fake_footywire_betting_data,
-    fake_cleaned_match_data,
-)
+from tests.fixtures import data_factories
 from tests.helpers import ColumnAssertionMixin
-from augury.nodes import common
+from augury.nodes import common, base
 from augury.settings import MELBOURNE_TIMEZONE, INDEX_COLS
 
 START_DATE = "2013-01-01"
@@ -31,10 +28,12 @@ N_TEAMMATCH_ROWS = N_MATCHES_PER_SEASON * len(range(*YEAR_RANGE)) * 2
 
 class TestCommon(TestCase, ColumnAssertionMixin):
     def setUp(self):
-        self.data_frame = fake_cleaned_match_data(N_MATCHES_PER_SEASON, YEAR_RANGE)
+        self.data_frame = data_factories.fake_cleaned_match_data(
+            N_MATCHES_PER_SEASON, YEAR_RANGE
+        )
 
     def test_convert_to_data_frame(self):
-        data = fake_raw_match_data(
+        data = data_factories.fake_raw_match_data(
             N_MATCHES_PER_SEASON, (START_YEAR, END_YEAR)
         ).to_dict("records")
 
@@ -61,13 +60,13 @@ class TestCommon(TestCase, ColumnAssertionMixin):
             self.assertFalse(any(data_frames.columns))
 
     def test_combine_data(self):
-        raw_betting_data = fake_footywire_betting_data(
-            N_MATCHES_PER_SEASON, YEAR_RANGE, clean=False
-        )
+        raw_betting_data = CandyStore(seasons=YEAR_RANGE).betting_odds(to_dict=None)
         min_year_range = min(YEAR_RANGE)
-        older_data = fake_footywire_betting_data(
-            N_MATCHES_PER_SEASON, (min_year_range - 2, min_year_range), clean=False
-        ).append(raw_betting_data.query("season == @min_year_range"))
+        older_data = (
+            CandyStore(seasons=(min_year_range - 2, min_year_range))
+            .betting_odds(to_dict=None)
+            .append(raw_betting_data.query("season == @min_year_range"))
+        )
 
         combine_data_func = common.combine_data(axis=0)
         combined_data = combine_data_func(raw_betting_data, older_data)
@@ -75,20 +74,22 @@ class TestCommon(TestCase, ColumnAssertionMixin):
         total_year_range = range(min_year_range - 2, max(YEAR_RANGE))
         self.assertEqual({*total_year_range}, {*combined_data["season"]})
 
-        self.assertEqual(
-            N_MATCHES_PER_SEASON * len(total_year_range), len(combined_data)
-        )
+        expected_row_count = len(
+            raw_betting_data.query("season != @min_year_range")
+        ) + len(older_data)
+
+        self.assertEqual(expected_row_count, len(combined_data))
 
         with self.subTest(axis=1):
             match_year_range = (START_YEAR - 2, END_YEAR)
-            match_data = fake_raw_match_data(N_MATCHES_PER_SEASON, match_year_range)
+            match_data = data_factories.fake_raw_match_data(
+                N_MATCHES_PER_SEASON, match_year_range
+            )
 
             combine_data_func = common.combine_data(axis=1)
             combined_data = combine_data_func(raw_betting_data, match_data)
 
-            self.assertEqual(
-                N_MATCHES_PER_SEASON * len(range(*match_year_range)), len(combined_data)
-            )
+            self.assertEqual(len(raw_betting_data), len(combined_data))
 
             self.assertEqual(
                 set(raw_betting_data.columns) | set(match_data.columns),
@@ -98,8 +99,10 @@ class TestCommon(TestCase, ColumnAssertionMixin):
             self.assertFalse(combined_data["date"].isna().any())
 
     def test_filter_by_date(self):
-        raw_betting_data = fake_footywire_betting_data(
-            N_MATCHES_PER_SEASON, YEAR_RANGE, clean=True
+        raw_betting_data = (
+            CandyStore(seasons=YEAR_RANGE)
+            .betting_odds(to_dict=None)
+            .assign(date=base._parse_dates)  # pylint: disable=protected-access
         )
         filter_start = f"{START_YEAR + 1}-06-01"
         filter_start_date = datetime.strptime(  # pylint: disable=unused-variable
@@ -132,7 +135,9 @@ class TestCommon(TestCase, ColumnAssertionMixin):
     def test_convert_match_rows_to_teammatch_rows(self):
         # DataFrame w/ minimum valid columns
         valid_data_frame = (
-            fake_cleaned_match_data(N_MATCHES_PER_SEASON, YEAR_RANGE, oppo_rows=False)
+            data_factories.fake_cleaned_match_data(
+                N_MATCHES_PER_SEASON, YEAR_RANGE, oppo_rows=False
+            )
             .rename(
                 columns={
                     "team": "home_team",
@@ -273,7 +278,7 @@ class TestCommon(TestCase, ColumnAssertionMixin):
 
     def test_finalize_data(self):
         data_frame = (
-            fake_cleaned_match_data(N_MATCHES_PER_SEASON, YEAR_RANGE)
+            data_factories.fake_cleaned_match_data(N_MATCHES_PER_SEASON, YEAR_RANGE)
             .assign(nans=None)
             .astype({"year": "str"})
         )

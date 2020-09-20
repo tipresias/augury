@@ -25,6 +25,7 @@ ROLLBAR_TOKEN=${ROLLBAR_TOKEN}
 gcloud beta run deploy augury \
   --image gcr.io/${PROJECT_ID}/augury \
   --memory 4Gi \
+  --timeout 900 \
   --region australia-southeast1 \
   --max-instances 5 \
   --concurrency 1 \

@@ -477,9 +477,9 @@ class TimeSeriesRegressor(BaseEstimator, RegressorMixin):
 
     def fit(self, X: pd.DataFrame, y: Union[pd.DataFrame, np.array]):
         """Fit the model to the training data."""
-        time_series_df = X.assign(y=y, ts_date=X["date"].dt.date).sort_values(
-            "ts_date", ascending=True
-        )
+        time_series_df = X.assign(
+            y=y.astype(float), ts_date=X["date"].dt.date
+        ).sort_values("ts_date", ascending=True)
 
         _ = [
             self._fit_team_model(team_name, team_df)
@@ -568,7 +568,11 @@ class TimeSeriesRegressor(BaseEstimator, RegressorMixin):
         return pd.Series(y_pred, name="yhat", index=team_df_index)
 
     def _exog_arg(self, data_frame: pd.DataFrame) -> Optional[np.array]:
-        return data_frame[self.exog_cols].to_numpy() if any(self.exog_cols) else None
+        return (
+            data_frame[self.exog_cols].astype(float).to_numpy()
+            if any(self.exog_cols)
+            else None
+        )
 
 
 class KerasClassifier(BaseEstimator, ClassifierMixin):
