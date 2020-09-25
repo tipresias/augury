@@ -111,7 +111,7 @@ def fetch_match_results_data(
     round_number: int, verbose: int = 1
 ) -> List[Dict[str, Any]]:
     """
-    Get AFL match results for the given round.
+    Get AFL match results for the given round from the latest season.
 
     Params
     ------

@@ -9,34 +9,29 @@ import pandas as pd
 import numpy as np
 from candystore import CandyStore
 
-from tests.fixtures import data_factories
 from tests.helpers import ColumnAssertionMixin
-from augury.nodes import common, base
+from augury.nodes import common, base, match
 from augury.settings import MELBOURNE_TIMEZONE, INDEX_COLS
 
 START_DATE = "2013-01-01"
 END_DATE = "2014-12-31"
 START_YEAR = int(START_DATE[:4])
 END_YEAR = int(END_DATE[:4]) + 1
-N_MATCHES_PER_SEASON = 4
 YEAR_RANGE = (START_YEAR, END_YEAR)
 REQUIRED_OUTPUT_COLS = ["home_team", "year", "round_number"]
-
-# Need to multiply by two, because we add team & oppo_team row per match
-N_TEAMMATCH_ROWS = N_MATCHES_PER_SEASON * len(range(*YEAR_RANGE)) * 2
 
 
 class TestCommon(TestCase, ColumnAssertionMixin):
     def setUp(self):
-        self.data_frame = data_factories.fake_cleaned_match_data(
-            N_MATCHES_PER_SEASON, YEAR_RANGE
+        self.data_frame = (
+            CandyStore(seasons=YEAR_RANGE)
+            .match_results(to_dict=None)
+            .pipe(match.clean_match_data)
+            .pipe(common.convert_match_rows_to_teammatch_rows)
         )
 
     def test_convert_to_data_frame(self):
-        data = data_factories.fake_raw_match_data(
-            N_MATCHES_PER_SEASON, (START_YEAR, END_YEAR)
-        ).to_dict("records")
-
+        data = CandyStore(seasons=(START_YEAR, END_YEAR)).match_results()
         data_frames = common.convert_to_data_frame(data, data)
 
         self.assertEqual(len(data_frames), 2)
@@ -82,14 +77,14 @@ class TestCommon(TestCase, ColumnAssertionMixin):
 
         with self.subTest(axis=1):
             match_year_range = (START_YEAR - 2, END_YEAR)
-            match_data = data_factories.fake_raw_match_data(
-                N_MATCHES_PER_SEASON, match_year_range
+            match_data = CandyStore(seasons=match_year_range).match_results(
+                to_dict=None
             )
 
             combine_data_func = common.combine_data(axis=1)
             combined_data = combine_data_func(raw_betting_data, match_data)
 
-            self.assertEqual(len(raw_betting_data), len(combined_data))
+            self.assertEqual(len(match_data), len(combined_data))
 
             self.assertEqual(
                 set(raw_betting_data.columns) | set(match_data.columns),
@@ -133,20 +128,10 @@ class TestCommon(TestCase, ColumnAssertionMixin):
                 filter_func(raw_betting_data.drop("date", axis=1))
 
     def test_convert_match_rows_to_teammatch_rows(self):
-        # DataFrame w/ minimum valid columns
         valid_data_frame = (
-            data_factories.fake_cleaned_match_data(
-                N_MATCHES_PER_SEASON, YEAR_RANGE, oppo_rows=False
-            )
-            .rename(
-                columns={
-                    "team": "home_team",
-                    "oppo_team": "away_team",
-                    "score": "home_score",
-                    "oppo_score": "away_score",
-                }
-            )
-            .assign(match_id=lambda df: np.arange(len(df)))
+            CandyStore(seasons=YEAR_RANGE)
+            .match_results(to_dict=None)
+            .pipe(match.clean_match_data)
         )
 
         invalid_data_frame = valid_data_frame.drop("year", axis=1)
@@ -187,9 +172,10 @@ class TestCommon(TestCase, ColumnAssertionMixin):
             "round_number",
         ]
         oppo_feature_cols = ["kicks", "marks"]
-        valid_data_frame = self.data_frame.assign(
-            kicks=np.random.randint(50, 100, N_TEAMMATCH_ROWS),
-            marks=np.random.randint(50, 100, N_TEAMMATCH_ROWS),
+
+        valid_data_frame = self.data_frame.loc[:, match_cols].assign(
+            kicks=np.random.randint(50, 100, len(self.data_frame)),
+            marks=np.random.randint(50, 100, len(self.data_frame)),
         )
 
         with self.subTest(data_frame=valid_data_frame, match_cols=match_cols):
@@ -198,7 +184,9 @@ class TestCommon(TestCase, ColumnAssertionMixin):
             transformed_df = transform_func(data_frame)
 
             # OppoFeatureBuilder adds 1 column per non-match column
-            self.assertEqual(len(data_frame.columns) + 2, len(transformed_df.columns))
+            self.assertEqual(
+                len(valid_data_frame.columns) + 2, len(transformed_df.columns)
+            )
 
             # Should add the two new oppo columns
             self.assertIn("oppo_kicks", transformed_df.columns)
@@ -277,11 +265,7 @@ class TestCommon(TestCase, ColumnAssertionMixin):
         )
 
     def test_finalize_data(self):
-        data_frame = (
-            data_factories.fake_cleaned_match_data(N_MATCHES_PER_SEASON, YEAR_RANGE)
-            .assign(nans=None)
-            .astype({"year": "str"})
-        )
+        data_frame = self.data_frame.assign(nans=None).astype({"year": "str"})
 
         finalized_data_frame = common.finalize_data(data_frame)
 
@@ -292,8 +276,8 @@ class TestCommon(TestCase, ColumnAssertionMixin):
         sort_data_frame_func = common.sort_data_frame_columns()
         sorted_data_frame = sort_data_frame_func(self.data_frame)
 
-        non_numeric_cols = {"date", "team", "oppo_team"}
-        first_cols = set(sorted_data_frame.columns[:3])
+        non_numeric_cols = {"team", "oppo_team", "venue", "round_type", "date"}
+        first_cols = set(sorted_data_frame.columns[slice(len(non_numeric_cols))])
 
         self.assertEqual(non_numeric_cols, non_numeric_cols & first_cols)
 

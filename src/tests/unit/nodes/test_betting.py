@@ -8,19 +8,12 @@ import numpy as np
 import pytz
 from candystore import CandyStore
 
-from tests.fixtures import data_factories
 from tests.helpers import ColumnAssertionMixin
 from augury.nodes import betting
 
 
-N_MATCHES_PER_SEASON = 4
-START_YEAR = 2013
-END_YEAR = 2015
 YEAR_RANGE = (2013, 2015)
 REQUIRED_OUTPUT_COLS = ["home_team", "year", "round_number"]
-
-# Need to multiply by two, because we add team & oppo_team row per match
-N_TEAMMATCH_ROWS = N_MATCHES_PER_SEASON * len(range(*YEAR_RANGE)) * 2
 
 
 class TestBetting(TestCase, ColumnAssertionMixin):
@@ -45,14 +38,13 @@ class TestBetting(TestCase, ColumnAssertionMixin):
 
     def test_add_betting_pred_win(self):
         feature_function = betting.add_betting_pred_win
+        match_data = CandyStore(seasons=YEAR_RANGE).match_results(to_dict=None)
 
-        valid_data_frame = data_factories.fake_cleaned_match_data(
-            N_MATCHES_PER_SEASON, YEAR_RANGE
-        ).assign(
-            win_odds=np.random.randint(0, 2, N_TEAMMATCH_ROWS),
-            oppo_win_odds=np.random.randint(0, 2, N_TEAMMATCH_ROWS),
-            line_odds=np.random.randint(-50, 50, N_TEAMMATCH_ROWS),
-            oppo_line_odds=np.random.randint(-50, 50, N_TEAMMATCH_ROWS),
+        valid_data_frame = match_data.assign(
+            win_odds=np.random.randint(0, 2, len(match_data)),
+            oppo_win_odds=np.random.randint(0, 2, len(match_data)),
+            line_odds=np.random.randint(-50, 50, len(match_data)),
+            oppo_line_odds=np.random.randint(-50, 50, len(match_data)),
         )
 
         self._make_column_assertions(

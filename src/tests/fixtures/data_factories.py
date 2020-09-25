@@ -12,11 +12,9 @@ from mypy_extensions import TypedDict
 from augury.settings import (
     TEAM_NAMES,
     DEFUNCT_TEAM_NAMES,
-    INDEX_COLS,
     VENUE_CITIES,
-    MELBOURNE_TIMEZONE,
+    TEAM_TRANSLATIONS,
 )
-from augury.types import BettingData
 
 
 FixtureData = TypedDict(
@@ -92,6 +90,32 @@ ROSTER_COLS = [
     "date",
     "match_id",
     "season",
+]
+
+MATCH_RESULTS_COLS = [
+    "date",
+    "tz",
+    "updated",
+    "round",
+    "roundname",
+    "year",
+    "hbehinds",
+    "hgoals",
+    "hscore",
+    "hteam",
+    "hteamid",
+    "abehinds",
+    "agoals",
+    "ascore",
+    "ateam",
+    "ateamid",
+    "winner",
+    "winnerteamid",
+    "is_grand_final",
+    "complete",
+    "is_final",
+    "id",
+    "venue",
 ]
 
 
@@ -236,101 +260,11 @@ def _add_oppo_rows(match_data: List[CleanedMatchData]) -> List[CleanedMatchData]
     return list(itertools.chain.from_iterable(data))
 
 
-def fake_cleaned_match_data(
-    match_count_per_year: int, year_range: Tuple[int, int], oppo_rows: bool = True
-) -> pd.DataFrame:
-    """Generate dummy data that replicates clean match data.
-
-    This represents past match data after it has passed through
-    the initial cleaning node `match.clean_match_data`.
-    """
-    data = cast(
-        List[List[CleanedMatchData]], _matches_by_year(match_count_per_year, year_range)
-    )
-    reduced_data = list(itertools.chain.from_iterable(data))
-
-    if oppo_rows:
-        data_frame = pd.DataFrame(_add_oppo_rows(reduced_data))
-    else:
-        data_frame = pd.DataFrame(reduced_data)
-
-    return (
-        data_frame.assign(
-            date=lambda df: pd.to_datetime(df["date"]).dt.tz_localize(
-                # Sometimes get ambiguous datetime errors due to 2:00 am to 3:00 am
-                # potentially being daylight-savings time or standard time
-                # on transitional days, so we just infer & shift forward,
-                # because we don't really care.
-                MELBOURNE_TIMEZONE,
-                ambiguous="infer",
-                nonexistent="shift_forward",
-            )
-        )
-        .set_index(INDEX_COLS, drop=False)
-        .rename_axis([None] * len(INDEX_COLS))
-        .sort_index()
-    )
-
-
-def fake_raw_match_data(
-    row_count: int, year_range: Tuple[int, int], clean=False
+def fake_match_results_data(
+    match_data: pd.DataFrame, round_number: int  # pylint: disable=unused-argument
 ) -> pd.DataFrame:
     """
-    Generate dummy data that replicates raw match data.
-
-    This represents data from past matches before it has passed through
-    the initial cleaning node `match.clean_match_data`.
-    """
-    data = cast(
-        List[List[MatchData]], _matches_by_year(row_count, year_range, raw=True)
-    )
-    reduced_data = list(itertools.chain.from_iterable(data))
-    data_frame = pd.DataFrame(list(reduced_data)).sort_index()
-
-    if clean:
-        return data_frame.rename(columns={"season": "year"})
-
-    return data_frame
-
-
-def _results_by_match(round_number: int, team_names: CyclicalTeamNames):
-    home_team = team_names.next_team()
-    away_team = team_names.next_team()
-    winner = np.random.choice([home_team, away_team])
-    match_date = FAKE.date_time_between_dates(
-        **_min_max_datetimes_by_year(date.today().year)
-    )
-
-    return {
-        "date": str(match_date),
-        "tz": "+10:00",
-        "updated": str(match_date + timedelta(hours=3)),
-        "round": round_number,
-        "roundname": f"Round {round_number}",
-        "year": date.today().year,
-        "hbehinds": FAKE.pyint(1, 15),
-        "hgoals": FAKE.pyint(1, 15),
-        "hscore": FAKE.pyint(20, 120),
-        "hteam": home_team,
-        "hteamid": TEAM_NAMES.index(home_team),
-        "abehinds": FAKE.pyint(1, 15),
-        "agoals": FAKE.pyint(1, 15),
-        "ascore": FAKE.pyint(20, 120),
-        "ateam": away_team,
-        "ateamid": TEAM_NAMES.index(away_team),
-        "winner": winner,
-        "winnerteamid": TEAM_NAMES.index(winner),
-        "is_grand_final": 0,
-        "complete": 100,
-        "is_final": 0,
-        "id": FAKE.pyint(1, 200),
-        "venue": np.random.choice(list(VENUE_CITIES.keys())),
-    }
-
-
-def fake_match_results_data(row_count: int, round_number: int) -> pd.DataFrame:
-    """
-    Generate dummy data that replicates match results data.
+    Generate dummy data that replicates match results data from the Squiggle API.
 
     Params
     ------
@@ -340,11 +274,48 @@ def fake_match_results_data(row_count: int, round_number: int) -> pd.DataFrame:
     -------
     DataFrame of match results data
     """
-    team_names = CyclicalTeamNames()
+    assert (
+        len(match_data["season"].drop_duplicates()) == 1
+    ), "Match results data is fetched one season at a time."
 
-    return pd.DataFrame(
-        [_results_by_match(round_number, team_names) for _ in range(row_count)]
-    )
+    return (
+        match_data.query("round_number == @round_number")
+        .assign(
+            updated=lambda df: pd.to_datetime(df["date"]) + timedelta(hours=3),
+            tz="+10:00",
+            # AFLTables match_results already have a 'round' column,
+            # so we have to replace rather than rename.
+            round=lambda df: df["round_number"],
+            roundname=lambda df: "Round " + df["round_number"].astype(str),
+            hteam=lambda df: df["home_team"].map(
+                lambda team: TEAM_TRANSLATIONS.get(team, team)
+            ),
+            ateam=lambda df: df["away_team"].map(
+                lambda team: TEAM_TRANSLATIONS.get(team, team)
+            ),
+            hteamid=lambda df: df["hteam"].map(TEAM_NAMES.index),
+            ateamid=lambda df: df["ateam"].map(TEAM_NAMES.index),
+            winner=lambda df: np.where(df["margin"] >= 0, df["hteam"], df["ateam"]),
+            winnerteamid=lambda df: df["winner"].map(TEAM_NAMES.index),
+            is_grand_final=0,
+            complete=100,
+            is_final=0,
+        )
+        .astype({"updated": str})
+        .reset_index(drop=False)
+        .rename(
+            columns={
+                "index": "id",
+                "season": "year",
+                "home_behinds": "hbehinds",
+                "home_goals": "hgoals",
+                "away_behinds": "abehinds",
+                "away_goals": "agoals",
+                "home_points": "hscore",
+                "away_points": "ascore",
+            }
+        )
+    ).loc[:, MATCH_RESULTS_COLS]
 
 
 def _players_by_match(
@@ -388,79 +359,6 @@ def fake_cleaned_player_data(
     reduced_player_data = list(itertools.chain.from_iterable(player_data))
 
     return pd.DataFrame(reduced_player_data).sort_index()
-
-
-def _betting_data(year: int, team_names: Tuple[str, str], clean=True) -> BettingData:
-    home_score, away_score = np.random.randint(50, 150), np.random.randint(50, 150)
-    home_line_odds = np.random.randint(-50, 50)
-    win_odds_diff = round((np.random.rand() * 0.8), 2)
-    home_win_odds_diff = win_odds_diff if home_line_odds > 0 else -1 * win_odds_diff
-    home_win_odds = BASELINE_BET_PAYOUT + home_win_odds_diff
-    away_win_odds = BASELINE_BET_PAYOUT - home_win_odds_diff
-
-    if clean:
-        betting_date = FAKE.date_time_between_dates(
-            **_min_max_datetimes_by_year(year), tzinfo=MELBOURNE_TIMEZONE
-        )
-    else:
-        betting_date = str(
-            FAKE.date_time_between_dates(**_min_max_datetimes_by_year(year))
-        )
-
-    return {
-        "date": betting_date,
-        "season": year,
-        "round_number": 1,
-        "round": f"{year} Round 1",
-        "home_team": team_names[0],
-        "away_team": team_names[1],
-        "home_score": home_score,
-        "away_score": away_score,
-        "home_margin": home_score - away_score,
-        "away_margin": away_score - home_score,
-        "home_win_odds": home_win_odds,
-        "away_win_odds": away_win_odds,
-        "home_win_paid": home_win_odds * int(home_score > away_score),
-        "away_win_paid": away_win_odds * int(away_score > home_score),
-        "home_line_odds": home_line_odds,
-        "away_line_odds": -1 * home_line_odds,
-        "home_line_paid": BASELINE_BET_PAYOUT * int(home_score > away_score),
-        "away_line_paid": BASELINE_BET_PAYOUT * int(away_score > home_score),
-        "venue": np.random.choice(list(VENUE_CITIES.keys())),
-    }
-
-
-def _betting_by_round(row_count: int, year: int, clean=True) -> List[BettingData]:
-    team_names = CyclicalTeamNames()
-
-    return [
-        _betting_data(
-            year, (team_names.next_team(), team_names.next_team()), clean=clean
-        )
-        for idx in range(row_count)
-    ]
-
-
-def _betting_by_year(
-    row_count: int, year_range: Tuple[int, int], clean=True
-) -> List[List[BettingData]]:
-    return [
-        _betting_by_round(row_count, year, clean=clean) for year in range(*year_range)
-    ]
-
-
-def fake_footywire_betting_data(
-    row_count: int, year_range: Tuple[int, int], clean=True
-) -> pd.DataFrame:
-    """Generate dummy data that replicates raw betting data.
-
-    This represents betting data before it has passed through the initial cleaning node
-    `betting.clean_data`.
-    """
-    data = _betting_by_year(row_count, year_range, clean=clean)
-    reduced_data = list(itertools.chain.from_iterable(data))
-
-    return pd.DataFrame(list(reduced_data)).sort_index()
 
 
 def fake_roster_data(match_count: int, n_players_per_team: int) -> pd.DataFrame:
