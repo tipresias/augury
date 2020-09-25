@@ -338,29 +338,6 @@ def _players_by_match(
     ]
 
 
-def fake_cleaned_player_data(
-    match_count_per_year: int, year_range: Tuple[int, int], n_players_per_team: int
-) -> pd.DataFrame:
-    """
-    Generate dummy data that replicates clean player data.
-
-    This represents player data for past matches after it has passed through
-    the initial cleaning node `player.clean_player_data`.
-    """
-    match_data = cast(
-        List[List[CleanedMatchData]], _matches_by_year(match_count_per_year, year_range)
-    )
-    reduced_match_data = list(itertools.chain.from_iterable(match_data))
-
-    player_data = [
-        _players_by_match(match_data, n_players_per_team, idx)
-        for idx, match_data in enumerate(_add_oppo_rows(reduced_match_data))
-    ]
-    reduced_player_data = list(itertools.chain.from_iterable(player_data))
-
-    return pd.DataFrame(reduced_player_data).sort_index()
-
-
 def fake_roster_data(match_count: int, n_players_per_team: int) -> pd.DataFrame:
     """Generate dummy data that replicates clean roster data.
 

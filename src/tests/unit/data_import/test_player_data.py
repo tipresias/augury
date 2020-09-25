@@ -6,7 +6,8 @@ from unittest import TestCase
 from unittest.mock import patch, mock_open
 import json
 
-from tests.fixtures.data_factories import fake_cleaned_player_data
+from candystore import CandyStore
+
 from augury.settings import RAW_DATA_DIR
 from augury.data_import.player_data import save_player_data
 
@@ -15,8 +16,6 @@ START_DATE = "2012-01-01"
 START_YEAR = int(START_DATE[:4])
 END_DATE = "2013-12-31"
 END_YEAR = int(END_DATE[:4]) + 1
-N_MATCHES_PER_YEAR = 2
-N_PLAYERS_PER_TEAM = 5
 PLAYER_DATA_MODULE_PATH = "augury.data_import.player_data"
 PLAYER_DATA_PATH = os.path.join(
     RAW_DATA_DIR, f"player-data_{START_DATE}_{END_DATE}.json"
@@ -25,9 +24,7 @@ PLAYER_DATA_PATH = os.path.join(
 
 class TestPlayerData(TestCase):
     def setUp(self):
-        self.fake_player_data = fake_cleaned_player_data(
-            N_MATCHES_PER_YEAR, (START_YEAR, END_YEAR), N_PLAYERS_PER_TEAM
-        ).to_dict("records")
+        self.fake_player_data = CandyStore(seasons=(START_YEAR, END_YEAR)).players()
 
     @patch(f"{PLAYER_DATA_MODULE_PATH}.fetch_player_data")
     @patch("builtins.open", mock_open())
