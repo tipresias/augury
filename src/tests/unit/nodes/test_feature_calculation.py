@@ -4,13 +4,12 @@
 from unittest import TestCase
 from faker import Faker
 import pandas as pd
+from candystore import CandyStore
 
-from tests.fixtures.data_factories import fake_cleaned_match_data
-from augury.nodes import feature_calculation
+from augury.nodes import feature_calculation, match, common
 
 
 FAKE = Faker()
-ROW_COUNT = 10
 YEAR_RANGE = (2015, 2016)
 
 
@@ -26,7 +25,12 @@ def assert_required_columns(
 
 class TestFeatureCalculations(TestCase):
     def setUp(self):
-        self.data_frame = fake_cleaned_match_data(ROW_COUNT, YEAR_RANGE)
+        self.data_frame = (
+            CandyStore(seasons=YEAR_RANGE)
+            .match_results(to_dict=None)
+            .pipe(match.clean_match_data)
+            .pipe(common.convert_match_rows_to_teammatch_rows)
+        )
 
     def test_feature_calculator(self):
         def calc_func(col):

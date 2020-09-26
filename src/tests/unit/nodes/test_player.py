@@ -9,29 +9,22 @@ import pandas as pd
 from faker import Faker
 import numpy as np
 import pytz
+from candystore import CandyStore
 
-from tests.fixtures.data_factories import fake_cleaned_player_data
 from tests.helpers import ColumnAssertionMixin
-from augury.nodes import player
+from augury.nodes import player, common
 from augury.settings import INDEX_COLS, BASE_DIR
 
 
-N_MATCHES_PER_SEASON = 10
 YEAR_RANGE = (2015, 2016)
 TEST_DATA_DIR = os.path.join(BASE_DIR, "src/tests/fixtures")
-N_PLAYERS_PER_TEAM = 10
-# Need to multiply by two, because we add team & oppo_team row per match
-N_TEAMMATCH_ROWS = N_MATCHES_PER_SEASON * len(range(*YEAR_RANGE)) * 2
-N_PLAYER_ROWS = N_TEAMMATCH_ROWS * N_PLAYERS_PER_TEAM
 
 FAKE = Faker()
 
 
 class TestPlayer(TestCase, ColumnAssertionMixin):
     def setUp(self):
-        self.data_frame = fake_cleaned_player_data(
-            N_MATCHES_PER_SEASON, YEAR_RANGE, N_PLAYERS_PER_TEAM
-        )
+        self.data_frame = CandyStore(seasons=YEAR_RANGE).players(to_dict=None)
 
     def test_clean_player_data(self):
         player_data = pd.read_csv(
@@ -57,8 +50,12 @@ class TestPlayer(TestCase, ColumnAssertionMixin):
         roster_data = pd.read_json(
             os.path.join(TEST_DATA_DIR, "team_rosters.json"), convert_dates=False
         )
-        dummy_player_data = fake_cleaned_player_data(
-            N_MATCHES_PER_SEASON, YEAR_RANGE, N_PLAYERS_PER_TEAM
+        dummy_player_data = (
+            CandyStore(seasons=YEAR_RANGE)
+            .players(to_dict=None)
+            .assign(player_name=lambda df: df["first_name"] + " " + df["surname"])
+            .drop(["first_name", "surname"], axis=1)
+            .rename(columns={"id": "player_id"})
         )
 
         clean_data = player.clean_roster_data(roster_data, dummy_player_data)
@@ -74,9 +71,8 @@ class TestPlayer(TestCase, ColumnAssertionMixin):
         self.assertFalse((clean_data["date"].dt.time == time()).any())
 
     def test_add_last_year_brownlow_votes(self):
-        valid_data_frame = self.data_frame.assign(
-            player_id=np.random.randint(100, 1000, N_PLAYER_ROWS),
-            brownlow_votes=np.random.randint(0, 20, N_PLAYER_ROWS),
+        valid_data_frame = self.data_frame.rename(
+            columns={"season": "year", "id": "player_id"}
         )
 
         self._make_column_assertions(
@@ -115,10 +111,10 @@ class TestPlayer(TestCase, ColumnAssertionMixin):
 
         valid_data_frame = self.data_frame.assign(
             **{
-                stats_col: np.random.randint(0, 20, N_PLAYER_ROWS)
+                stats_col: np.random.randint(0, 20, len(self.data_frame))
                 for stats_col in STATS_COLS
             }
-        )
+        ).rename(columns={"season": "year", "round": "round_number"})
 
         self._make_column_assertions(
             column_names=[
@@ -134,7 +130,7 @@ class TestPlayer(TestCase, ColumnAssertionMixin):
 
     def test_add_cum_matches_played(self):
         valid_data_frame = self.data_frame.assign(
-            player_id=np.random.randint(100, 1000, N_PLAYER_ROWS)
+            player_id=np.random.randint(100, 1000, len(self.data_frame))
         )
 
         self._make_column_assertions(
@@ -146,16 +142,48 @@ class TestPlayer(TestCase, ColumnAssertionMixin):
 
     def test_aggregate_player_stats_by_team_match(self):
         stats_col_assignments = {
-            stats_col: np.random.randint(0, 20, N_PLAYER_ROWS)
+            stats_col: np.random.randint(0, 20, len(self.data_frame))
             for stats_col in player.PLAYER_STATS_COLS
         }
         # Drop 'playing_for', because it gets dropped by PlayerDataStacker,
         # which comes before PlayerDataAggregator in the pipeline
-        valid_data_frame = self.data_frame.assign(**stats_col_assignments).drop(
-            "playing_for", axis=1
+        valid_data_frame = (
+            self.data_frame.loc[
+                :,
+                [
+                    "first_name",
+                    "surname",
+                    "round",
+                    "season",
+                    "home_team",
+                    "away_team",
+                    "id",
+                    "date",
+                    "home_score",
+                    "away_score",
+                ],
+            ]
+            .assign(
+                **{
+                    **{
+                        "player_name": lambda df: df["first_name"] + " " + df["surname"]
+                    },
+                    **stats_col_assignments,
+                }
+            )
+            .drop(["first_name", "surname"], axis=1)
+            .rename(
+                columns={
+                    "round": "round_number",
+                    "season": "year",
+                    "id": "player_id",
+                }
+            )
+            .astype({"player_id": str})
+            .pipe(common.convert_match_rows_to_teammatch_rows)
         )
 
-        aggregation_func = player.aggregate_player_stats_by_team_match(["sum", "std"])
+        aggregation_func = player.aggregate_player_stats_by_team_match(["sum", "mean"])
 
         transformed_df = aggregation_func(valid_data_frame)
 

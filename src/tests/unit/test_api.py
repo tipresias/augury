@@ -9,11 +9,8 @@ import json
 from faker import Faker
 from candystore import CandyStore
 
-from tests.fixtures.data_factories import (
-    fake_raw_match_data,
-    fake_match_results_data,
-)
 from tests.fixtures.fake_estimator import create_fake_pipeline
+from tests.fixtures import data_factories
 from augury.data_import import match_data
 from augury import api
 from augury import settings
@@ -23,7 +20,6 @@ from augury.types import MLModelDict
 FAKE = Faker()
 THIS_YEAR = date.today().year
 YEAR_RANGE = (2018, 2019)
-N_MATCHES = 5
 FAKE_ML_MODELS: List[MLModelDict] = [
     {
         "name": "fake_estimator",
@@ -32,6 +28,17 @@ FAKE_ML_MODELS: List[MLModelDict] = [
         "trained_to": 2018,
     }
 ]
+REQUIRED_MATCH_COLUMNS = {
+    "date",
+    "year",
+    "round_number",
+    "home_team",
+    "away_team",
+    "venue",
+    "home_score",
+    "away_score",
+    "match_id",
+}
 
 
 class TestApi(TestCase):
@@ -96,49 +103,40 @@ class TestApi(TestCase):
         self.assertEqual(fixture_years, [YEAR_RANGE[0]])
 
     def test_fetch_match_data(self):
+        fake_match_results = CandyStore(seasons=YEAR_RANGE).match_results(to_dict=None)
         data_importer = match_data
-        data_importer.fetch_match_data = Mock(
-            return_value=fake_raw_match_data(N_MATCHES, YEAR_RANGE)
-        )
+        data_importer.fetch_match_data = Mock(return_value=fake_match_results)
 
         response = api.fetch_match_data(
-            "2019-01-01", "2019-12-31", data_import=data_importer, verbose=0
+            f"{YEAR_RANGE[0]}-01-01",
+            f"{YEAR_RANGE[1]}-12-31",
+            data_import=data_importer,
+            verbose=0,
         )
 
         matches = response["data"]
 
-        self.assertEqual(len(matches), N_MATCHES)
+        self.assertEqual(len(matches), len(fake_match_results))
 
         first_match = matches[0]
 
         self.assertEqual(
-            set(first_match.keys()),
-            set(
-                [
-                    "date",
-                    "year",
-                    "round_number",
-                    "home_team",
-                    "away_team",
-                    "venue",
-                    "home_score",
-                    "away_score",
-                    "match_id",
-                    "crowd",
-                ]
-            ),
+            set(first_match.keys()) & REQUIRED_MATCH_COLUMNS,
+            REQUIRED_MATCH_COLUMNS,
         )
 
         match_years = list({match["year"] for match in matches})
         self.assertEqual(match_years, [YEAR_RANGE[0]])
 
     def test_fetch_match_results_data(self):
-        round_number = FAKE.pyint(1, 25)
+        full_fake_match_results = CandyStore(seasons=1).match_results(to_dict=None)
+        round_number = FAKE.pyint(1, full_fake_match_results["round_number"].max())
+        fake_match_results = data_factories.fake_match_results_data(
+            full_fake_match_results, round_number
+        )
 
         data_importer = match_data
-        data_importer.fetch_match_results_data = Mock(
-            return_value=fake_match_results_data(N_MATCHES, round_number)
-        )
+        data_importer.fetch_match_results_data = Mock(return_value=fake_match_results)
 
         response = api.fetch_match_results_data(
             round_number, data_import=data_importer, verbose=0
@@ -147,7 +145,10 @@ class TestApi(TestCase):
         match_results = response["data"]
 
         # It returns all available match results for the round
-        self.assertEqual(len(match_results), N_MATCHES)
+        self.assertEqual(
+            len(match_results),
+            len(fake_match_results.query("round == @round_number")),
+        )
 
         required_fields = set(
             [

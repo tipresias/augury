@@ -11,10 +11,11 @@ import numpy as np
 from faker import Faker
 from tensorflow import keras
 import pytest
+from candystore import CandyStore
 
 from tests.helpers import KedroContextMixin
-from tests.fixtures.data_factories import fake_cleaned_match_data
 from tests.fixtures.fake_estimator import FakeEstimatorData, create_fake_pipeline
+from augury.nodes import match, common
 from augury.sklearn.models import AveragingRegressor, EloRegressor, KerasClassifier
 from augury.sklearn.preprocessing import (
     CorrelationSelector,
@@ -145,16 +146,11 @@ class TestEloRegressor(TestCase):
 
 class TestTeammatchToMatchConverter(TestCase):
     def setUp(self):
-        DATA_YEARS = (2017, 2018)
-        total_rows = ROW_COUNT * (len(range(*DATA_YEARS)) + 1)
-        # Need to sort by year/round_number to avoid duplicate match-ups
-        # (e.g. team A and B "play" each other in rounds 1 and 2)
-        # resulting in both teams being home or away for the same match.
         self.data = (
-            fake_cleaned_match_data(ROW_COUNT, DATA_YEARS)
-            .sort_values(["year", "round_number"])
-            .assign(at_home=[row % 2 for row in range(total_rows)])
-            .sort_index()
+            CandyStore(seasons=(2017, 2018))
+            .match_results(to_dict=None)
+            .pipe(match.clean_match_data)
+            .pipe(common.convert_match_rows_to_teammatch_rows)
         )
 
         self.match_cols = ["date", "year", "round_number"]
@@ -185,7 +181,12 @@ class TestTeammatchToMatchConverter(TestCase):
 
 class TestColumnDropper(TestCase):
     def setUp(self):
-        self.data = fake_cleaned_match_data(ROW_COUNT, (2017, 2018))
+        self.data = (
+            CandyStore(seasons=(2017, 2018))
+            .match_results(to_dict=None)
+            .pipe(match.clean_match_data)
+            .pipe(common.convert_match_rows_to_teammatch_rows)
+        )
         self.cols_to_drop = ["team", "oppo_score"]
         self.transformer = ColumnDropper(cols_to_drop=self.cols_to_drop)
 
@@ -199,7 +200,11 @@ class TestColumnDropper(TestCase):
 
 class TestDataFrameConverter(TestCase):
     def setUp(self):
-        self.data = fake_cleaned_match_data(ROW_COUNT, (2017, 2018))
+        self.data = (
+            CandyStore(seasons=(2017, 2018))
+            .match_results(to_dict=None)
+            .pipe(match.clean_match_data)
+        )
         self.transformer = DataFrameConverter(
             columns=self.data.columns, index=self.data.index
         )

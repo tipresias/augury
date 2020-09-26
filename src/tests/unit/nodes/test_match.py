@@ -9,30 +9,30 @@ import pandas as pd
 import numpy as np
 from faker import Faker
 import pytz
+from candystore import CandyStore
 
-from tests.fixtures.data_factories import (
-    fake_cleaned_match_data,
-    fake_match_results_data,
-)
 from tests.helpers import ColumnAssertionMixin
-from augury.nodes import match
-from augury.settings import VENUES, BASE_DIR
+from tests.fixtures import data_factories
+from augury.nodes import match, common
+from augury.settings import BASE_DIR
 
 
 FAKE = Faker()
 
 TEST_DATA_DIR = os.path.join(BASE_DIR, "src/tests/fixtures")
-N_MATCHES_PER_SEASON = 10
 YEAR_RANGE = (2015, 2016)
 MAX_MATCHES_PER_ROUND = 9
-
-# Need to multiply by two, because we add team & oppo_team row per match
-N_TEAMMATCH_ROWS = N_MATCHES_PER_SEASON * len(range(*YEAR_RANGE)) * 2
 
 
 class TestMatch(TestCase, ColumnAssertionMixin):
     def setUp(self):
-        self.data_frame = fake_cleaned_match_data(N_MATCHES_PER_SEASON, YEAR_RANGE)
+        self.data_frame = (
+            CandyStore(seasons=YEAR_RANGE)
+            .match_results(to_dict=None)
+            .pipe(match.clean_match_data)
+            .pipe(common.convert_match_rows_to_teammatch_rows)
+            .drop("margin", axis=1)
+        )
 
     def test_clean_match_data(self):
         match_data = pd.read_csv(
@@ -79,11 +79,13 @@ class TestMatch(TestCase, ColumnAssertionMixin):
         self.assertFalse((clean_data["date"].dt.time == time()).any())
 
     def test_clean_match_results_data(self):
-        match_results = fake_match_results_data(
-            MAX_MATCHES_PER_ROUND, FAKE.pyint(1, 25)
+        full_match_results = CandyStore(seasons=1).match_results(to_dict=None)
+        round_number = FAKE.pyint(1, full_match_results["round_number"].max())
+        fake_match_results = data_factories.fake_match_results_data(
+            full_match_results, round_number
         )
 
-        clean_data = match.clean_match_results_data(match_results)
+        clean_data = match.clean_match_results_data(fake_match_results)
 
         # It returns a data frame with data
         self.assertIsInstance(clean_data, pd.DataFrame)
@@ -135,9 +137,7 @@ class TestMatch(TestCase, ColumnAssertionMixin):
 
     def test_add_out_of_state(self):
         feature_function = match.add_out_of_state
-        valid_data_frame = self.data_frame.assign(
-            venue=[VENUES[idx % len(VENUES)] for idx in range(N_TEAMMATCH_ROWS)]
-        )
+        valid_data_frame = self.data_frame
 
         self._make_column_assertions(
             column_names=["out_of_state"],
@@ -148,9 +148,7 @@ class TestMatch(TestCase, ColumnAssertionMixin):
 
     def test_add_travel_distance(self):
         feature_function = match.add_travel_distance
-        valid_data_frame = self.data_frame.assign(
-            venue=[VENUES[idx % len(VENUES)] for idx in range(N_TEAMMATCH_ROWS)]
-        )
+        valid_data_frame = self.data_frame
 
         self._make_column_assertions(
             column_names=["travel_distance"],
@@ -226,7 +224,7 @@ class TestMatch(TestCase, ColumnAssertionMixin):
     def test_add_cum_win_points(self):
         feature_function = match.add_cum_win_points
         valid_data_frame = self.data_frame.assign(
-            prev_match_result=np.random.randint(0, 2, N_TEAMMATCH_ROWS)
+            prev_match_result=np.random.randint(0, 2, len(self.data_frame))
         )
 
         self._make_column_assertions(
@@ -239,7 +237,7 @@ class TestMatch(TestCase, ColumnAssertionMixin):
     def test_add_win_streak(self):
         feature_function = match.add_win_streak
         valid_data_frame = self.data_frame.assign(
-            prev_match_result=np.random.randint(0, 2, N_TEAMMATCH_ROWS)
+            prev_match_result=np.random.randint(0, 2, len(self.data_frame))
         )
 
         self._make_column_assertions(
@@ -252,8 +250,8 @@ class TestMatch(TestCase, ColumnAssertionMixin):
     def test_add_cum_percent(self):
         feature_function = match.add_cum_percent
         valid_data_frame = self.data_frame.assign(
-            prev_match_score=np.random.randint(50, 150, N_TEAMMATCH_ROWS),
-            prev_match_oppo_score=np.random.randint(50, 150, N_TEAMMATCH_ROWS),
+            prev_match_score=np.random.randint(50, 150, len(self.data_frame)),
+            prev_match_oppo_score=np.random.randint(50, 150, len(self.data_frame)),
         )
 
         self._make_column_assertions(
@@ -267,8 +265,8 @@ class TestMatch(TestCase, ColumnAssertionMixin):
         feature_function = match.add_ladder_position
         valid_data_frame = self.data_frame.assign(
             # Float from 0.5 to 2.0 covers most percentages
-            cum_percent=(2.5 * np.random.ranf(N_TEAMMATCH_ROWS)) - 0.5,
-            cum_win_points=np.random.randint(0, 60, N_TEAMMATCH_ROWS),
+            cum_percent=(2.5 * np.random.ranf(len(self.data_frame))) - 0.5,
+            cum_win_points=np.random.randint(0, 60, len(self.data_frame)),
         )
 
         self._make_column_assertions(
@@ -281,8 +279,8 @@ class TestMatch(TestCase, ColumnAssertionMixin):
     def test_add_elo_pred_win(self):
         feature_function = match.add_elo_pred_win
         valid_data_frame = self.data_frame.assign(
-            elo_rating=np.random.randint(900, 1100, N_TEAMMATCH_ROWS),
-            oppo_elo_rating=np.random.randint(900, 1100, N_TEAMMATCH_ROWS),
+            elo_rating=np.random.randint(900, 1100, len(self.data_frame)),
+            oppo_elo_rating=np.random.randint(900, 1100, len(self.data_frame)),
         )
 
         self._make_column_assertions(

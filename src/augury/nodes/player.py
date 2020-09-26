@@ -414,7 +414,7 @@ def _aggregate_player_stats_by_team_match_node(
         col
         for col in player_data_frame.select_dtypes("number")
         # Excluding player stats columns & index columns, which are included in the
-        # groupby index and readded to the dataframe later
+        # groupby index and re-added to the dataframe later
         if col not in PLAYER_STATS_COLS + INDEX_COLS
     ]
 
