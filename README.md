@@ -1,8 +1,8 @@
 # Augury
 
 [![Build Status](https://travis-ci.com/tipresias/augury.svg?branch=main)](https://travis-ci.com/tipresias/augury)
-[![Maintainability](https://api.codeclimate.com/v1/badges/e3f72dba19bb5f121622/maintainability)](https://codeclimate.com/github/tipresias/augury/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/e3f72dba19bb5f121622/test_coverage)](https://codeclimate.com/github/tipresias/augury/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/17a2262d1fe60a36dd4a/maintainability)](https://codeclimate.com/github/tipresias/augury/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/17a2262d1fe60a36dd4a/test_coverage)](https://codeclimate.com/github/tipresias/augury/test_coverage)
 
 Jupyter Notebooks and machine-learning service for the Tipresias app
 
