@@ -38,7 +38,7 @@ script:
   # Running code coverage commands in scripts instead of after_script,
   # because after_script silently fails, and I don't check codeclimate often enough
   # to catch problems early.
-  - docker-compose -f docker-compose.ci.yml run data_science coverage xml
+  - docker-compose -f docker-compose.ci.yml run data_science coverage xml -i
   - ./cc-test-reporter format-coverage -t coverage.py
   - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./cc-test-reporter upload-coverage; fi
 before_deploy:
