@@ -5,7 +5,7 @@ env:
   global:
     DOCKER_COMPOSE_VERSION: 1.25.5
     GOOGLE_APPLICATION_CREDENTIALS: .gcloud/keyfile.json
-    CC_TEST_REPORTER_ID: 3c6e7d3ecb1089284ed54da495ee9062362337415223df4c122dc68b575dd708
+    CC_TEST_REPORTER_ID: bc52d889596333356007dd578d7a33f4a69a2c134db9afa2b3d1700ae5455fa9
 install:
   # Install docker-compose
   - sudo rm /usr/local/bin/docker-compose
@@ -34,8 +34,11 @@ script:
   # Integration tests
   # Using pytest, because coverage.py doesn't play nice with the kedro CLI
   - docker-compose -f docker-compose.ci.yml run data_science coverage run --append -m pytest --no-cov -n auto --dist=loadfile src/tests/integration
-after_script:
-  - docker-compose -f docker-compose.ci.yml run data_science coverage xml
+  # Code coverage
+  # Running code coverage commands in scripts instead of after_script,
+  # because after_script silently fails, and I don't check codeclimate often enough
+  # to catch problems early.
+  - docker-compose -f docker-compose.ci.yml run data_science coverage xml -i
   - ./cc-test-reporter format-coverage -t coverage.py
   - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./cc-test-reporter upload-coverage; fi
 before_deploy:
