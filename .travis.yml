@@ -34,7 +34,10 @@ script:
   # Integration tests
   # Using pytest, because coverage.py doesn't play nice with the kedro CLI
   - docker-compose -f docker-compose.ci.yml run data_science coverage run --append -m pytest --no-cov -n auto --dist=loadfile src/tests/integration
-after_script:
+  # Code coverage
+  # Running code coverage commands in scripts instead of after_script,
+  # because after_script silently fails, and I don't check codeclimate often enough
+  # to catch problems early.
   - docker-compose -f docker-compose.ci.yml run data_science coverage xml
   - ./cc-test-reporter format-coverage -t coverage.py
   - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./cc-test-reporter upload-coverage; fi
