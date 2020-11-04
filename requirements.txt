@@ -15,7 +15,7 @@ pandas==1.1.4
 scikit-learn==0.23.2
 xgboost==1.2.1
 mlxtend==0.17.3
-statsmodels==0.12.0
+statsmodels==0.12.1
 scipy==1.5.3
 tensorflow==2.3.1
 
