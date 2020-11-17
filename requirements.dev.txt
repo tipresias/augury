@@ -8,7 +8,7 @@ memory_profiler
 
 # Data packages
 dask[complete]>=2.3
-mlflow==1.11.0
+mlflow==1.12.0
 catboost
 pystan # required for fbprophet
 fbprophet==0.7.1
