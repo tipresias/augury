@@ -103,7 +103,7 @@ class TestApi(TestCase):
         self.assertEqual(fixture_years, [YEAR_RANGE[0]])
 
     def test_fetch_match_data(self):
-        fake_match_results = CandyStore(seasons=YEAR_RANGE).match_results(to_dict=None)
+        fake_match_results = CandyStore(seasons=YEAR_RANGE).match_results()
         data_importer = match_data
         data_importer.fetch_match_data = Mock(return_value=fake_match_results)
 
@@ -129,7 +129,7 @@ class TestApi(TestCase):
         self.assertEqual(match_years, [YEAR_RANGE[0]])
 
     def test_fetch_match_results_data(self):
-        full_fake_match_results = CandyStore(seasons=1).match_results(to_dict=None)
+        full_fake_match_results = CandyStore(seasons=1).match_results()
         round_number = FAKE.pyint(1, full_fake_match_results["round_number"].max())
         fake_match_results = data_factories.fake_match_results_data(
             full_fake_match_results, round_number

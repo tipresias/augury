@@ -148,7 +148,7 @@ class TestTeammatchToMatchConverter(TestCase):
     def setUp(self):
         self.data = (
             CandyStore(seasons=(2017, 2018))
-            .match_results(to_dict=None)
+            .match_results()
             .pipe(match.clean_match_data)
             .pipe(common.convert_match_rows_to_teammatch_rows)
         )
@@ -183,7 +183,7 @@ class TestColumnDropper(TestCase):
     def setUp(self):
         self.data = (
             CandyStore(seasons=(2017, 2018))
-            .match_results(to_dict=None)
+            .match_results()
             .pipe(match.clean_match_data)
             .pipe(common.convert_match_rows_to_teammatch_rows)
         )
@@ -202,7 +202,7 @@ class TestDataFrameConverter(TestCase):
     def setUp(self):
         self.data = (
             CandyStore(seasons=(2017, 2018))
-            .match_results(to_dict=None)
+            .match_results()
             .pipe(match.clean_match_data)
         )
         self.transformer = DataFrameConverter(

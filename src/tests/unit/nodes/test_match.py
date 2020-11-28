@@ -28,7 +28,7 @@ class TestMatch(TestCase, ColumnAssertionMixin):
     def setUp(self):
         self.data_frame = (
             CandyStore(seasons=YEAR_RANGE)
-            .match_results(to_dict=None)
+            .match_results()
             .pipe(match.clean_match_data)
             .pipe(common.convert_match_rows_to_teammatch_rows)
             .drop("margin", axis=1)
@@ -79,7 +79,7 @@ class TestMatch(TestCase, ColumnAssertionMixin):
         self.assertFalse((clean_data["date"].dt.time == time()).any())
 
     def test_clean_match_results_data(self):
-        full_match_results = CandyStore(seasons=1).match_results(to_dict=None)
+        full_match_results = CandyStore(seasons=1).match_results()
         round_number = FAKE.pyint(1, full_match_results["round_number"].max())
         fake_match_results = data_factories.fake_match_results_data(
             full_match_results, round_number
