@@ -27,7 +27,7 @@ class TestFeatureCalculations(TestCase):
     def setUp(self):
         self.data_frame = (
             CandyStore(seasons=YEAR_RANGE)
-            .match_results(to_dict=None)
+            .match_results()
             .pipe(match.clean_match_data)
             .pipe(common.convert_match_rows_to_teammatch_rows)
         )

@@ -24,7 +24,7 @@ FAKE = Faker()
 
 class TestPlayer(TestCase, ColumnAssertionMixin):
     def setUp(self):
-        self.data_frame = CandyStore(seasons=YEAR_RANGE).players(to_dict=None)
+        self.data_frame = CandyStore(seasons=YEAR_RANGE).players()
 
     def test_clean_player_data(self):
         player_data = pd.read_csv(
@@ -52,7 +52,7 @@ class TestPlayer(TestCase, ColumnAssertionMixin):
         )
         dummy_player_data = (
             CandyStore(seasons=YEAR_RANGE)
-            .players(to_dict=None)
+            .players()
             .assign(player_name=lambda df: df["first_name"] + " " + df["surname"])
             .drop(["first_name", "surname"], axis=1)
             .rename(columns={"id": "player_id"})

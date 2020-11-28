@@ -18,9 +18,7 @@ REQUIRED_OUTPUT_COLS = ["home_team", "year", "round_number"]
 
 class TestBetting(TestCase, ColumnAssertionMixin):
     def setUp(self):
-        self.raw_betting_data = CandyStore(seasons=YEAR_RANGE).betting_odds(
-            to_dict=None
-        )
+        self.raw_betting_data = CandyStore(seasons=YEAR_RANGE).betting_odds()
 
     def test_clean_data(self):
         clean_data = betting.clean_data(self.raw_betting_data)
@@ -38,7 +36,7 @@ class TestBetting(TestCase, ColumnAssertionMixin):
 
     def test_add_betting_pred_win(self):
         feature_function = betting.add_betting_pred_win
-        match_data = CandyStore(seasons=YEAR_RANGE).match_results(to_dict=None)
+        match_data = CandyStore(seasons=YEAR_RANGE).match_results()
 
         valid_data_frame = match_data.assign(
             win_odds=np.random.randint(0, 2, len(match_data)),

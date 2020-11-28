@@ -25,13 +25,15 @@ class TestCommon(TestCase, ColumnAssertionMixin):
     def setUp(self):
         self.data_frame = (
             CandyStore(seasons=YEAR_RANGE)
-            .match_results(to_dict=None)
+            .match_results()
             .pipe(match.clean_match_data)
             .pipe(common.convert_match_rows_to_teammatch_rows)
         )
 
     def test_convert_to_data_frame(self):
-        data = CandyStore(seasons=(START_YEAR, END_YEAR)).match_results()
+        data = CandyStore(seasons=(START_YEAR, END_YEAR)).match_results(
+            to_dict="records"
+        )
         data_frames = common.convert_to_data_frame(data, data)
 
         self.assertEqual(len(data_frames), 2)
@@ -55,11 +57,11 @@ class TestCommon(TestCase, ColumnAssertionMixin):
             self.assertFalse(any(data_frames.columns))
 
     def test_combine_data(self):
-        raw_betting_data = CandyStore(seasons=YEAR_RANGE).betting_odds(to_dict=None)
+        raw_betting_data = CandyStore(seasons=YEAR_RANGE).betting_odds()
         min_year_range = min(YEAR_RANGE)
         older_data = (
             CandyStore(seasons=(min_year_range - 2, min_year_range))
-            .betting_odds(to_dict=None)
+            .betting_odds()
             .append(raw_betting_data.query("season == @min_year_range"))
         )
 
@@ -77,9 +79,7 @@ class TestCommon(TestCase, ColumnAssertionMixin):
 
         with self.subTest(axis=1):
             match_year_range = (START_YEAR - 2, END_YEAR)
-            match_data = CandyStore(seasons=match_year_range).match_results(
-                to_dict=None
-            )
+            match_data = CandyStore(seasons=match_year_range).match_results()
 
             combine_data_func = common.combine_data(axis=1)
             combined_data = combine_data_func(raw_betting_data, match_data)
@@ -96,7 +96,7 @@ class TestCommon(TestCase, ColumnAssertionMixin):
     def test_filter_by_date(self):
         raw_betting_data = (
             CandyStore(seasons=YEAR_RANGE)
-            .betting_odds(to_dict=None)
+            .betting_odds()
             .assign(date=base._parse_dates)  # pylint: disable=protected-access
         )
         filter_start = f"{START_YEAR + 1}-06-01"
@@ -129,9 +129,7 @@ class TestCommon(TestCase, ColumnAssertionMixin):
 
     def test_convert_match_rows_to_teammatch_rows(self):
         valid_data_frame = (
-            CandyStore(seasons=YEAR_RANGE)
-            .match_results(to_dict=None)
-            .pipe(match.clean_match_data)
+            CandyStore(seasons=YEAR_RANGE).match_results().pipe(match.clean_match_data)
         )
 
         invalid_data_frame = valid_data_frame.drop("year", axis=1)
