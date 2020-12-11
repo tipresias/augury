@@ -11,6 +11,8 @@ dask[complete]>=2.3
 mlflow==1.12.1
 catboost
 pystan # required for fbprophet
+pytz<2020 # required version for convertdate==2.2
+convertdate==2.2 # required version for fbprophet to avoid conflicts
 fbprophet==0.7.1
 category_encoders
 
@@ -42,7 +44,7 @@ shap
 # Testing/Linting
 pylint==2.6.0
 black
-faker
+faker<5.0
 freezegun
 factory_boy
 betamax
