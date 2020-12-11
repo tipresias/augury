@@ -81,15 +81,10 @@ def rolling_rate_filled_by_expanding_rate(
     # different index shapes:
     # Group.expanding appends the data frame's original index at the end
     # of the group-key index.
-    # Group.rolling converts a data frame's multi-index into a single level
-    # with tuple values and appends that at the end of the group-key index.
-    # It seems that the easiest way to make the indices compatible is to expand
-    # the tuples from rolling into separate index levels to match expanding.
-    if expanding_rate.index.names != rolling_rate.index.names:
-        rolling_rate.index = pd.MultiIndex.from_tuples(
-            [tuple([*value[:-1], *value[-1]]) for value in rolling_rate.index.values],
-            names=expanding_rate.index.names,
-        )
+    # Group.rolling drops a data frame's multi-index, using just each group's label.
+    # Since both resulting series are the same shape and maintain the same order,
+    # we can assign expanding's multi-index to rolling to enable fillna
+    rolling_rate.index = expanding_rate.index
 
     return rolling_rate.fillna(expanding_rate)
 
