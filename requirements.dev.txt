@@ -11,7 +11,7 @@ dask[complete]>=2.3
 mlflow==1.12.1
 catboost
 pystan # required for fbprophet
-pytz<2020 # required version for convertdate==2.2
+pytz<2021 # required version for convertdate==2.2
 convertdate==2.2 # required version for fbprophet to avoid conflicts
 fbprophet==0.7.1
 category_encoders
