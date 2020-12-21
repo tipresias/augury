@@ -1,6 +1,6 @@
 # Augury
 
-[![Build Status](https://travis-ci.com/tipresias/augury.svg?branch=main)](https://travis-ci.com/tipresias/augury)
+![build](https://github.com/tipresias/augury/workflows/build/badge.svg)
 [![Maintainability](https://api.codeclimate.com/v1/badges/17a2262d1fe60a36dd4a/maintainability)](https://codeclimate.com/github/tipresias/augury/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/17a2262d1fe60a36dd4a/test_coverage)](https://codeclimate.com/github/tipresias/augury/test_coverage)
 
