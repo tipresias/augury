@@ -1,0 +1,89 @@
+name: build
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    env:
+      GOOGLE_APPLICATION_CREDENTIALS: .gcloud/keyfile.json
+      CC_TEST_REPORTER_ID: bc52d889596333356007dd578d7a33f4a69a2c134db9afa2b3d1700ae5455fa9
+      AFL_DATA_SERVICE: ${{ secrets.AFL_DATA_SERVICE }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up code coverage monitoring
+        run: |
+          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-0.6.3-linux-amd64 > ./cc-test-reporter
+          chmod +x ./cc-test-reporter
+          ./cc-test-reporter before-build
+      - name: Build image
+        run: |
+          docker pull cfranklin11/tipresias_data_science:latest
+          docker build --cache-from cfranklin11/tipresias_data_science:latest -t cfranklin11/tipresias_data_science:latest -f Dockerfile.local .
+      - name: Set up cloud credentials
+        env:
+          ENCRYPTION_PASSWORD: ${{ secrets.ENCRYPTION_PASSWORD }}
+        # We use gcloud/gsutil to upload screenshot artifacts on browser test failures,
+        # so we have to add credentials before running system tests
+        run: |
+          gpg --quiet --batch --yes --decrypt --passphrase="$ENCRYPTION_PASSWORD" --output keyfile.json keyfile.json.gpg
+          mkdir ${PWD}/.gcloud && mv keyfile.json ${GOOGLE_APPLICATION_CREDENTIALS}
+      - name: Lint
+        if: ${{ always() }}
+        run: |
+          docker run cfranklin11/tipresias_data_science:latest pip3 check
+          docker run cfranklin11/tipresias_data_science:latest pylint --disable=R src app.py scripts/save_default_models.py
+      - name: Check types
+        if: ${{ always() }}
+        run: |
+          docker run cfranklin11/tipresias_data_science:latest mypy src app.py scripts/save_default_models.py
+      - name: Check documentation
+        if: ${{ always() }}
+        run: |
+          docker run cfranklin11/tipresias_data_science:latest pydocstyle src app.py
+      - name: Run unit tests
+        if: ${{ always() }}
+        # Using pytest, because coverage.py doesn't play nice with the kedro CLI
+        run: |
+          docker run \
+            -v "${PWD}/.gcloud:/app/.gcloud" \
+            -v "${PWD}:/app" -e PYTHON_ENV=ci \
+            -e GOOGLE_APPLICATION_CREDENTIALS="${GOOGLE_APPLICATION_CREDENTIALS}" \
+            cfranklin11/tipresias_data_science:latest \
+              coverage run -m pytest --no-cov src/tests/unit/
+      - name: Run integration/system tests
+        if: ${{ always() }}
+        # Using pytest, because coverage.py doesn't play nice with the kedro CLI
+        run: |
+          docker-compose -f docker-compose.ci.yml run data_science \
+            coverage run --append -m pytest --no-cov -n auto --dist=loadfile src/tests/integration
+      - name: Upload test coverage report
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: |
+          docker-compose -f docker-compose.ci.yml run data_science coverage xml -i
+          ./cc-test-reporter format-coverage -t coverage.py
+      - name: Login to Docker Hub
+        if: ${{ github.ref == 'refs/heads/main' }}
+        uses: docker/login-action@v1
+        with:
+          username: cfranklin11
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Push updated images
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: |
+          docker push cfranklin11/tipresias_data_science:latest
+      - name: Set up Google Cloud SDK
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.PROJECT_ID }}
+          service_account_key: ${{ secrets.GC_SA_KEY }}
+      - name: Deploy
+        if: ${{ github.ref == 'refs/heads/main' }}
+        env:
+          AFL_DATA_SERVICE_TOKEN: ${{ secrets.AFL_DATA_SERVICE_TOKEN }}
+          DATA_SCIENCE_SERVICE_TOKEN: ${{ secrets.DATA_SCIENCE_SERVICE_TOKEN }}
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+          ROLLBAR_TOKEN: ${{ secrets.ROLLBAR_TOKEN }}
+          TIPRESIAS_APP_TOKEN: ${{ secrets.TIPRESIAS_APP_TOKEN }}
+        run: ./scripts/deploy.sh
