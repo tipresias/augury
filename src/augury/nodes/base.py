@@ -25,14 +25,14 @@ EARLIEST_NZ_START_TIME: ReplaceKwargs = {"hour": 13, "minute": 10}
 def _localize_dates(row: pd.Series) -> datetime:
     # Defaulting to Melbourne time, when the datetime isn't location specific,
     # because the AFL has a pro-Melbourne bias, so why shouldn't we?
-    venue_timezone = (
+    venue_timezone_label = (
         VENUE_TIMEZONES.get(row["venue"])
         if "venue" in row.index
         else "Australia/Melbourne"
     )
 
     assert isinstance(
-        venue_timezone, str
+        venue_timezone_label, str
     ), f"Could not find timezone for {row['venue']}"
 
     match_date: datetime = parser.parse(row["date"])
@@ -55,7 +55,7 @@ def _localize_dates(row: pd.Series) -> datetime:
         else match_date
     )
 
-    return match_datetime.replace(tzinfo=pytz.timezone(venue_timezone))
+    return match_datetime.replace(tzinfo=pytz.timezone(venue_timezone_label))
 
 
 def _format_time(unformatted_time: str):

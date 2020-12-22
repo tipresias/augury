@@ -6,10 +6,14 @@ from datetime import datetime, timedelta
 import re
 
 import pandas as pd
-import pytz
 
 from augury.nodes.feature_calculation import rolling_rate_filled_by_expanding_rate
-from augury.settings import TEAM_TRANSLATIONS, AVG_SEASON_LENGTH, INDEX_COLS
+from augury.settings import (
+    TEAM_TRANSLATIONS,
+    AVG_SEASON_LENGTH,
+    INDEX_COLS,
+    MELBOURNE_TIMEZONE,
+)
 from .base import (
     _parse_dates,
     _filter_out_dodgy_data,
@@ -184,7 +188,7 @@ def clean_roster_data(
     # As such, filtering out matches that were played before this week
     # should be sufficient without risking weird results due to timezones
     # if you decide to run the pipeline mid-round.
-    start_of_today = datetime.now(tz=pytz.timezone("Australia/Melbourne"))
+    start_of_today = datetime.now(tz=MELBOURNE_TIMEZONE)
     # We filter from start of week, because past match player data
     # usually isn't available until a few days after a round ends.
     start_of_week = start_of_today - timedelta(  # pylint: disable=unused-variable
