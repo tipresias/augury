@@ -3,20 +3,21 @@
 
 from unittest import TestCase
 from collections import Counter
-from datetime import datetime
+from datetime import timezone, timedelta
 
 import pandas as pd
 import numpy as np
 from candystore import CandyStore
+from dateutil import parser
 
 from tests.helpers import ColumnAssertionMixin
 from augury.nodes import common, base, match
-from augury.settings import MELBOURNE_TIMEZONE, INDEX_COLS
+from augury.settings import INDEX_COLS
 
-START_DATE = "2013-01-01"
-END_DATE = "2014-12-31"
-START_YEAR = int(START_DATE[:4])
-END_YEAR = int(END_DATE[:4]) + 1
+START_DATE = parser.parse("2013-01-01")
+END_DATE = parser.parse("2014-12-31")
+START_YEAR = START_DATE.year
+END_YEAR = END_DATE.year
 YEAR_RANGE = (START_YEAR, END_YEAR)
 REQUIRED_OUTPUT_COLS = ["home_team", "year", "round_number"]
 
@@ -99,18 +100,22 @@ class TestCommon(TestCase, ColumnAssertionMixin):
             .betting_odds()
             .assign(date=base._parse_dates)  # pylint: disable=protected-access
         )
-        filter_start = f"{START_YEAR + 1}-06-01"
-        filter_start_date = datetime.strptime(  # pylint: disable=unused-variable
-            filter_start, "%Y-%m-%d"
-        ).replace(tzinfo=MELBOURNE_TIMEZONE)
-        filter_end = f"{START_YEAR + 1}-06-30"
-        filter_end_date = datetime.strptime(  # pylint: disable=unused-variable
-            filter_end, "%Y-%m-%d"
-        ).replace(tzinfo=MELBOURNE_TIMEZONE)
+        filter_start = f"{START_YEAR}-06-01"
+        filter_start_date = parser.parse(  # pylint: disable=unused-variable
+            filter_start
+        ).replace(tzinfo=timezone.utc)
+        filter_end = f"{START_YEAR}-06-30"
+        filter_end_date = parser.parse(  # pylint: disable=unused-variable
+            filter_end
+        ).replace(tzinfo=timezone.utc) + timedelta(days=1)
 
         filter_func = common.filter_by_date(filter_start, filter_end)
         filtered_data_frame = filter_func(raw_betting_data)
 
+        # It has some data
+        self.assertTrue(filtered_data_frame.any().any())
+
+        # It doesn't have any data outside the date range
         self.assertFalse(
             filtered_data_frame.query(
                 "date < @filter_start_date | date > @filter_end_date"
