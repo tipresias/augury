@@ -3,12 +3,13 @@
 from typing import Sequence, List, Dict, Any, cast, Callable, Optional, Union
 from functools import reduce, partial, update_wrapper
 import re
-from datetime import datetime
+from datetime import timezone
 
 import pandas as pd
 import numpy as np
+from dateutil import parser
 
-from augury.settings import MELBOURNE_TIMEZONE, INDEX_COLS
+from augury.settings import INDEX_COLS
 from .base import _validate_required_columns, _validate_no_dodgy_zeros
 
 
@@ -134,12 +135,12 @@ def _filter_by_date(
     REQUIRED_COLS = {"date"}
     _validate_required_columns(REQUIRED_COLS, data_frame.columns)
 
-    start_datetime = datetime.strptime(  # pylint: disable=unused-variable
-        start_date, "%Y-%m-%d"
-    ).replace(tzinfo=MELBOURNE_TIMEZONE)
-    end_datetime = datetime.strptime(  # pylint: disable=unused-variable
-        end_date, "%Y-%m-%d"
-    ).replace(hour=11, minute=59, second=59, tzinfo=MELBOURNE_TIMEZONE)
+    start_datetime = parser.parse(  # pylint: disable=unused-variable
+        start_date
+    ).replace(tzinfo=timezone.utc)
+    end_datetime = parser.parse(end_date).replace(  # pylint: disable=unused-variable
+        hour=11, minute=59, second=59, tzinfo=timezone.utc
+    )
 
     return data_frame.query("date >= @start_datetime & date <= @end_datetime")
 
