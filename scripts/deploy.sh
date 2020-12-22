@@ -4,7 +4,7 @@ set -euo pipefail
 
 PORT=8008
 
-# gcloud builds submit --config cloudbuild.yaml --quiet
+gcloud builds submit --config cloudbuild.yaml --quiet
 
 GOOGLE_ENV_VARS="
 AFL_DATA_SERVICE=${AFL_DATA_SERVICE},\
