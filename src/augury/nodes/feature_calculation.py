@@ -77,15 +77,6 @@ def rolling_rate_filled_by_expanding_rate(
     expanding_rate = groups.expanding(1).mean()
     rolling_rate = groups.rolling(window=rolling_window).mean()
 
-    # When the original data frame has a multi-index, expanding and rolling produce
-    # different index shapes:
-    # Group.expanding appends the data frame's original index at the end
-    # of the group-key index.
-    # Group.rolling drops a data frame's multi-index, using just each group's label.
-    # Since both resulting series are the same shape and maintain the same order,
-    # we can assign expanding's multi-index to rolling to enable fillna
-    rolling_rate.index = expanding_rate.index
-
     return rolling_rate.fillna(expanding_rate)
 
 
@@ -97,13 +88,20 @@ def _rolling_rate(column: str, data_frame: pd.DataFrame) -> pd.Series:
             f"{data_frame.columns}"
         )
 
-    groups = data_frame[column].groupby(level=TEAM_LEVEL, group_keys=True)
+    # We need to groupby the 'team' column rather than the index in order to preserve
+    # the multi-index after calculating expanding/rolling. Otherwise, the resulting
+    # index is just the groupby key.
+    groups = (
+        data_frame[["team", column]]
+        .reset_index(level=TEAM_LEVEL, drop=True)
+        .groupby("team")
+    )
 
     return (
         rolling_rate_filled_by_expanding_rate(groups, AVG_SEASON_LENGTH)
-        .droplevel(level=0)
         .dropna()
         .sort_index()
+        .loc[:, column]
         .rename(f"rolling_{column}_rate")
     )
 
