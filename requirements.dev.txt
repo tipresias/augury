@@ -8,7 +8,7 @@ memory_profiler
 
 # Data packages
 dask[complete]>=2.3
-mlflow==1.13
+mlflow==1.13.1
 catboost
 pystan # required for fbprophet
 pytz<2020 # required version for convertdate==2.2
