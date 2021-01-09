@@ -14,7 +14,12 @@ from .base_ml_estimator import BaseMLEstimator, BASE_ML_PIPELINE
 
 PIPELINE = make_pipeline(
     BASE_ML_PIPELINE,
-    XGBClassifier(random_state=SEED, objective=bits_objective, verbosity=0),
+    XGBClassifier(
+        random_state=SEED,
+        objective=bits_objective,
+        use_label_encoder=False,
+        verbosity=0,
+    ),
 )
 
 

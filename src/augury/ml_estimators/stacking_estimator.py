@@ -66,7 +66,9 @@ ELO_PIPELINE = make_pipeline(
 ARIMA_PIPELINE = make_pipeline(
     DataFrameConverter(),
     TimeSeriesRegressor(
-        sm.tsa.ARIMA, order=(6, 0, 1), exog_cols=["at_home", "oppo_cum_percent"]
+        sm.tsa.arima.ARIMA,
+        order=(6, 0, 1),
+        exog_cols=["at_home", "oppo_cum_percent"],
     ),
 ).set_params(**BEST_PARAMS["arima_pipeline"])
 
