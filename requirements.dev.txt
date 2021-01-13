@@ -14,7 +14,6 @@ category_encoders
 
 # Kedro packages
 ipython>=7.0.0, <8.0
-jedi<=0.17.2 # Required version for jupyter-client, which is required in various jupyter* packages
 jupyter>=1.0.0, <2.0
 jupyterlab==3.0.3
 jupyter_nbextensions_configurator==0.4.1
