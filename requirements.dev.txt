@@ -33,7 +33,7 @@ ipywidgets
 # Model analysis packages
 eli5
 pdpbox
-yellowbrick
+# yellowbrick temporarily removing as it's incompatible with scikit learn 0.24
 shap
 
 # Testing/Linting
