@@ -45,9 +45,16 @@ final_player_data:
     date_format: iso
 
 # Final data
-model_data:
+legacy_data:
   type: pandas.JSONDataSet
-  filepath: /app/data/05_model_input/model-data_1897-01-01_2020-12-31.json
+  filepath: /app/data/05_model_input/legacy-data_1897-01-01_2020-12-31.json
+  save_args:
+    indent: 2
+    orient: records
+    date_format: iso
+full_data:
+  type: pandas.JSONDataSet
+  filepath: /app/data/05_model_input/full-data_1897-01-01_2020-12-31.json
   save_args:
     indent: 2
     orient: records

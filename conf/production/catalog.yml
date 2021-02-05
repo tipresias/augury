@@ -34,9 +34,9 @@ player_data:
     token: cloud
 
 # Final data
-model_data:
+full_data:
   type: pandas.JSONDataSet
-  filepath: gs://afl_data/model-data_2010-01-01_2020-12-31.json
+  filepath: gs://afl_data/full-data_2010-01-01_2020-12-31.json
   fs_args:
     project: tipresias
   save_args:

@@ -49,19 +49,24 @@ def _train_save_model(model, **data_kwargs):
 def main():
     """Loop through models, training and saving each."""
     data_kwargs = {
-        "data_set": "model_data",
         "train_year_range": TRAIN_YEAR_RANGE,
     }
 
     context = load_project_context()
-    model_data = pd.DataFrame(context.catalog.load("model_data"))
+    full_data = pd.DataFrame(context.catalog.load("full_data"))
 
     # Make sure we're using full data sets instead of truncated prod data sets
-    assert model_data["year"].min() < parser.parse(PREDICTION_DATA_START_DATE).year
+    assert full_data["year"].min() < parser.parse(PREDICTION_DATA_START_DATE).year
 
     model_info = [
-        (ConfidenceEstimator(), {**data_kwargs, "label_col": "result"}),
-        (StackingEstimator(name="tipresias_2020"), data_kwargs),
+        (
+            ConfidenceEstimator(),
+            {**data_kwargs, "data_set": "legacy_data", "label_col": "result"},
+        ),
+        (
+            StackingEstimator(name="tipresias_2020"),
+            {**data_kwargs, "data_set": "legacy_data"},
+        ),
     ]
 
     Parallel(n_jobs=-1)(
