@@ -3,16 +3,6 @@
 # Given how we load data in Predictor, it's best to order these by data_set
 # to avoid unnecessary reloading of data sets
 models:
-  - name: tipresias_2019
-    prediction_type: margin
-    trained_to: 2016
-    data_set: legacy_model_data
-    label_col: margin
-  - name: benchmark_estimator
-    prediction_type: margin
-    trained_to: 2016
-    data_set: legacy_model_data
-    label_col: margin
   - name: tipresias_2020
     prediction_type: margin
     trained_to: 2016

@@ -14,8 +14,6 @@ from kedro.extras.datasets.pickle import PickleDataSet
 
 from tests.fixtures.fake_estimator import pickle_fake_estimator
 from augury.ml_estimators import (
-    BenchmarkEstimator,
-    BaggingEstimator,
     StackingEstimator,
     ConfidenceEstimator,
 )
@@ -50,10 +48,6 @@ def _train_save_model(model, **data_kwargs):
 
 def main():
     """Loop through models, training and saving each."""
-    legacy_data_kwargs = {
-        "data_set": "legacy_model_data",
-        "train_year_range": TRAIN_YEAR_RANGE,
-    }
     data_kwargs = {
         "data_set": "model_data",
         "train_year_range": TRAIN_YEAR_RANGE,
@@ -66,8 +60,6 @@ def main():
     assert model_data["year"].min() < parser.parse(PREDICTION_DATA_START_DATE).year
 
     model_info = [
-        (BenchmarkEstimator(), legacy_data_kwargs),
-        (BaggingEstimator(name="tipresias_2019"), legacy_data_kwargs),
         (ConfidenceEstimator(), {**data_kwargs, "label_col": "result"}),
         (StackingEstimator(name="tipresias_2020"), data_kwargs),
     ]

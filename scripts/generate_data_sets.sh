@@ -8,5 +8,4 @@ python3 "${DATA_IMPORT_DIR}/betting_data.py"
 python3 "${DATA_IMPORT_DIR}/match_data.py"
 python3 "${DATA_IMPORT_DIR}/player_data.py"
 
-kedro run --pipeline legacy
 kedro run --pipeline full

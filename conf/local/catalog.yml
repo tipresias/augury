@@ -36,13 +36,6 @@ final_match_data:
     indent: 2
     orient: records
     date_format: iso
-final_legacy_match_data:
-  type: pandas.JSONDataSet
-  filepath: /app/data/02_intermediate/legacy-match-data_1897-01-01_2020-12-31.json
-  save_args:
-    indent: 2
-    orient: records
-    date_format: iso
 final_player_data:
   type: pandas.JSONDataSet
   filepath: /app/data/02_intermediate/player-data_1965-01-01_2020-12-31.json
@@ -52,13 +45,6 @@ final_player_data:
     date_format: iso
 
 # Final data
-legacy_model_data:
-  type: pandas.JSONDataSet
-  filepath: /app/data/05_model_input/legacy-model-data_1897-01-01_2020-12-31.json
-  save_args:
-    indent: 2
-    orient: records
-    date_format: iso
 model_data:
   type: pandas.JSONDataSet
   filepath: /app/data/05_model_input/model-data_1897-01-01_2020-12-31.json
@@ -68,14 +54,6 @@ model_data:
     date_format: iso
 
 # Models
-tipresias_2019:
-  type: pickle.PickleDataSet
-  filepath: data/06_models/tipresias_2019.pkl
-  backend: joblib
-benchmark_estimator:
-  type: pickle.PickleDataSet
-  filepath: data/06_models/benchmark_estimator.pkl
-  backend: joblib
 tipresias_2020:
   type: pickle.PickleDataSet
   filepath: data/06_models/tipresias_2020.pkl
