@@ -18,6 +18,7 @@ from augury.ml_estimators import (
     ConfidenceEstimator,
 )
 from augury.ml_data import MLData
+from augury.ml_estimators import estimator_params
 from augury.settings import SEED, PREDICTION_DATA_START_DATE
 from augury.context import load_project_context
 
@@ -60,11 +61,11 @@ def main():
 
     model_info = [
         (
-            ConfidenceEstimator(),
+            ConfidenceEstimator(**estimator_params.confidence_estimator),
             {**data_kwargs, "data_set": "legacy_data", "label_col": "result"},
         ),
         (
-            StackingEstimator(name="tipresias_2020"),
+            StackingEstimator(**estimator_params.tipresias_2020),
             {**data_kwargs, "data_set": "legacy_data"},
         ),
     ]

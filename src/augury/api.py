@@ -59,6 +59,7 @@ def make_predictions(
     year_range: Year range for which you want prediction data. Format = yyyy-yyyy.
     round_number: Round number for which you want prediction data.
     ml_models: Comma-separated list of names of ML model to use for making predictions.
+    train: Whether to train the model before predicting.
 
     Returns
     -------
