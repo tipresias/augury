@@ -8,7 +8,7 @@ from kedro.framework.context import KedroContext
 import simplejson
 
 from augury.data_import import match_data
-from augury.nodes import match
+from augury.pipelines.match import nodes as match
 from augury.predictions import Predictor
 from augury.types import YearRange, MLModelDict
 from augury.settings import ML_MODELS

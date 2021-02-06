@@ -5,21 +5,21 @@ from unittest import TestCase
 
 from kedro.pipeline import Pipeline
 
-from augury.pipelines.match_pipeline import (
-    create_match_pipeline,
-    create_legacy_match_pipeline,
+from augury.pipelines.match import (
+    create_pipeline,
+    create_legacy_pipeline,
 )
 
 
 class TestMatchPipeline(TestCase):
-    def test_create_match_pipeline(self):
-        pipeline = create_match_pipeline("2000-01-01", "2010-12-31")
+    def test_create_pipeline(self):
+        pipeline = create_pipeline("2000-01-01", "2010-12-31")
 
         self.assertIsInstance(pipeline, Pipeline)
         self.assertTrue(any(pipeline.nodes))
 
     def test_create_legacy_match_pipeline(self):
-        pipeline = create_legacy_match_pipeline("2000-01-01", "2010-12-31")
+        pipeline = create_legacy_pipeline("2000-01-01", "2010-12-31")
 
         self.assertIsInstance(pipeline, Pipeline)
         self.assertTrue(any(pipeline.nodes))

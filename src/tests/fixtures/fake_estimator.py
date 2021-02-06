@@ -7,7 +7,8 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 from kedro.pipeline import Pipeline, node
 
-from augury.nodes import common, match
+from augury.pipelines.nodes import common
+from augury.pipelines.match import nodes as match
 from augury.ml_estimators.base_ml_estimator import BaseMLEstimator
 from augury.sklearn.preprocessing import ColumnDropper
 from augury.ml_data import MLData
@@ -80,7 +81,9 @@ class FakeEstimatorData(MLData):
             },
             **kwargs,
         }
-        super().__init__(**data_kwargs,)
+        super().__init__(
+            **data_kwargs,
+        )
 
         self.max_year = max_year
 

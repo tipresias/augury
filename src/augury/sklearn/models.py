@@ -20,8 +20,8 @@ from scipy.stats import norm
 from tensorflow import keras
 
 from augury.types import R
-from augury.nodes.base import _validate_required_columns
-from augury.nodes import common
+from augury.pipelines.nodes.base import _validate_required_columns
+from augury.pipelines.nodes import common
 from augury.sklearn.metrics import bits_loss
 from augury.settings import TEAM_NAMES
 

@@ -6,7 +6,8 @@ from faker import Faker
 import pandas as pd
 from candystore import CandyStore
 
-from augury.nodes import feature_calculation, match, common
+from augury.pipelines.nodes import feature_calculation, common
+from augury.pipelines.match import nodes as match
 
 
 FAKE = Faker()

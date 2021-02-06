@@ -2,7 +2,8 @@
 
 from kedro.pipeline import Pipeline, node
 
-from augury.nodes import common, player, feature_calculation
+from ..nodes import common, feature_calculation
+from . import nodes
 
 
 PLAYER_MATCH_STATS_COLS = [
@@ -32,7 +33,7 @@ def create_past_player_pipeline():
                 "combined_past_player_data",
             ),
             node(
-                player.clean_player_data,
+                nodes.clean_player_data,
                 ["combined_past_player_data", "clean_past_match_data"],
                 "clean_player_data",
             ),
@@ -46,7 +47,7 @@ def create_roster_pipeline():
         [
             node(common.convert_to_data_frame, "roster_data", "roster_data_frame"),
             node(
-                player.clean_roster_data,
+                nodes.clean_roster_data,
                 ["roster_data_frame", "clean_player_data"],
                 "clean_roster_data",
             ),
@@ -54,7 +55,7 @@ def create_roster_pipeline():
     )
 
 
-def create_player_pipeline(
+def create_pipeline(
     start_date: str, end_date: str, past_match_pipeline=Pipeline([]), **_kwargs
 ):
     """
@@ -83,17 +84,17 @@ def create_player_pipeline(
                 "filtered_player_data",
             ),
             node(
-                player.convert_player_match_rows_to_player_teammatch_rows,
+                nodes.convert_player_match_rows_to_player_teammatch_rows,
                 "filtered_player_data",
                 "stacked_player_data",
             ),
             node(
-                player.add_last_year_brownlow_votes,
+                nodes.add_last_year_brownlow_votes,
                 "stacked_player_data",
                 "player_data_a",
             ),
-            node(player.add_rolling_player_stats, "player_data_a", "player_data_b"),
-            node(player.add_cum_matches_played, "player_data_b", "player_data_c"),
+            node(nodes.add_rolling_player_stats, "player_data_a", "player_data_b"),
+            node(nodes.add_cum_matches_played, "player_data_b", "player_data_c"),
             node(
                 feature_calculation.feature_calculator(
                     [
@@ -129,7 +130,7 @@ def create_player_pipeline(
                 "player_data_e",
             ),
             node(
-                player.aggregate_player_stats_by_team_match(
+                nodes.aggregate_player_stats_by_team_match(
                     ["sum", "max", "min", "skew", "std"]
                 ),
                 "player_data_e",

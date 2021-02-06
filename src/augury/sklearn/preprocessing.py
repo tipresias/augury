@@ -7,7 +7,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 import pandas as pd
 import numpy as np
 
-from augury.nodes.base import _validate_required_columns
+from augury.pipelines.nodes.base import _validate_required_columns
 from augury.types import T
 
 

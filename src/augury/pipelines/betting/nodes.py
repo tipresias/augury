@@ -4,7 +4,7 @@ from typing import List
 
 import pandas as pd
 
-from .base import (
+from ..nodes.base import (
     _parse_dates,
     _translate_team_column,
     _validate_required_columns,

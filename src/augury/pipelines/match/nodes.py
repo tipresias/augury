@@ -17,7 +17,7 @@ from augury.settings import (
     TEAM_CITIES,
     INDEX_COLS,
 )
-from .base import (
+from ..nodes.base import (
     _parse_dates,
     _translate_team_column,
     _validate_required_columns,

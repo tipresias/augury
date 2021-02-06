@@ -11,7 +11,8 @@ from candystore import CandyStore
 from dateutil import parser
 
 from tests.helpers import ColumnAssertionMixin
-from augury.nodes import common, base, match
+from augury.pipelines.nodes import common, base
+from augury.pipelines.match import nodes as match
 from augury.settings import INDEX_COLS
 
 START_DATE = parser.parse("2013-01-01")

@@ -1,3 +1,5 @@
+"""Entrypoint for setting up the Augury app per Kedro boilerplate."""
+
 # Copyright 2020 QuantumBlack Visual Analytics Limited
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
