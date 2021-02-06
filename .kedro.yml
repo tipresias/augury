@@ -1,1 +1,6 @@
 context_path: augury.run.ProjectContext
+project_name: "augury"
+project_version: "0.16.5"
+package_name: "augury"
+hooks:
+  - augury.hooks.project_hooks
