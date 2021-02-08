@@ -9,7 +9,7 @@ import pytz
 from candystore import CandyStore
 
 from tests.helpers import ColumnAssertionMixin
-from augury.nodes import betting
+from augury.pipelines.betting import nodes as betting
 
 
 YEAR_RANGE = (2013, 2015)

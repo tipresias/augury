@@ -13,7 +13,8 @@ from candystore import CandyStore
 
 from tests.helpers import ColumnAssertionMixin
 from tests.fixtures import data_factories
-from augury.nodes import match, common
+from augury.pipelines.match import nodes as match
+from augury.pipelines.nodes import common
 from augury.settings import BASE_DIR
 
 

@@ -1,24 +1,20 @@
 """Application entry point."""
 
 from pathlib import Path
-from typing import Iterable, Dict, Optional
+from typing import Optional
 from datetime import date
 import os
 
-from kedro.framework.context import KedroContext, load_context
-from kedro.runner import AbstractRunner
-from kedro.pipeline import Pipeline
-from kedro.io import DataCatalog
+from kedro.framework.context import KedroContext, load_package_context
 
-from augury.pipelines import create_pipelines, create_full_pipeline
-from augury.io import JSONRemoteDataSet
+from augury.settings import BASE_DIR
 
 
 class ProjectContext(KedroContext):
     """Specialisation of generic KedroContext object with params specific to Augury."""
 
     project_name = "augury"
-    project_version = "0.16.1"
+    project_version = "0.16.5"
 
     def __init__(
         self,
@@ -46,80 +42,31 @@ class ProjectContext(KedroContext):
         self.start_date = start_date
         self.end_date = end_date
 
-    @property
-    def pipeline(self):
-        """Create the default pipeline for the Augury app."""
-        return create_full_pipeline(self.start_date, self.end_date)
 
-    def _get_pipelines(self) -> Dict[str, Pipeline]:
-        return create_pipelines(self.start_date, self.end_date)
-
-    def _get_catalog(
-        self, save_version=None, journal=None, load_versions=None
-    ) -> DataCatalog:
-        catalog = super()._get_catalog(
-            save_version=save_version, journal=journal, load_versions=load_versions
-        )
-        catalog.add(
-            "roster_data",
-            JSONRemoteDataSet(
-                data_source="augury.data_import.player_data.fetch_roster_data",
-                round_number=self.round_number,
-            ),
-        )
-
-        return catalog
-
-
-def main(
-    tags: Iterable[str] = None,
-    env: str = None,
-    runner: AbstractRunner = None,
-    node_names: Iterable[str] = None,
-    from_nodes: Iterable[str] = None,
-    to_nodes: Iterable[str] = None,
-    from_inputs: Iterable[str] = None,
+def run_package(
     round_number: Optional[int] = None,
     start_date: str = "1897-01-01",
     end_date: str = f"{date.today().year}-12-31",
 ):
-    """Application main entry point.
+    """Entry point for running a Kedro project packaged with `kedro package`.
+
+    Uses `python -m <project_package>.run` command.
 
     Params
     ------
-    tags: An optional list of node tags which should be used to
-        filter the nodes of the ``Pipeline``. If specified, only the nodes
-        containing *any* of these tags will be run.
-    env: An optional parameter specifying the environment in which
-        the ``Pipeline`` should be run.
-    runner: An optional parameter specifying the runner that you want to run
-        the pipeline with.
-    node_names: An optional list of node names which should be used to filter
-        the nodes of the ``Pipeline``. If specified, only the nodes with these
-        names will be run.
-    from_nodes: An optional list of node names which should be used as a
-        starting point of the new ``Pipeline``.
-    to_nodes: An optional list of node names which should be used as an
-        end point of the new ``Pipeline``.
-    from_inputs: An optional list of input datasets which should be used as a
-        starting point of the new ``Pipeline``.
+    round_number: The relevant round_number for filtering data.
+    start_date: The earliest match date (inclusive) to include in any data sets.
+    end_date: The latest match date (inclusive) to include in any data sets.
     """
-    project_context = load_context(
-        Path.cwd(),
-        env=env,
+    project_context = load_package_context(
+        project_path=Path(BASE_DIR),
+        package_name=Path(__file__).resolve().parent.name,
         round_number=round_number,
         start_date=start_date,
         end_date=end_date,
     )
-    project_context.run(
-        tags=tags,
-        runner=runner,
-        node_names=node_names,
-        from_nodes=from_nodes,
-        to_nodes=to_nodes,
-        from_inputs=from_inputs,
-    )
+    project_context.run()
 
 
 if __name__ == "__main__":
-    main()
+    run_package()

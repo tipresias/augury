@@ -2,8 +2,8 @@
 
 from kedro.pipeline import Pipeline, node
 
-from augury.nodes import common, match, feature_calculation
-
+from ..nodes import common, feature_calculation
+from . import nodes
 
 MATCH_OPPO_COLS = [
     "team",
@@ -43,7 +43,7 @@ def create_past_match_pipeline():
                 "combined_past_match_data",
             ),
             node(
-                match.clean_match_data,
+                nodes.clean_match_data,
                 "combined_past_match_data",
                 "clean_past_match_data",
             ),
@@ -56,12 +56,12 @@ def create_future_match_pipeline():
     return Pipeline(
         [
             node(common.convert_to_data_frame, "fixture_data", "fixture_data_frame"),
-            node(match.clean_fixture_data, "fixture_data_frame", "clean_fixture_data"),
+            node(nodes.clean_fixture_data, "fixture_data_frame", "clean_fixture_data"),
         ]
     )
 
 
-def create_match_pipeline(
+def create_pipeline(
     start_date: str,
     end_date: str,
     past_match_pipeline=create_past_match_pipeline(),
@@ -96,12 +96,12 @@ def create_match_pipeline(
                 "filtered_past_match_data",
                 "match_data_a",
             ),
-            node(match.add_out_of_state, "match_data_a", "match_data_b"),
-            node(match.add_travel_distance, "match_data_b", "match_data_c"),
-            node(match.add_result, "match_data_c", "match_data_d"),
-            node(match.add_margin, "match_data_d", "match_data_e"),
+            node(nodes.add_out_of_state, "match_data_a", "match_data_b"),
+            node(nodes.add_travel_distance, "match_data_b", "match_data_c"),
+            node(nodes.add_result, "match_data_c", "match_data_d"),
+            node(nodes.add_margin, "match_data_d", "match_data_e"),
             node(
-                match.add_shifted_team_features(
+                nodes.add_shifted_team_features(
                     shift_columns=[
                         "score",
                         "oppo_score",
@@ -116,8 +116,8 @@ def create_match_pipeline(
                 "match_data_e",
                 "shifted_match_data",
             ),
-            node(match.add_cum_win_points, "shifted_match_data", "match_data_g"),
-            node(match.add_win_streak, "match_data_g", "match_data_h"),
+            node(nodes.add_cum_win_points, "shifted_match_data", "match_data_g"),
+            node(nodes.add_win_streak, "match_data_g", "match_data_h"),
             node(
                 feature_calculation.feature_calculator(
                     [
@@ -147,8 +147,8 @@ def create_match_pipeline(
                 "match_data_j",
             ),
             # Features dependent on oppo columns
-            node(match.add_cum_percent, "match_data_j", "match_data_k"),
-            node(match.add_ladder_position, "match_data_k", "match_data_l"),
+            node(nodes.add_cum_percent, "match_data_j", "match_data_k"),
+            node(nodes.add_ladder_position, "match_data_k", "match_data_l"),
             node(
                 common.add_oppo_features(
                     oppo_feature_cols=["cum_percent", "ladder_position"]
@@ -161,7 +161,7 @@ def create_match_pipeline(
     )
 
 
-def create_legacy_match_pipeline(
+def create_legacy_pipeline(
     start_date: str,
     end_date: str,
     past_match_pipeline=create_past_match_pipeline(),
@@ -195,18 +195,18 @@ def create_legacy_match_pipeline(
             ),
             # add_elo_rating depends on DF still being organized per-match
             # with home_team/away_team columns
-            node(match.add_elo_rating, "filtered_past_match_data", "match_data_a"),
+            node(nodes.add_elo_rating, "filtered_past_match_data", "match_data_a"),
             node(
                 common.convert_match_rows_to_teammatch_rows,
                 "match_data_a",
                 "match_data_b",
             ),
-            node(match.add_out_of_state, "match_data_b", "match_data_c"),
-            node(match.add_travel_distance, "match_data_c", "match_data_d"),
-            node(match.add_result, "match_data_d", "match_data_e"),
-            node(match.add_margin, "match_data_e", "match_data_f"),
+            node(nodes.add_out_of_state, "match_data_b", "match_data_c"),
+            node(nodes.add_travel_distance, "match_data_c", "match_data_d"),
+            node(nodes.add_result, "match_data_d", "match_data_e"),
+            node(nodes.add_margin, "match_data_e", "match_data_f"),
             node(
-                match.add_shifted_team_features(
+                nodes.add_shifted_team_features(
                     shift_columns=[
                         "score",
                         "oppo_score",
@@ -219,8 +219,8 @@ def create_legacy_match_pipeline(
                 "match_data_f",
                 "match_data_g",
             ),
-            node(match.add_cum_win_points, "match_data_g", "match_data_h"),
-            node(match.add_win_streak, "match_data_h", "match_data_i"),
+            node(nodes.add_cum_win_points, "match_data_g", "match_data_h"),
+            node(nodes.add_win_streak, "match_data_h", "match_data_i"),
             node(
                 feature_calculation.feature_calculator(
                     [
@@ -252,9 +252,9 @@ def create_legacy_match_pipeline(
                 "match_data_k",
             ),
             # Features dependent on oppo columns
-            node(match.add_cum_percent, "match_data_k", "match_data_l"),
-            node(match.add_ladder_position, "match_data_l", "match_data_m"),
-            node(match.add_elo_pred_win, "match_data_m", "match_data_n"),
+            node(nodes.add_cum_percent, "match_data_k", "match_data_l"),
+            node(nodes.add_ladder_position, "match_data_l", "match_data_m"),
+            node(nodes.add_elo_pred_win, "match_data_m", "match_data_n"),
             node(
                 feature_calculation.feature_calculator(
                     [

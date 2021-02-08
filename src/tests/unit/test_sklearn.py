@@ -15,7 +15,8 @@ from candystore import CandyStore
 
 from tests.helpers import KedroContextMixin
 from tests.fixtures.fake_estimator import FakeEstimatorData, create_fake_pipeline
-from augury.nodes import match, common
+from augury.pipelines.match import nodes as match
+from augury.pipelines.nodes import common
 from augury.sklearn.models import AveragingRegressor, EloRegressor, KerasClassifier
 from augury.sklearn.preprocessing import (
     CorrelationSelector,
@@ -241,7 +242,9 @@ class TestDataFrameConverter(TestCase):
 
 
 class TestKerasClassifier(TestCase):
-    @patch("augury.run.create_pipelines", {"fake": create_fake_pipeline()})
+    @patch(
+        "augury.hooks.ProjectHooks.register_pipelines", {"fake": create_fake_pipeline()}
+    )
     def setUp(self):
         data = FakeEstimatorData()
         _X_train, _y_train = data.train_data

@@ -8,3 +8,4 @@ disable=
     C0330, # Wrong indentation (indentation handled by black),
     C0103, # Wrong case naming style
     C0413, # Imports at the top (sometimes need to add project to sys.path)
+    no-self-use, # @property doesn't play nice with other decorators

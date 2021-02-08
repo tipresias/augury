@@ -3,10 +3,8 @@
 from kedro.pipeline import Pipeline, node
 
 from augury.settings import CATEGORY_COLS
-from augury.nodes import common, feature_calculation
-from .player_pipeline import create_player_pipeline
-from .betting_pipeline import create_betting_pipeline
-from .match_pipeline import create_match_pipeline
+from ..nodes import common, feature_calculation
+from .. import player, betting, match
 
 
 DEFAULT_FEATURE_CALCS = [
@@ -14,11 +12,11 @@ DEFAULT_FEATURE_CALCS = [
 ]
 
 
-def create_full_pipeline(
+def create_pipeline(
     start_date: str,
     end_date: str,
     match_data_set="final_match_data",
-    match_pipeline_func=create_match_pipeline,
+    match_pipeline_func=match.create_pipeline,
     feature_calcs=DEFAULT_FEATURE_CALCS,
     final_data_set="model_data",
     category_cols=CATEGORY_COLS + ["prev_match_oppo_team", "oppo_prev_match_oppo_team"],
@@ -26,9 +24,9 @@ def create_full_pipeline(
     """Create a pipeline that joins all data-source-specific pipelines."""
     return Pipeline(
         [
-            create_betting_pipeline(start_date, end_date),
+            betting.create_pipeline(start_date, end_date),
             match_pipeline_func(start_date, end_date),
-            create_player_pipeline(start_date, end_date),
+            player.create_pipeline(start_date, end_date),
             node(
                 common.clean_full_data,
                 ["final_betting_data", match_data_set, "final_player_data"],

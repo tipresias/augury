@@ -12,7 +12,8 @@ import pytz
 from candystore import CandyStore
 
 from tests.helpers import ColumnAssertionMixin
-from augury.nodes import player, common
+from augury.pipelines.player import nodes as player
+from augury.pipelines.nodes import common
 from augury.settings import INDEX_COLS, BASE_DIR
 
 

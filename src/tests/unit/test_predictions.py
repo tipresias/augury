@@ -49,7 +49,9 @@ class TestPredictor(TestCase, KedroContextMixin):
 
         self.predictor._data = fake_data  # pylint: disable=protected-access
 
-    @patch("augury.run.create_pipelines", {"fake": create_fake_pipeline()})
+    @patch(
+        "augury.hooks.ProjectHooks.register_pipelines", {"fake": create_fake_pipeline()}
+    )
     def test_make_predictions(self):
         with freeze_time(f"{self.max_year}-06-15"):
             model_predictions = self.predictor.make_predictions(FAKE_ML_MODELS)
