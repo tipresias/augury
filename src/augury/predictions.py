@@ -143,8 +143,8 @@ class Predictor:
 
     @staticmethod
     def _prediction_data(
-        ml_model: MLModelDict, y_pred: np.array
-    ) -> Dict[str, Optional[np.array]]:
+        ml_model: MLModelDict, y_pred: np.ndarray
+    ) -> Dict[str, Optional[np.ndarray]]:
         model_pred_type = ml_model["prediction_type"]
 
         return {

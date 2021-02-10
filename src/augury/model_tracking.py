@@ -24,7 +24,7 @@ np.random.seed(SEED)
 
 GenericModel = Union[BaseEstimator, BaseMLEstimator, Pipeline]
 SKLearnScorer = Callable[
-    [BaseEstimator, Union[pd.DataFrame, np.array], Union[pd.DataFrame, np.array]],
+    [BaseEstimator, Union[pd.DataFrame, np.ndarray], Union[pd.DataFrame, np.ndarray]],
     Union[float, int],
 ]
 
@@ -79,7 +79,7 @@ def score_model(
         "match_accuracy": match_accuracy_scorer,
     },
     n_jobs=None,
-) -> Dict[str, np.array]:
+) -> Dict[str, np.ndarray]:
     """
     Perform cross-validation on the given model without logging to mlflow.
 

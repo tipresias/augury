@@ -217,7 +217,7 @@ class DataFrameConverter(BaseEstimator, TransformerMixin):
         """Include for consistency with Scikit-learn interface."""
         return self
 
-    def transform(self, X: Union[pd.DataFrame, np.array]):
+    def transform(self, X: Union[pd.DataFrame, np.ndarray]):
         """Convert data into a pandas DataFrame with the given columns and index."""
         if self.columns is not None:
             assert X.shape[1] == len(self.columns), (
