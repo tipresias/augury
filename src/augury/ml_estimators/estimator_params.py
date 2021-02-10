@@ -55,7 +55,7 @@ tipresias_2020 = {
             make_pipeline(
                 DataFrameConverter(),
                 TimeSeriesRegressor(
-                    sm.tsa.arima.ARIMA,
+                    sm.tsa.ARIMA,
                     order=(6, 0, 1),
                     exog_cols=["at_home", "oppo_cum_percent"],
                 ),
