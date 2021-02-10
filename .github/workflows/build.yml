@@ -21,7 +21,9 @@ jobs:
       - name: Build image
         run: |
           docker pull cfranklin11/tipresias_data_science:latest
+          docker pull cfranklin11/tipresias_afl_data:latest
           docker build --cache-from cfranklin11/tipresias_data_science:latest -t cfranklin11/tipresias_data_science:latest -f Dockerfile.local .
+          docker-compose
       - run: mkdir .gcloud
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@master
