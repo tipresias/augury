@@ -47,6 +47,14 @@ full_data:
     token: cloud
 
 # Models
+tipresias_2021:
+  type: pickle.PickleDataSet
+  filepath: gs://afl_data/tipresias_2021.pkl
+  backend: joblib
+  fs_args:
+    project: tipresias
+  credentials:
+    token: cloud
 tipresias_2020:
   type: pickle.PickleDataSet
   filepath: gs://afl_data/tipresias_2020.pkl

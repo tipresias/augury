@@ -68,6 +68,10 @@ def main():
             StackingEstimator(**estimator_params.tipresias_2020),
             {**data_kwargs, "data_set": "legacy_data"},
         ),
+        (
+            StackingEstimator(name="tipresias_2021"),
+            {**data_kwargs, "data_set": "full_data"},
+        ),
     ]
 
     Parallel(n_jobs=-1)(
