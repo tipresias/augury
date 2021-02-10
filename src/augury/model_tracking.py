@@ -187,7 +187,7 @@ def _track_model(
     run_tags,
     **score_model_kwargs,
 ) -> Dict[str, Any]:
-    cv_scores = score_model(loaded_model, model_data, **score_model_kwargs,)
+    cv_scores = score_model(loaded_model, model_data, **score_model_kwargs)
 
     run_tags = run_info.get("tags") or {}
     run_params = run_info.get("params") or {}
@@ -232,7 +232,7 @@ def start_run(
         mlflow.set_experiment(experiment)
 
     return [
-        _track_model(ml_model, model_data, run_info, run_tags, **score_model_kwargs,)
+        _track_model(ml_model, model_data, run_info, run_tags, **score_model_kwargs)
         for ml_model, model_data, run_info in ml_models
     ]
 
