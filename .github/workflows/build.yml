@@ -20,11 +20,28 @@ jobs:
           curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-0.6.3-linux-amd64 > ./cc-test-reporter
           chmod +x ./cc-test-reporter
           ./cc-test-reporter before-build
-      - name: Build image
-        run: |
-          docker pull cfranklin11/tipresias_data_science:latest
-          docker pull cfranklin11/tipresias_afl_data:latest
-          docker build --cache-from cfranklin11/tipresias_data_science:latest -t cfranklin11/tipresias_data_science:latest -f Dockerfile.local .
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      - name: Build Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./Dockerfile.local
+          builder: ${{ steps.buildx.outputs.name }}
+          tags: cfranklin11/tipresias_data_science:latest
+          load: true
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+      - name: Pull afl_data image
+        run: docker pull cfranklin11/tipresias_afl_data:latest
       - run: mkdir .gcloud
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@master
