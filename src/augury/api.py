@@ -19,7 +19,7 @@ ApiResponse = TypedDict(
     "ApiResponse", {"data": Union[List[Dict[str, Any]], Dict[str, Any]]}
 )
 
-PIPELINE_NAMES = {"model_data": "full", "legacy_model_data": "legacy"}
+PIPELINE_NAMES = {"full_data": "full", "legacy_data": "legacy"}
 
 
 def _clean_data_frame_for_json(data_frame: pd.DataFrame) -> List[Dict[str, Any]]:
@@ -59,6 +59,7 @@ def make_predictions(
     year_range: Year range for which you want prediction data. Format = yyyy-yyyy.
     round_number: Round number for which you want prediction data.
     ml_models: Comma-separated list of names of ML model to use for making predictions.
+    train: Whether to train the model before predicting.
 
     Returns
     -------

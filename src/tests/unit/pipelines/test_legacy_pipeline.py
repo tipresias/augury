@@ -5,10 +5,10 @@ from unittest import TestCase
 
 from kedro.pipeline import Pipeline
 
-from augury.pipelines.match import create_pipeline
+from augury.pipelines.legacy import create_pipeline
 
 
-class TestMatchPipeline(TestCase):
+class TestLegacyPipeline(TestCase):
     def test_create_pipeline(self):
         pipeline = create_pipeline("2000-01-01", "2010-12-31")
 

@@ -24,7 +24,7 @@ class MLData:
     def __init__(
         self,
         context: Optional[KedroContext] = None,
-        data_set: str = "model_data",
+        data_set: str = "full_data",
         train_year_range: YearRange = TRAIN_YEAR_RANGE,
         test_year_range: YearRange = VALIDATION_YEAR_RANGE,
         index_cols: List[str] = INDEX_COLS,

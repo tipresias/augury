@@ -34,20 +34,9 @@ player_data:
     token: cloud
 
 # Final data
-legacy_model_data:
+full_data:
   type: pandas.JSONDataSet
-  filepath: gs://afl_data/legacy-model-data_2010-01-01_2020-12-31.json
-  fs_args:
-    project: tipresias
-  save_args:
-    indent: 2
-    orient: records
-    date_format: iso
-  credentials:
-    token: cloud
-model_data:
-  type: pandas.JSONDataSet
-  filepath: gs://afl_data/model-data_2010-01-01_2020-12-31.json
+  filepath: gs://afl_data/full-data_2010-01-01_2020-12-31.json
   fs_args:
     project: tipresias
   save_args:
@@ -58,17 +47,9 @@ model_data:
     token: cloud
 
 # Models
-tipresias_2019:
+tipresias_2021:
   type: pickle.PickleDataSet
-  filepath: gs://afl_data/tipresias_2019.pkl
-  backend: joblib
-  fs_args:
-    project: tipresias
-  credentials:
-    token: cloud
-benchmark_estimator:
-  type: pickle.PickleDataSet
-  filepath: gs://afl_data/benchmark_estimator.pkl
+  filepath: gs://afl_data/tipresias_2021.pkl
   backend: joblib
   fs_args:
     project: tipresias

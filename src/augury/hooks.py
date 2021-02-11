@@ -38,8 +38,8 @@ from kedro.versioning import Journal
 
 from augury.io import JSONRemoteDataSet
 from augury.run import ProjectContext
-from augury.settings import CATEGORY_COLS, BASE_DIR
-from augury.pipelines import betting, full, match, player
+from augury.settings import BASE_DIR
+from augury.pipelines import betting, full, match, player, legacy
 from augury.pipelines.nodes import feature_calculation
 
 
@@ -71,15 +71,7 @@ class ProjectHooks:
                 past_match_pipeline=match.create_past_match_pipeline(),
             ),
             "full": full.create_pipeline(context.start_date, context.end_date),
-            "legacy": full.create_pipeline(
-                context.start_date,
-                context.end_date,
-                match_data_set="final_legacy_match_data",
-                match_pipeline_func=match.create_legacy_pipeline,
-                feature_calcs=LEGACY_FEATURE_CALCS,
-                final_data_set="legacy_model_data",
-                category_cols=CATEGORY_COLS,
-            ),
+            "legacy": legacy.create_pipeline(context.start_date, context.end_date),
         }
 
     @hook_impl

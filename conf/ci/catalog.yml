@@ -34,17 +34,9 @@ player_data:
     token: /app/.gcloud/keyfile.json
 
 # Models
-tipresias_2019:
+tipresias_2021:
   type: pickle.PickleDataSet
-  filepath: gs://afl_data/tipresias_2019.pkl
-  backend: joblib
-  fs_args:
-    project: tipresias
-  credentials:
-    token: /app/.gcloud/keyfile.json
-benchmark_estimator:
-  type: pickle.PickleDataSet
-  filepath: gs://afl_data/benchmark_estimator.pkl
+  filepath: gs://afl_data/tipresias_2021.pkl
   backend: joblib
   fs_args:
     project: tipresias

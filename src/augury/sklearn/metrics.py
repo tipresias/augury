@@ -182,12 +182,12 @@ def _bits_gradient(y_true, y_pred):
         y_true == DRAW,
         _draw_bits_gradient(y_pred),
         np.where(
-            y_true == WIN, _win_bits_gradient(y_pred), _loss_bits_gradient(y_pred),
+            y_true == WIN, _win_bits_gradient(y_pred), _loss_bits_gradient(y_pred)
         ),
     )
 
 
-def bits_objective(y_true, y_pred) -> Tuple[np.array, np.array]:
+def bits_objective(y_true, y_pred) -> Tuple[np.ndarray, np.ndarray]:
     """Objective function for XGBoost estimators.
 
     The gradient and hessian formulas are based on the formula for the bits error

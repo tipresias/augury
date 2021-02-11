@@ -103,8 +103,8 @@ class EloRegressor(BaseEstimator, RegressorMixin):
     EloDictionary = TypedDict(
         "EloDictionary",
         {
-            "previous_elo": np.array,
-            "current_elo": np.array,
+            "previous_elo": np.ndarray,
+            "current_elo": np.ndarray,
             "year": int,
             "round_number": int,
         },
@@ -475,7 +475,7 @@ class TimeSeriesRegressor(BaseEstimator, RegressorMixin):
         self.verbose = verbose
         self._team_models: Dict[str, TimeSeriesModel] = {}
 
-    def fit(self, X: pd.DataFrame, y: Union[pd.DataFrame, np.array]):
+    def fit(self, X: pd.DataFrame, y: Union[pd.DataFrame, np.ndarray]):
         """Fit the model to the training data."""
         time_series_df = X.assign(
             y=y.astype(float), ts_date=X["date"].dt.date
@@ -567,7 +567,7 @@ class TimeSeriesRegressor(BaseEstimator, RegressorMixin):
 
         return pd.Series(y_pred, name="yhat", index=team_df_index)
 
-    def _exog_arg(self, data_frame: pd.DataFrame) -> Optional[np.array]:
+    def _exog_arg(self, data_frame: pd.DataFrame) -> Optional[np.ndarray]:
         return (
             data_frame[self.exog_cols].astype(float).to_numpy()
             if any(self.exog_cols)

@@ -14,12 +14,11 @@ from kedro.extras.datasets.pickle import PickleDataSet
 
 from tests.fixtures.fake_estimator import pickle_fake_estimator
 from augury.ml_estimators import (
-    BenchmarkEstimator,
-    BaggingEstimator,
     StackingEstimator,
     ConfidenceEstimator,
 )
 from augury.ml_data import MLData
+from augury.ml_estimators import estimator_params
 from augury.settings import SEED, PREDICTION_DATA_START_DATE
 from augury.context import load_project_context
 
@@ -50,26 +49,29 @@ def _train_save_model(model, **data_kwargs):
 
 def main():
     """Loop through models, training and saving each."""
-    legacy_data_kwargs = {
-        "data_set": "legacy_model_data",
-        "train_year_range": TRAIN_YEAR_RANGE,
-    }
     data_kwargs = {
-        "data_set": "model_data",
         "train_year_range": TRAIN_YEAR_RANGE,
     }
 
     context = load_project_context()
-    model_data = pd.DataFrame(context.catalog.load("model_data"))
+    full_data = pd.DataFrame(context.catalog.load("full_data"))
 
     # Make sure we're using full data sets instead of truncated prod data sets
-    assert model_data["year"].min() < parser.parse(PREDICTION_DATA_START_DATE).year
+    assert full_data["year"].min() < parser.parse(PREDICTION_DATA_START_DATE).year
 
     model_info = [
-        (BenchmarkEstimator(), legacy_data_kwargs),
-        (BaggingEstimator(name="tipresias_2019"), legacy_data_kwargs),
-        (ConfidenceEstimator(), {**data_kwargs, "label_col": "result"}),
-        (StackingEstimator(name="tipresias_2020"), data_kwargs),
+        (
+            ConfidenceEstimator(**estimator_params.confidence_estimator),
+            {**data_kwargs, "data_set": "legacy_data", "label_col": "result"},
+        ),
+        (
+            StackingEstimator(**estimator_params.tipresias_2020),
+            {**data_kwargs, "data_set": "legacy_data"},
+        ),
+        (
+            StackingEstimator(name="tipresias_2021"),
+            {**data_kwargs, "data_set": "full_data"},
+        ),
     ]
 
     Parallel(n_jobs=-1)(
