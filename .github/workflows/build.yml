@@ -12,7 +12,10 @@ jobs:
       GOOGLE_APPLICATION_CREDENTIALS: .gcloud/keyfile.json
     steps:
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get -y install haveged && sudo systemctl start haveged
+        run: |
+          sudo apt-get update && sudo apt-get -y install haveged && sudo systemctl start haveged
+          docker-compose
+          docker-compose version
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Set up code coverage monitoring
