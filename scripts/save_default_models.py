@@ -7,7 +7,6 @@ make old model files obsolete.
 import os
 from dateutil import parser
 
-from joblib import Parallel, delayed
 import numpy as np
 import pandas as pd
 from kedro.extras.datasets.pickle import PickleDataSet
@@ -58,6 +57,7 @@ def main():
 
     # Make sure we're using full data sets instead of truncated prod data sets
     assert full_data["year"].min() < parser.parse(PREDICTION_DATA_START_DATE).year
+    del full_data
 
     model_info = [
         (
@@ -74,10 +74,8 @@ def main():
         ),
     ]
 
-    Parallel(n_jobs=-1)(
-        delayed(_train_save_model)(model, **data_kwargs)
-        for model, data_kwargs in model_info
-    )
+    for model, data_kwargs in model_info:
+        _train_save_model(model, **data_kwargs)
 
     pickle_fake_estimator()
 
