@@ -9,13 +9,12 @@ from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import ExtraTreesRegressor
 from mlxtend.regressor import StackingRegressor
-import statsmodels.api as sm
 
 from augury.sklearn.preprocessing import (
     TeammatchToMatchConverter,
     DataFrameConverter,
 )
-from augury.sklearn.models import EloRegressor, TimeSeriesRegressor
+from augury.sklearn.models import EloRegressor
 from augury.settings import SEED
 from augury.types import R
 from .base_ml_estimator import BaseMLEstimator, BASE_ML_PIPELINE
@@ -41,12 +40,6 @@ BEST_PARAMS = {
         "eloregressor__season_carryover": 0.5329064035,
         "eloregressor__x": 0.6343992255,
     },
-    "arima_pipeline": {
-        "timeseriesregressor__exog_cols": ["at_home", "oppo_cum_percent"],
-        "timeseriesregressor__fit_method": "css",
-        "timeseriesregressor__fit_solver": "bfgs",
-        "timeseriesregressor__order": (8, 0, 1),
-    },
     "meta_pipeline": {
         "extratreesregressor__max_depth": 41,
         "extratreesregressor__min_samples_leaf": 1,
@@ -63,21 +56,12 @@ ELO_PIPELINE = make_pipeline(
     DataFrameConverter(), TeammatchToMatchConverter(), EloRegressor()
 ).set_params(**BEST_PARAMS["elo_pipeline"])
 
-ARIMA_PIPELINE = make_pipeline(
-    DataFrameConverter(),
-    TimeSeriesRegressor(
-        sm.tsa.ARIMA,
-        order=(6, 0, 1),
-        exog_cols=["at_home", "oppo_cum_percent"],
-    ),
-).set_params(**BEST_PARAMS["arima_pipeline"])
-
 META_PIPELINE = make_pipeline(
     StandardScaler(), ExtraTreesRegressor(random_state=SEED)
 ).set_params(**BEST_PARAMS["meta_pipeline"])
 
 PIPELINE = StackingRegressor(
-    regressors=[ML_PIPELINE, ELO_PIPELINE, ARIMA_PIPELINE], meta_regressor=META_PIPELINE
+    regressors=[ML_PIPELINE, ELO_PIPELINE], meta_regressor=META_PIPELINE
 )
 
 
