@@ -52,15 +52,14 @@ class TestPlayerData(TestCase):
         start_of_this_season = date(today.year, MAR, THIRTY_FIRST)
         end_of_this_season = date(today.year, SEPT, FIFTEENTH)
 
-        a_year = timedelta(days=365)
-        a_year_ago = today - a_year
+        a_month = timedelta(days=30)
 
-        if today > start_of_this_season and a_year_ago < end_of_this_season:
-            self.start_date = str(a_year_ago)
-        elif today < start_of_this_season:
-            self.start_date = str(end_of_previous_season - a_year)
+        if start_of_this_season <= today <= end_of_this_season:
+            self.start_date = str(today - a_month)
+        elif today <= start_of_this_season:
+            self.start_date = str(end_of_previous_season - a_month)
         else:
-            self.start_date = str(end_of_this_season - a_year)
+            self.start_date = str(end_of_this_season - a_month)
 
         self.end_date = str(today)
 
