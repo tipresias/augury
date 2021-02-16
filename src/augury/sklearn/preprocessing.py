@@ -21,9 +21,9 @@ class CorrelationSelector(BaseEstimator, TransformerMixin):
 
     def __init__(
         self,
-        cols_to_keep: List[str] = [],
+        cols_to_keep: List[str] = None,
         threshold: Optional[float] = None,
-        labels=pd.Series(dtype="object"),
+        labels: pd.Series = None,
     ) -> None:
         """Instantiate a CorrelationSelector transformer.
 
@@ -35,18 +35,24 @@ class CorrelationSelector(BaseEstimator, TransformerMixin):
             correlations.
         """
         self.threshold = threshold
-        self.labels = labels
-        self._cols_to_keep = cols_to_keep
-        self._above_threshold_columns = cols_to_keep
+        self.labels = pd.Series(dtype="object") if labels is None else labels
+        self._cols_to_keep = [] if cols_to_keep is None else cols_to_keep
+        self._above_threshold_columns = self._cols_to_keep
 
     def transform(self, X: pd.DataFrame, _y=None) -> pd.DataFrame:
         """Filter out features with weak correlation with the labels."""
         return X[self._above_threshold_columns]
 
-    def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> Type[T]:
+    def fit(
+        self, X: pd.DataFrame, y: Optional[Union[pd.Series, np.ndarray]] = None
+    ) -> Type[T]:
         """Calculate feature/label correlations and save high-correlation features."""
         if not any(self.labels) and y is not None:
-            self.labels = y
+            self.labels = (
+                y
+                if isinstance(y, pd.Series)
+                else pd.Series(y, index=X.index, name="label")
+            )
 
         assert any(
             self.labels
