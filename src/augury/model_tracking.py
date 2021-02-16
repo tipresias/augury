@@ -12,6 +12,7 @@ import mlflow
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 from augury.ml_data import MLData
 from augury.sklearn.model_selection import year_cv_split
@@ -270,3 +271,53 @@ def graph_tf_model_history(history, metrics: List[str] = []) -> None:
         plt.legend()
 
     plt.show()
+
+
+def _graph_accuracy_scores(performance_data_frame, sort):
+    data = (
+        performance_data_frame.sort_values("match_accuracy", ascending=False)
+        if sort
+        else performance_data_frame
+    )
+
+    plt.figure(figsize=(15, 7))
+    sns.barplot(
+        x="model",
+        y="match_accuracy",
+        data=data,
+    )
+    plt.ylim(bottom=0.55)
+    plt.title("Model accuracy for cross-validation\n", fontsize=18)
+    plt.ylabel("Accuracy", fontsize=14)
+    plt.xlabel("", fontsize=14)
+    plt.yticks(fontsize=12)
+    plt.xticks(fontsize=12, rotation=90)
+    plt.legend(fontsize=14)
+
+    plt.show()
+
+
+def _graph_mae_scores(performance_data_frame, sort):
+    data = (
+        performance_data_frame.sort_values("mae", ascending=True)
+        if sort
+        else performance_data_frame
+    )
+
+    plt.figure(figsize=(15, 7))
+    sns.barplot(x="model", y="mae", data=data)
+    plt.ylim(bottom=20)
+    plt.title("Model mean absolute error for cross-validation\n", fontsize=18)
+    plt.ylabel("MAE", fontsize=14)
+    plt.xlabel("", fontsize=14)
+    plt.yticks(fontsize=12)
+    plt.xticks(fontsize=12, rotation=90)
+    plt.legend(fontsize=14)
+
+    plt.show()
+
+
+def graph_cv_model_performance(performance_data_frame, sort=True):
+    """Display accuracy and MAE scores for the given of models."""
+    _graph_accuracy_scores(performance_data_frame, sort=sort)
+    _graph_mae_scores(performance_data_frame, sort=sort)

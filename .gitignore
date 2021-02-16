@@ -160,6 +160,7 @@ target/
 # Jupyter Notebook
 .ipynb_checkpoints
 Untitled.ipynb
+.Trash-*
 
 # IPython
 .ipython/profile_default/history.sqlite

@@ -12,10 +12,7 @@ import pandas as pd
 from kedro.extras.datasets.pickle import PickleDataSet
 
 from tests.fixtures.fake_estimator import pickle_fake_estimator
-from augury.ml_estimators import (
-    StackingEstimator,
-    ConfidenceEstimator,
-)
+from augury.ml_estimators import StackingEstimator, BasicEstimator, ConfidenceEstimator
 from augury.ml_data import MLData
 from augury.ml_estimators import estimator_params
 from augury.settings import SEED, PREDICTION_DATA_START_DATE
@@ -69,7 +66,7 @@ def main():
             {**data_kwargs, "data_set": "legacy_data"},
         ),
         (
-            StackingEstimator(name="tipresias_2021"),
+            BasicEstimator(name="tipresias_2021"),
             {**data_kwargs, "data_set": "full_data"},
         ),
     ]
