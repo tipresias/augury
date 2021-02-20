@@ -190,7 +190,9 @@ class ColumnDropper(BaseEstimator, TransformerMixin):
         """Include for consistency with Scikit-learn interface."""
         return self
 
-    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+    def transform(
+        self, X: pd.DataFrame, y=None  # pylint: disable=unused-argument
+    ) -> pd.DataFrame:
         """Drop the given columns from the data."""
         return X.drop(self.cols_to_drop, axis=1, errors="ignore")
 
@@ -238,3 +240,102 @@ class DataFrameConverter(BaseEstimator, TransformerMixin):
             )
 
         return pd.DataFrame(X, columns=self.columns, index=self.index)
+
+
+class TimeStepReshaper(BaseEstimator, TransformerMixin):
+    """Reshapes the sample data matrix.
+
+    Shape goes from [n_observations, n_features] to [n_observations, n_steps, n_features]
+    (via [n_segments, n_observations / n_segments, n_features])
+    and returns the 3D matrix for use in a RNN model.
+    """
+
+    def __init__(
+        self, n_steps: int = None, are_labels: bool = False, segment_col: int = 0
+    ):
+        """Initialise TimeStepReshaper object.
+
+        Params
+        ------
+        n_steps: Number of steps back in time added to each observation.
+        segment_col: Index of the column with the segment values.
+        are_labels: Whether data are features or labels.
+        """
+        assert n_steps is not None
+
+        self.n_steps = n_steps
+        self.are_labels = are_labels
+        self.segment_col = segment_col
+
+    def fit(self, X, y=None):  # pylint: disable=unused-argument
+        """Fit the reshaper to the data."""
+        return self
+
+    def transform(self, X):
+        """Reshape data to be three dimensional: observations x time steps x features."""
+        # Can handle pd.DataFrame or np.Array
+        try:
+            X_values = X.to_numpy()
+        except AttributeError:
+            X_values = X
+
+        # List of n_segments length, composed of numpy arrays of shape
+        # [n_observations / n_segments, n_features]
+        X_segmented = self._segment_arrays(X_values)
+
+        time_step_matrices = [
+            (
+                # Shift individual segment by time steps to:
+                # [n_steps, (n_observations / n_segments) - n_steps, n_features]
+                np.array(
+                    [
+                        segment[self.n_steps - step_n : -step_n or None, :]
+                        for step_n in range(self.n_steps)
+                    ]
+                )
+                # Transpose into correct dimension order for RNN:
+                # [(n_observations / n_segments) - n_steps, n_steps, n_features]
+                .transpose(1, 0, 2)
+            )
+            for segment in X_segmented
+        ]
+
+        # Combine segments into 3D data matrix for RNN:
+        # [n_observations - n_steps, n_steps, n_features]
+        return np.concatenate(time_step_matrices)
+
+    def _segment_arrays(self, X):
+        # Segments don't necessarily have to be equal length, so we're accepting
+        # a list of 2D numpy matrices
+        return [
+            self._segment(X, segment_value)
+            for segment_value in np.unique(X[:, self.segment_col])
+        ]
+
+    def _segment(self, X, segment_value):
+        # If input is labels instead of features, ignore all but last column,
+        # because others are only there for segmenting purposes
+        slice_start = -1 if self.are_labels else 0
+
+        # Filter by segment value to get 2D matrix for that segment
+        filter_condition = X[:, self.segment_col] == segment_value
+
+        return X[filter_condition][:, slice_start:]
+
+
+class KerasInputLister(BaseEstimator, TransformerMixin):
+    """Transformer for breaking up features into separate inputs for Keras models."""
+
+    def __init__(self, n_inputs=1):
+        self.n_inputs = n_inputs
+
+    def fit(self, X, y=None):  # pylint: disable=unused-argument
+        """Fit the lister to the data."""
+        return self
+
+    def transform(self, X, y=None):  # pylint: disable=unused-argument
+        """Break up the data into separate inputs for a Keras model."""
+        return [
+            X[:, :, n] if n < self.n_inputs - 1 else X[:, :, n:]
+            for n in range(self.n_inputs)
+        ]

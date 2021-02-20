@@ -7,13 +7,10 @@ import tempfile
 
 import pandas as pd
 import numpy as np
-from sklearn.base import (
-    BaseEstimator,
-    RegressorMixin,
-    ClassifierMixin,
-)
-from sklearn.utils.metaestimators import _BaseComposition
+from sklearn.base import BaseEstimator, RegressorMixin, ClassifierMixin
+from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import LabelEncoder
+from sklearn.utils.metaestimators import _BaseComposition
 from mypy_extensions import TypedDict
 from statsmodels.tsa.base.tsa_model import TimeSeriesModel
 from scipy.stats import norm
@@ -22,8 +19,10 @@ from tensorflow import keras
 from augury.types import R
 from augury.pipelines.nodes.base import _validate_required_columns
 from augury.pipelines.nodes import common
-from augury.sklearn.metrics import bits_loss
-from augury.settings import TEAM_NAMES
+from augury.sklearn.metrics import bits_loss, regressor_team_match_accuracy
+from augury.sklearn.model_selection import year_cv_split
+from augury.sklearn.preprocessing import TimeStepReshaper, KerasInputLister
+from augury.settings import TEAM_NAMES, VENUES, CATEGORY_COLS, ROUND_TYPES
 
 
 # Default params for EloRegressor
@@ -33,6 +32,9 @@ DEFAULT_M = 130
 DEFAULT_HOME_GROUND_ADVANTAGE = 9
 DEFAULT_S = 250
 DEFAULT_SEASON_CARRYOVER = 0.575
+
+TEAM_LEVEL = 0
+YEAR_LEVEL = 1
 
 
 class AveragingRegressor(_BaseComposition, RegressorMixin):
@@ -697,7 +699,7 @@ class KerasClassifier(BaseEstimator, ClassifierMixin):
     def __getstate__(self):
         model_str = ""
         with tempfile.NamedTemporaryFile(suffix=".hdf5", delete=True) as f:
-            keras.models.save_model(self.model, f.name, overwrite=True)
+            keras.models.save_model(self._model, f.name, overwrite=True)
             model_str = f.read()
         d = {key: value for key, value in self.__dict__.items() if key != "model"}
         d.update({"model_str": model_str})
@@ -711,3 +713,404 @@ class KerasClassifier(BaseEstimator, ClassifierMixin):
         d = {value: key for value, key in state.items() if key != "model_str"}
         d.update({"model": model})
         self.__dict__ = d  # pylint: disable=attribute-defined-outside-init
+
+
+def rnn_model_func(
+    n_teams: int = len(TEAM_NAMES),
+    n_venues: int = len(VENUES),
+    n_categories: int = len(CATEGORY_COLS),
+    n_round_types: int = len(ROUND_TYPES),
+    n_steps=None,
+    n_features=None,
+    round_type_dim=None,
+    venue_dim=None,
+    team_dim=None,
+    n_cells=None,
+    dropout=None,
+    recurrent_dropout=None,
+    n_hidden_layers=1,
+    kernel_regularizer=None,
+    recurrent_regularizer=None,
+    bias_regularizer=None,
+    activity_regularizer=None,
+    loss=None,
+    optimizer=None,
+):
+    """Function for creating a function that returns an RNN Keras model."""
+    assert n_hidden_layers >= 1, "Must have at least one hidden layer"
+
+    create_category_input = lambda name: keras.layers.Input(
+        shape=(n_steps,), dtype="int32", name=name
+    )
+    create_team_embedding_layer = lambda name: keras.layers.Embedding(
+        input_dim=n_teams * 2,
+        output_dim=team_dim,
+        input_length=n_steps,
+        name=name,
+    )
+
+    team_input = create_category_input("team_input")
+    oppo_team_input = create_category_input("oppo_team_input")
+    round_type_input = create_category_input("round_type_input")
+    venue_input = create_category_input("venue_input")
+
+    numeric_input = keras.layers.Input(
+        shape=(n_steps, n_features - n_categories),
+        dtype="float32",
+        name="numeric_input",
+    )
+
+    team_embed = create_team_embedding_layer("embedding_team")(team_input)
+    oppo_team_embed = create_team_embedding_layer("embedding_oppo_team")(
+        oppo_team_input
+    )
+    round_type_embed = keras.layers.Embedding(
+        input_dim=n_round_types * 2,
+        output_dim=round_type_dim,
+        input_length=n_steps,
+        name="embedding_round_type",
+    )(round_type_input)
+    venue_embed = keras.layers.Embedding(
+        input_dim=n_venues * 2,
+        output_dim=venue_dim,
+        input_length=n_steps,
+        name="embedding_venue",
+    )(venue_input)
+
+    concated_layers = keras.layers.concatenate(
+        [team_embed, oppo_team_embed, round_type_embed, venue_embed, numeric_input]
+    )
+
+    # Have to define the first layer outside the loop due to limitations
+    # in how Keras compiles models and being unable to handle
+    # dynamically-defined inputs (e.g. concated_layers vs lstm).
+    lstm = keras.layers.LSTM(
+        n_cells[0],
+        dropout=dropout,
+        recurrent_dropout=recurrent_dropout,
+        return_sequences=n_hidden_layers - 1 > 0,
+        kernel_regularizer=kernel_regularizer,
+        recurrent_regularizer=recurrent_regularizer,
+        bias_regularizer=bias_regularizer,
+        activity_regularizer=activity_regularizer,
+        name=f"lstm_{0}",
+    )(concated_layers)
+
+    # Allow for variable number of hidden layers, returning sequences to each
+    # subsequent LSTM layer
+    for idx in range(1, n_hidden_layers):
+        lstm = keras.layers.LSTM(
+            n_cells[idx],
+            dropout=dropout,
+            recurrent_dropout=recurrent_dropout,
+            return_sequences=idx < n_hidden_layers - 1,
+            kernel_regularizer=kernel_regularizer,
+            recurrent_regularizer=recurrent_regularizer,
+            bias_regularizer=bias_regularizer,
+            activity_regularizer=activity_regularizer,
+            name=f"lstm_{idx}",
+        )(lstm)
+
+    output = keras.layers.Dense(1)(lstm)
+
+    model = keras.models.Model(
+        inputs=[
+            team_input,
+            oppo_team_input,
+            round_type_input,
+            venue_input,
+            numeric_input,
+        ],
+        outputs=output,
+    )
+    model.compile(
+        loss=loss, optimizer=optimizer, metrics=[regressor_team_match_accuracy]
+    )
+
+    return lambda: model
+
+
+class RNNRegressor(BaseEstimator, RegressorMixin):
+    """Wrapper class for a keras RNN regressor model."""
+
+    def __init__(
+        self,
+        n_categories: int = len(CATEGORY_COLS),
+        n_features: int = None,
+        n_steps: int = 2,
+        patience: int = 5,
+        dropout: float = 0.2,
+        recurrent_dropout=0,
+        kernel_regularizer=None,
+        recurrent_regularizer=None,
+        bias_regularizer=None,
+        activity_regularizer=None,
+        n_cells=50,
+        batch_size=None,
+        team_dim=4,
+        round_type_dim=4,
+        venue_dim=4,
+        verbose=0,
+        n_hidden_layers=1,
+        epochs=20,
+        optimizer="adam",
+        metrics=None,
+        loss="mean_absolute_error",
+        model_func=rnn_model_func,
+    ):
+        """Initialise RNNRegressor.
+
+        Params
+        ------
+        n_teams: Size of team vocab.
+        n_years: Number of years in data set.
+        n_categories: Total number of category features.
+        n_features: Total number of features of X input.
+
+        n_steps: Number of time steps (i.e. past observations) to include in the data.
+            (This is the 2nd dimension of the input data.)
+        patience: Number of epochs of declining performance before model stops early.
+        dropout: Percentage of data that's dropped from inputs.
+        recurrent_dropout: Percentage of data that's dropped from recurrent state.
+        n_cells: Number of neurons per layer.
+        team_dim: Output dimension of embedded team data.
+        batch_size: Number of observations per batch (keras default is 32).
+        team: Whether to include teams input in model.
+        oppo_team: Whether to include oppo_teams input model.
+        verbose: How frequently messages are printed during training.
+        n_hidden_layers: How many hidden layers to include in the model.
+        epochs: Max number of epochs to run during training.
+        """
+        assert not n_features is None
+        assert (
+            n_hidden_layers >= 1
+        ), "The model assumes at least one hidden layer between the inputs and outputs."
+
+        self.n_features = n_features
+
+        self.n_categories = n_categories
+        self.n_steps = n_steps
+
+        self.n_cells = n_cells
+        self.n_hidden_layers = n_hidden_layers
+        self.venue_dim = venue_dim
+        self.team_dim = team_dim
+        self.round_type_dim = round_type_dim
+
+        self.dropout = dropout
+        self.recurrent_dropout = recurrent_dropout
+        self.kernel_regularizer = kernel_regularizer
+        self.recurrent_regularizer = recurrent_regularizer
+        self.bias_regularizer = bias_regularizer
+        self.activity_regularizer = activity_regularizer
+
+        self.batch_size = batch_size
+        self.patience = patience
+        self.verbose = verbose
+        self.epochs = epochs
+        self.optimizer = optimizer
+        self.metrics = metrics or [regressor_team_match_accuracy]
+        self.loss = loss
+
+        self.model_func = model_func
+        self._model = None
+
+        # We have to include the time reshaper/encoder in the model instead of
+        # separate pipelines for consistency during parameter tuning.
+        # Both the model and reshaper take n_steps as a parameter and must use
+        # the same n_steps value.
+        # Also, sklearn really doesn't like 3D data sets.
+        self.segment_col = 0
+        self._X_reshaper = make_pipeline(
+            TimeStepReshaper(n_steps=n_steps, segment_col=self.segment_col),
+            KerasInputLister(n_inputs=(self.n_categories + 1)),
+        )
+        self._y_reshaper = TimeStepReshaper(
+            n_steps=n_steps, are_labels=True, segment_col=self.segment_col
+        )
+
+        self._create_model()
+
+    def fit(self, X, y):
+        """Fit model to training data."""
+        X_train, X_test, y_train, y_test = self._train_test_split(X, y)
+
+        return self._model.fit(
+            self._inputs(X_train),
+            self._labels(y_train),
+            batch_size=self.batch_size,
+            epochs=self.epochs,
+            validation_split=0.2,
+            validation_data=(self._inputs(X_test), self._labels(y_test)),
+            verbose=self.verbose,
+            # Using loss instead of accuracy, because it bounces around less.
+            # Also, accuracy tends to reach its max a little after loss reaches its min,
+            # meaning the early-stopping delay improves performance.
+            callbacks=[
+                keras.callbacks.EarlyStopping(
+                    monitor="val_loss", patience=self.patience
+                )
+            ],
+        )
+
+    def predict(self, X):
+        """Predict label for each observation."""
+        if self._model is None:
+            return None
+
+        return self._model.predict(self._inputs(X))
+
+    def score(self, X, y, sample_weight=None):
+        """Score the model based on the loss and metrics passed to the keras model."""
+        if self._model is None:
+            return None
+
+        return self._model.evaluate(self._inputs(X), self._labels(y))
+
+    @property
+    def history(self) -> keras.callbacks.History:
+        """Return the history object of the trained Keras model."""
+        if self._model is None:
+            return None
+
+        return self._model.model.history
+
+    def set_params(self, **params):
+        """Set params for this model instance, and create a new keras model."""
+        prev_params = self.get_params()
+        # NOTE: Don't do an early return if params haven't changed, because it causes an
+        # error when n_jobs > 1
+
+        # Use parent set_params method to avoid infinite loop
+        super().set_params(**params)
+
+        # Only need to recreate reshapers if n_steps has changed
+        if prev_params["n_steps"] != self.n_steps:
+            self._X_reshaper.set_params(
+                timestepreshaper__n_steps=self.n_steps,
+                kerasinputlister__n_inputs=(self.n_categories + 1),
+            )
+            self._y_reshaper.set_params(n_steps=self.n_steps)
+
+        # Need to recreate model after changing any relevant params
+        self._create_model()
+
+        return self
+
+    @property
+    def n_cells(self) -> List[int]:
+        """Get the number of cells per layer."""
+        n_cells = (
+            self._n_cells
+            if isinstance(self._n_cells, list)
+            else [self._n_cells] * (self.n_hidden_layers)
+        )
+
+        assert len(n_cells) == self.n_hidden_layers, (
+            "n_cells must be an integer or a list with length equal to number "
+            f"of layers. n_cells has {len(n_cells)} values and there are "
+            f"{self.n_hidden_layers} layers in this model."
+        )
+
+        return n_cells
+
+    @n_cells.setter
+    def n_cells(self, n_cells):
+        self._n_cells = n_cells
+
+    def _train_test_split(self, X, y):
+        years = y.index.get_level_values(YEAR_LEVEL)
+        validation_season = years.max()
+
+        X_with_years = pd.DataFrame(X).assign(year=years)
+        X_train_filter, X_test_filter = year_cv_split(
+            X_with_years, (validation_season, validation_season + 1)
+        )[0]
+
+        y_with_years = pd.DataFrame(y).assign(year=years)
+        y_train_filter, y_test_filter = year_cv_split(
+            y_with_years, (validation_season, validation_season + 1)
+        )[0]
+
+        return X[X_train_filter], X[X_test_filter], y[y_train_filter], y[y_test_filter]
+
+    def _inputs(self, X):
+        """Reshape X to fit expected inputs for model."""
+        return self._X_reshaper.fit_transform(X)
+
+    def _labels(self, y):
+        """Prepare y data array to fit expected input shape for the model."""
+        y_with_segments = y.reset_index(TEAM_LEVEL)
+        reshaped_y = self._y_reshaper.fit_transform(y_with_segments)
+        return reshaped_y[:, 0, :].astype(int)
+
+    def _create_model(self):
+        keras.backend.clear_session()
+
+        self._model = keras.wrappers.scikit_learn.KerasRegressor(
+            build_fn=self.model_func(
+                n_steps=self.n_steps,
+                n_features=self.n_features,
+                round_type_dim=self.round_type_dim,
+                venue_dim=self.venue_dim,
+                team_dim=self.team_dim,
+                n_cells=self.n_cells,
+                dropout=self.dropout,
+                recurrent_dropout=self.recurrent_dropout,
+                n_hidden_layers=self.n_hidden_layers,
+                kernel_regularizer=self.kernel_regularizer,
+                recurrent_regularizer=self.recurrent_regularizer,
+                bias_regularizer=self.bias_regularizer,
+                activity_regularizer=self.activity_regularizer,
+                loss=self.loss,
+                optimizer=self.optimizer,
+            )
+        )
+
+    def _load_model(self, saved_model):
+        keras.backend.clear_session()
+
+        return keras.wrappers.scikit_learn.KerasRegressor(build_fn=lambda: saved_model)
+
+    # Adapted this code from: http://zachmoshe.com/2017/04/03/pickling-keras-models.html
+    # Keras has since been updated to be picklable, but my custom tensorflow
+    # loss function is not (at least I can't figure out how to pickle it).
+    # So, this is necessary for basic Scikit-learn functionality like grid search
+    # and multiprocessing.
+    def __getstate__(self):
+        model_str = ""
+
+        if self._model and "model" in dir(self._model):
+            with tempfile.NamedTemporaryFile(suffix=".hdf5", delete=True) as f:
+                keras.models.save_model(self._model.model, f.name, overwrite=True)
+                model_str = f.read()
+
+        dict_definition = {
+            key: value for key, value in self.__dict__.items() if key != "_model"
+        }
+        dict_definition.update({"model_str": model_str})
+        return dict_definition
+
+    def __setstate__(self, state):
+        model = None
+        if state["model_str"] != "":
+            with tempfile.NamedTemporaryFile(suffix=".hdf5", delete=True) as f:
+                f.write(state["model_str"])
+                f.flush()
+                model = keras.models.load_model(
+                    f.name,
+                    custom_objects={
+                        "regressor_team_match_accuracy": regressor_team_match_accuracy
+                    },
+                )
+
+        dict_definition = {
+            value: key for value, key in state.items() if key != "model_str"
+        }
+
+        if model is not None:
+            dict_definition.update({"_model": self._load_model(model)})
+
+        self.__dict__ = (
+            dict_definition  # pylint: disable=attribute-defined-outside-init
+        )
