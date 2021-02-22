@@ -37,7 +37,7 @@ pdpbox
 shap
 
 # Testing/Linting
-pylint==2.6.0
+pylint==2.7.0
 black
 faker<6.0
 freezegun
