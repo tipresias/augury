@@ -16,7 +16,7 @@ scikit-learn==0.24.0
 xgboost==1.3.3
 mlxtend==0.18.0
 statsmodels==0.11.1
-scipy==1.6.0
+scipy==1.6.1
 tensorflow==2.4.1
 
 # Kedro packages
