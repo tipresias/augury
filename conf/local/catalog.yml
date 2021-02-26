@@ -61,15 +61,15 @@ full_data:
     date_format: iso
 
 # Models
-tipresias_2021:
+tipresias_margin_2021:
   type: pickle.PickleDataSet
-  filepath: data/06_models/tipresias_2021.pkl
+  filepath: data/06_models/tipresias_margin_2021.pkl
   backend: joblib
-tipresias_2020:
+tipresias_margin_2020:
   type: pickle.PickleDataSet
-  filepath: data/06_models/tipresias_2020.pkl
+  filepath: data/06_models/tipresias_margin_2020.pkl
   backend: joblib
-confidence_estimator:
+tipresias_proba_2020:
   type: pickle.PickleDataSet
-  filepath: data/06_models/confidence_estimator.pkl
+  filepath: data/06_models/tipresias_proba_2020.pkl
   backend: joblib
