@@ -283,22 +283,7 @@ class TimeStepReshaper(BaseEstimator, TransformerMixin):
         # [n_observations / n_segments, n_features]
         X_segmented = self._segment_arrays(X_values)
 
-        time_step_matrices = [
-            (
-                # Shift individual segment by time steps to:
-                # [n_steps, (n_observations / n_segments) - n_steps, n_features]
-                np.array(
-                    [
-                        segment[self.n_steps - step_n : -step_n or None, :]
-                        for step_n in range(self.n_steps)
-                    ]
-                )
-                # Transpose into correct dimension order for RNN:
-                # [(n_observations / n_segments) - n_steps, n_steps, n_features]
-                .transpose(1, 0, 2)
-            )
-            for segment in X_segmented
-        ]
+        time_step_matrices = [self._shift_by_steps(segment) for segment in X_segmented]
 
         # Combine segments into 3D data matrix for RNN:
         # [n_observations - n_steps, n_steps, n_features]
@@ -321,6 +306,28 @@ class TimeStepReshaper(BaseEstimator, TransformerMixin):
         filter_condition = X[:, self.segment_col] == segment_value
 
         return X[filter_condition][:, slice_start:]
+
+    def _shift_by_steps(self, segment):
+        return (
+            # Shift individual segment by time steps to:
+            # [n_steps, n_observations - n_steps, n_features]
+            np.array(
+                [
+                    np.concatenate(
+                        (
+                            # We fill in past steps that precede available data
+                            # with zeros in order to preserve data shape
+                            np.zeros([self.n_steps - step_n, segment.shape[1]]),
+                            segment[self.n_steps - step_n :, :],
+                        )
+                    )
+                    for step_n in range(self.n_steps)
+                ]
+            )
+            # Transpose into correct dimension order for RNN:
+            # [n_observations - n_steps, n_steps, n_features]
+            .transpose(1, 0, 2)
+        )
 
 
 class KerasInputLister(BaseEstimator, TransformerMixin):
