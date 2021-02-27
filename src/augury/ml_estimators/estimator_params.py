@@ -21,8 +21,8 @@ from .base_ml_estimator import BASE_ML_PIPELINE
 np.random.seed(SEED)
 
 
-tipresias_2020 = {
-    "name": "tipresias_2020",
+tipresias_margin_2020 = {
+    "name": "tipresias_margin_2020",
     "min_year": 1965,
     "pipeline": StackingRegressor(
         regressors=[
@@ -81,8 +81,8 @@ tipresias_2020 = {
     ),
 }
 
-confidence_estimator = {
-    "name": "confidence_estimator",
+tipresias_proba_2020 = {
+    "name": "tipresias_proba_2020",
     "pipeline": make_pipeline(
         BASE_ML_PIPELINE,
         XGBClassifier(

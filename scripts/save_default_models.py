@@ -58,15 +58,15 @@ def main():
 
     model_info = [
         (
-            ConfidenceEstimator(**estimator_params.confidence_estimator),
+            ConfidenceEstimator(**estimator_params.tipresias_proba_2020),
             {**data_kwargs, "data_set": "legacy_data", "label_col": "result"},
         ),
         (
-            StackingEstimator(**estimator_params.tipresias_2020),
+            StackingEstimator(**estimator_params.tipresias_margin_2020),
             {**data_kwargs, "data_set": "legacy_data"},
         ),
         (
-            BasicEstimator(name="tipresias_2021"),
+            BasicEstimator(name="tipresias_margin_2021"),
             {**data_kwargs, "data_set": "full_data"},
         ),
     ]
