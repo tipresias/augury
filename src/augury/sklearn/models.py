@@ -1,3 +1,5 @@
+# pylint: disable=too-many-lines
+
 """Classes and functions based on existing Scikit-learn functionality."""
 
 from typing import Type, List, Union, Optional, Any, Tuple, Dict, Callable
