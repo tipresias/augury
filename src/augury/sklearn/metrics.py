@@ -72,6 +72,18 @@ def match_accuracy_scorer(estimator, X, y):
     return _calculate_match_accuracy(X, y, y_pred)
 
 
+def regressor_team_match_accuracy(y, y_pred):
+    """Measure accuracy of margin predictions at the team-match level for Keras models."""
+    # Any zero margin (i.e. a draw) is counted as correct per usual tipping rules.
+    # Predicted margins should never be zero, but since we don't want to encourage
+    # any wayward models, we'll count a predicted margin of zero as incorrect
+    correct_preds = tf.math.logical_or(
+        tf.math.logical_and(tf.greater_equal(y, 0), tf.greater_equal(y_pred, 0)),
+        tf.math.logical_and(tf.less_equal(y, 0), tf.less_equal(y_pred, 0)),
+    )
+    return keras.backend.mean(correct_preds)
+
+
 def _positive_pred(y_pred):
     return np.maximum(y_pred, np.repeat(MIN_LOG_VAL, len(y_pred)))
 

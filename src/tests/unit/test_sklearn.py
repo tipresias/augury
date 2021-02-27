@@ -5,7 +5,7 @@ from unittest.mock import patch
 import os
 import warnings
 
-from sklearn.linear_model import Ridge, Lasso, LogisticRegression
+from sklearn.linear_model import LogisticRegression
 import pandas as pd
 import numpy as np
 from faker import Faker
@@ -17,7 +17,7 @@ from tests.helpers import KedroContextMixin
 from tests.fixtures.fake_estimator import FakeEstimatorData, create_fake_pipeline
 from augury.pipelines.match import nodes as match
 from augury.pipelines.nodes import common
-from augury.sklearn.models import AveragingRegressor, EloRegressor, KerasClassifier
+from augury.sklearn.models import EloRegressor, KerasClassifier
 from augury.sklearn.preprocessing import (
     CorrelationSelector,
     TeammatchToMatchConverter,
@@ -33,31 +33,6 @@ from augury.settings import BASE_DIR
 FAKE = Faker()
 ROW_COUNT = 10
 N_FAKE_CATS = 6
-
-
-class TestAveragingRegressor(TestCase):
-    def setUp(self):
-        data_frame = pd.DataFrame(
-            {
-                "year": ([2014] * round(ROW_COUNT * 0.2))
-                + ([2015] * round(ROW_COUNT * 0.6))
-                + ([2016] * round(ROW_COUNT * 0.2)),
-                "prev_match_score": np.random.randint(50, 150, ROW_COUNT),
-                "prev_match_oppo_score": np.random.randint(50, 150, ROW_COUNT),
-                "round_number": 15,
-                "margin": np.random.randint(5, 50, ROW_COUNT),
-            }
-        )
-
-        self.X = data_frame.drop("margin", axis=1)
-        self.y = data_frame["margin"]
-        self.regressor = AveragingRegressor([("ridge", Ridge()), ("lasso", Lasso())])
-
-    def test_predict(self):
-        self.regressor.fit(self.X, self.y)
-        predictions = self.regressor.predict(self.X)
-
-        self.assertIsInstance(predictions, np.ndarray)
 
 
 class TestCorrelationSelector(TestCase):
