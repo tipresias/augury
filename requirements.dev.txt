@@ -15,7 +15,7 @@ category_encoders
 # Kedro packages
 ipython>=7.0.0, <8.0
 jupyter>=1.0.0, <2.0
-jupyterlab==3.0.8
+jupyterlab==3.0.9
 jupyter_nbextensions_configurator==0.4.1
 jupyter_contrib_nbextensions==0.5.1
 nbstripout==0.3.9
