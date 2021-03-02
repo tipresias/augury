@@ -309,18 +309,8 @@ class TestSklearn(TestCase, KedroContextMixin):
     # and we don't care if it doesn't converge
     @pytest.mark.filterwarnings("ignore:lbfgs failed to converge")
     def test_bits_scorer(self):
-        bits = bits_scorer(self.estimator, *self.data.train_data, proba=False)
+        bits = bits_scorer(self.estimator, *self.data.train_data)
         self.assertIsInstance(bits, float)
-
-        with self.subTest("with a superfluous n_years arg"):
-            bits_with_year = bits_scorer(
-                self.estimator, *self.data.train_data, proba=False, n_years=100
-            )
-            self.assertEqual(bits, bits_with_year)
-
-        with self.subTest("with an invalid proba arg"):
-            with self.assertRaisesRegex(IndexError, "too many indices for array"):
-                bits_scorer(self.estimator, *self.data.train_data, proba=True)
 
         with self.subTest("with a classifier"):
             classifier = LogisticRegression()
@@ -330,7 +320,7 @@ class TestSklearn(TestCase, KedroContextMixin):
             X_train = _X_train.iloc[:, N_FAKE_CATS:]
             classifier.fit(X_train, y_train)
 
-            class_bits = bits_scorer(classifier, X_train, y_train, proba=True)
+            class_bits = bits_scorer(classifier, X_train, y_train)
 
             self.assertIsInstance(class_bits, float)
 

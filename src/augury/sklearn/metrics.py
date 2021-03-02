@@ -10,12 +10,11 @@ from sklearn.base import BaseEstimator
 import tensorflow as tf
 from tensorflow import keras
 
+
 # For regressors that might try to predict negative values or 0,
 # we need a slightly positive minimum to not get errors when calculating logarithms
 MIN_LOG_VAL = 1 * 10 ** -10
-LOSS = 0
 DRAW = 0.5
-WIN = 1
 
 
 def _calculate_team_margin(team_margin, oppo_margin):
@@ -92,12 +91,18 @@ def _draw_bits(y_pred):
     return 1 + (0.5 * np.log2(_positive_pred(y_pred * (1 - y_pred))))
 
 
-def _win_bits(y_pred):
+def _correct_bits(y_pred):
     return 1 + np.log2(_positive_pred(y_pred))
 
 
-def _loss_bits(y_pred):
+def _incorrect_bits(y_pred):
     return 1 + np.log2(_positive_pred(1 - y_pred))
+
+
+def _correct_preds(y_true, y_pred):
+    # Technically, we pick winners by comparing predictions per team-match, but trying
+    # to join and compare predictions is too slow and complicated to be worth it.
+    return ((y_true > 0) & (y_pred > 0.5)) | ((y_true <= 0) & (y_pred < 0.5))
 
 
 # Raw bits calculations per http://probabilistic-footy.monash.edu/~footy/about.shtml
@@ -105,7 +110,11 @@ def _calculate_bits(y_true, y_pred):
     return np.where(
         y_true == DRAW,
         _draw_bits(y_pred),
-        np.where(y_true == WIN, _win_bits(y_pred), _loss_bits(y_pred)),
+        np.where(
+            _correct_preds(y_true, y_pred),
+            _correct_bits(y_pred),
+            _incorrect_bits(y_pred),
+        ),
     )
 
 
@@ -113,8 +122,7 @@ def bits_scorer(
     estimator: BaseEstimator,
     X: Union[pd.DataFrame, np.ndarray],
     y: pd.Series,
-    proba=False,
-    n_years=1,
+    n_rows_per_match: int = 2,
 ) -> float:
     """Scikit-learn scorer for the bits metric.
 
@@ -133,26 +141,17 @@ def bits_scorer(
     estimator: The estimator being scored.
     X: Model features.
     y: Model labels.
-    proba: Whether to use the `predict_proba` method to get predictions.
+    n_rows_per_match: Number of rows of data per match (e.g. 2 for team-match rows).
+        This is to get per-match bits scores. Otherwise, metrics are difficult
+        to compare to other models.
     """
+    y_pred = (
+        estimator.predict_proba(X)[:, -1]
+        if "predict_proba" in dir(estimator)
+        else estimator.predict(X)
+    )
 
-    try:
-        y_pred = estimator.predict_proba(X)[:, -1] if proba else estimator.predict(X)
-    # TF/Keras models don't use predict_proba, so for classifiers, we pass proba=True,
-    # then rescue and call predict.
-    except AttributeError:
-        if proba:
-            y_pred = estimator.predict(X)[:, -1]
-        else:
-            raise
-
-    if isinstance(X, pd.DataFrame) and "year" in X.columns:
-        n_years = X["year"].drop_duplicates().count()
-
-    # For tipping competitions, bits are summed across the season.
-    # We divide by number of seasons for easier comparison with other models.
-    # We divide by two to get a rough per-match bits value.
-    return _calculate_bits(y, y_pred).sum() / n_years / 2
+    return _calculate_bits(y, y_pred).sum() / n_rows_per_match
 
 
 def _draw_bits_hessian(y_pred):
@@ -161,11 +160,11 @@ def _draw_bits_hessian(y_pred):
     )
 
 
-def _win_bits_hessian(y_pred):
+def _correct_bits_hessian(y_pred):
     return 1 / (math.log(2) * y_pred ** 2)
 
 
-def _loss_bits_hessian(y_pred):
+def _incorrect_bits_hessian(y_pred):
     return 1 / (math.log(2) * (1 - y_pred) ** 2)
 
 
@@ -173,7 +172,11 @@ def _bits_hessian(y_true, y_pred):
     return np.where(
         y_true == DRAW,
         _draw_bits_hessian(y_pred),
-        np.where(y_true == WIN, _win_bits_hessian(y_pred), _loss_bits_hessian(y_pred)),
+        np.where(
+            _correct_preds(y_true, y_pred),
+            _correct_bits_hessian(y_pred),
+            _incorrect_bits_hessian(y_pred),
+        ),
     )
 
 
@@ -181,11 +184,11 @@ def _draw_bits_gradient(y_pred):
     return (y_pred - 0.5) / (math.log(2) * (y_pred - y_pred ** 2))
 
 
-def _win_bits_gradient(y_pred):
+def _correct_bits_gradient(y_pred):
     return -1 / (math.log(2) * y_pred)
 
 
-def _loss_bits_gradient(y_pred):
+def _incorrect_bits_gradient(y_pred):
     return 1 / (math.log(2) * (1 - y_pred))
 
 
@@ -194,7 +197,9 @@ def _bits_gradient(y_true, y_pred):
         y_true == DRAW,
         _draw_bits_gradient(y_pred),
         np.where(
-            y_true == WIN, _win_bits_gradient(y_pred), _loss_bits_gradient(y_pred)
+            _correct_preds(y_true, y_pred),
+            _correct_bits_gradient(y_pred),
+            _incorrect_bits_gradient(y_pred),
         ),
     )
 
@@ -253,7 +258,11 @@ def _bits_error(y_true, y_pred):
     return np.where(
         y_true == DRAW,
         -1 * _draw_bits(y_pred),
-        np.where(y_true == WIN, 1 - _win_bits(y_pred), 1 + (-1 * _loss_bits(y_pred))),
+        np.where(
+            _correct_preds(y_true, y_pred),
+            1 - _correct_bits(y_pred),
+            1 + (-1 * _incorrect_bits(y_pred)),
+        ),
     )
 
 
@@ -299,11 +308,11 @@ def _draw_bits_tensor(y_pred):
     )
 
 
-def _win_bits_tensor(y_pred):
+def _correct_bits_tensor(y_pred):
     return tf.math.add(tf.constant(1.0), _log2(y_pred))
 
 
-def _loss_bits_tensor(y_pred):
+def _incorrect_bits_tensor(y_pred):
     return tf.math.add(
         tf.constant(1.0), _log2(tf.math.subtract(tf.constant(1.0), y_pred))
     )
@@ -324,11 +333,11 @@ def bits_loss(y_true, y_pred):
             tf.math.scalar_mul(tf.constant(-1.0), _draw_bits_tensor(y_pred_win)),
             tf.where(
                 tf.math.equal(y_true_f, tf.constant(1.0)),
-                tf.math.subtract(tf.constant(1.0), _win_bits_tensor(y_pred_win)),
+                tf.math.subtract(tf.constant(1.0), _correct_bits_tensor(y_pred_win)),
                 tf.math.add(
                     tf.constant(1.0),
                     tf.math.scalar_mul(
-                        tf.constant(-1.0), _loss_bits_tensor(y_pred_win)
+                        tf.constant(-1.0), _incorrect_bits_tensor(y_pred_win)
                     ),
                 ),
             ),
