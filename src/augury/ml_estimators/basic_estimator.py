@@ -9,9 +9,12 @@ from sklearn.linear_model import Ridge
 from .base_ml_estimator import BaseMLEstimator, BASE_ML_PIPELINE
 
 
-BEST_PARAMS = {"min_year": 1965}
+BEST_PARAMS = {
+    "pipeline__correlationselector__threshold": 0.03921446485352182,
+    "ridge__alpha": 0.3663618432936917,
+}
 
-PIPELINE = make_pipeline(BASE_ML_PIPELINE, Ridge())
+PIPELINE = make_pipeline(BASE_ML_PIPELINE, Ridge()).set_params(**BEST_PARAMS)
 
 
 class BasicEstimator(BaseMLEstimator):
@@ -21,7 +24,6 @@ class BasicEstimator(BaseMLEstimator):
         self,
         pipeline: Union[Pipeline, BaseEstimator] = None,
         name: str = "basic_estimator",
-        min_year: int = BEST_PARAMS["min_year"],
     ) -> None:
         """Instantiate a StackingEstimator object.
 
@@ -34,5 +36,3 @@ class BasicEstimator(BaseMLEstimator):
         """
         pipeline = PIPELINE if pipeline is None else pipeline
         super().__init__(pipeline, name=name)
-
-        self.min_year = min_year

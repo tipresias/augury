@@ -12,6 +12,19 @@ from augury.settings import SEED
 from .base_ml_estimator import BaseMLEstimator, BASE_ML_PIPELINE
 
 
+BEST_PARAMS = {
+    "pipeline__correlationselector__threshold": 0.04559726786512616,
+    "xgbclassifier__booster": "gbtree",
+    "xgbclassifier__colsample_bylevel": 0.8240329295611285,
+    "xgbclassifier__colsample_bytree": 0.8683759333432803,
+    "xgbclassifier__learning_rate": 0.10367196263253768,
+    "xgbclassifier__max_depth": 8,
+    "xgbclassifier__n_estimators": 136,
+    "xgbclassifier__reg_alpha": 0.0851828929690012,
+    "xgbclassifier__reg_lambda": 0.11896695316349301,
+    "xgbclassifier__subsample": 0.8195668321302003,
+}
+
 PIPELINE = make_pipeline(
     BASE_ML_PIPELINE,
     XGBClassifier(
@@ -20,7 +33,7 @@ PIPELINE = make_pipeline(
         use_label_encoder=False,
         verbosity=0,
     ),
-)
+).set_params(**BEST_PARAMS)
 
 
 class ConfidenceEstimator(BaseMLEstimator):
