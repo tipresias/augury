@@ -69,6 +69,10 @@ def main():
             BasicEstimator(name="tipresias_margin_2021"),
             {**data_kwargs, "data_set": "full_data"},
         ),
+        (
+            ConfidenceEstimator(name="tipresias_proba_2021"),
+            {**data_kwargs, "data_set": "full_data", "label_col": "result"},
+        ),
     ]
 
     for model, data_kwargs in model_info:
