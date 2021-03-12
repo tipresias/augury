@@ -15,7 +15,7 @@ from tests.fixtures.fake_estimator import pickle_fake_estimator
 from augury.ml_estimators import StackingEstimator, BasicEstimator, ConfidenceEstimator
 from augury.ml_data import MLData
 from augury.ml_estimators import estimator_params
-from augury.settings import SEED, PREDICTION_DATA_START_DATE
+from augury.settings import SEED, PREDICTION_DATA_START_DATE, FULL_YEAR_RANGE
 from augury.context import load_project_context
 
 
@@ -46,7 +46,7 @@ def _train_save_model(model, **data_kwargs):
 def main():
     """Loop through models, training and saving each."""
     data_kwargs = {
-        "train_year_range": TRAIN_YEAR_RANGE,
+        "train_year_range": FULL_YEAR_RANGE,
     }
 
     context = load_project_context()
