@@ -34,6 +34,17 @@ player_data:
     token: cloud
 
 # Final data
+legacy_data:
+  type: pandas.JSONDataSet
+  filepath: gs://afl_data/legacy-data_1897-01-01_2020-12-31.json
+  fs_args:
+    project: tipresias
+  save_args:
+    indent: 2
+    orient: records
+    date_format: iso
+  credentials:
+    token: cloud
 full_data:
   type: pandas.JSONDataSet
   filepath: gs://afl_data/full-data_2010-01-01_2020-12-31.json
