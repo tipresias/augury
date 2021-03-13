@@ -1,7 +1,7 @@
 # Raw data
 betting_data:
   type: pandas.JSONDataSet
-  filepath: gs://afl_data/betting-data_2010-01-01_2019-12-31.json
+  filepath: gs://afl_data/betting-data_2010-01-01_2020-12-31.json
   fs_args:
     project: tipresias
   save_args:
@@ -12,7 +12,7 @@ betting_data:
     token: cloud
 match_data:
   type: pandas.JSONDataSet
-  filepath: gs://afl_data/match-data_2010-01-01_2019-12-31.json
+  filepath: gs://afl_data/match-data_2010-01-01_2020-12-31.json
   fs_args:
     project: tipresias
   save_args:
@@ -23,7 +23,7 @@ match_data:
     token: cloud
 player_data:
   type: pandas.JSONDataSet
-  filepath: gs://afl_data/player-data_2010-01-01_2019-12-31.json
+  filepath: gs://afl_data/player-data_2010-01-01_2020-12-31.json
   fs_args:
     project: tipresias
   save_args:
