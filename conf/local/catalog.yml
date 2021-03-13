@@ -1,21 +1,21 @@
 # Raw data
 betting_data:
   type: pandas.JSONDataSet
-  filepath: /app/data/01_raw/betting-data_2010-01-01_2019-12-31.json
+  filepath: /app/data/01_raw/betting-data_2010-01-01_2020-12-31.json
   save_args:
     indent: 2
     orient: records
     date_format: iso
 match_data:
   type: pandas.JSONDataSet
-  filepath: /app/data/01_raw/match-data_1897-01-01_2019-12-31.json
+  filepath: /app/data/01_raw/match-data_1897-01-01_2020-12-31.json
   save_args:
     indent: 2
     orient: records
     date_format: iso
 player_data:
   type: pandas.JSONDataSet
-  filepath: /app/data/01_raw/player-data_1965-01-01_2019-12-31.json
+  filepath: /app/data/01_raw/player-data_1965-01-01_2020-12-31.json
   save_args:
     indent: 2
     orient: records
