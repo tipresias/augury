@@ -31,7 +31,7 @@ class Predictor:
     def __init__(
         self,
         year_range: YearRange,
-        context: KedroContext,
+        context: "augury.settings.ProjectContext",
         round_number: Optional[int] = None,
         train=False,
         verbose: int = 1,
@@ -43,7 +43,7 @@ class Predictor:
         ------
         year_range: Year range for which to make predictions (first year inclusive,
             last year exclusive, per `range` function).
-        context: Kedro context object as defined in run.ProjectContext.
+        context: Kedro context object as defined in settings.ProjectContext.
         round_number: Round number for which to make predictions. If omitted,
             predictions are made for entire seasons.
         train: Whether to train each model on data from previous years

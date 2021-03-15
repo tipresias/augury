@@ -1,18 +1,20 @@
 """The public API for the Augury app."""
 
 from typing import List, Optional, Dict, Union, Any
+from pathlib import Path
+from datetime import date
 
 import pandas as pd
 from mypy_extensions import TypedDict
 from kedro.framework.context import KedroContext
+from kedro.framework.session import KedroSession
 import simplejson
 
 from augury.data_import import match_data
 from augury.pipelines.match import nodes as match
 from augury.predictions import Predictor
 from augury.types import YearRange, MLModelDict
-from augury.settings import ML_MODELS
-from augury.context import load_project_context
+from augury import settings
 
 
 ApiResponse = TypedDict(
@@ -65,30 +67,41 @@ def make_predictions(
     -------
     List of prediction data dictionaries.
     """
-    context = load_project_context(round_number=round_number)
+    package_name = Path(__file__).resolve().parent.name
+    extra_params = {
+        "round_number": round_number,
+        "start_date": "1897-01-01",
+        "end_date": f"{date.today().year}-12-31",
+    }
+    with KedroSession.create(
+        package_name, env=settings.ENV, extra_params=extra_params
+    ) as session:
+        context = session.load_context()
 
-    if ml_model_names is None:
-        ml_models = ML_MODELS
-    else:
-        ml_models = [
-            ml_model for ml_model in ML_MODELS if ml_model["name"] in ml_model_names
-        ]
+        if ml_model_names is None:
+            ml_models = settings.ML_MODELS
+        else:
+            ml_models = [
+                ml_model
+                for ml_model in settings.ML_MODELS
+                if ml_model["name"] in ml_model_names
+            ]
 
-    _run_pipelines(context, ml_models)
+        _run_pipelines(context, ml_models)
 
-    predictor = Predictor(
-        year_range,
-        context,
-        # Ignoring, because ProjectContext has project-specific attributes,
-        # and importing it to use as a type tends to create circular dependencies
-        round_number=context.round_number,  # type: ignore
-        train=train,
-        verbose=1,
-    )
+        predictor = Predictor(
+            year_range,
+            context,
+            # Ignoring, because ProjectContext has project-specific attributes,
+            # and importing it to use as a type tends to create circular dependencies
+            round_number=round_number,  # type: ignore
+            train=train,
+            verbose=1,
+        )
 
-    predictions = predictor.make_predictions(ml_models)
+        predictions = predictor.make_predictions(ml_models)
 
-    return _api_response(predictions)
+        return _api_response(predictions)
 
 
 def fetch_fixture_data(
@@ -169,4 +182,4 @@ def fetch_match_results_data(
 
 def fetch_ml_model_info() -> ApiResponse:
     """Fetch general info about all saved ML models."""
-    return _api_response(ML_MODELS)
+    return _api_response(settings.ML_MODELS)

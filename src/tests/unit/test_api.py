@@ -44,10 +44,10 @@ REQUIRED_MATCH_COLUMNS = {
 class TestApi(TestCase):
     # It doesn't matter what data Predictor returns since this method doesn't check
     @patch("augury.api.Predictor.make_predictions")
-    @patch("augury.api.ML_MODELS", FAKE_ML_MODELS)
+    @patch("augury.api.settings.ML_MODELS", FAKE_ML_MODELS)
     @patch("augury.api.PIPELINE_NAMES", {"fake_data": "fake"})
     @patch(
-        "augury.run.ProjectContext._get_pipelines",
+        "augury.settings.ProjectContext._get_pipelines",
         MagicMock(return_value={"fake": create_fake_pipeline()}),
     )
     def test_make_predictions(self, mock_make_predictions):

@@ -17,8 +17,8 @@ services:
     env_file: .env
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=.gcloud/keyfile.json
-      - PYTHONPATH=./src
       - PYTHON_ENV=local
+      - GIT_PYTHON_REFRESH=quiet
     command: python3 app.py
   afl_data:
     image: cfranklin11/tipresias_afl_data:latest

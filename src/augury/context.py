@@ -25,7 +25,9 @@ def load_project_context(round_number: Optional[int] = None, **context_kwargs):
     return load_context(
         BASE_DIR,
         env=kedro_env,
-        round_number=round_number,
-        **date_kwargs,
+        extra_params={
+            "round_number": round_number,
+            **date_kwargs,
+        },
         **context_kwargs,
     )

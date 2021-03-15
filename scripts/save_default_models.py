@@ -10,13 +10,13 @@ from dateutil import parser
 import numpy as np
 import pandas as pd
 from kedro.extras.datasets.pickle import PickleDataSet
+from kedro.framework.session import get_current_session
 
 from tests.fixtures.fake_estimator import pickle_fake_estimator
 from augury.ml_estimators import StackingEstimator, BasicEstimator, ConfidenceEstimator
 from augury.ml_data import MLData
 from augury.ml_estimators import estimator_params
 from augury.settings import SEED, PREDICTION_DATA_START_DATE, FULL_YEAR_RANGE
-from augury.context import load_project_context
 
 
 np.random.seed(SEED)
@@ -49,7 +49,8 @@ def main():
         "train_year_range": FULL_YEAR_RANGE,
     }
 
-    context = load_project_context()
+    session = get_current_session()
+    context = session.load_context()
     full_data = pd.DataFrame(context.catalog.load("full_data"))
 
     # Make sure we're using full data sets instead of truncated prod data sets

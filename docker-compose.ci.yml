@@ -12,6 +12,7 @@ services:
       - AFL_DATA_SERVICE=${AFL_DATA_SERVICE}
       - GOOGLE_APPLICATION_CREDENTIALS="${GOOGLE_APPLICATION_CREDENTIALS}"
       - PYTHON_ENV=ci
+      - GIT_PYTHON_REFRESH=quiet
     command: python3 app.py
   afl_data:
     image: cfranklin11/tipresias_afl_data:latest

@@ -16,7 +16,7 @@ class TestMLEstimators(TestCase, KedroContextMixin):
     def setUp(self):
         self.context = self.load_context(start_date="2007-01-01", end_date="2017-12-31")
         self.predictor = Predictor(
-            (2017, 2018), self.context, train_year_range=(2007, 2017),
+            (2017, 2018), self.context, train_year_range=(2007, 2017)
         )
 
     @skip(
