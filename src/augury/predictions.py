@@ -5,14 +5,13 @@ import itertools
 
 import pandas as pd
 import numpy as np
-from kedro.framework.context import KedroContext
 
 from augury.ml_data import MLData
 from augury.ml_estimators.base_ml_estimator import BaseMLEstimator
 from augury.types import YearRange, MLModelDict
-from augury.settings import SEED, PREDICTION_TYPES
+from augury import settings
 
-np.random.seed(SEED)
+np.random.seed(settings.SEED)
 
 
 PREDICTION_COLS = [
@@ -22,7 +21,7 @@ PREDICTION_COLS = [
     "oppo_team",
     "at_home",
     "ml_model",
-] + [f"predicted_{pred_type}" for pred_type in PREDICTION_TYPES]
+] + [f"predicted_{pred_type}" for pred_type in settings.PREDICTION_TYPES]
 
 
 class Predictor:
@@ -31,7 +30,7 @@ class Predictor:
     def __init__(
         self,
         year_range: YearRange,
-        context: "augury.settings.ProjectContext",
+        context: settings.ProjectContext,
         round_number: Optional[int] = None,
         train=False,
         verbose: int = 1,
@@ -150,7 +149,7 @@ class Predictor:
         return {
             **{
                 f"predicted_{pred_type}": np.nan
-                for pred_type in PREDICTION_TYPES
+                for pred_type in settings.PREDICTION_TYPES
                 if pred_type != model_pred_type
             },
             f"predicted_{model_pred_type}": y_pred,

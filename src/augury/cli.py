@@ -32,7 +32,6 @@ import os
 from itertools import chain
 from pathlib import Path
 from typing import Dict, Iterable, Tuple
-from datetime import date
 
 import click
 from kedro.framework.cli import main as kedro_main
@@ -44,7 +43,7 @@ from kedro.framework.cli.utils import KedroCliError, env_option, split_string
 from kedro.framework.session import KedroSession
 from kedro.utils import load_obj
 
-from augury.settings import BASE_DIR
+from augury import settings
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
@@ -226,17 +225,11 @@ def run(
     tag = _get_values_as_tuple(tag) if tag else tag
     node_names = _get_values_as_tuple(node_names) if node_names else node_names
 
-    package_name = str(Path(__file__).resolve().parent.name)
-    default_params = {
-        "round_number": None,
-        "start_date": "1897-01-01",
-        "end_date": f"{date.today().year}-12-31",
-    }
     with KedroSession.create(
-        package_name,
-        project_path=BASE_DIR,
+        settings.PACKAGE_NAME,
+        project_path=settings.BASE_DIR,
         env=env,
-        extra_params={**default_params, **params},
+        extra_params=params,
     ) as session:
         session.run(
             tags=tag,

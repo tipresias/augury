@@ -3,6 +3,7 @@
 from typing import Dict, Union, List, Optional
 import os
 from datetime import date
+from pathlib import Path
 import pytz
 
 import yaml
@@ -13,6 +14,7 @@ from augury.hooks import ProjectHooks  # pylint: disable=import-outside-toplevel
 
 
 ENV = os.getenv("PYTHON_ENV")
+
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
 RAW_DATA_DIR = os.path.join(BASE_DIR, "data/01_raw/")
 CASSETTE_LIBRARY_DIR = os.path.join(BASE_DIR, "src/tests/fixtures/cassettes")
@@ -40,19 +42,50 @@ class ProjectContext(KedroContext):
         start_date: The earliest match date (inclusive) to include in any data sets.
         end_date: The latest match date (inclusive) to include in any data sets.
         """
+        default_params = {
+            "start_date": "1897-01-01",
+            "end_date": f"{date.today().year}-12-31",
+        }
         extra_params = extra_params or {}
+        params = {**default_params, **extra_params}
 
         super().__init__(
             package_name=package_name,
             project_path=project_path,
             env=env,
-            extra_params=extra_params,
+            extra_params=params,
         )
 
-        self.round_number = extra_params.get("round_number")
-        self.start_date = extra_params.get("start_date", "1897-01-01")
-        self.end_date = extra_params.get("end_date", f"{date.today().year}-12-31")
+    @property
+    def round_number(self):
+        """Get the round_number for fetching/filtering data in this Kedro session."""
+        return self._extra_params.get("round_number")
 
+    @round_number.setter
+    def round_number(self, round_number: Optional[int]):
+        """Set the round_number for this Kedro session.
+
+        Params:
+        -------
+        round_number: The round_number used for fetching/filtering data
+        """
+        self._extra_params = {
+            **(self._extra_params or {}),
+            "round_number": round_number,
+        }
+
+    @property
+    def start_date(self):
+        """Get the start_date for filtering data in this Kedro session."""
+        return self._extra_params.get("start_date")
+
+    @property
+    def end_date(self):
+        """Get the end_date for filtering data in this Kedro session."""
+        return self._extra_params.get("end_date")
+
+
+PACKAGE_NAME = Path(__file__).resolve().parent.name
 
 # Instantiate and list your project hooks here
 HOOKS = (ProjectHooks(),)

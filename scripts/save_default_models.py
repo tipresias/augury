@@ -5,21 +5,27 @@ make old model files obsolete.
 """
 
 import os
+import sys
 from dateutil import parser
 
 import numpy as np
 import pandas as pd
 from kedro.extras.datasets.pickle import PickleDataSet
-from kedro.framework.session import get_current_session
+from kedro.framework.session import KedroSession
+
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../"))
+
+if BASE_DIR not in sys.path:
+    sys.path.append(BASE_DIR)
 
 from tests.fixtures.fake_estimator import pickle_fake_estimator
 from augury.ml_estimators import StackingEstimator, BasicEstimator, ConfidenceEstimator
 from augury.ml_data import MLData
 from augury.ml_estimators import estimator_params
-from augury.settings import SEED, PREDICTION_DATA_START_DATE, FULL_YEAR_RANGE
+from augury import settings
 
 
-np.random.seed(SEED)
+np.random.seed(settings.SEED)
 
 BUCKET_NAME = "afl_data"
 TRAIN_YEAR_RANGE = (2020,)
@@ -46,40 +52,45 @@ def _train_save_model(model, **data_kwargs):
 def main():
     """Loop through models, training and saving each."""
     data_kwargs = {
-        "train_year_range": FULL_YEAR_RANGE,
+        "train_year_range": settings.FULL_YEAR_RANGE,
     }
 
-    session = get_current_session()
-    context = session.load_context()
-    full_data = pd.DataFrame(context.catalog.load("full_data"))
+    with KedroSession.create(
+        settings.PACKAGE_NAME, project_path=settings.BASE_DIR, env=settings.ENV
+    ) as session:
+        context = session.load_context()
+        full_data = pd.DataFrame(context.catalog.load("full_data"))
 
-    # Make sure we're using full data sets instead of truncated prod data sets
-    assert full_data["year"].min() < parser.parse(PREDICTION_DATA_START_DATE).year
-    del full_data
+        # Make sure we're using full data sets instead of truncated prod data sets
+        assert (
+            full_data["year"].min()
+            < parser.parse(settings.PREDICTION_DATA_START_DATE).year
+        )
+        del full_data
 
-    model_info = [
-        (
-            ConfidenceEstimator(**estimator_params.tipresias_proba_2020),
-            {**data_kwargs, "data_set": "legacy_data", "label_col": "result"},
-        ),
-        (
-            StackingEstimator(**estimator_params.tipresias_margin_2020),
-            {**data_kwargs, "data_set": "legacy_data"},
-        ),
-        (
-            BasicEstimator(name="tipresias_margin_2021"),
-            {**data_kwargs, "data_set": "full_data"},
-        ),
-        (
-            ConfidenceEstimator(name="tipresias_proba_2021"),
-            {**data_kwargs, "data_set": "full_data", "label_col": "result"},
-        ),
-    ]
+        model_info = [
+            (
+                ConfidenceEstimator(**estimator_params.tipresias_proba_2020),
+                {**data_kwargs, "data_set": "legacy_data", "label_col": "result"},
+            ),
+            (
+                StackingEstimator(**estimator_params.tipresias_margin_2020),
+                {**data_kwargs, "data_set": "legacy_data"},
+            ),
+            (
+                BasicEstimator(name="tipresias_margin_2021"),
+                {**data_kwargs, "data_set": "full_data"},
+            ),
+            (
+                ConfidenceEstimator(name="tipresias_proba_2021"),
+                {**data_kwargs, "data_set": "full_data", "label_col": "result"},
+            ),
+        ]
 
-    for model, data_kwargs in model_info:
-        _train_save_model(model, **data_kwargs)
+        for model, data_kwargs in model_info:
+            _train_save_model(model, **data_kwargs)
 
-    pickle_fake_estimator()
+        pickle_fake_estimator()
 
 
 if __name__ == "__main__":

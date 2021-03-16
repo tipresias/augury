@@ -1,13 +1,11 @@
 """The public API for the Augury app."""
 
-from typing import List, Optional, Dict, Union, Any
-from pathlib import Path
-from datetime import date
+from typing import List, Optional, Dict, Union, Any, cast
 
 import pandas as pd
 from mypy_extensions import TypedDict
 from kedro.framework.context import KedroContext
-from kedro.framework.session import KedroSession
+from kedro.framework.session import get_current_session
 import simplejson
 
 from augury.data_import import match_data
@@ -67,41 +65,34 @@ def make_predictions(
     -------
     List of prediction data dictionaries.
     """
-    package_name = Path(__file__).resolve().parent.name
-    extra_params = {
-        "round_number": round_number,
-        "start_date": "1897-01-01",
-        "end_date": f"{date.today().year}-12-31",
-    }
-    with KedroSession.create(
-        package_name, env=settings.ENV, extra_params=extra_params
-    ) as session:
-        context = session.load_context()
+    session = get_current_session()
+    assert session is not None
 
-        if ml_model_names is None:
-            ml_models = settings.ML_MODELS
-        else:
-            ml_models = [
-                ml_model
-                for ml_model in settings.ML_MODELS
-                if ml_model["name"] in ml_model_names
-            ]
+    context = cast(settings.ProjectContext, session.load_context())
+    context.round_number = round_number
 
-        _run_pipelines(context, ml_models)
+    if ml_model_names is None:
+        ml_models = settings.ML_MODELS
+    else:
+        ml_models = [
+            ml_model
+            for ml_model in settings.ML_MODELS
+            if ml_model["name"] in ml_model_names
+        ]
 
-        predictor = Predictor(
-            year_range,
-            context,
-            # Ignoring, because ProjectContext has project-specific attributes,
-            # and importing it to use as a type tends to create circular dependencies
-            round_number=round_number,  # type: ignore
-            train=train,
-            verbose=1,
-        )
+    _run_pipelines(context, ml_models)
 
-        predictions = predictor.make_predictions(ml_models)
+    predictor = Predictor(
+        year_range,
+        context,
+        round_number=round_number,
+        train=train,
+        verbose=1,
+    )
 
-        return _api_response(predictions)
+    predictions = predictor.make_predictions(ml_models)
+
+    return _api_response(predictions)
 
 
 def fetch_fixture_data(

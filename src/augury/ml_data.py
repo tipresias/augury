@@ -5,6 +5,7 @@ from datetime import date
 
 import pandas as pd
 from kedro.framework.context import KedroContext
+from kedro.framework.session import get_current_session
 
 from augury.types import YearRange
 from augury.settings import (
@@ -12,7 +13,6 @@ from augury.settings import (
     TRAIN_YEAR_RANGE,
     VALIDATION_YEAR_RANGE,
 )
-from augury.context import load_project_context
 
 
 END_OF_YEAR = f"{date.today().year}-12-31"
@@ -44,7 +44,7 @@ class MLData:
         index_cols: Column names to use for the DataFrame's index.
         label_col: Name of the column to use for data labels (i.e. y data set).
         """
-        self.context = context or load_project_context()
+        self.context = context
         self._data_set = data_set
         self._train_year_range = train_year_range
         self._test_year_range = test_year_range
@@ -53,6 +53,11 @@ class MLData:
         self._data = None
         self._X_data = None
         self._y_data = None
+
+        if self.context is None:
+            session = get_current_session()
+            assert session is not None
+            self.context = session.load_context()
 
     @property
     def data(self) -> pd.DataFrame:
