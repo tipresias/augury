@@ -1,4 +1,4 @@
-# pylint: disable=missing-docstring
+# pylint: disable=missing-docstring, redefined-outer-name
 
 from unittest import TestCase
 from unittest.mock import patch
@@ -9,11 +9,11 @@ from sklearn.linear_model import LogisticRegression
 import pandas as pd
 import numpy as np
 from faker import Faker
+from kedro.framework.session import get_current_session
 from tensorflow import keras
 import pytest
 from candystore import CandyStore
 
-from tests.helpers import KedroContextMixin
 from tests.fixtures.fake_estimator import FakeEstimatorData, create_fake_pipeline
 from augury.pipelines.match import nodes as match
 from augury.pipelines.nodes import common
@@ -274,83 +274,95 @@ class TestKerasClassifier(TestCase):
         return lambda: model
 
 
-class TestSklearn(TestCase, KedroContextMixin):
-    def setUp(self):
-        self.data = FakeEstimatorData()
-        self.estimator = self.load_context().catalog.load("fake_estimator")
+@pytest.fixture
+def data():
+    return FakeEstimatorData()
 
-    def test_match_accuracy_scorer(self):
-        X_test, y_test = self.data.test_data
 
-        match_acc = match_accuracy_scorer(self.estimator, X_test, y_test)
+@pytest.fixture
+def estimator():
+    session = get_current_session()
+    assert session is not None
 
-        self.assertIsInstance(match_acc, float)
-        self.assertGreater(match_acc, 0)
+    context = session.load_context()
+    return context.catalog.load("fake_estimator")
 
-    def test_year_cv_split(self):
-        max_train_year = max(self.data.train_year_range)
-        n_splits = 5
-        year_range = (max_train_year - n_splits, max_train_year)
-        X_train, _ = self.data.train_data
 
-        cv_splits = year_cv_split(X_train, year_range)
+def test_match_accuracy_scorer(data, estimator):
+    X_test, y_test = data.test_data
 
-        self.assertIsInstance(cv_splits, list)
-        self.assertEqual(len(cv_splits), n_splits)
+    match_acc = match_accuracy_scorer(estimator, X_test, y_test)
 
-        for split in cv_splits:
-            self.assertIsInstance(split, tuple)
-            self.assertEqual(len(split), 2)
+    assert isinstance(match_acc, float)
+    assert match_acc > 0
 
-            train, test = split
-            self.assertFalse(train[test].any())
 
-    # We use FakeEstimator to generate predictions for #test_bits_scorer,
-    # and we don't care if it doesn't converge
-    @pytest.mark.filterwarnings("ignore:lbfgs failed to converge")
-    def test_bits_scorer(self):
-        bits = bits_scorer(self.estimator, *self.data.train_data)
-        self.assertIsInstance(bits, float)
+def test_year_cv_split(data):
+    max_train_year = max(data.train_year_range)
+    n_splits = 5
+    year_range = (max_train_year - n_splits, max_train_year)
+    X_train, _ = data.train_data
 
-        with self.subTest("with a classifier"):
-            classifier = LogisticRegression()
-            _X_train, y_train = self.data.train_data
-            # There are six categorical features in fake data, and we don't need
-            # to bother with encoding them
-            X_train = _X_train.iloc[:, N_FAKE_CATS:]
-            classifier.fit(X_train, y_train)
+    cv_splits = year_cv_split(X_train, year_range)
 
-            class_bits = bits_scorer(classifier, X_train, y_train)
+    assert isinstance(cv_splits, list)
+    assert len(cv_splits) == n_splits
 
-            self.assertIsInstance(class_bits, float)
+    for split in cv_splits:
+        assert isinstance(split, tuple)
+        assert len(split) == 2
 
-    def test_bits_objective(self):
-        y_true = np.random.randint(0, 2, 10)
-        y_pred = np.random.random(10)
+        train, test = split
+        assert not train[test].any()
 
-        grad, hess = bits_objective(y_true, y_pred)
 
-        self.assertIsInstance(grad, np.ndarray)
-        self.assertEqual(grad.dtype, "float64")
-        self.assertIsInstance(hess, np.ndarray)
-        self.assertEqual(hess.dtype, "float64")
+# We use FakeEstimator to generate predictions for #test_bits_scorer,
+# and we don't care if it doesn't converge
+@pytest.mark.filterwarnings("ignore:lbfgs failed to converge")
+def test_bits_scorer_with_regressor(data, estimator):
+    bits = bits_scorer(estimator, *data.train_data)
+    assert isinstance(bits, float)
 
-        warnings.filterwarnings(
-            "error",
-            category=RuntimeWarning,
-            message="divide by zero encountered in true_divide",
-        )
 
-        with self.subTest("when some predictions equal 1"):
-            y_pred[:5] = np.ones(5)
+@pytest.mark.filterwarnings("ignore:lbfgs failed to converge")
+def test_bits_scorer_with_classifier(data):
+    classifier = LogisticRegression()
+    _X_train, y_train = data.train_data
+    # There are six categorical features in fake data, and we don't need
+    # to bother with encoding them
+    X_train = _X_train.iloc[:, N_FAKE_CATS:]
+    classifier.fit(X_train, y_train)
 
-            # Will raise a divide-by-zero error if a y_pred value of 1 gets through,
-            # so we don't need to assert anything
-            bits_objective(y_true, y_pred)
+    class_bits = bits_scorer(classifier, X_train, y_train)
 
-        with self.subTest("when some predictions equal 0"):
-            y_pred[:5] = np.zeros(5)
+    assert isinstance(class_bits, float)
 
-            # Will raise a divide-by-zero error if a y_pred value of 1 gets through,
-            # so we don't need to assert anything
-            bits_objective(y_true, y_pred)
+
+def test_bits_objective():
+    y_true = np.random.randint(0, 2, 10)
+    y_pred = np.random.random(10)
+
+    grad, hess = bits_objective(y_true, y_pred)
+
+    assert isinstance(grad, np.ndarray)
+    assert grad.dtype == "float64"
+    assert isinstance(hess, np.ndarray)
+    assert hess.dtype == "float64"
+
+
+@pytest.mark.parametrize("invalid_preds", [np.ones(5), np.zeros(5)])
+def test_handling_of_invalid_values(invalid_preds):
+    y_true = np.random.randint(0, 2, 10)
+    y_pred = np.random.random(10)
+
+    warnings.filterwarnings(
+        "error",
+        category=RuntimeWarning,
+        message="divide by zero encountered in true_divide",
+    )
+
+    y_pred[:5] = invalid_preds
+
+    # Will raise a divide-by-zero error if a y_pred value of 1 or 0 gets through,
+    # so we don't need to assert anything
+    bits_objective(y_true, y_pred)

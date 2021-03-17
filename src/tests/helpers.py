@@ -1,20 +1,5 @@
 """Functions and classes to deduplicate and simplify test code."""
 
-from augury.context import load_project_context
-
-
-class KedroContextMixin:
-    """Mixin class for loading the kedro context in tests."""
-
-    @staticmethod
-    def load_context(**context_kwargs):
-        """Load the kedro context, using production environment for CI.
-
-        Need to use production environment for loading data sets if in CI, because we
-        don't check data set files into source control
-        """
-        return load_project_context(**context_kwargs)
-
 
 class ColumnAssertionMixin:
     """Mixin class for making columns assertions in tests for Kedro nodes."""

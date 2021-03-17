@@ -1,18 +1,18 @@
 """The public API for the Augury app."""
 
-from typing import List, Optional, Dict, Union, Any
+from typing import List, Optional, Dict, Union, Any, cast
 
 import pandas as pd
 from mypy_extensions import TypedDict
 from kedro.framework.context import KedroContext
+from kedro.framework.session import get_current_session
 import simplejson
 
 from augury.data_import import match_data
 from augury.pipelines.match import nodes as match
 from augury.predictions import Predictor
 from augury.types import YearRange, MLModelDict
-from augury.settings import ML_MODELS
-from augury.context import load_project_context
+from augury import settings
 
 
 ApiResponse = TypedDict(
@@ -65,13 +65,19 @@ def make_predictions(
     -------
     List of prediction data dictionaries.
     """
-    context = load_project_context(round_number=round_number)
+    session = get_current_session()
+    assert session is not None
+
+    context = cast(settings.ProjectContext, session.load_context())
+    context.round_number = round_number
 
     if ml_model_names is None:
-        ml_models = ML_MODELS
+        ml_models = settings.ML_MODELS
     else:
         ml_models = [
-            ml_model for ml_model in ML_MODELS if ml_model["name"] in ml_model_names
+            ml_model
+            for ml_model in settings.ML_MODELS
+            if ml_model["name"] in ml_model_names
         ]
 
     _run_pipelines(context, ml_models)
@@ -79,9 +85,7 @@ def make_predictions(
     predictor = Predictor(
         year_range,
         context,
-        # Ignoring, because ProjectContext has project-specific attributes,
-        # and importing it to use as a type tends to create circular dependencies
-        round_number=context.round_number,  # type: ignore
+        round_number=round_number,
         train=train,
         verbose=1,
     )
@@ -169,4 +173,4 @@ def fetch_match_results_data(
 
 def fetch_ml_model_info() -> ApiResponse:
     """Fetch general info about all saved ML models."""
-    return _api_response(ML_MODELS)
+    return _api_response(settings.ML_MODELS)

@@ -1,21 +1,17 @@
 # pylint: disable=missing-module-docstring, missing-function-docstring
 # pylint: disable=missing-class-docstring
 
-from unittest import TestCase
+import pytest
 
-from tests.helpers import KedroContextMixin
 from augury.ml_estimators.base_ml_estimator import BaseMLEstimator
-from augury.settings import ML_MODELS
+from augury import settings
 
 
-class TestMLEstimators(TestCase, KedroContextMixin):
-    """Basic spot check for being able to load saved ML estimators"""
+@pytest.mark.parametrize(
+    "model_name", [ml_model["name"] for ml_model in settings.ML_MODELS]
+)
+def test_model_pickle_file_compatibility(model_name, kedro_session):
+    context = kedro_session.load_context()
 
-    def setUp(self):
-        self.context = self.load_context(start_date="2000-01-01", end_date="2010-12-31")
-
-    def test_pickle_file_compatibility(self):
-        for model in ML_MODELS:
-            with self.subTest(model_name=model["name"]):
-                estimator = self.context.catalog.load(model["name"])
-                self.assertIsInstance(estimator, BaseMLEstimator)
+    estimator = context.catalog.load(model_name)
+    assert isinstance(estimator, BaseMLEstimator)

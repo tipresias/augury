@@ -27,26 +27,14 @@
 # limitations under the License.
 
 """Project hooks."""
-from typing import Any, Dict, Iterable, Optional, cast
+from typing import Any, Dict, Iterable, Optional
 
 from kedro.config import ConfigLoader
 from kedro.framework.hooks import hook_impl
-from kedro.framework.context import load_context
+from kedro.framework.session import get_current_session
 from kedro.io import DataCatalog
 from kedro.pipeline import Pipeline
 from kedro.versioning import Journal
-
-from augury.io import JSONRemoteDataSet
-from augury.run import ProjectContext
-from augury.settings import BASE_DIR
-from augury.pipelines import betting, full, match, player, legacy
-from augury.pipelines.nodes import feature_calculation
-
-
-LEGACY_FEATURE_CALCS = [
-    (feature_calculation.calculate_division, [("elo_rating", "win_odds")]),
-    (feature_calculation.calculate_multiplication, [("win_odds", "ladder_position")]),
-]
 
 
 class ProjectHooks:
@@ -59,19 +47,35 @@ class ProjectHooks:
         Returns:
             A mapping from a pipeline name to a ``Pipeline`` object.
         """
-        context = cast(ProjectContext, load_context(BASE_DIR))
+        # We need to import inside the method, because Kedro's bogarting
+        # of the 'settings' module creates circular dependencies, so we either have to
+        # do this or create a separate settings module to import around the app.
+        from augury.pipelines import (  # pylint: disable=import-outside-toplevel
+            betting,
+            full,
+            match,
+            player,
+            legacy,
+        )
+
+        session = get_current_session()
+        assert session is not None
+
+        context = session.load_context()
+        start_date: str = context.start_date  # type: ignore
+        end_date: str = context.end_date  # type: ignore
 
         return {
             "__default__": Pipeline([]),
-            "betting": betting.create_pipeline(context.start_date, context.end_date),
-            "match": match.create_pipeline(context.start_date, context.end_date),
+            "betting": betting.create_pipeline(start_date, end_date),
+            "match": match.create_pipeline(start_date, end_date),
             "player": player.create_pipeline(
-                context.start_date,
-                context.end_date,
+                start_date,
+                end_date,
                 past_match_pipeline=match.create_past_match_pipeline(),
             ),
-            "full": full.create_pipeline(context.start_date, context.end_date),
-            "legacy": legacy.create_pipeline(context.start_date, context.end_date),
+            "full": full.create_pipeline(start_date, end_date),
+            "legacy": legacy.create_pipeline(start_date, end_date),
         }
 
     @hook_impl
@@ -89,16 +93,27 @@ class ProjectHooks:
         journal: Journal,
     ) -> DataCatalog:
         """Register the project's data catalog."""
+        # We need to import inside the method, because Kedro's bogarting
+        # of the 'settings' module creates circular dependencies, so we either have to
+        # do this or create a separate settings module to import around the app.
+        from augury.io import (  # pylint: disable=import-outside-toplevel
+            JSONRemoteDataSet,
+        )
+
         data_catalog = DataCatalog.from_config(
             catalog, credentials, load_versions, save_version, journal
         )
-        context = cast(ProjectContext, load_context(BASE_DIR))
+        session = get_current_session()
+        assert session is not None
+
+        context = session.load_context()
+        round_number: Optional[int] = context.round_number  # type: ignore
 
         data_catalog.add(
             "roster_data",
             JSONRemoteDataSet(
                 data_source="augury.data_import.player_data.fetch_roster_data",
-                round_number=context.round_number,
+                round_number=round_number,
             ),
         )
 

@@ -1,4 +1,4 @@
-# Copyright 2020 QuantumBlack Visual Analytics Limited
+# Copyright 2021 QuantumBlack Visual Analytics Limited
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,8 +40,10 @@ from kedro.framework.cli.jupyter import jupyter as jupyter_group
 from kedro.framework.cli.pipeline import pipeline as pipeline_group
 from kedro.framework.cli.project import project_group
 from kedro.framework.cli.utils import KedroCliError, env_option, split_string
-from kedro.framework.context import load_context
+from kedro.framework.session import KedroSession
 from kedro.utils import load_obj
+
+from augury import settings
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
@@ -103,8 +105,8 @@ def _get_values_as_tuple(values: Iterable[str]) -> Tuple[str, ...]:
 def _reformat_load_versions(  # pylint: disable=unused-argument
     ctx, param, value
 ) -> Dict[str, str]:
-    """Reformat data structure from tuple to dictionary for `load-version`.
-        E.g ('dataset1:time1', 'dataset2:time2') -> {"dataset1": "time1", "dataset2": "time2"}.
+    """Reformat data structure from tuple to dictionary for `load-version`, e.g.:
+    ('dataset1:time1', 'dataset2:time2') -> {"dataset1": "time1", "dataset2": "time2"}.
     """
     load_versions_dict = {}
 
@@ -129,7 +131,8 @@ def _split_params(ctx, param, value):
         item = item.split(":", 1)
         if len(item) != 2:
             ctx.fail(
-                f"Invalid format of `{param.name}` option: Item `{item[0]}` must contain "
+                f"Invalid format of `{param.name}` option: "
+                f"Item `{item[0]}` must contain "
                 f"a key and a value separated by `:`."
             )
         key = item[0].strip()
@@ -205,7 +208,7 @@ def run(
     from_inputs,
     load_version,
     pipeline,
-    config,
+    config,  # pylint: disable=unused-argument
     params,
 ):
     """Run the pipeline."""
@@ -222,17 +225,22 @@ def run(
     tag = _get_values_as_tuple(tag) if tag else tag
     node_names = _get_values_as_tuple(node_names) if node_names else node_names
 
-    context = load_context(Path.cwd(), env=env, extra_params=params)
-    context.run(
-        tags=tag,
-        runner=runner_class(is_async=is_async),
-        node_names=node_names,
-        from_nodes=from_nodes,
-        to_nodes=to_nodes,
-        from_inputs=from_inputs,
-        load_versions=load_version,
-        pipeline_name=pipeline,
-    )
+    with KedroSession.create(
+        settings.PACKAGE_NAME,
+        project_path=settings.BASE_DIR,
+        env=env,
+        extra_params=params,
+    ) as session:
+        session.run(
+            tags=tag,
+            runner=runner_class(is_async=is_async),
+            node_names=node_names,
+            from_nodes=from_nodes,
+            to_nodes=to_nodes,
+            from_inputs=from_inputs,
+            load_versions=load_version,
+            pipeline_name=pipeline,
+        )
 
 
 cli.add_command(pipeline_group)

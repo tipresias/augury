@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Copyright 2018-2019 QuantumBlack Visual Analytics Limited
+# Copyright 2021 QuantumBlack Visual Analytics Limited
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-# http://www.apache.org/licenses/LICENSE-2.0
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 # EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
@@ -22,14 +22,14 @@
 # trademarks of QuantumBlack. The License does not grant you any right or
 # license to the QuantumBlack Trademarks. You may not use the QuantumBlack
 # Trademarks or any confusingly similar mark as a trademark for your product,
-#     or use the QuantumBlack Trademarks in any other manner that might cause
+# or use the QuantumBlack Trademarks in any other manner that might cause
 # confusion in the marketplace, including but not limited to in advertising,
 # on websites, or on software.
 #
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Augury documentation build
+# augury documentation build
 # configuration file, created by sphinx-quickstart.
 #
 # This file is execfile()d with the current directory set to its
@@ -46,7 +46,6 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import re
-from typing import Dict
 
 from kedro.framework.cli.utils import find_stylesheets
 from recommonmark.transform import AutoStructify
@@ -55,8 +54,9 @@ from augury import __version__ as release
 
 # -- Project information -----------------------------------------------------
 
-project = "Augury"
-author = "Craig Franklin"
+project = "augury"
+copyright = "2021, QuantumBlack Visual Analytics Limited"
+author = "QuantumBlack"
 
 # The short X.Y version.
 version = re.match(r"^([0-9]+\.[0-9]+).*", release).group(1)
@@ -153,7 +153,7 @@ htmlhelp_basename = "augurydoc"
 
 # -- Options for LaTeX output ------------------------------------------------
 
-latex_elements: Dict[str, str] = {
+latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
@@ -175,14 +175,28 @@ latex_elements: Dict[str, str] = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, "augury.tex", "Augury Documentation", "Craig Franklin", "manual",)
+    (
+        master_doc,
+        "augury.tex",
+        "augury Documentation",
+        "QuantumBlack",
+        "manual",
+    )
 ]
 
 # -- Options for manual page output ------------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "augury", "Augury Documentation", [author], 1,)]
+man_pages = [
+    (
+        master_doc,
+        "augury",
+        "augury Documentation",
+        [author],
+        1,
+    )
+]
 
 # -- Options for Texinfo output ----------------------------------------------
 
@@ -192,11 +206,11 @@ man_pages = [(master_doc, "augury", "Augury Documentation", [author], 1,)]
 texinfo_documents = [
     (
         master_doc,
-        "Augury",
-        "Augury Documentation",
+        "augury",
+        "augury Documentation",
         author,
-        "Augury",
-        "Project Augury codebase.",
+        "augury",
+        "Project augury codebase.",
         "Data-Science",
     )
 ]

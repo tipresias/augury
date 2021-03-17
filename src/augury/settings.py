@@ -1,18 +1,112 @@
 """App-wide constants for app and data configuration."""
 
-from typing import Dict, Union, List
+from typing import Dict, Union, List, Optional
 import os
 from datetime import date
+from pathlib import Path
 import pytz
 
 import yaml
+from kedro.framework.context import KedroContext
 
 from augury.types import MLModelDict
+from augury.hooks import ProjectHooks  # pylint: disable=import-outside-toplevel
 
+
+ENV = os.getenv("PYTHON_ENV")
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
 RAW_DATA_DIR = os.path.join(BASE_DIR, "data/01_raw/")
 CASSETTE_LIBRARY_DIR = os.path.join(BASE_DIR, "src/tests/fixtures/cassettes")
+
+
+class ProjectContext(KedroContext):
+    """Specialisation of generic KedroContext object with params specific to Augury."""
+
+    def __init__(
+        self,
+        package_name: str = "augury",
+        project_path: str = BASE_DIR,
+        env: Optional[str] = ENV,
+        extra_params=None,
+    ):
+        """
+        Instantiate ProjectContext object.
+
+        Params
+        ------
+        project_path: Absolute path to project root.
+        env: Name of the current environment. Principally used
+            to load the correct `conf/` files.
+        round_number: The relevant round_number for filtering data.
+        start_date: The earliest match date (inclusive) to include in any data sets.
+        end_date: The latest match date (inclusive) to include in any data sets.
+        """
+        default_params = {
+            "start_date": "1897-01-01",
+            "end_date": f"{date.today().year}-12-31",
+        }
+        extra_params = extra_params or {}
+        params = {**default_params, **extra_params}
+
+        super().__init__(
+            package_name=package_name,
+            project_path=project_path,
+            env=env,
+            extra_params=params,
+        )
+
+    @property
+    def round_number(self):
+        """Get the round_number for fetching/filtering data in this Kedro session."""
+        return self._extra_params.get("round_number")
+
+    @round_number.setter
+    def round_number(self, round_number: Optional[int]):
+        """Set the round_number for this Kedro session.
+
+        Params:
+        -------
+        round_number: The round_number used for fetching/filtering data
+        """
+        self._extra_params = {
+            **(self._extra_params or {}),
+            "round_number": round_number,
+        }
+
+    @property
+    def start_date(self):
+        """Get the start_date for filtering data in this Kedro session."""
+        return self._extra_params.get("start_date")
+
+    @property
+    def end_date(self):
+        """Get the end_date for filtering data in this Kedro session."""
+        return self._extra_params.get("end_date")
+
+
+PACKAGE_NAME = Path(__file__).resolve().parent.name
+
+# Instantiate and list your project hooks here
+HOOKS = (ProjectHooks(),)
+
+# List the installed plugins for which to disable auto-registry
+# DISABLE_HOOKS_FOR_PLUGINS = ("kedro-viz",)
+
+# Define where to store data from a KedroSession. Defaults to BaseSessionStore.
+# from kedro.framework.session.store import ShelveStore
+# SESSION_STORE_CLASS = ShelveStore
+
+# Define keyword arguments to be passed to `SESSION_STORE_CLASS` constructor
+# SESSION_STORE_ARGS = {
+#     "path": "./sessions"
+# }
+
+# Define custom context class. Defaults to `KedroContext`
+CONTEXT_CLASS = ProjectContext
+
+# Define the configuration folder. Defaults to `conf`
+# CONF_ROOT = "conf"
 
 # Using Melbourne for datetimes that aren't location specific, because these are usually
 # start/end datetimes, and Melbourne will at least get us on the correct date

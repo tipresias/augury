@@ -5,7 +5,9 @@ import os
 import sys
 from datetime import date
 
+from kedro.framework.session import KedroSession, get_current_session
 from bottle import Bottle, run, request, response
+
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 SRC_PATH = os.path.join(BASE_DIR, "src")
@@ -21,14 +23,27 @@ IS_PRODUCTION = PYTHON_ENV == "production"
 TIPRESIAS_HOST = (
     "http://www.tipresias.net" if IS_PRODUCTION else "http://host.docker.internal:8000"
 )
+PACKAGE_NAME = "augury"
+
+
+def _close_kedro_session():
+    session = get_current_session()
+    if session is None:
+        return
+
+    session.close()
+
 
 app = Bottle()
+app.add_hook("before_request", lambda: KedroSession.create(PACKAGE_NAME))
+app.add_hook("after_request", _close_kedro_session)
 
 if IS_PRODUCTION:
     from rollbar.contrib.bottle import RollbarBottleReporter
 
     rbr = RollbarBottleReporter(
-        access_token=os.getenv("ROLLBAR_TOKEN", ""), environment=PYTHON_ENV,
+        access_token=os.getenv("ROLLBAR_TOKEN", ""),
+        environment=PYTHON_ENV,
     )
     app.install(rbr)
 

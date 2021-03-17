@@ -20,7 +20,7 @@ scipy==1.6.1
 tensorflow==2.4.1
 
 # Kedro packages
-kedro==0.16.5
+kedro==0.17.0
 gcsfs<0.7 # Needed to access Google Cloud Storage files
 fsspec<0.7 # Needed for DataSet functionality
 
