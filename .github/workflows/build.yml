@@ -53,6 +53,14 @@ jobs:
           service_account_key: ${{ secrets.GC_SA_KEY }}
           export_default_credentials: true
           credentials_file_path: ${{ env.GOOGLE_APPLICATION_CREDENTIALS }}
+      # setup-gcloud fails silently, so we have to exit manually
+      - name: Check Google Cloud credentials were exported
+        run: |
+          if [[ ! -f ${{ env.GOOGLE_APPLICATION_CREDENTIALS }} ]]
+          then
+              echo 'File "${{ env.GOOGLE_APPLICATION_CREDENTIALS }}" was not found'
+              exit 1
+          fi
       - name: Lint
         if: ${{ always() }}
         run: |
