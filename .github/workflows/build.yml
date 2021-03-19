@@ -9,7 +9,10 @@ jobs:
       CC_TEST_REPORTER_ID: bc52d889596333356007dd578d7a33f4a69a2c134db9afa2b3d1700ae5455fa9
       AFL_DATA_SERVICE: ${{ secrets.AFL_DATA_SERVICE }}
       PROJECT_ID: ${{ secrets.PROJECT_ID }}
-      GOOGLE_APPLICATION_CREDENTIALS: .gcloud/keyfile.json
+      # Need to use an alternative env var to GOOGLE_APPLICATION_CREDENTIALS,
+      # because setup-gcloud overwrites it before exporting the credentials,
+      # resulting in the default randomised filepath for the keyfile
+      GCP_CREDENTIALS_FILE: .gcloud/keyfile.json
     steps:
       - name: Install dependencies
         run: |
@@ -47,19 +50,19 @@ jobs:
         run: docker pull cfranklin11/tipresias_afl_data:latest
       - run: mkdir .gcloud
       - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0.2.0
+        uses: google-github-actions/setup-gcloud@v0.2.1
         with:
           project_id: ${{ env.PROJECT_ID }}
           service_account_key: ${{ secrets.GC_SA_KEY }}
           export_default_credentials: true
-          credentials_file_path: ${{ env.GOOGLE_APPLICATION_CREDENTIALS }}
+          credentials_file_path: ${{ env.GCP_CREDENTIALS_FILE }}
       # setup-gcloud fails silently, so we have to exit manually
       - name: Check Google Cloud credentials were exported
         id: gcloud_setup_check
         run: |
-          if [[ ! -f ${{ env.GOOGLE_APPLICATION_CREDENTIALS }} ]]
+          if [[ ! -f ${{ env.GCP_CREDENTIALS_FILE }} ]]
           then
-              echo 'File "${{ env.GOOGLE_APPLICATION_CREDENTIALS }}" was not found'
+              echo 'File "${{ env.GCP_CREDENTIALS_FILE }}" was not found. GOOGLE_APPLICATION_CREDENTIALS=${{ env.GOOGLE_APPLICATION_CREDENTIALS }}.'
               exit 1
           fi
       - name: Lint
