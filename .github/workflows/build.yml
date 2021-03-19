@@ -47,7 +47,7 @@ jobs:
         run: docker pull cfranklin11/tipresias_afl_data:latest
       - run: mkdir .gcloud
       - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@master
+        uses: google-github-actions/setup-gcloud@v0.2.0
         with:
           project_id: ${{ env.PROJECT_ID }}
           service_account_key: ${{ secrets.GC_SA_KEY }}
