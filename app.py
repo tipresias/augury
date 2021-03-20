@@ -5,7 +5,7 @@ import os
 import sys
 from datetime import date
 
-from kedro.framework.session import KedroSession, get_current_session
+from kedro.framework.session import KedroSession
 from bottle import Bottle, run, request, response
 
 
@@ -25,18 +25,7 @@ TIPRESIAS_HOST = (
 )
 PACKAGE_NAME = "augury"
 
-
-def _close_kedro_session():
-    session = get_current_session()
-    if session is None:
-        return
-
-    session.close()
-
-
 app = Bottle()
-app.add_hook("before_request", lambda: KedroSession.create(PACKAGE_NAME))
-app.add_hook("after_request", _close_kedro_session)
 
 if IS_PRODUCTION:
     from rollbar.contrib.bottle import RollbarBottleReporter
@@ -126,12 +115,15 @@ def predictions():
     train_models_param = request.query.train_models
     train_models = train_models_param.lower() == "true"
 
-    return api.make_predictions(
-        year_range,
-        round_number=round_number,
-        ml_model_names=ml_models_param,
-        train=train_models,
-    )
+    with KedroSession.create(
+        settings.PACKAGE_NAME, extra_params={"round_number": round_number}
+    ):
+        return api.make_predictions(
+            year_range,
+            round_number=round_number,
+            ml_model_names=ml_models_param,
+            train=train_models,
+        )
 
 
 @app.route("/fixtures")
@@ -157,7 +149,8 @@ def fixtures():
     start_date = request.query.start_date
     end_date = request.query.end_date
 
-    return api.fetch_fixture_data(start_date, end_date)
+    with KedroSession.create(settings.PACKAGE_NAME):
+        return api.fetch_fixture_data(start_date, end_date)
 
 
 @app.route("/match_results")
@@ -180,7 +173,8 @@ def match_results():
 
     round_number = request.query.round_number
 
-    return api.fetch_match_results_data(round_number)
+    with KedroSession.create(settings.PACKAGE_NAME):
+        return api.fetch_match_results_data(round_number)
 
 
 @app.route("/matches")
@@ -206,7 +200,8 @@ def matches():
     start_date = request.query.start_date
     end_date = request.query.end_date
 
-    return api.fetch_match_data(start_date, end_date)
+    with KedroSession.create(settings.PACKAGE_NAME):
+        return api.fetch_match_data(start_date, end_date)
 
 
 @app.route("/ml_models")
@@ -221,7 +216,8 @@ def ml_models():
     if not _request_is_authorized(request):
         return _unauthorized_response()
 
-    return api.fetch_ml_model_info()
+    with KedroSession.create(settings.PACKAGE_NAME):
+        return api.fetch_ml_model_info()
 
 
 run(app, **_run_kwargs())
