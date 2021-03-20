@@ -67,9 +67,7 @@ def make_predictions(
     """
     session = get_current_session()
     assert session is not None
-
-    context = cast(settings.ProjectContext, session.load_context())
-    context.round_number = round_number
+    context = session.load_context()
 
     if ml_model_names is None:
         ml_models = settings.ML_MODELS
@@ -80,6 +78,7 @@ def make_predictions(
             if ml_model["name"] in ml_model_names
         ]
 
+    context = cast(settings.ProjectContext, session.load_context())
     _run_pipelines(context, ml_models)
 
     predictor = Predictor(

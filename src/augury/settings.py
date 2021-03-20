@@ -14,7 +14,7 @@ from augury.hooks import ProjectHooks  # pylint: disable=import-outside-toplevel
 
 
 ENV = os.getenv("PYTHON_ENV")
-
+ROLLBAR_TOKEN = os.getenv("ROLLBAR_TOKEN", "")
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
 RAW_DATA_DIR = os.path.join(BASE_DIR, "data/01_raw/")
 CASSETTE_LIBRARY_DIR = os.path.join(BASE_DIR, "src/tests/fixtures/cassettes")
