@@ -79,7 +79,7 @@ jobs:
         run: |
           docker run cfranklin11/tipresias_data_science:latest pydocstyle src app.py
       - name: Run unit tests
-        if: ${{ steps.gcloud_setup_check.conclusion == 'success' }}
+        if: ${{ always() && steps.gcloud_setup_check.conclusion == 'success' }}
         # Using pytest, because coverage.py doesn't play nice with the kedro CLI
         run: |
           docker run \
@@ -89,7 +89,7 @@ jobs:
             cfranklin11/tipresias_data_science:latest \
             coverage run -m pytest --no-cov src/tests/unit/
       - name: Run integration/system tests
-        if: ${{ steps.gcloud_setup_check.conclusion == 'success' }}
+        if: ${{ always() && steps.gcloud_setup_check.conclusion == 'success' }}
         # Using pytest, because coverage.py doesn't play nice with the kedro CLI
         run: |
           docker-compose -f docker-compose.ci.yml run data_science \
