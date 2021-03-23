@@ -29,7 +29,10 @@ def run_package(
         "end_date": end_date,
     }
     with KedroSession.create(
-        settings.PACKAGE_NAME, project_path=settings.BASE_DIR, extra_params=extra_params
+        settings.PACKAGE_NAME,
+        env=settings.ENV,
+        project_path=settings.BASE_DIR,
+        extra_params=extra_params,
     ) as session:
         session.run()
 

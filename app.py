@@ -115,7 +115,10 @@ def predictions():
     train_models = train_models_param.lower() == "true"
 
     with KedroSession.create(
-        settings.PACKAGE_NAME, extra_params={"round_number": round_number}
+        settings.PACKAGE_NAME,
+        env=settings.ENV,
+        project_path=settings.BASE_DIR,
+        extra_params={"round_number": round_number},
     ):
         return api.make_predictions(
             year_range,
@@ -148,7 +151,9 @@ def fixtures():
     start_date = request.query.start_date
     end_date = request.query.end_date
 
-    with KedroSession.create(settings.PACKAGE_NAME):
+    with KedroSession.create(
+        settings.PACKAGE_NAME, env=settings.ENV, project_path=settings.BASE_DIR
+    ):
         return api.fetch_fixture_data(start_date, end_date)
 
 
@@ -172,7 +177,9 @@ def match_results():
 
     round_number = request.query.round_number
 
-    with KedroSession.create(settings.PACKAGE_NAME):
+    with KedroSession.create(
+        settings.PACKAGE_NAME, env=settings.ENV, project_path=settings.BASE_DIR
+    ):
         return api.fetch_match_results_data(round_number)
 
 
@@ -199,7 +206,9 @@ def matches():
     start_date = request.query.start_date
     end_date = request.query.end_date
 
-    with KedroSession.create(settings.PACKAGE_NAME):
+    with KedroSession.create(
+        settings.PACKAGE_NAME, env=settings.ENV, project_path=settings.BASE_DIR
+    ):
         return api.fetch_match_data(start_date, end_date)
 
 
@@ -215,7 +224,9 @@ def ml_models():
     if not _request_is_authorized(request):
         return _unauthorized_response()
 
-    with KedroSession.create(settings.PACKAGE_NAME):
+    with KedroSession.create(
+        settings.PACKAGE_NAME, env=settings.ENV, project_path=settings.BASE_DIR
+    ):
         return api.fetch_ml_model_info()
 
 
