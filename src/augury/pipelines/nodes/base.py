@@ -55,7 +55,7 @@ def _localize_dates(row: pd.Series) -> datetime:
         else match_date
     )
 
-    return match_datetime.replace(tzinfo=pytz.timezone(venue_timezone_label))
+    return pytz.timezone(venue_timezone_label).localize(match_datetime)
 
 
 def _format_time(unformatted_time: str):
