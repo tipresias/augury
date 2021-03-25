@@ -24,7 +24,7 @@ nbstripout==0.3.3
 pytest==6.2.2
 pytest-cov~=2.11
 pytest-mock>=1.7.1, <4.0
-wheel~=0.35
+wheel~=0.36
 
 # Data vis packages
 seaborn
