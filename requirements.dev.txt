@@ -14,7 +14,7 @@ category_encoders
 
 # Kedro packages
 ipython==7.21.0
-isort>=4.3.21, <5.0
+isort>=4.3.21, <6.0
 jupyter~=1.0
 jupyterlab==0.31.1
 jupyter_client>=5.1, <7.0
