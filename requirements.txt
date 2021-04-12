@@ -21,7 +21,7 @@ tensorflow==2.4.1
 
 # Kedro packages
 kedro==0.17.0
-gcsfs<0.7 # Needed to access Google Cloud Storage files
+gcsfs<0.9 # Needed to access Google Cloud Storage files
 fsspec<0.7 # Needed for DataSet functionality
 
 # Testing/Linting
