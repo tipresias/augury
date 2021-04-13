@@ -48,4 +48,4 @@ betamax
 pytest-xdist
 pydocstyle==6.0.0
 coverage
-candystore==0.3.2
+candystore==0.3.3
