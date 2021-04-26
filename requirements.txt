@@ -13,7 +13,7 @@ rollbar
 numpy==1.19.5
 pandas==1.2.4
 scikit-learn==0.24.1
-xgboost==1.4.0
+xgboost==1.4.1
 mlxtend==0.18.0
 statsmodels==0.11.1
 scipy==1.6.2
