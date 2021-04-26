@@ -20,7 +20,7 @@ jupyterlab==3.0.14
 jupyter_client>=5.1, <7.0
 jupyter_nbextensions_configurator==0.4.1
 jupyter_contrib_nbextensions==0.5.1
-nbstripout==0.3.9
+nbstripout==0.4.0
 pytest==6.2.3
 pytest-cov~=2.11
 pytest-mock>=1.7.1, <4.0
