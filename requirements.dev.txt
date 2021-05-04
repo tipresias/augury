@@ -8,7 +8,7 @@ memory_profiler
 
 # Data packages
 dask[complete]>=2.3
-mlflow==1.15.0
+mlflow==1.16.0
 catboost
 category_encoders
 
