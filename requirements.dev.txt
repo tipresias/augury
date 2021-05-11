@@ -41,7 +41,7 @@ shap
 # Testing/Linting
 pylint==2.8.2
 black
-faker==8.1.2
+faker==8.1.3
 freezegun
 factory_boy
 betamax
