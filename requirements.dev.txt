@@ -5,6 +5,7 @@
 
 responses>=0.10.6,<0.14
 memory_profiler
+MarkupSafe>=2.0.0rc2 # Required version for 'jupyter contrib' extensions
 
 # Data packages
 dask[complete]>=2.3
