@@ -17,7 +17,7 @@ xgboost==1.4.1
 mlxtend==0.18.0
 statsmodels==0.11.1
 scipy==1.6.3
-tensorflow==2.4.1
+tensorflow==2.5.0
 six~=1.15.0 # Required version for TF 2.4.1
 
 # Kedro packages
