@@ -5,8 +5,6 @@
 
 responses>=0.10.6,<0.14
 memory_profiler
-MarkupSafe<2.0.0 # Required version for 'cookiecutter' (a 'kedro' dependency)
-Jinja2<3.0.0 # Required version for 'cookiecutter' (a 'kedro' dependency)
 
 # Data packages
 dask[complete]>=2.3

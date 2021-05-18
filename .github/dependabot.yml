@@ -12,3 +12,8 @@ updates:
     interval: weekly
     time: "19:00"
   open-pull-requests-limit: 10
+  ignored_updates:
+    - match:
+        dependency_name: MarkupSafe
+    - match:
+        dependency_name: Jinja2

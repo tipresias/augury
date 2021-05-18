@@ -24,6 +24,8 @@ six~=1.15.0 # Required version for TF 2.4.1
 kedro==0.17.0
 gcsfs<0.7 # Needed to access Google Cloud Storage files
 fsspec<0.7 # Needed for DataSet functionality
+MarkupSafe<2.0.0 # Required version for 'cookiecutter' (a 'kedro' dependency)
+Jinja2<3.0.0 # Required version for 'cookiecutter' (a 'kedro' dependency)
 
 # Testing/Linting
 mypy>=0.70 # Need mypy due to references to mypy_extensions in production code
