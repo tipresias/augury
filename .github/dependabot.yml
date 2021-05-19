@@ -13,5 +13,5 @@ updates:
     time: "19:00"
   open-pull-requests-limit: 10
   ignore:
-    - dependency_name: MarkupSafe
-    - dependency_name: Jinja2
+    - dependency-name: MarkupSafe
+    - dependency-name: Jinja2
