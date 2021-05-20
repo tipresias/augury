@@ -46,6 +46,6 @@ freezegun
 factory_boy
 betamax
 pytest-xdist
-pydocstyle==6.0.0
+pydocstyle==6.1.1
 coverage
 candystore==0.3.3
