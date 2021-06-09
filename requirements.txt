@@ -28,4 +28,4 @@ MarkupSafe<2.0.0 # Required version for 'cookiecutter' (a 'kedro' dependency)
 Jinja2<3.0.0 # Required version for 'cookiecutter' (a 'kedro' dependency)
 
 # Testing/Linting
-mypy>=0.70 # Need mypy due to references to mypy_extensions in production code
+mypy==0.812 # Need mypy due to references to mypy_extensions in production code
