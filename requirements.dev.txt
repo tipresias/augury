@@ -49,3 +49,15 @@ pytest-xdist
 pydocstyle==6.1.1
 coverage
 candystore==0.3.3
+
+# Types
+types-PyYAML
+types-cachetools
+types-click
+types-freezegun
+types-pkg_resources
+types-python-dateutil
+types-pytz
+types-requests
+types-simplejson
+types-toml
