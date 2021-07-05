@@ -1,6 +1,6 @@
 """Generates predictions with the given models for the given inputs."""
 
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Union
 import itertools
 
 import pandas as pd
@@ -143,7 +143,7 @@ class Predictor:
     @staticmethod
     def _prediction_data(
         ml_model: MLModelDict, y_pred: np.ndarray
-    ) -> Dict[str, Optional[np.ndarray]]:
+    ) -> Dict[str, Union[np.ndarray, str, float]]:
         model_pred_type = ml_model["prediction_type"]
 
         return {
