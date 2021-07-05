@@ -140,7 +140,7 @@ def _validate_no_dodgy_zeros(data_frame: pd.DataFrame):
     zeros_data_frame = data_frame.query(zero_value_query)
 
     assert (
-        not zeros_data_frame.any().any()
+        not zeros_data_frame.size
     ), f"An invalid fillna produced index column values of 0:\n{zeros_data_frame}"
 
 

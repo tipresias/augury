@@ -114,7 +114,7 @@ class TestCommon(TestCase, ColumnAssertionMixin):
         filtered_data_frame = filter_func(raw_betting_data)
 
         # It has some data
-        self.assertTrue(filtered_data_frame.any().any())
+        self.assertTrue(filtered_data_frame.size)
 
         # It doesn't have any data outside the date range
         self.assertFalse(

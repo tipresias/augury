@@ -487,7 +487,7 @@ class TimeSeriesRegressor(BaseEstimator, RegressorMixin):
     ) -> pd.Series:
         team_df = X.query("team == @team_name").sort_values("date")
 
-        if not team_df.any().any():
+        if not team_df.size:
             return pd.Series(name="yhat")
 
         team_df_index = team_df.index

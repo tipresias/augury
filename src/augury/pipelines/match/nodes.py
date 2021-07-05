@@ -213,7 +213,7 @@ def clean_fixture_data(fixture_data: pd.DataFrame) -> pd.DataFrame:
     -------
     Cleanish pandas.DataFrame
     """
-    if not fixture_data.any().any():
+    if not fixture_data.size:
         return pd.DataFrame()
 
     fixture_data_frame = (
