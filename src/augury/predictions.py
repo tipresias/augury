@@ -1,6 +1,6 @@
 """Generates predictions with the given models for the given inputs."""
 
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Union
 import itertools
 
 import pandas as pd
@@ -90,7 +90,7 @@ class Predictor:
         trained_model = self._train_model(loaded_model) if self.train else loaded_model
         X_test, _ = self._data.test_data
 
-        assert X_test.any().any(), (
+        assert X_test.size, (
             "X_test doesn't have any rows, likely due to no data being available for "
             f"{year}."
         )
@@ -114,7 +114,7 @@ class Predictor:
             .loc[data_row_slice, PREDICTION_COLS]
         )
 
-        assert model_predictions.any().any(), (
+        assert model_predictions.size, (
             "Model predictions data frame is empty, possibly due to a bad row slice:\n"
             f"{data_row_slice}"
         )
@@ -143,7 +143,7 @@ class Predictor:
     @staticmethod
     def _prediction_data(
         ml_model: MLModelDict, y_pred: np.ndarray
-    ) -> Dict[str, Optional[np.ndarray]]:
+    ) -> Dict[str, Union[np.ndarray, str, float]]:
         model_pred_type = ml_model["prediction_type"]
 
         return {

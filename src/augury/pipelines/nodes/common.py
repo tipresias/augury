@@ -96,7 +96,7 @@ def _combine_data_vertically(*data_frames: Sequence[pd.DataFrame]):
         return data_frames[0]
 
     valid_data_frames = [
-        df for df in cast(Sequence[pd.DataFrame], data_frames) if df.any().any()
+        df for df in cast(Sequence[pd.DataFrame], data_frames) if df.size
     ]
     sorted_data_frames = sorted(valid_data_frames, key=lambda df: df["date"].min())
     combined_data_frame = reduce(_append_data_frames, sorted_data_frames).fillna(0)
