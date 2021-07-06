@@ -90,7 +90,7 @@ class FakeEstimatorData(MLData):
     @property
     def data(self):
         """Return full data set."""
-        if self._data is None:
+        if self._data.empty:
             self._data = super().data
 
             max_data_year = self._data["year"].max()

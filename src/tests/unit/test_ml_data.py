@@ -82,7 +82,7 @@ class TestMLData(TestCase):
             return_value="dataz"
         )
 
-        self.assertEqual(self.data._data, None)  # pylint: disable=protected-access
+        self.assertTrue(self.data._data.empty)  # pylint: disable=protected-access
         self.assertEqual(self.data.data, "dataz")
 
     def test_data_set(self):
@@ -91,7 +91,3 @@ class TestMLData(TestCase):
 
         self.assertIsNone(self.data._data)  # pylint: disable=protected-access
         self.assertEqual(self.data.data_set, data_set_name)
-
-    @staticmethod
-    def __set_valid_index(data_frame):
-        return data_frame.set_index(["team", "year", "round_number"])
