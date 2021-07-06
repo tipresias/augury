@@ -39,7 +39,7 @@ eli5
 shap
 
 # Testing/Linting
-pylint==2.8.3
+pylint==2.9.3
 black
 faker==8.9.1
 freezegun
