@@ -50,7 +50,7 @@ class MLData:
         self._test_year_range = test_year_range
         self.index_cols = index_cols
         self.label_col = label_col
-        self._data = None
+        self._data = pd.DataFrame()
         self._X_data = None
         self._y_data = None
 
@@ -62,7 +62,7 @@ class MLData:
     @property
     def data(self) -> pd.DataFrame:
         """Full data set stored in the given class instance."""
-        if self._data is None:
+        if self._data.empty:
             self._data = self._load_data()
 
         return self._data
