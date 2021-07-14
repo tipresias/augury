@@ -60,8 +60,14 @@ class TestCorrelationSelector(TestCase):
         self.assertEqual(len(transformed_data_frame.columns), len(self.X.columns))
 
         with self.subTest("threshold > 0"):
+            corr_df = self.data_frame.corr().fillna(0)
+            assert corr_df is not None
             label_correlations = (
-                self.data_frame.corr().fillna(0)["margin"].abs().sort_values()
+                # Getting a false positive where pylint doesn't realise that the return
+                # for fillna is a dataframe
+                corr_df["margin"]  # pylint: disable=unsubscriptable-object
+                .abs()
+                .sort_values()
             )
             threshold = label_correlations.iloc[round(len(label_correlations) * 0.5)]
 
