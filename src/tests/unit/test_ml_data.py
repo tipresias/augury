@@ -89,5 +89,5 @@ class TestMLData(TestCase):
         data_set_name = "even_faker_data"
         self.data.data_set = data_set_name
 
-        self.assertIsNone(self.data._data)  # pylint: disable=protected-access
+        self.assertTrue(self.data._data.empty)  # pylint: disable=protected-access
         self.assertEqual(self.data.data_set, data_set_name)
