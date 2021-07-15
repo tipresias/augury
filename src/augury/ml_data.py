@@ -141,7 +141,7 @@ class MLData:
     @data_set.setter
     def data_set(self, name: str) -> None:
         if self._data_set != name:
-            self._data = None
+            self._data = pd.DataFrame()
             self._X_data = None
             self._y_data = None
 
