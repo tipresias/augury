@@ -219,6 +219,7 @@ def clean_fixture_data(fixture_data: pd.DataFrame) -> pd.DataFrame:
     fixture_data_frame = (
         fixture_data.rename(columns={"round": "round_number", "season": "year"})
         .loc[:, SHARED_MATCH_FIXTURE_COLS]
+        .dropna(subset=["home_team", "away_team"])
         .assign(
             venue=lambda df: df["venue"].map(_map_footywire_venues),
             round_type=_round_type_column,
