@@ -119,6 +119,15 @@ class TestMatch(TestCase, ColumnAssertionMixin):
         # Dates have real times
         self.assertFalse((clean_data["date"].dt.time == time()).any())
 
+        with self.subTest("when some teams are blank"):
+            row_count = len(fake_match_results)
+            fake_match_results.iloc[int(row_count / 2) :, :]["hteam"] = np.nan
+            fake_match_results.iloc[int(row_count / 2) :, :]["ateam"] = np.nan
+            clean_data = match.clean_match_results_data(fake_match_results)
+
+            self.assertFalse((clean_data["home_team"] == 0).any())
+            self.assertFalse((clean_data["away_team"] == 0).any())
+
     def test_add_elo_rating(self):
         valid_data_frame = self.data_frame.rename(
             columns={

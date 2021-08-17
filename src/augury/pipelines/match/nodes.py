@@ -259,6 +259,7 @@ def clean_match_results_data(data_frame: pd.DataFrame):
                 "round": "round_number",
             }
         )
+        .dropna(subset=["home_team", "away_team"])
         .assign(
             date=_parse_dates,
             home_team=_translate_team_column("home_team"),
