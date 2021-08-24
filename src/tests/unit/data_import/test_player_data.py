@@ -37,6 +37,6 @@ class TestPlayerData(TestCase):
         mock_fetch_data.assert_called_with(
             start_date=START_DATE, end_date=END_DATE, verbose=0
         )
-        open.assert_called_with(PLAYER_DATA_PATH, "w")
+        open.assert_called_with(PLAYER_DATA_PATH, "w", encoding="utf-8")
         dump_args, _dump_kwargs = json.dump.call_args
         self.assertIn(self.fake_player_data, dump_args)
