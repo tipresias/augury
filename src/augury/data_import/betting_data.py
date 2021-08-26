@@ -72,7 +72,7 @@ def save_betting_data(
     data = fetch_betting_data(start_date=start_date, end_date=end_date, verbose=verbose)
     filepath = os.path.join(RAW_DATA_DIR, f"betting-data_{start_date}_{end_date}.json")
 
-    with open(filepath, "w") as json_file:
+    with open(filepath, "w", encoding="utf-8") as json_file:
         json.dump(data, json_file, indent=2)
 
     if verbose == 1:

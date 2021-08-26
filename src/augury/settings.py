@@ -122,7 +122,9 @@ N_SEASONS_FOR_PREDICTION = 10
 # and we want to limit memory usage and speed up data processing for tipping
 PREDICTION_DATA_START_DATE = f"{date.today().year - N_SEASONS_FOR_PREDICTION}-01-01"
 
-with open(os.path.join(BASE_DIR, "src/augury/ml_models.yml"), "r") as file:
+with open(
+    os.path.join(BASE_DIR, "src/augury/ml_models.yml"), "r", encoding="utf-8"
+) as file:
     ML_MODELS: List[MLModelDict] = yaml.safe_load(file).get("models", [])
     PREDICTION_TYPES: List[str] = list(
         {ml_model["prediction_type"] for ml_model in ML_MODELS}
