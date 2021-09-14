@@ -43,16 +43,3 @@ services:
       - GIT_PYTHON_REFRESH=silence
       - GOOGLE_APPLICATION_CREDENTIALS=.gcloud/keyfile.json
     command: kedro jupyter notebook --ip 0.0.0.0 --no-browser --allow-root
-  mlflow:
-    image: augury_data_science:latest
-    volumes:
-      - ./:/app
-    ports:
-      - "5000:5000"
-    depends_on:
-      - data_science
-    command: mlflow server -h 0.0.0.0 --backend-store-uri sqlite:////app/db/mlflow.db --default-artifact-root ./mlruns
-  db:
-    image: nouchka/sqlite3:latest
-    volumes:
-      - ./db:/root/db
