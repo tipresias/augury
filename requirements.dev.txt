@@ -3,7 +3,7 @@
 
 -r requirements.txt
 
-responses>=0.10.6,<0.14
+responses>=0.10.6,<0.15
 memory_profiler
 
 # Data packages
