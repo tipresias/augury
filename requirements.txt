@@ -2,7 +2,7 @@
 # This reduces the file size deployed to Google Cloud.
 
 requests
-google-cloud-storage==1.42.1
+google-cloud-storage==1.42.2
 joblib
 simplejson
 bottle==0.12.19
