@@ -55,7 +55,6 @@ class ProjectHooks:
             full,
             match,
             player,
-            legacy,
         )
 
         session = get_current_session()
@@ -75,7 +74,6 @@ class ProjectHooks:
                 past_match_pipeline=match.create_past_match_pipeline(),
             ),
             "full": full.create_pipeline(start_date, end_date),
-            "legacy": legacy.create_pipeline(start_date, end_date),
         }
 
     @hook_impl

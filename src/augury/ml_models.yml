@@ -11,11 +11,3 @@ models:
     prediction_type: win_probability
     data_set: full_data
     label_col: result
-  - name: tipresias_margin_2020
-    prediction_type: margin
-    data_set: legacy_data
-    label_col: margin
-  - name: tipresias_proba_2020
-    prediction_type: win_probability
-    data_set: legacy_data
-    label_col: result
