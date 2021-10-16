@@ -19,9 +19,8 @@ if BASE_DIR not in sys.path:
     sys.path.append(BASE_DIR)
 
 from tests.fixtures.fake_estimator import pickle_fake_estimator
-from augury.ml_estimators import StackingEstimator, BasicEstimator, ConfidenceEstimator
+from augury.ml_estimators import BasicEstimator, ConfidenceEstimator
 from augury.ml_data import MLData
-from augury.ml_estimators import estimator_params
 from augury import settings
 
 
@@ -69,14 +68,6 @@ def main():
         del full_data
 
         model_info = [
-            (
-                ConfidenceEstimator(**estimator_params.tipresias_proba_2020),
-                {**data_kwargs, "data_set": "legacy_data", "label_col": "result"},
-            ),
-            (
-                StackingEstimator(**estimator_params.tipresias_margin_2020),
-                {**data_kwargs, "data_set": "legacy_data"},
-            ),
             (
                 BasicEstimator(name="tipresias_margin_2021"),
                 {**data_kwargs, "data_set": "full_data"},

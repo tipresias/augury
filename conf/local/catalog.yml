@@ -45,13 +45,6 @@ final_player_data:
     date_format: iso
 
 # Final data
-legacy_data:
-  type: pandas.JSONDataSet
-  filepath: /app/data/05_model_input/legacy-data_1897-01-01_2021-12-31.json
-  save_args:
-    indent: 2
-    orient: records
-    date_format: iso
 full_data:
   type: pandas.JSONDataSet
   filepath: /app/data/05_model_input/full-data_1897-01-01_2021-12-31.json
@@ -68,12 +61,4 @@ tipresias_margin_2021:
 tipresias_proba_2021:
   type: pickle.PickleDataSet
   filepath: data/06_models/tipresias_proba_2021.pkl
-  backend: joblib
-tipresias_margin_2020:
-  type: pickle.PickleDataSet
-  filepath: data/06_models/tipresias_margin_2020.pkl
-  backend: joblib
-tipresias_proba_2020:
-  type: pickle.PickleDataSet
-  filepath: data/06_models/tipresias_proba_2020.pkl
   backend: joblib

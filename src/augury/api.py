@@ -19,7 +19,7 @@ ApiResponse = TypedDict(
     "ApiResponse", {"data": Union[List[Dict[str, Any]], Dict[str, Any]]}
 )
 
-PIPELINE_NAMES = {"full_data": "full", "legacy_data": "legacy"}
+PIPELINE_NAMES = {"full_data": "full"}
 
 
 def _clean_data_frame_for_json(data_frame: pd.DataFrame) -> List[Dict[str, Any]]:
