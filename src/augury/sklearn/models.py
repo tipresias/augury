@@ -16,6 +16,7 @@ from mypy_extensions import TypedDict
 from statsmodels.tsa.base.tsa_model import TimeSeriesModel
 from scipy.stats import norm
 from tensorflow import keras
+from scikeras.wrappers import KerasRegressor
 
 from augury.types import R
 from augury.pipelines.nodes.base import _validate_required_columns
@@ -615,7 +616,8 @@ class KerasClassifier(BaseEstimator, ClassifierMixin):
 
         # We use KerasRegressor, because KerasClassifier only works
         # with the Sequential model
-        self._model = keras.wrappers.scikit_learn.KerasRegressor(
+        # (2021-11-30: this might no longer be true with switch to scikeras)
+        self._model = KerasRegressor(
             build_fn=self.model_func(
                 n_hidden_layers=self.n_hidden_layers,
                 n_cells=self.n_cells,
@@ -986,7 +988,7 @@ class RNNRegressor(BaseEstimator, RegressorMixin):
     def _create_model(self):
         keras.backend.clear_session()
 
-        self._model = keras.wrappers.scikit_learn.KerasRegressor(
+        self._model = KerasRegressor(
             build_fn=self.model_func(
                 n_steps=self.n_steps,
                 n_features=self.n_features,
@@ -1009,7 +1011,7 @@ class RNNRegressor(BaseEstimator, RegressorMixin):
     def _load_model(self, saved_model):
         keras.backend.clear_session()
 
-        return keras.wrappers.scikit_learn.KerasRegressor(build_fn=lambda: saved_model)
+        return KerasRegressor(build_fn=lambda: saved_model)
 
     # Adapted this code from: http://zachmoshe.com/2017/04/03/pickling-keras-models.html
     # Keras has since been updated to be picklable, but my custom tensorflow
