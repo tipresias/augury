@@ -81,8 +81,8 @@ class TestMatch(TestCase, ColumnAssertionMixin):
 
         with self.subTest("when some teams are blank"):
             row_count = len(fixture_data)
-            fixture_data.iloc[int(row_count / 2) :, :]["home_team"] = np.nan
-            fixture_data.iloc[int(row_count / 2) :, :]["away_team"] = np.nan
+            fixture_data.iloc[int(row_count / 2) :, :].loc["home_team"] = np.nan
+            fixture_data.iloc[int(row_count / 2) :, :].loc["away_team"] = np.nan
             clean_data = match.clean_fixture_data(fixture_data)
 
             self.assertFalse((clean_data["home_team"] == 0).any())
