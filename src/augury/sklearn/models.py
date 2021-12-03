@@ -2,6 +2,7 @@
 
 """Classes and functions based on existing Scikit-learn functionality."""
 
+from collections import defaultdict
 from typing import Type, List, Union, Optional, Any, Tuple, Dict, Callable
 import copy
 import warnings
@@ -16,7 +17,7 @@ from mypy_extensions import TypedDict
 from statsmodels.tsa.base.tsa_model import TimeSeriesModel
 from scipy.stats import norm
 from tensorflow import keras
-from scikeras.wrappers import KerasRegressor
+from scikeras.wrappers import KerasRegressor, KerasClassifier as ScikerasClassifier
 
 from augury.types import R
 from augury.pipelines.nodes.base import _validate_required_columns
@@ -584,15 +585,11 @@ class KerasClassifier(BaseEstimator, ClassifierMixin):
         Only works if the output has more than one column. Otherwise,
         returns the same predictions as the #predict method.
         """
-        return self._model.predict(X)
+        return self._model.predict_proba(X)
 
     def predict(self, X):
         """Return predictions."""
-        return (
-            self.predict_proba(X)
-            if self.n_labels == 1
-            else np.argmax(self.predict_proba(X), axis=1)
-        )
+        return self._model.predict(X)
 
     def set_params(self, **params):
         """Set instance params."""
@@ -607,9 +604,9 @@ class KerasClassifier(BaseEstimator, ClassifierMixin):
         return self
 
     @property
-    def history(self) -> keras.callbacks.History:
+    def history(self) -> defaultdict:
         """Return the history object of the trained Keras model."""
-        return self._model.model.history
+        return self._model.history_
 
     def _create_model(self):
         keras.backend.clear_session()
@@ -617,8 +614,8 @@ class KerasClassifier(BaseEstimator, ClassifierMixin):
         # We use KerasRegressor, because KerasClassifier only works
         # with the Sequential model
         # (2021-11-30: this might no longer be true with switch to scikeras)
-        self._model = KerasRegressor(
-            build_fn=self.model_func(
+        self._model = ScikerasClassifier(
+            self.model_func(
                 n_hidden_layers=self.n_hidden_layers,
                 n_cells=self.n_cells,
                 dropout_rate=self.dropout_rate,
@@ -629,7 +626,7 @@ class KerasClassifier(BaseEstimator, ClassifierMixin):
                 **self.kwargs,
             ),
             epochs=self.epochs,
-            callbacks=[keras.callbacks.EarlyStopping(monitor="val_loss", patience=5)],
+            callbacks=[keras.callbacks.EarlyStopping(monitor="loss", patience=5)],
         )
 
     # Adapted this code from: http://zachmoshe.com/2017/04/03/pickling-keras-models.html
@@ -752,7 +749,7 @@ def rnn_model_func(
             name=f"lstm_{idx}",
         )(lstm)
 
-    output = keras.layers.Dense(1)(lstm)
+    output = keras.layers.Dense(2)(lstm)
 
     model = keras.models.Model(
         inputs=[
@@ -989,7 +986,7 @@ class RNNRegressor(BaseEstimator, RegressorMixin):
         keras.backend.clear_session()
 
         self._model = KerasRegressor(
-            build_fn=self.model_func(
+            model=self.model_func(
                 n_steps=self.n_steps,
                 n_features=self.n_features,
                 round_type_dim=self.round_type_dim,
@@ -1011,7 +1008,7 @@ class RNNRegressor(BaseEstimator, RegressorMixin):
     def _load_model(self, saved_model):
         keras.backend.clear_session()
 
-        return KerasRegressor(build_fn=lambda: saved_model)
+        return KerasRegressor(model=lambda: saved_model)
 
     # Adapted this code from: http://zachmoshe.com/2017/04/03/pickling-keras-models.html
     # Keras has since been updated to be picklable, but my custom tensorflow

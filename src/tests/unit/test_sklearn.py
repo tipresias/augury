@@ -1,5 +1,6 @@
 # pylint: disable=missing-docstring, redefined-outer-name
 
+from collections import defaultdict
 from unittest import TestCase
 from unittest.mock import patch
 import os
@@ -259,7 +260,7 @@ class TestKerasClassifier(TestCase):
 
     def test_history(self):
         self.classifier.fit(self.X_train, self.y_train)
-        self.assertIsInstance(self.classifier.history, keras.callbacks.History)
+        self.assertIsInstance(self.classifier.history, defaultdict)
 
     def model_func(self, **_kwargs):
         N_FEATURES = len(self.X_train.columns)
@@ -275,7 +276,7 @@ class TestKerasClassifier(TestCase):
         output = keras.layers.Dense(2, activation="softmax")(dropout_n)
 
         model = keras.models.Model(inputs=stats_input, outputs=output)
-        model.compile(loss="categorical_crossentropy", optimizer="adam")
+        model.compile(loss="sparse_categorical_crossentropy", optimizer="adam")
 
         return lambda: model
 
