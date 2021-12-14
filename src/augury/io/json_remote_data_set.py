@@ -90,7 +90,7 @@ class JSONRemoteDataSet(AbstractDataSet):
 
     @staticmethod
     def _validate_date_range_type(date_range_type: Optional[str]) -> None:
-        assert date_range_type is None or date_range_type in DATE_RANGE_TYPE.keys(), (
+        assert date_range_type is None or date_range_type in DATE_RANGE_TYPE, (
             "Argument date_range_type must be None or one of "
             f"{DATE_RANGE_TYPE.keys()}, but {date_range_type} was received."
         )
