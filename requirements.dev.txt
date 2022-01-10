@@ -47,7 +47,7 @@ betamax
 pytest-xdist
 pydocstyle==6.1.1
 coverage
-candystore==0.3.3
+candystore==0.3.4
 
 # Types
 types-PyYAML
