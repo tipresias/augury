@@ -12,7 +12,7 @@ catboost
 category_encoders
 
 # Kedro packages
-ipython==7.31.0
+ipython==8.0.0
 isort>=4.3.21, <6.0
 jupyter~=1.0
 jupyterlab==3.2.8
