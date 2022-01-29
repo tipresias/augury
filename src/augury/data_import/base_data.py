@@ -37,7 +37,7 @@ def _make_request(
         if retry:
             print(f"Received an error response from {url}, retrying...")
             time.sleep(5)
-            _make_request(url, params=params, headers=headers, retry=False)
+            return _make_request(url, params=params, headers=headers, retry=False)
 
         raise Exception(
             "Bad response from application: "
