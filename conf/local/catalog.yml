@@ -1,21 +1,21 @@
 # Raw data
 betting_data:
   type: pandas.JSONDataSet
-  filepath: /app/data/01_raw/betting-data_2010-01-01_2020-12-31.json
+  filepath: /app/data/01_raw/betting-data_2010-01-01_2021-12-31.json
   save_args:
     indent: 2
     orient: records
     date_format: iso
 match_data:
   type: pandas.JSONDataSet
-  filepath: /app/data/01_raw/match-data_1897-01-01_2020-12-31.json
+  filepath: /app/data/01_raw/match-data_1897-01-01_2021-12-31.json
   save_args:
     indent: 2
     orient: records
     date_format: iso
 player_data:
   type: pandas.JSONDataSet
-  filepath: /app/data/01_raw/player-data_1965-01-01_2020-12-31.json
+  filepath: /app/data/01_raw/player-data_1965-01-01_2021-12-31.json
   save_args:
     indent: 2
     orient: records
@@ -24,21 +24,21 @@ player_data:
 # Intermediate data
 final_betting_data:
   type: pandas.JSONDataSet
-  filepath: /app/data/02_intermediate/betting-data_2010-01-01_2021-12-31.json
+  filepath: /app/data/02_intermediate/betting-data_2010-01-01_2022-12-31.json
   save_args:
     indent: 2
     orient: records
     date_format: iso
 final_match_data:
   type: pandas.JSONDataSet
-  filepath: /app/data/02_intermediate/match-data_1897-01-01_2021-12-31.json
+  filepath: /app/data/02_intermediate/match-data_1897-01-01_2022-12-31.json
   save_args:
     indent: 2
     orient: records
     date_format: iso
 final_player_data:
   type: pandas.JSONDataSet
-  filepath: /app/data/02_intermediate/player-data_1965-01-01_2021-12-31.json
+  filepath: /app/data/02_intermediate/player-data_1965-01-01_2022-12-31.json
   save_args:
     indent: 2
     orient: records
@@ -47,7 +47,7 @@ final_player_data:
 # Final data
 full_data:
   type: pandas.JSONDataSet
-  filepath: /app/data/05_model_input/full-data_1897-01-01_2021-12-31.json
+  filepath: /app/data/05_model_input/full-data_1897-01-01_2022-12-31.json
   save_args:
     indent: 2
     orient: records
