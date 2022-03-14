@@ -1,15 +1,4 @@
 # Raw data
-betting_data:
-  type: pandas.JSONDataSet
-  filepath: gs://afl_data/betting-data_2010-01-01_2021-12-31.json
-  fs_args:
-    project: tipresias
-  save_args:
-    indent: 2
-    orient: records
-    date_format: iso
-  credentials:
-    token: cloud
 match_data:
   type: pandas.JSONDataSet
   filepath: gs://afl_data/match-data_2010-01-01_2021-12-31.json

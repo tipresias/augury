@@ -1,8 +1,4 @@
 # Remote data
-remote_betting_data:
-  type: augury.io.JSONRemoteDataSet
-  data_source: "augury.data_import.betting_data.fetch_betting_data"
-  date_range_type: whole_season
 remote_match_data:
   type: augury.io.JSONRemoteDataSet
   data_source: "augury.data_import.match_data.fetch_match_data"
