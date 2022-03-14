@@ -42,11 +42,3 @@ tipresias_margin_2021:
     project: tipresias
   credentials:
     token: /app/.gcloud/keyfile.json
-tipresias_proba_2021:
-  type: pickle.PickleDataSet
-  filepath: gs://afl_data/tipresias_proba_2021.pkl
-  backend: joblib
-  fs_args:
-    project: tipresias
-  credentials:
-    token: /app/.gcloud/keyfile.json
