@@ -10,7 +10,7 @@ gunicorn
 rollbar
 
 # Data packages
-numpy==1.22.2
+numpy==1.22.3
 pandas==1.4.1
 scikit-learn==1.0
 xgboost==1.5.2
