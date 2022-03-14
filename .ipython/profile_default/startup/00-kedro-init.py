@@ -10,6 +10,11 @@ from kedro.framework.startup import _get_project_metadata
 startup_error = None
 project_path = Path(__file__).parents[3].resolve()
 
+src_path = Path(project_path, "src")
+
+if src_path not in sys.path:
+    sys.path.append(str(src_path))
+
 
 @register_line_magic
 def reload_kedro(path, line=None):
