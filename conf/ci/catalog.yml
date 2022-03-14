@@ -1,18 +1,7 @@
 # Raw data
-betting_data:
-  type: pandas.JSONDataSet
-  filepath: gs://afl_data/betting-data_2010-01-01_2020-12-31.json
-  fs_args:
-    project: tipresias
-  save_args:
-    indent: 2
-    orient: records
-    date_format: iso
-  credentials:
-    token: /app/.gcloud/keyfile.json
 match_data:
   type: pandas.JSONDataSet
-  filepath: gs://afl_data/match-data_2010-01-01_2020-12-31.json
+  filepath: gs://afl_data/match-data_2010-01-01_2021-12-31.json
   fs_args:
     project: tipresias
   save_args:
@@ -23,7 +12,7 @@ match_data:
     token: /app/.gcloud/keyfile.json
 player_data:
   type: pandas.JSONDataSet
-  filepath: gs://afl_data/player-data_2010-01-01_2020-12-31.json
+  filepath: gs://afl_data/player-data_2010-01-01_2021-12-31.json
   fs_args:
     project: tipresias
   save_args:
@@ -37,14 +26,6 @@ player_data:
 tipresias_margin_2021:
   type: pickle.PickleDataSet
   filepath: gs://afl_data/tipresias_margin_2021.pkl
-  backend: joblib
-  fs_args:
-    project: tipresias
-  credentials:
-    token: /app/.gcloud/keyfile.json
-tipresias_proba_2021:
-  type: pickle.PickleDataSet
-  filepath: gs://afl_data/tipresias_proba_2021.pkl
   backend: joblib
   fs_args:
     project: tipresias

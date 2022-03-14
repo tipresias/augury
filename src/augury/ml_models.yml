@@ -7,7 +7,3 @@ models:
     prediction_type: margin
     data_set: full_data
     label_col: margin
-  - name: tipresias_proba_2021
-    prediction_type: win_probability
-    data_set: full_data
-    label_col: result

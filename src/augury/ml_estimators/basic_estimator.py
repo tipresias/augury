@@ -10,8 +10,8 @@ from .base_ml_estimator import BaseMLEstimator, BASE_ML_PIPELINE
 
 
 BEST_PARAMS = {
-    "pipeline__correlationselector__threshold": 0.03921446485352182,
-    "ridge__alpha": 0.3663618432936917,
+    "pipeline__correlationselector__threshold": 0.04308980248526492,
+    "ridge__alpha": 0.06355835028602363,
 }
 
 PIPELINE = make_pipeline(BASE_ML_PIPELINE, Ridge()).set_params(**BEST_PARAMS)

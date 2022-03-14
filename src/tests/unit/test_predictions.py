@@ -72,7 +72,6 @@ def test_make_predictions(models, prediction_multiplier, predictor):
                 "oppo_team",
                 "ml_model",
                 "predicted_margin",
-                "predicted_win_probability",
             ]
         )
 
