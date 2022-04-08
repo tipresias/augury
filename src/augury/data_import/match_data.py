@@ -1,5 +1,6 @@
 """Module for fetching match data from afl_data service."""
 
+import sys
 from typing import List, Dict, Any
 from datetime import date
 import os
@@ -134,9 +135,22 @@ def fetch_match_results_data(
 
 
 if __name__ == "__main__":
-    last_year = date.today().year - 1
-    end_of_last_year = f"{last_year}-12-31"
+    script_args = sys.argv[1:]
+
+    if "--start_date" in script_args:
+        start_date_arg_index = script_args.index("--start_date") + 1
+        start_date_arg = script_args[start_date_arg_index]
+    else:
+        start_date_arg = f"{FIRST_YEAR_OF_MATCH_DATA}-01-01"
+
+    if "--end_date" in script_args:
+        end_date_arg_index = script_args.index("--end_date") + 1
+        end_date_arg = script_args[end_date_arg_index]
+    else:
+        last_year = date.today().year - 1
+        end_of_last_year = f"{last_year}-12-31"
+        end_date_arg = end_of_last_year
 
     # A bit arbitrary, but in general I prefer to keep the static, raw data up to the
     # end of last season, fetching more recent data as necessary
-    save_match_data(end_date=end_of_last_year)
+    save_match_data(start_date=start_date_arg, end_date=end_date_arg)

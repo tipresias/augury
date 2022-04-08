@@ -7,6 +7,7 @@ import math
 from functools import partial
 import os
 import json
+import sys
 
 from augury.data_import.base_data import fetch_afl_data
 from augury.settings import RAW_DATA_DIR, PREDICTION_DATA_START_DATE
@@ -173,9 +174,22 @@ def fetch_roster_data(
 
 
 if __name__ == "__main__":
-    last_year = date.today().year - 1
-    end_of_last_year = f"{last_year}-12-31"
+    script_args = sys.argv[1:]
+
+    if "--start_date" in script_args:
+        start_date_arg_index = script_args.index("--start_date") + 1
+        start_date_arg = script_args[start_date_arg_index]
+    else:
+        start_date_arg = f"{EARLIEST_SEASON_WITH_EXTENSIVE_PLAYER_STATS}-01-01"
+
+    if "--end_date" in script_args:
+        end_date_arg_index = script_args.index("--end_date") + 1
+        end_date_arg = script_args[end_date_arg_index]
+    else:
+        last_year = date.today().year - 1
+        end_of_last_year = f"{last_year}-12-31"
+        end_date_arg = end_of_last_year
 
     # A bit arbitrary, but in general I prefer to keep the static, raw data up to the
     # end of last season, fetching more recent data as necessary
-    save_player_data(end_date=end_of_last_year)
+    save_player_data(start_date=start_date_arg, end_date=end_date_arg)
