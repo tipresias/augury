@@ -16,7 +16,7 @@ ipython==8.2.0
 setuptools>=60 # Version requirement of ipykernel
 isort>=4.3.21, <6.0
 jupyter~=1.0
-jupyterlab==3.3.2
+jupyterlab==3.3.4
 jupyter_client>=5.1, <8.0
 jupyter_nbextensions_configurator==0.4.1
 jupyter_contrib_nbextensions==0.5.1
