@@ -5,7 +5,7 @@ requests
 google-cloud-storage==2.2.1
 joblib
 simplejson
-bottle==0.12.19
+bottle==0.12.21
 gunicorn
 rollbar
 
