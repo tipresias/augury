@@ -22,7 +22,7 @@ scikeras==0.4.1
 six~=1.15.0 # Required version for TF 2.4.1
 
 # Kedro packages
-kedro==0.17.0
+kedro==0.18.2
 gcsfs<2022.4 # Needed to access Google Cloud Storage files
 fsspec<2022.4 # Needed for DataSet functionality
 MarkupSafe <2.1.0 # Last version to include 'soft_unicode'
