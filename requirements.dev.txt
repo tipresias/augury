@@ -12,7 +12,7 @@ catboost
 category_encoders
 
 # Kedro packages
-ipython==8.2.0
+ipython==8.5.0
 setuptools>=60 # Version requirement of ipykernel
 isort>=4.3.21, <6.0
 jupyter~=1.0
