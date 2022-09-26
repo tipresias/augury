@@ -23,7 +23,7 @@ six~=1.15.0 # Required version for TF 2.4.1
 
 # Kedro packages
 kedro==0.17.0
-gcsfs<2022.4 # Needed to access Google Cloud Storage files
+gcsfs<2022.9 # Needed to access Google Cloud Storage files
 fsspec<2022.4 # Needed for DataSet functionality
 MarkupSafe <2.1.0 # Last version to include 'soft_unicode'
 Jinja2<3.0.0 # Required version for 'cookiecutter' (a 'kedro' dependency)
