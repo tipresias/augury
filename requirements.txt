@@ -29,4 +29,4 @@ MarkupSafe <2.1.0 # Last version to include 'soft_unicode'
 Jinja2<3.0.0 # Required version for 'cookiecutter' (a 'kedro' dependency)
 
 # Testing/Linting
-mypy==0.942 # Need mypy due to references to mypy_extensions in production code
+mypy==0.981 # Need mypy due to references to mypy_extensions in production code
